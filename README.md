@@ -1,9 +1,10 @@
 # Loopholemaxing
 
-**Find Every Edge.** Deep research systems for markets, crypto, and alpha generation.
+**Find Every Edge.** Systems, research, and tools — built by obsessive analysis.
 
-## Bitcoin Intelligence Brain
+## Creations
 
+### BTC Intelligence Brain
 A comprehensive 12-chapter Bitcoin research and trading intelligence system covering:
 
 - **Macro History & Cycles** — Complete price history 2009-2026, all 4 halving cycles
@@ -14,23 +15,21 @@ A comprehensive 12-chapter Bitcoin research and trading intelligence system cove
 - **Trading Frameworks** — Backtested strategies, DCA analysis, composite scoring
 - **Risk Management** — Kelly Criterion, position sizing, leverage rules
 
-### Stats
-- 5,578+ lines of research
-- 10 analytical charts
-- 12 chapters
-- 4 complete cycles analyzed
-- 137KB master intelligence document
+**Stats:** 12 chapters | 10 charts | 5,578 lines of research | 137KB intel doc
+
+*More creations coming.*
 
 ## Structure
 
 ```
-├── index.html              # Homepage
-├── btc-brain.html          # BTC Intelligence Brain
-├── styles.css              # Shared stylesheet
+├── index.html                 # Homepage — creation hub
+├── styles.css                 # Shared stylesheet
+├── CNAME                      # Custom domain config
 ├── btc-brain/
-│   ├── charts/             # 10 analytical PNG charts
-│   ├── research/           # 5 deep research markdown files
-│   └── BTC-INTELLIGENCE-BRAIN.pplx.md  # Master knowledge base
+│   ├── index.html             # BTC Intelligence Brain
+│   ├── charts/                # 10 analytical PNG charts
+│   ├── research/              # 5 deep research markdown files
+│   └── BTC-INTELLIGENCE-BRAIN.pplx.md
 ```
 
 ## Built By

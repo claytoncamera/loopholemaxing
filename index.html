@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loopholemaxing — Find Every Edge</title>
+  <meta name="description" content="Deep research systems for markets, crypto, and alpha generation. Built by obsessive analysis, not hype.">
+  <meta property="og:title" content="Loopholemaxing — Find Every Edge">
+  <meta property="og:description" content="Deep research systems for markets, crypto, and alpha generation.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ========================================
+       INDEX PAGE STYLES
+       ======================================== */
+
+    /* Dot grid background */
+    .bg-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(circle, rgba(59, 130, 246, 0.07) 1px, transparent 1px);
+      background-size: 32px 32px;
+    }
+
+    /* Gradient overlay for hero area */
+    .bg-glow {
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, rgba(247, 147, 26, 0.03) 40%, transparent 70%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px var(--space-lg) var(--space-4xl);
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-orange);
+      background: var(--accent-orange-glow);
+      border: 1px solid rgba(247, 147, 26, 0.2);
+      padding: 6px 16px;
+      border-radius: 20px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent-orange);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero h1 {
+      font-size: clamp(48px, 8vw, 80px);
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      color: var(--text-primary);
+      margin-bottom: var(--space-lg);
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 20px);
+      color: var(--text-secondary);
+      max-width: 600px;
+      line-height: 1.6;
+      margin-bottom: var(--space-xl);
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: var(--space-md);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Features Section */
+    .features {
+      padding: var(--space-4xl) var(--space-lg);
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: var(--space-3xl);
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .feature-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card .feature-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: var(--space-md);
+    }
+
+    .feature-icon.brain { background: var(--accent-orange-glow); color: var(--accent-orange); }
+    .feature-icon.cycle { background: var(--accent-blue-glow); color: var(--accent-blue); }
+    .feature-icon.trade { background: rgba(63, 185, 80, 0.12); color: var(--green); }
+    .feature-icon.macro { background: rgba(210, 168, 255, 0.12); color: var(--purple); }
+
+    .feature-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: var(--space-sm);
+      color: var(--text-primary);
+    }
+
+    .feature-card p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .feature-card .feature-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: var(--space-md);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-cyan);
+    }
+
+    .feature-card .feature-link:hover {
+      color: var(--accent-blue);
+    }
+
+    /* Stats Section */
+    .stats {
+      padding: var(--space-3xl) var(--space-lg);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .stats-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: var(--space-lg);
+    }
+
+    .stat {
+      text-align: center;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .stat-value {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* Preview Section */
+    .preview {
+      padding: var(--space-4xl) var(--space-lg);
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+
+    .preview-header {
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+    }
+
+    .preview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-lg);
+    }
+
+    .preview-item {
+      position: relative;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      transition: all var(--transition-base);
+    }
+
+    .preview-item:hover {
+      border-color: var(--border-light);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .preview-item img {
+      width: 100%;
+      display: block;
+    }
+
+    .preview-caption {
+      padding: var(--space-sm) var(--space-md);
+      font-size: 12px;
+      color: var(--text-muted);
+      background: var(--bg-card);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      padding: var(--space-4xl) var(--space-lg);
+      text-align: center;
+    }
+
+    .cta-box {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: var(--space-3xl);
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-box::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-orange), var(--accent-blue));
+    }
+
+    .cta-box h2 {
+      font-size: 28px;
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+    }
+
+    .cta-box p {
+      color: var(--text-secondary);
+      margin-bottom: var(--space-xl);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .hero { padding: 100px var(--space-md) var(--space-3xl); }
+      .features-grid { grid-template-columns: 1fr; }
+      .stats-inner { justify-content: center; }
+      .stat { min-width: 120px; }
+      .stat-value { font-size: 22px; }
+      .preview-grid { grid-template-columns: 1fr; }
+      .nav-links { gap: var(--space-md); }
+      .nav-links a { font-size: 12px; }
+    }
+
+    @media (max-width: 480px) {
+      .top-header { padding: 0 var(--space-md); }
+      .logo { font-size: 12px; }
+      .hero h1 { font-size: 36px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Effects -->
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <!-- Header -->
+  <header class="top-header">
+    <a href="index.html" class="logo">Loopholemaxing</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="btc-brain.html">BTC Brain</a></li>
+        <li><a href="btc-brain.html#appendices">Research</a></li>
+        <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge">Live Research System</div>
+    <h1>Find Every <span>Edge.</span></h1>
+    <p class="hero-sub">Deep research systems for markets, crypto, and alpha generation. Built by obsessive analysis, not hype.</p>
+    <div class="hero-actions">
+      <a href="btc-brain.html" class="btn-primary">Enter BTC Brain →</a>
+      <a href="#features" class="btn-secondary">Learn More</a>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="features" id="features">
+    <div class="features-header">
+      <p class="section-label">What's Inside</p>
+      <h2 class="section-title">Intelligence Systems</h2>
+      <p class="section-subtitle" style="margin: 0 auto;">Comprehensive research frameworks built from first principles. Every data point verified, every model backtested.</p>
+    </div>
+    <div class="features-grid">
+      <div class="card feature-card">
+        <div class="feature-icon brain">₿</div>
+        <h3>BTC Intelligence Brain</h3>
+        <p>12-chapter deep research system covering cycles, on-chain, technicals, sentiment, macro, and trading frameworks. 137KB of raw intelligence.</p>
+        <a href="btc-brain.html" class="feature-link">Open Brain →</a>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon cycle">◎</div>
+        <h3>Cycle Analysis</h3>
+        <p>Complete halving cycle framework across all 4 Bitcoin epochs. Diminishing returns mapping, halving-to-peak timelines, and current cycle positioning.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon trade">⚡</div>
+        <h3>Trading Frameworks</h3>
+        <p>Backtested strategies, volatility regime analysis, DCA optimization, composite indicator scoring, and risk management systems.</p>
+      </div>
+      <div class="card feature-card">
+        <div class="feature-icon macro">◈</div>
+        <h3>Market Research</h3>
+        <p>Macro correlations, institutional flows, ETF impact analysis, black swan event studies, and regulatory landscape mapping.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats Section -->
+  <section class="stats">
+    <div class="stats-inner">
+      <div class="stat">
+        <div class="stat-value">5,578+</div>
+        <div class="stat-label">Lines of Research</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">10</div>
+        <div class="stat-label">Analytical Charts</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">12</div>
+        <div class="stat-label">Chapters</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">4</div>
+        <div class="stat-label">Complete Cycles</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">137KB</div>
+        <div class="stat-label">Intelligence Doc</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Preview Section -->
+  <section class="preview">
+    <div class="preview-header">
+      <p class="section-label">Preview</p>
+      <h2 class="section-title">Analytical Charts</h2>
+      <p class="section-subtitle" style="margin: 0 auto;">Custom-built analytical visualizations spanning price history, cycle overlays, and market structure.</p>
+    </div>
+    <div class="preview-grid">
+      <div class="preview-item">
+        <img src="btc-brain/charts/01-btc-price-history-log.png" alt="BTC Price History (Log Scale)" loading="lazy">
+        <div class="preview-caption">BTC Price History — Log Scale</div>
+      </div>
+      <div class="preview-item">
+        <img src="btc-brain/charts/02-halving-cycle-comparison.png" alt="Halving Cycle Comparison" loading="lazy">
+        <div class="preview-caption">Halving Cycle Comparison</div>
+      </div>
+      <div class="preview-item">
+        <img src="btc-brain/charts/10-cycle-dashboard.png" alt="Cycle Dashboard" loading="lazy">
+        <div class="preview-caption">Cycle Dashboard — Current Position</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-box">
+      <h2>Ready to go deep?</h2>
+      <p>Access the full BTC Intelligence Brain — 12 chapters of pure signal, zero noise.</p>
+      <a href="btc-brain.html" class="btn-primary">Enter BTC Brain →</a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div>Loopholemaxing.com — Built by Clayton Camera — 2026 | <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="footer-tagline">Research. Analyze. Execute.</div>
+  </footer>
+
+  <!-- Scroll to Top -->
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+  <script>
+    // Scroll to top button
+    const scrollBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      scrollBtn.classList.toggle('visible', window.scrollY > 400);
+    });
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.card, .stat, .preview-item').forEach(el => {
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(20px)';
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      observer.observe(el);
+    });
+  </script>
+
+</body>
+</html>

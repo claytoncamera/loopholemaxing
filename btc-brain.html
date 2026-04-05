@@ -1,0 +1,1409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BTC Intelligence Brain — Loopholemaxing</title>
+  <meta name="description" content="12-chapter deep research system covering Bitcoin cycles, on-chain metrics, technicals, sentiment, macro correlations, and trading frameworks.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* ========================================
+       BTC BRAIN PAGE STYLES
+       ======================================== */
+
+    body {
+      background: var(--bg-secondary);
+    }
+
+    /* Top bar override for brain page */
+    .brain-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1001;
+      background: rgba(13, 17, 23, 0.92);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+      height: 48px;
+      display: flex;
+      align-items: center;
+      padding: 0 var(--space-lg);
+      gap: var(--space-lg);
+    }
+
+    .brain-header .logo {
+      font-size: 12px;
+      letter-spacing: 0.15em;
+    }
+
+    .brain-header-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--accent-orange);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .brain-header-title::before {
+      content: '₿';
+      font-size: 14px;
+    }
+
+    .brain-header-right {
+      margin-left: auto;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .hamburger {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 20px;
+      cursor: pointer;
+      padding: 4px;
+      line-height: 1;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 48px;
+      left: 0;
+      width: var(--sidebar-width);
+      height: calc(100vh - 48px);
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      padding: var(--space-md) 0;
+      z-index: 1000;
+      transition: transform var(--transition-base);
+    }
+
+    .sidebar::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .sidebar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .sidebar::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 2px;
+    }
+
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      padding: var(--space-md) var(--space-md) var(--space-xs);
+    }
+
+    .sidebar-nav {
+      list-style: none;
+    }
+
+    .sidebar-nav a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 7px var(--space-md);
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      border-left: 2px solid transparent;
+    }
+
+    .sidebar-nav a:hover {
+      color: var(--text-primary);
+      background: rgba(88, 166, 255, 0.05);
+    }
+
+    .sidebar-nav a.active {
+      color: var(--accent-cyan);
+      border-left-color: var(--accent-cyan);
+      background: rgba(88, 166, 255, 0.08);
+    }
+
+    .sidebar-nav .chapter-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-muted);
+      min-width: 22px;
+    }
+
+    .sidebar-nav a.active .chapter-num {
+      color: var(--accent-cyan);
+    }
+
+    .sidebar-back {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: var(--space-md);
+      margin-top: var(--space-sm);
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: none;
+      border-top: 1px solid var(--border);
+    }
+
+    .sidebar-back:hover {
+      color: var(--accent-cyan);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: var(--sidebar-width);
+      padding: calc(48px + var(--space-xl)) var(--space-2xl) var(--space-3xl);
+      max-width: calc(var(--sidebar-width) + 920px);
+    }
+
+    /* Chapter sections */
+    .chapter {
+      margin-bottom: var(--space-4xl);
+      scroll-margin-top: 72px;
+    }
+
+    .chapter-header {
+      margin-bottom: var(--space-xl);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chapter-number {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-blue);
+      letter-spacing: 0.1em;
+      margin-bottom: 4px;
+    }
+
+    .chapter-title {
+      font-size: 26px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .chapter-desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-top: 6px;
+    }
+
+    /* Metric cards grid */
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-md);
+      text-align: center;
+    }
+
+    .metric-card .metric-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .metric-card .metric-value {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .metric-card .metric-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Zone indicator cards */
+    .zone-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+      margin-bottom: var(--space-md);
+    }
+
+    .zone-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: var(--space-sm);
+      color: var(--text-primary);
+    }
+
+    .zone-bar {
+      display: flex;
+      gap: 2px;
+      margin-bottom: var(--space-sm);
+      border-radius: 4px;
+      overflow: hidden;
+      height: 6px;
+    }
+
+    .zone-bar span {
+      flex: 1;
+    }
+
+    .zone-levels {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    .zone-level {
+      font-size: 12px;
+      font-family: var(--font-mono);
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border);
+    }
+
+    /* Event timeline cards */
+    .event-timeline {
+      display: grid;
+      gap: var(--space-md);
+    }
+
+    .event-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+      display: flex;
+      gap: var(--space-lg);
+      align-items: flex-start;
+    }
+
+    .event-date {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      min-width: 80px;
+    }
+
+    .event-body h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .event-body p {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    .event-impact {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 6px;
+    }
+
+    /* Strategy cards */
+    .strategy-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+
+    .strategy-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+    }
+
+    .strategy-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .strategy-stat {
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 0;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .strategy-stat:last-child {
+      border-bottom: none;
+    }
+
+    .strategy-stat span:first-child {
+      color: var(--text-muted);
+    }
+
+    .strategy-stat span:last-child {
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    /* Key level map */
+    .level-map {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+
+    .level-item {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 14px;
+    }
+
+    .level-item:last-child {
+      border-bottom: none;
+    }
+
+    .level-price {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      min-width: 100px;
+    }
+
+    .level-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .level-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .level-item.current {
+      background: rgba(247, 147, 26, 0.08);
+      border-radius: 6px;
+      padding: 10px var(--space-sm);
+      margin: 4px -8px;
+    }
+
+    .level-item.current .level-price {
+      color: var(--accent-orange);
+    }
+
+    /* Outlook cards */
+    .outlook-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+
+    .outlook-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+    }
+
+    .outlook-card .outlook-timeframe {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent-blue);
+      margin-bottom: var(--space-sm);
+    }
+
+    .outlook-card .outlook-range {
+      font-family: var(--font-mono);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .outlook-card .outlook-base {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Position sizing cards */
+    .position-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+    }
+
+    .position-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+      text-align: center;
+    }
+
+    .position-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .position-card .position-range {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    /* Info callout */
+    .callout {
+      background: var(--bg-card);
+      border-left: 3px solid var(--accent-blue);
+      border-radius: 0 8px 8px 0;
+      padding: var(--space-md) var(--space-lg);
+      margin: var(--space-lg) 0;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .callout strong {
+      color: var(--text-primary);
+    }
+
+    .callout.warning {
+      border-left-color: var(--yellow);
+    }
+
+    .callout.danger {
+      border-left-color: var(--red);
+    }
+
+    /* Table container for horizontal scroll on mobile */
+    .table-wrap {
+      overflow-x: auto;
+      margin: var(--space-md) 0;
+      border-radius: 8px;
+    }
+
+    /* Glossary */
+    .glossary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-sm) var(--space-xl);
+    }
+
+    .glossary-item {
+      padding: var(--space-sm) 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .glossary-item dt {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .glossary-item dd {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 2px;
+    }
+
+    /* Quick reference card */
+    .quick-ref {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+
+    .quick-ref h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+      color: var(--text-primary);
+    }
+
+    .quick-ref-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .quick-ref-item:last-child {
+      border-bottom: none;
+    }
+
+    .quick-ref-item span:first-child {
+      color: var(--text-secondary);
+    }
+
+    .quick-ref-item span:last-child {
+      font-family: var(--font-mono);
+      font-weight: 600;
+    }
+
+    /* Composite scoring */
+    .composite-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: var(--space-lg);
+      margin: var(--space-lg) 0;
+    }
+
+    .composite-card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: var(--space-md);
+      color: var(--text-primary);
+    }
+
+    .composite-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: var(--space-md);
+    }
+
+    .composite-bar .zone-buy { background: var(--green); flex: 20; }
+    .composite-bar .zone-neutral { background: var(--yellow); flex: 60; }
+    .composite-bar .zone-sell { background: var(--red); flex: 20; }
+
+    .composite-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-family: var(--font-mono);
+    }
+
+    /* Mobile sidebar */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 999;
+    }
+
+    @media (max-width: 900px) {
+      .hamburger {
+        display: block;
+      }
+
+      .sidebar {
+        transform: translateX(-100%);
+        z-index: 1002;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .sidebar-overlay.open {
+        display: block;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: calc(48px + var(--space-lg)) var(--space-md) var(--space-2xl);
+      }
+
+      .metric-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .strategy-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .outlook-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .position-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .glossary-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .event-card {
+        flex-direction: column;
+        gap: var(--space-sm);
+      }
+
+      .brain-header-right {
+        display: none;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .metric-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .chapter-title {
+        font-size: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Bar -->
+  <header class="brain-header">
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">☰</button>
+    <a href="index.html" class="logo">Loopholemaxing</a>
+    <span class="brain-header-title">BTC Intelligence Brain</span>
+    <span class="brain-header-right">April 2026</span>
+  </header>
+
+  <!-- Sidebar Overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <!-- Sidebar Navigation -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-section-label">Chapters</div>
+    <ul class="sidebar-nav" id="sidebarNav">
+      <li><a href="#ch01"><span class="chapter-num">01</span> Fundamentals</a></li>
+      <li><a href="#ch02"><span class="chapter-num">02</span> Price History</a></li>
+      <li><a href="#ch03"><span class="chapter-num">03</span> Halving Cycles</a></li>
+      <li><a href="#ch04"><span class="chapter-num">04</span> Bull & Bear Markets</a></li>
+      <li><a href="#ch05"><span class="chapter-num">05</span> Technical Analysis</a></li>
+      <li><a href="#ch06"><span class="chapter-num">06</span> On-Chain Metrics</a></li>
+      <li><a href="#ch07"><span class="chapter-num">07</span> Sentiment</a></li>
+      <li><a href="#ch08"><span class="chapter-num">08</span> Macro Correlations</a></li>
+      <li><a href="#ch09"><span class="chapter-num">09</span> Black Swans</a></li>
+      <li><a href="#ch10"><span class="chapter-num">10</span> Trading Strategies</a></li>
+      <li><a href="#ch11"><span class="chapter-num">11</span> Risk Management</a></li>
+      <li><a href="#ch12"><span class="chapter-num">12</span> Current Assessment</a></li>
+    </ul>
+    <div class="sidebar-section-label">Reference</div>
+    <ul class="sidebar-nav">
+      <li><a href="#appendices"><span class="chapter-num">—</span> Appendices</a></li>
+    </ul>
+    <a href="index.html" class="sidebar-back">← Back to Home</a>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main-content">
+
+    <!-- ===== CH 01: FUNDAMENTALS ===== -->
+    <section class="chapter" id="ch01">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 01</div>
+        <h2 class="chapter-title">Fundamentals</h2>
+        <p class="chapter-desc">Core protocol parameters and network statistics.</p>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Max Supply</div>
+          <div class="metric-value">21M</div>
+          <div class="metric-sub">Hard cap</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Consensus</div>
+          <div class="metric-value">PoW</div>
+          <div class="metric-sub">SHA-256</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Block Time</div>
+          <div class="metric-value">~10 min</div>
+          <div class="metric-sub">Target avg</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Current Reward</div>
+          <div class="metric-value highlight">3.125</div>
+          <div class="metric-sub">BTC per block</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Halving Interval</div>
+          <div class="metric-value">210,000</div>
+          <div class="metric-sub">Blocks</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Circulating</div>
+          <div class="metric-value">~19.85M</div>
+          <div class="metric-sub">94.5% mined</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Full Nodes</div>
+          <div class="metric-value">~18,000+</div>
+          <div class="metric-sub">Global network</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Genesis Block</div>
+          <div class="metric-value" style="font-size:14px;">Jan 3, 2009</div>
+          <div class="metric-sub">Block 0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 02: PRICE HISTORY ===== -->
+    <section class="chapter" id="ch02">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 02</div>
+        <h2 class="chapter-title">Price History</h2>
+        <p class="chapter-desc">Bitcoin price evolution and annual return analysis.</p>
+      </div>
+      <img src="btc-brain/charts/01-btc-price-history-log.png" alt="BTC Price History (Log Scale)" class="chart-img">
+      <img src="btc-brain/charts/09-annual-returns.png" alt="BTC Annual Returns" class="chart-img">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Yearly Returns (2014–2026)</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Year</th><th>Return</th><th>Year</th><th>Return</th><th>Year</th><th>Return</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2014</td><td class="negative">-58%</td>
+              <td>2019</td><td class="positive">+95%</td>
+              <td>2024</td><td class="positive">+121%</td>
+            </tr>
+            <tr>
+              <td>2015</td><td class="positive">+35%</td>
+              <td>2020</td><td class="positive">+305%</td>
+              <td>2025</td><td class="positive">+5%</td>
+            </tr>
+            <tr>
+              <td>2016</td><td class="positive">+125%</td>
+              <td>2021</td><td class="positive">+60%</td>
+              <td>2026 YTD</td><td class="negative">-23%</td>
+            </tr>
+            <tr>
+              <td>2017</td><td class="positive">+1,369%</td>
+              <td>2022</td><td class="negative">-64%</td>
+              <td></td><td></td>
+            </tr>
+            <tr>
+              <td>2018</td><td class="negative">-73%</td>
+              <td>2023</td><td class="positive">+155%</td>
+              <td></td><td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== CH 03: HALVING CYCLES ===== -->
+    <section class="chapter" id="ch03">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 03</div>
+        <h2 class="chapter-title">Halving Cycles</h2>
+        <p class="chapter-desc">Complete halving cycle framework across all four Bitcoin epochs.</p>
+      </div>
+      <img src="btc-brain/charts/02-halving-cycle-comparison.png" alt="Halving Cycle Comparison" class="chart-img">
+      <img src="btc-brain/charts/08-cycle-overlay.png" alt="Cycle Overlay" class="chart-img">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Halving Data Across All Epochs</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Halving</th><th>Date</th><th>Block Reward</th><th>Price at Halving</th><th>Cycle Peak</th><th>Peak Date</th><th>Days to Peak</th><th>Gain %</th><th>Drawdown %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1st</td><td>Nov 28, 2012</td><td>50→25 BTC</td><td class="highlight">$12</td><td class="positive">$1,163</td><td>Nov 29, 2013</td><td>367</td><td class="positive">9,575%</td><td class="negative">-85%</td>
+            </tr>
+            <tr>
+              <td>2nd</td><td>Jul 9, 2016</td><td>25→12.5 BTC</td><td class="highlight">$650</td><td class="positive">$19,783</td><td>Dec 17, 2017</td><td>526</td><td class="positive">2,943%</td><td class="negative">-84%</td>
+            </tr>
+            <tr>
+              <td>3rd</td><td>May 11, 2020</td><td>12.5→6.25 BTC</td><td class="highlight">$8,600</td><td class="positive">$68,789</td><td>Nov 10, 2021</td><td>547</td><td class="positive">700%</td><td class="negative">-77%</td>
+            </tr>
+            <tr>
+              <td>4th</td><td>Apr 19, 2024</td><td>6.25→3.125 BTC</td><td class="highlight">$64,000</td><td class="positive">$126,296</td><td>Oct 6, 2025</td><td>548</td><td class="positive">715%</td><td class="warning">-53%*</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: var(--space-sm);">*ongoing — drawdown may deepen</p>
+    </section>
+
+    <!-- ===== CH 04: BULL & BEAR MARKETS ===== -->
+    <section class="chapter" id="ch04">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 04</div>
+        <h2 class="chapter-title">Bull &amp; Bear Markets</h2>
+        <p class="chapter-desc">Historical bear market analysis and structural patterns.</p>
+      </div>
+      <img src="btc-brain/charts/04-drawdown-history.png" alt="Drawdown History" class="chart-img">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Major Bear Markets</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Bear Market</th><th>Start</th><th>End</th><th>Duration</th><th>Drawdown</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2014–2015</td><td>Dec 2013</td><td>Jan 2015</td><td>410 days</td><td class="negative">-85%</td></tr>
+            <tr><td>2018</td><td>Dec 2017</td><td>Dec 2018</td><td>364 days</td><td class="negative">-84%</td></tr>
+            <tr><td>2022</td><td>Nov 2021</td><td>Nov 2022</td><td>371 days</td><td class="negative">-77%</td></tr>
+            <tr><td>2025–26</td><td>Oct 2025</td><td>Ongoing</td><td>182+ days</td><td class="warning">-53%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== CH 05: TECHNICAL ANALYSIS ===== -->
+    <section class="chapter" id="ch05">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 05</div>
+        <h2 class="chapter-title">Technical Analysis</h2>
+        <p class="chapter-desc">Pattern reliability, moving averages, and key technical frameworks.</p>
+      </div>
+      <img src="btc-brain/charts/05-moving-averages.png" alt="Moving Averages" class="chart-img">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Pattern Reliability on BTC</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Pattern</th><th>BTC Win Rate</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Head &amp; Shoulders</td><td class="neutral">63%</td><td>Reliable at macro tops</td></tr>
+            <tr><td>Double Bottom</td><td class="positive">72%</td><td>Strong at cycle lows</td></tr>
+            <tr><td>Bull Flag</td><td class="neutral">67%</td><td>Works in confirmed uptrends</td></tr>
+            <tr><td>Ascending Triangle</td><td class="neutral">65%</td><td>Breakout above resistance</td></tr>
+            <tr><td>Falling Wedge</td><td class="neutral">68%</td><td>Bullish reversal pattern</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout warning">
+        <strong>Death Cross Warning:</strong> BTC death crosses are NOT reliably bearish — only 36% accurate at a 1-year horizon. Most are buying opportunities.
+      </div>
+    </section>
+
+    <!-- ===== CH 06: ON-CHAIN METRICS ===== -->
+    <section class="chapter" id="ch06">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 06</div>
+        <h2 class="chapter-title">On-Chain Metrics</h2>
+        <p class="chapter-desc">Key blockchain-native valuation indicators and their zone frameworks.</p>
+      </div>
+
+      <div class="zone-card">
+        <h4>MVRV Ratio <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Market Value to Realized Value)</span></h4>
+        <div class="zone-bar">
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--text-secondary);"></span>
+          <span style="background: var(--accent-orange);"></span>
+          <span style="background: var(--red);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="positive">●</span> Below 1.0 — Undervalued</span>
+          <span class="zone-level">1.0–2.5 — Fair Value</span>
+          <span class="zone-level"><span class="warning">●</span> 2.5–3.5 — Overvalued</span>
+          <span class="zone-level"><span class="negative">●</span> Above 3.5 — Euphoria</span>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <h4>NUPL <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Net Unrealized Profit/Loss)</span></h4>
+        <div class="zone-bar">
+          <span style="background: var(--red);"></span>
+          <span style="background: var(--accent-orange);"></span>
+          <span style="background: var(--yellow);"></span>
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--accent-blue);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="negative">●</span> &lt;0 — Capitulation</span>
+          <span class="zone-level"><span class="warning">●</span> 0–0.25 — Hope</span>
+          <span class="zone-level"><span class="highlight">●</span> 0.25–0.5 — Optimism</span>
+          <span class="zone-level"><span class="positive">●</span> 0.5–0.75 — Belief</span>
+          <span class="zone-level"><span class="blue">●</span> &gt;0.75 — Euphoria</span>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <h4>Puell Multiple</h4>
+        <div class="zone-bar">
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--text-muted);"></span>
+          <span style="background: var(--red);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="positive">●</span> Below 0.5 — Accumulate</span>
+          <span class="zone-level">0.5–1.5 — Normal</span>
+          <span class="zone-level"><span class="negative">●</span> Above 2.0 — Distribution</span>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <h4>Reserve Risk</h4>
+        <div class="zone-bar">
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--text-muted);"></span>
+          <span style="background: var(--red);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="positive">●</span> Below 0.002 — Accumulate</span>
+          <span class="zone-level"><span class="negative">●</span> Above 0.02 — Distribute</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 07: SENTIMENT ===== -->
+    <section class="chapter" id="ch07">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 07</div>
+        <h2 class="chapter-title">Sentiment</h2>
+        <p class="chapter-desc">Fear & Greed Index extremes and their predictive power.</p>
+      </div>
+      <img src="btc-brain/charts/03-monthly-returns-heatmap.png" alt="Monthly Returns Heatmap" class="chart-img">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Fear &amp; Greed Extremes — Historical Outcomes</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Date</th><th>Reading</th><th>Category</th><th>BTC Price</th><th>6-Month After</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Mar 2020</td><td class="negative">8</td><td><span class="negative">Extreme Fear</span></td><td>$5,000</td><td class="positive">+232%</td></tr>
+            <tr><td>Jun 2022</td><td class="negative">6</td><td><span class="negative">Extreme Fear</span></td><td>$17,600</td><td class="positive">+38%</td></tr>
+            <tr><td>Feb 2026</td><td class="negative">5</td><td><span class="negative">Extreme Fear</span></td><td>$60,001</td><td class="neutral">TBD</td></tr>
+            <tr><td>Nov 2021</td><td class="positive">84</td><td><span class="positive">Extreme Greed</span></td><td>$69,000</td><td class="negative">-67%</td></tr>
+            <tr><td>Oct 2025</td><td class="positive">90</td><td><span class="positive">Extreme Greed</span></td><td>$126,000</td><td class="negative">-47%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== CH 08: MACRO CORRELATIONS ===== -->
+    <section class="chapter" id="ch08">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 08</div>
+        <h2 class="chapter-title">Macro Correlations</h2>
+        <p class="chapter-desc">Cross-asset relationships, institutional flows, and ETF impact.</p>
+      </div>
+
+      <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Cross-Asset Correlation Matrix</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Asset</th><th>Bull Market Corr.</th><th>Bear Market Corr.</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>S&amp;P 500</td><td>0.40–0.70</td><td class="negative">0.60–0.87</td><td>Highest during risk-off</td></tr>
+            <tr><td>Nasdaq</td><td>0.50–0.80</td><td class="negative">0.70–0.87</td><td>Strongest tech correlation</td></tr>
+            <tr><td>Gold</td><td>0.10–0.40</td><td>-0.20–0.30</td><td>Diverged sharply in 2025</td></tr>
+            <tr><td>DXY</td><td class="negative">-0.30–(-0.60)</td><td class="negative">-0.40–(-0.70)</td><td>Inverse most of the time</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-top: var(--space-xl);">
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">MicroStrategy Holdings</div>
+          <div class="metric-value highlight" style="font-size: 22px;">762,099 BTC</div>
+          <div class="metric-sub" style="margin-top: 8px;">$57.6B aggregate cost | $75,696 avg price</div>
+        </div>
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">ETF Cumulative Flows</div>
+          <div class="metric-value positive" style="font-size: 22px;">$56.9B</div>
+          <div class="metric-sub" style="margin-top: 8px;">Since Jan 2024 spot ETF approval</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 09: BLACK SWANS ===== -->
+    <section class="chapter" id="ch09">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 09</div>
+        <h2 class="chapter-title">Black Swan Events</h2>
+        <p class="chapter-desc">Critical disruption events and their market impact.</p>
+      </div>
+
+      <div class="event-timeline">
+        <div class="event-card">
+          <div class="event-date">2014</div>
+          <div class="event-body">
+            <h4>Mt. Gox Collapse</h4>
+            <p>850,000 BTC stolen from the world's largest exchange, exposing catastrophic custodial risk.</p>
+            <div class="event-impact negative">Price impact: -47%</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Mar 2020</div>
+          <div class="event-body">
+            <h4>COVID Black Thursday</h4>
+            <p>Global liquidity crisis triggered a -53% crash in 24 hours, followed by a historic V-shaped recovery.</p>
+            <div class="event-impact negative">Price impact: -53% in 24h</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">May 2022</div>
+          <div class="event-body">
+            <h4>Terra/LUNA Death Spiral</h4>
+            <p>Algorithmic stablecoin UST depegged, destroying $60B in value and triggering cascading liquidations across DeFi.</p>
+            <div class="event-impact negative">Systemic contagion event</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Nov 2022</div>
+          <div class="event-body">
+            <h4>FTX Collapse</h4>
+            <p>Exchange fraud exposed, leading to bankruptcy. BTC hit $15,476 cycle low — peak fear, peak opportunity.</p>
+            <div class="event-impact negative">Cycle low: $15,476</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Mar 2023</div>
+          <div class="event-body">
+            <h4>SVB Banking Crisis</h4>
+            <p>Silicon Valley Bank failure sparked fears of systemic banking contagion. BTC rallied as safe-haven narrative validated.</p>
+            <div class="event-impact positive">BTC: +33% — safe haven signal</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Jan 2024</div>
+          <div class="event-body">
+            <h4>Spot ETF Approval</h4>
+            <p>SEC approved 11 spot Bitcoin ETFs, opening historic institutional access and fundamentally changing the market structure.</p>
+            <div class="event-impact positive">$56.9B cumulative inflows</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 10: TRADING STRATEGIES ===== -->
+    <section class="chapter" id="ch10">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 10</div>
+        <h2 class="chapter-title">Trading Strategies</h2>
+        <p class="chapter-desc">Backtested frameworks, volatility regimes, and composite indicator systems.</p>
+      </div>
+      <img src="btc-brain/charts/07-volatility-regimes.png" alt="Volatility Regimes" class="chart-img">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Strategy Backtest Results</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Strategy</th><th>CAGR</th><th>Max DD</th><th>Win Rate</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>MACD Histogram</td><td class="positive">77.2%</td><td class="negative">-62%</td><td>—</td><td>Beats buy-hold</td></tr>
+            <tr><td>RSI Momentum</td><td class="positive">122%</td><td class="negative">-39%</td><td>—</td><td>Best risk-adjusted</td></tr>
+            <tr><td>BB Mean Reversion</td><td class="positive">49.7%</td><td>—</td><td>41%</td><td>Only 34% time in market</td></tr>
+            <tr><td>Fear-Based DCA</td><td class="positive">1,145% (total)</td><td>—</td><td>—</td><td>2018–2025 backtest</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="composite-card">
+        <h4>Composite Indicator Scoring System</h4>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: var(--space-md);">7 indicators combined into a single score (0–100). Aggregate reading determines market regime.</p>
+        <div class="composite-bar">
+          <span class="zone-buy"></span>
+          <span class="zone-neutral"></span>
+          <span class="zone-sell"></span>
+        </div>
+        <div class="composite-labels">
+          <span class="positive">0–20: Buy Zone</span>
+          <span class="neutral">20–80: Neutral</span>
+          <span class="negative">80–100: Sell Zone</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 11: RISK MANAGEMENT ===== -->
+    <section class="chapter" id="ch11">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 11</div>
+        <h2 class="chapter-title">Risk Management</h2>
+        <p class="chapter-desc">Position sizing frameworks, Kelly Criterion, and leverage mechanics.</p>
+      </div>
+
+      <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Position Sizing by Risk Profile</h3>
+      <div class="position-grid">
+        <div class="position-card">
+          <h4 class="positive">Conservative</h4>
+          <div class="position-range">1–5%</div>
+          <div class="metric-sub">of portfolio in BTC</div>
+        </div>
+        <div class="position-card">
+          <h4 class="highlight">Moderate</h4>
+          <div class="position-range">5–15%</div>
+          <div class="metric-sub">of portfolio in BTC</div>
+        </div>
+        <div class="position-card">
+          <h4 class="negative">Aggressive</h4>
+          <div class="position-range">15–30%</div>
+          <div class="metric-sub">of portfolio in BTC</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Kelly Criterion for BTC:</strong> Optimal allocation is 32.8%. In practice, use half-Kelly — <strong>16.4%</strong> — to account for estimation error and tail risk.
+      </div>
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Leverage Liquidation Table</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Leverage</th><th>Liquidation Drop</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2x</td><td class="warning">-50%</td></tr>
+            <tr><td>3x</td><td class="warning">-33%</td></tr>
+            <tr><td>5x</td><td class="negative">-20%</td></tr>
+            <tr><td>10x</td><td class="negative">-10%</td></tr>
+            <tr><td>25x</td><td class="negative">-4%</td></tr>
+            <tr><td>50x</td><td class="negative">-2%</td></tr>
+            <tr><td>100x</td><td class="negative">-1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout danger">
+        <strong>Warning:</strong> Leverage above 10x in crypto is effectively gambling. BTC routinely sees 10–20% swings that will liquidate high-leverage positions.
+      </div>
+    </section>
+
+    <!-- ===== CH 12: CURRENT ASSESSMENT ===== -->
+    <section class="chapter" id="ch12">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 12</div>
+        <h2 class="chapter-title">Current Assessment</h2>
+        <p class="chapter-desc">April 2026 — Market positioning, key levels, and outlook.</p>
+      </div>
+      <img src="btc-brain/charts/10-cycle-dashboard.png" alt="Cycle Dashboard" class="chart-img">
+      <img src="btc-brain/charts/06-volume-analysis.png" alt="Volume Analysis" class="chart-img">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin: var(--space-xl) 0;">
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">Current Price</div>
+          <div class="metric-value highlight" style="font-size: 28px;">$67,010</div>
+        </div>
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">Market Phase</div>
+          <div class="metric-value negative" style="font-size: 16px; line-height: 1.3;">Distribution / Markdown</div>
+          <div class="metric-sub" style="margin-top: 6px;">5 consecutive red monthly candles</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Key Price Levels</h3>
+      <div class="level-map">
+        <div class="level-item">
+          <span class="level-price positive">$126,296</span>
+          <span class="level-line"></span>
+          <span class="level-label">All-Time High</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price neutral">$100,000</span>
+          <span class="level-line"></span>
+          <span class="level-label">Psychological Level</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price blue">$89,365</span>
+          <span class="level-line"></span>
+          <span class="level-label">200-Day MA</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price warning">$76,000</span>
+          <span class="level-line"></span>
+          <span class="level-label">Resistance</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price" style="color: var(--text-secondary);">$68,600</span>
+          <span class="level-line"></span>
+          <span class="level-label">20/50 MA Convergence</span>
+        </div>
+        <div class="level-item current">
+          <span class="level-price">$67,010</span>
+          <span class="level-line" style="background: var(--accent-orange);"></span>
+          <span class="level-label" style="color: var(--accent-orange); font-weight: 700;">◄ CURRENT PRICE</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price warning">$65,000</span>
+          <span class="level-line"></span>
+          <span class="level-label">Near Support</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price negative">$60,001</span>
+          <span class="level-line"></span>
+          <span class="level-label">Cycle Low</span>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Price Outlook</h3>
+      <div class="outlook-grid">
+        <div class="outlook-card">
+          <div class="outlook-timeframe">Short-Term (1 Week)</div>
+          <div class="outlook-range">$64,500 – $69,500</div>
+          <div class="outlook-base">Range-bound, low conviction</div>
+        </div>
+        <div class="outlook-card">
+          <div class="outlook-timeframe">Medium-Term (1 Month)</div>
+          <div class="outlook-range">$58,000 – $76,000</div>
+          <div class="outlook-base">Base case: $62K–$70K</div>
+        </div>
+        <div class="outlook-card">
+          <div class="outlook-timeframe">Long-Term (1 Year)</div>
+          <div class="outlook-range">$48,000 – $110,000</div>
+          <div class="outlook-base">Base case: $55K–$95K</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== APPENDICES ===== -->
+    <section class="chapter" id="appendices">
+      <div class="chapter-header">
+        <div class="chapter-number">APPENDICES</div>
+        <h2 class="chapter-title">Quick Reference &amp; Glossary</h2>
+      </div>
+
+      <div class="quick-ref">
+        <h4>Key Thresholds — Quick Reference</h4>
+        <div class="quick-ref-item"><span>MVRV Buy Zone</span><span class="positive">&lt; 1.0</span></div>
+        <div class="quick-ref-item"><span>MVRV Sell Zone</span><span class="negative">&gt; 3.5</span></div>
+        <div class="quick-ref-item"><span>NUPL Capitulation</span><span class="negative">&lt; 0</span></div>
+        <div class="quick-ref-item"><span>NUPL Euphoria</span><span class="positive">&gt; 0.75</span></div>
+        <div class="quick-ref-item"><span>Puell Accumulate</span><span class="positive">&lt; 0.5</span></div>
+        <div class="quick-ref-item"><span>Puell Distribute</span><span class="negative">&gt; 2.0</span></div>
+        <div class="quick-ref-item"><span>Reserve Risk Buy</span><span class="positive">&lt; 0.002</span></div>
+        <div class="quick-ref-item"><span>Reserve Risk Sell</span><span class="negative">&gt; 0.02</span></div>
+        <div class="quick-ref-item"><span>Fear &amp; Greed Buy</span><span class="positive">&lt; 15</span></div>
+        <div class="quick-ref-item"><span>Fear &amp; Greed Sell</span><span class="negative">&gt; 80</span></div>
+        <div class="quick-ref-item"><span>Composite Buy Signal</span><span class="positive">&lt; 20</span></div>
+        <div class="quick-ref-item"><span>Composite Sell Signal</span><span class="negative">&gt; 80</span></div>
+        <div class="quick-ref-item"><span>Half-Kelly BTC Allocation</span><span class="highlight">16.4%</span></div>
+        <div class="quick-ref-item"><span>Avg Days Halving→Peak</span><span class="blue">497 days</span></div>
+      </div>
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Glossary</h3>
+      <dl class="glossary-grid">
+        <div class="glossary-item"><dt>MVRV</dt><dd>Market Value to Realized Value — compares market cap to the cost basis of all coins.</dd></div>
+        <div class="glossary-item"><dt>NUPL</dt><dd>Net Unrealized Profit/Loss — proportion of the network in profit vs loss.</dd></div>
+        <div class="glossary-item"><dt>Puell Multiple</dt><dd>Daily miner revenue relative to the 365-day average — measures miner profitability.</dd></div>
+        <div class="glossary-item"><dt>Reserve Risk</dt><dd>Ratio of price to hodler conviction — low values = high conviction, cheap price.</dd></div>
+        <div class="glossary-item"><dt>Halving</dt><dd>Block reward cut in half every 210,000 blocks (~4 years). Reduces new BTC supply.</dd></div>
+        <div class="glossary-item"><dt>Death Cross</dt><dd>50-day MA crossing below the 200-day MA. Often a lagging indicator in BTC.</dd></div>
+        <div class="glossary-item"><dt>Golden Cross</dt><dd>50-day MA crossing above the 200-day MA. Historically bullish signal.</dd></div>
+        <div class="glossary-item"><dt>DCA</dt><dd>Dollar Cost Averaging — systematic periodic buying regardless of price.</dd></div>
+        <div class="glossary-item"><dt>Kelly Criterion</dt><dd>Optimal bet sizing formula based on win rate and payoff ratio.</dd></div>
+        <div class="glossary-item"><dt>Fear &amp; Greed Index</dt><dd>Composite sentiment metric (0=extreme fear, 100=extreme greed).</dd></div>
+        <div class="glossary-item"><dt>MACD</dt><dd>Moving Average Convergence Divergence — momentum and trend indicator.</dd></div>
+        <div class="glossary-item"><dt>RSI</dt><dd>Relative Strength Index — oscillator measuring overbought/oversold conditions.</dd></div>
+        <div class="glossary-item"><dt>Bollinger Bands</dt><dd>Price envelopes 2 standard deviations from the 20-day SMA.</dd></div>
+        <div class="glossary-item"><dt>DXY</dt><dd>U.S. Dollar Index — measures dollar strength against a basket of currencies.</dd></div>
+        <div class="glossary-item"><dt>Drawdown</dt><dd>Peak-to-trough decline from an all-time high. Measures downside risk.</dd></div>
+        <div class="glossary-item"><dt>HODL</dt><dd>Hold On for Dear Life — long-term holding strategy regardless of volatility.</dd></div>
+        <div class="glossary-item"><dt>On-Chain</dt><dd>Data derived directly from the blockchain (transactions, addresses, flows).</dd></div>
+        <div class="glossary-item"><dt>Spot ETF</dt><dd>Exchange-traded fund holding actual Bitcoin, providing regulated institutional access.</dd></div>
+        <div class="glossary-item"><dt>Black Swan</dt><dd>Unpredictable, high-impact event that retrospectively appears inevitable.</dd></div>
+        <div class="glossary-item"><dt>Volatility Regime</dt><dd>Market phase defined by realized volatility levels (low, medium, high, extreme).</dd></div>
+      </dl>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer" style="margin-left: var(--sidebar-width);">
+    <div>Loopholemaxing.com — Built by Clayton Camera — 2026 | <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="footer-tagline">Research. Analyze. Execute.</div>
+  </footer>
+
+  <!-- Scroll to Top -->
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+  <script>
+    // ===== Sidebar active section highlighting =====
+    const sections = document.querySelectorAll('.chapter');
+    const sidebarLinks = document.querySelectorAll('#sidebarNav a');
+
+    const observerOptions = {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    };
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          sidebarLinks.forEach(link => {
+            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+          });
+        }
+      });
+    }, observerOptions);
+
+    sections.forEach(section => sectionObserver.observe(section));
+
+    // ===== Mobile hamburger menu =====
+    const hamburger = document.getElementById('hamburgerBtn');
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+
+    function toggleSidebar() {
+      sidebar.classList.toggle('open');
+      overlay.classList.toggle('open');
+    }
+
+    hamburger.addEventListener('click', toggleSidebar);
+    overlay.addEventListener('click', toggleSidebar);
+
+    // Close sidebar on link click (mobile)
+    sidebarLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 900) {
+          sidebar.classList.remove('open');
+          overlay.classList.remove('open');
+        }
+      });
+    });
+
+    // ===== Scroll to top button =====
+    const scrollBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => {
+      scrollBtn.classList.toggle('visible', window.scrollY > 400);
+    });
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+
+</body>
+</html>

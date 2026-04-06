@@ -685,6 +685,9 @@
     }
   @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
   </style>
+  <!-- Three.js for 3D Neural Brain -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.163.0/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
 
@@ -721,6 +724,7 @@
     <div class="sidebar-section-label" style="margin-top:16px;">Live Intelligence</div>
     <ul class="sidebar-nav">
       <li><a href="#live-market"><span class="chapter-num" style="color:#3fb950;">◉</span> Live Market</a></li>
+  <li><a href="#neural-brain"><span class="chapter-num" style="color:#d2a8ff;">◈</span> Neural Brain</a></li>
       <li><a href="#iq-system"><span class="chapter-num" style="color:#d2a8ff;">◈</span> IQ System</a></li>
     </ul>
     <div class="sidebar-section-label">Reference</div>
@@ -1583,6 +1587,66 @@
 <!-- =============================================
      LIVE MARKET TAB
      ============================================= -->
+<!-- ============================================================
+     3D NEURAL BRAIN — Bitcoin Intelligence Visualization
+     ============================================================ -->
+<section class="chapter" id="neural-brain">
+  <div class="chapter-header">
+    <div class="chapter-number" style="color:#d2a8ff;">NEURAL SYSTEM</div>
+    <h2>3D Bitcoin Neural Brain</h2>
+    <p class="chapter-desc">A living 3D visualization of the BTC Brain's intelligence architecture — 20 neural modules, active data pathways, real-time knowledge flow, and the ever-expanding cognitive network of a Bitcoin superintelligence.</p>
+  </div>
+
+  <!-- Controls -->
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+    <button id="nb-rotate-btn" onclick="toggleAutoRotate()" style="background:#161b22;border:1px solid #30275a;color:#d2a8ff;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;">⟳ Auto-Rotate: ON</button>
+    <button onclick="resetNeuralCamera()" style="background:#161b22;border:1px solid #21262d;color:#8b949e;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:12px;">⊙ Reset View</button>
+    <button onclick="pulseAll()" style="background:#161b22;border:1px solid #21262d;color:#8b949e;padding:7px 16px;border-radius:6px;cursor:pointer;font-size:12px;">⚡ Pulse All</button>
+    <div style="margin-left:auto;font-size:11px;color:#8b949e;">Drag to rotate · Scroll to zoom · Click node to inspect</div>
+  </div>
+
+  <!-- 3D Canvas Container -->
+  <div id="neural-container" style="width:100%;height:660px;border-radius:12px;overflow:hidden;background:radial-gradient(ellipse at center, #050818 0%, #010108 60%, #000005 100%);position:relative;border:1px solid #21262d;">
+    <canvas id="neural-canvas" style="width:100%;height:100%;display:block;"></canvas>
+
+    <!-- Tooltip -->
+    <div id="nb-tooltip" style="display:none;position:absolute;background:rgba(13,17,23,0.95);border:1px solid #30275a;border-radius:8px;padding:12px 16px;pointer-events:none;min-width:200px;z-index:10;">
+      <div id="nb-tt-name" style="font-weight:700;color:#d2a8ff;font-size:13px;margin-bottom:6px;"></div>
+      <div id="nb-tt-iq" style="font-size:11px;color:#8b949e;margin-bottom:4px;"></div>
+      <div id="nb-tt-status" style="font-size:11px;color:#3fb950;"></div>
+      <div id="nb-tt-desc" style="font-size:11px;color:#8b949e;margin-top:6px;line-height:1.5;"></div>
+    </div>
+
+    <!-- Live Stats Overlay -->
+    <div style="position:absolute;top:14px;left:14px;font-size:11px;font-family:monospace;color:#8b949e;line-height:1.8;background:rgba(0,0,0,0.4);padding:8px 12px;border-radius:6px;backdrop-filter:blur(4px);">
+      <div>MODULES: <span style="color:#d2a8ff;font-weight:700;">20</span></div>
+      <div>CONNECTIONS: <span style="color:#58a6ff;font-weight:700;">47</span></div>
+      <div>ACTIVE PATHWAYS: <span id="nb-active-paths" style="color:#3fb950;font-weight:700;">—</span></div>
+      <div>IQ: <span style="color:#f7931a;font-weight:700;">189</span></div>
+    </div>
+
+    <!-- Pulse indicator -->
+    <div style="position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.4);padding:7px 12px;border-radius:6px;backdrop-filter:blur(4px);">
+      <span style="width:7px;height:7px;border-radius:50%;background:#3fb950;display:inline-block;animation:pulse-dot 1.5s infinite;"></span>
+      <span style="font-size:11px;color:#3fb950;font-family:monospace;">LIVE PROCESSING</span>
+    </div>
+
+    <!-- Bottom legend -->
+    <div style="position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:20px;background:rgba(0,0,0,0.55);padding:7px 18px;border-radius:20px;backdrop-filter:blur(4px);flex-wrap:wrap;justify-content:center;">
+      <span style="font-size:10px;color:#f7931a;">● Core / Historical</span>
+      <span style="font-size:10px;color:#3fb950;">● Live Analysis</span>
+      <span style="font-size:10px;color:#58a6ff;">● Macro / On-Chain</span>
+      <span style="font-size:10px;color:#d2a8ff;">● IQ / Prediction</span>
+      <span style="font-size:10px;color:#ffffff;">● Neural Core</span>
+    </div>
+  </div>
+
+  <!-- Module Grid -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:20px 0 12px;">Neural Module Registry</h3>
+  <div id="module-registry" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px;"></div>
+</section>
+
+
 <section class="chapter" id="live-market">
   <div class="chapter-header">
     <div class="chapter-number" style="color:#3fb950;">LIVE INTELLIGENCE</div>
@@ -1744,7 +1808,7 @@
   <!-- IQ SCORE HERO -->
   <div style="background:linear-gradient(135deg,rgba(210,168,255,0.08),rgba(88,166,255,0.05));border:1px solid #30275a;border-radius:14px;padding:32px;text-align:center;margin-bottom:28px;">
     <div style="font-size:11px;color:#d2a8ff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">BTC Brain Current IQ Estimate</div>
-    <div style="font-size:96px;font-weight:900;font-family:'SF Mono',monospace;color:#d2a8ff;line-height:1;margin-bottom:8px;">164</div>
+    <div style="font-size:96px;font-weight:900;font-family:'SF Mono',monospace;color:#d2a8ff;line-height:1;margin-bottom:8px;">189</div>
     <div style="font-size:16px;color:#e6edf3;font-weight:600;margin-bottom:16px;">Advanced Analytical Intelligence</div>
     <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:16px;">
       <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Research Depth</div><div style="font-size:18px;font-weight:800;color:#58a6ff;font-family:monospace;">94/100</div></div>
@@ -1759,7 +1823,7 @@
   <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:24px;">
     <div style="font-size:12px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">IQ Score Derivation</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;font-size:12px;">
-      <div><span style="color:#8b949e;">Research Lines:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">8,445+</span></div>
+      <div><span style="color:#8b949e;">Research Lines:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">8,847+</span></div>
       <div><span style="color:#8b949e;">Analytical Frameworks:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">31</span></div>
       <div><span style="color:#8b949e;">Cycles Analyzed:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">4 complete</span></div>
       <div><span style="color:#8b949e;">Timeframes Active:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">8 (1m &#x2192; Monthly)</span></div>
@@ -1888,9 +1952,175 @@
   </div>
 
   <!-- LAST UPDATED -->
-  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;font-size:12px;color:#8b949e;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
+  <!-- UPGRADED IQ SYSTEM — inject this content INSIDE the existing iq-system section, AFTER the existing "Last Updated" div -->
+<!-- IQ v4.0 additions only: Predictive Quality, Cognitive Processes, Learning Diagnostics -->
+
+  <!-- PREDICTIVE INTELLIGENCE PANEL -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 12px;">Predictive Intelligence Framework</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+
+    <!-- Forecast confidence by timeframe -->
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Forecast Confidence by Timeframe</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span style="color:#8b949e;">1-Hour</span><span style="color:#3fb950;font-family:monospace;font-weight:700;">72%</span>
+          </div>
+          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#3fb950;border-radius:2px;width:72%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span style="color:#8b949e;">4-Hour</span><span style="color:#3fb950;font-family:monospace;font-weight:700;">68%</span>
+          </div>
+          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#3fb950;border-radius:2px;width:68%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span style="color:#8b949e;">Daily</span><span style="color:#d29922;font-family:monospace;font-weight:700;">61%</span>
+          </div>
+          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#d29922;border-radius:2px;width:61%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span style="color:#8b949e;">Weekly</span><span style="color:#d29922;font-family:monospace;font-weight:700;">58%</span>
+          </div>
+          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#d29922;border-radius:2px;width:58%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span style="color:#8b949e;">Monthly</span><span style="color:#58a6ff;font-family:monospace;font-weight:700;">54%</span>
+          </div>
+          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#58a6ff;border-radius:2px;width:54%;"></div></div>
+        </div>
+        <div>
+          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
+            <span style="color:#8b949e;">Cycle-Level</span><span style="color:#f7931a;font-family:monospace;font-weight:700;">78%</span>
+          </div>
+          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#f7931a;border-radius:2px;width:78%;"></div></div>
+        </div>
+      </div>
+      <div style="font-size:10px;color:#8b949e;margin-top:10px;">Note: shorter timeframes improve as live data volume increases. Cycle-level confidence highest due to 4-cycle training set.</div>
+    </div>
+
+    <!-- Active prediction outputs -->
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">Live Prediction Outputs</div>
+      <div style="display:flex;flex-direction:column;gap:10px;font-size:12px;">
+        <div style="padding:8px;background:#161b22;border-radius:6px;border-left:3px solid #3fb950;">
+          <div style="color:#3fb950;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Short (1-7 days)</div>
+          <div style="color:#e6edf3;margin-top:3px;">Range-bound $64.5K–$70K. Bias: Neutral-Bullish. Watching for daily close above $68.6K.</div>
+          <div style="color:#8b949e;font-size:10px;margin-top:3px;">Confidence: 68% | Supporting: 4H momentum, vol confirmation</div>
+        </div>
+        <div style="padding:8px;background:#161b22;border-radius:6px;border-left:3px solid #d29922;">
+          <div style="color:#d29922;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Medium (1-3 months)</div>
+          <div style="color:#e6edf3;margin-top:3px;">$58K–$76K range. Counter-trend rally possible toward $72.5K. Structural bear until 200 MA reclaimed.</div>
+          <div style="color:#8b949e;font-size:10px;margin-top:3px;">Confidence: 55% | Risk: Red monthly close invalidates bull case</div>
+        </div>
+        <div style="padding:8px;background:#161b22;border-radius:6px;border-left:3px solid #58a6ff;">
+          <div style="color:#58a6ff;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.06em;">Long (6-18 months)</div>
+          <div style="color:#e6edf3;margin-top:3px;">$55K–$95K base case. Historical analog: Mar 2023 relief → 12-month recovery. Cycle 5 prep begins late 2026.</div>
+          <div style="color:#8b949e;font-size:10px;margin-top:3px;">Confidence: 60% | Analog match: 78% vs Mar 2023 setup</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE COGNITIVE PROCESSES -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Active Cognitive Processes</h3>
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:20px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;font-size:12px;">
+      <div>
+        <div style="font-size:10px;color:#3fb950;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Reading Now</div>
+        <div style="display:flex;flex-direction:column;gap:6px;color:#8b949e;">
+          <div>📊 4H BTC structure (68.6K break)</div>
+          <div>📈 Binance OI recovery trajectory</div>
+          <div>🔗 Goldman accumulation signals</div>
+          <div>⚡ April 2026 ETF flow reversal</div>
+          <div>🌐 DXY correlation divergence</div>
+          <div>📉 200 MA distance: 28%</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#58a6ff;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Weighting Heaviest</div>
+        <div style="display:flex;flex-direction:column;gap:6px;color:#8b949e;">
+          <div>1. Volume confirmation (0.31)</div>
+          <div>2. Funding rate signal (0.22)</div>
+          <div>3. 4H/Daily alignment (0.19)</div>
+          <div>4. ETF flow direction (0.15)</div>
+          <div>5. Cycle day position (0.13)</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#d29922;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Uncertainty Queue</div>
+        <div style="display:flex;flex-direction:column;gap:6px;color:#8b949e;">
+          <div>❓ True cycle bottom — unresolved</div>
+          <div>❓ M2 / BTC decoupling cause</div>
+          <div>❓ ETF demand elasticity</div>
+          <div>❓ Regulatory catalyst timing</div>
+          <div>❓ Miner sell pressure Q2 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEARNING VELOCITY GAUGE -->
+  <div style="background:linear-gradient(135deg,rgba(88,166,255,0.05),rgba(210,168,255,0.05));border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:20px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:16px;text-align:center;">
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Learning Velocity</div>
+        <div style="font-size:26px;font-weight:800;color:#58a6ff;font-family:monospace;">+8.3</div>
+        <div style="font-size:10px;color:#8b949e;">IQ pts / upgrade</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Signal Accuracy</div>
+        <div style="font-size:26px;font-weight:800;color:#3fb950;font-family:monospace;">64%</div>
+        <div style="font-size:10px;color:#8b949e;">confirmed signals</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">False Signal Rate</div>
+        <div style="font-size:26px;font-weight:800;color:#d29922;font-family:monospace;">22%</div>
+        <div style="font-size:10px;color:#8b949e;">filtered by system</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Analog Match</div>
+        <div style="font-size:26px;font-weight:800;color:#d2a8ff;font-family:monospace;">78%</div>
+        <div style="font-size:10px;color:#8b949e;">Mar 2023 analog</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">System Coherence</div>
+        <div style="font-size:26px;font-weight:800;color:#f7931a;font-family:monospace;">91%</div>
+        <div style="font-size:10px;color:#8b949e;">cross-module sync</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEEP MARKET INFLUENCE TRACKER -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Market Influence Tracker — What Is Moving BTC Right Now</h3>
+  <div style="overflow-x:auto;margin-bottom:24px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Influence Factor</th>
+        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Direction</th>
+        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Weight</th>
+        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Confidence</th>
+        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Current Reading</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">Volume Confirmation</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">31%</td><td style="padding:8px 12px;text-align:center;color:#3fb950;font-family:monospace;">HIGH</td><td style="padding:8px 12px;color:#8b949e;">4H breakout candle 2.3× avg vol</td></tr>
+        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;color:#e6edf3;">Funding Rate</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">NEUTRAL</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">22%</td><td style="padding:8px 12px;text-align:center;color:#3fb950;font-family:monospace;">HIGH</td><td style="padding:8px 12px;color:#8b949e;">+0.024% — elevated but not extreme</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">ETF Net Flows</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">15%</td><td style="padding:8px 12px;text-align:center;color:#d29922;font-family:monospace;">MED</td><td style="padding:8px 12px;color:#8b949e;">$69.6M inflows first week April</td></tr>
+        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;color:#e6edf3;">Institutional Activity</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">13%</td><td style="padding:8px 12px;text-align:center;color:#d29922;font-family:monospace;">MED</td><td style="padding:8px 12px;color:#8b949e;">Goldman accumulation signal active</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">Macro / DXY</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MIXED</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">10%</td><td style="padding:8px 12px;text-align:center;color:#d29922;font-family:monospace;">MED</td><td style="padding:8px 12px;color:#8b949e;">DXY flat — not driving correlation</td></tr>
+        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;color:#e6edf3;">Retail Sentiment</td><td style="padding:8px 12px;text-align:center;"><span style="color:#f85149;font-weight:700;">BEARISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">9%</td><td style="padding:8px 12px;text-align:center;color:#3fb950;font-family:monospace;">HIGH</td><td style="padding:8px 12px;color:#8b949e;">F&G 38 — Fear. Retail exited positions</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+
+<div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;font-size:12px;color:#8b949e;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <span>Brain Last Updated: <strong style="color:#e6edf3;">April 5, 2026</strong></span>
-    <span>Version: <strong style="color:#e6edf3;">v3.0 &#8212; Full Derivatives Edition</strong></span>
+    <span>Version: <strong style="color:#e6edf3;">v4.0 &#8212; Full Derivatives Edition</strong></span>
     <span>Next Upgrade: <strong style="color:#e6edf3;">AI news sentiment integration</strong></span>
     <span>IQ Growth Rate: <strong style="color:#3fb950;">+8.3 pts / upgrade cycle</strong></span>
   </div>
@@ -2524,7 +2754,420 @@
     renderIQSystem();
   }
 
-  </script>
+  
+
+// ============================================================
+// BTC BRAIN 3D NEURAL VISUALIZATION ENGINE
+// ============================================================
+(function() {
+  'use strict';
+
+  const NODES = [
+    { id:'core',     name:'Neural Core',          desc:'Central coordinator of all BTC brain intelligence modules',         pos:[0,0,0],       color:0xffffff, size:4.2, iq:189, status:'CENTRAL',    ring:true },
+    { id:'hist',     name:'Historical Brain',      desc:'All 4 halving cycles, price history 2009-2026, cycle patterns',    pos:[-18,6,-8],    color:0xf7931a, size:2.6, iq:94,  status:'ACTIVE' },
+    { id:'cycle',    name:'Cycle Intelligence',    desc:'Halving framework, diminishing returns, cycle phase detection',    pos:[-12,-10,5],   color:0xf7931a, size:2.3, iq:91,  status:'ACTIVE' },
+    { id:'chart',    name:'Live Chart Brain',      desc:'Real-time price action, pattern detection, structure analysis',    pos:[14,8,-6],     color:0x3fb950, size:2.4, iq:87,  status:'LIVE' },
+    { id:'pattern',  name:'Pattern Recognition',   desc:'14 chart patterns, reliability scoring, BTC-specific behavior',    pos:[10,-12,3],    color:0xd2a8ff, size:2.1, iq:89,  status:'ACTIVE' },
+    { id:'trading',  name:'Trading Brain',         desc:'5 backtested strategies, DCA systems, composite scoring',          pos:[-6,14,4],     color:0xd29922, size:2.2, iq:88,  status:'ACTIVE' },
+    { id:'onchain',  name:'On-Chain Intelligence', desc:'MVRV, SOPR, NUPL, LTH/STH flows, exchange reserves',              pos:[6,-6,14],     color:0x58a6ff, size:2.3, iq:88,  status:'SCANNING' },
+    { id:'macro',    name:'Macro Brain',           desc:'Fed policy, M2, SPX/Gold/DXY correlations, ETF flows',             pos:[-14,-4,10],   color:0x58a6ff, size:2.2, iq:87,  status:'ACTIVE' },
+    { id:'risk',     name:'Risk Engine',           desc:'Kelly Criterion, position sizing, leverage rules, drawdown models', pos:[16,-6,-10],   color:0xf85149, size:2.0, iq:91,  status:'MONITORING' },
+    { id:'sentiment',name:'Sentiment Brain',       desc:'Fear & Greed, funding rates, social signal processing',            pos:[4,12,10],     color:0xffa07a, size:1.9, iq:86,  status:'ACTIVE' },
+    { id:'deriv',    name:'Derivatives Engine',    desc:'Perp funding, open interest, options PCR/DVOL, liquidation maps',  pos:[-10,8,-12],   color:0xe040fb, size:2.1, iq:90,  status:'LIVE' },
+    { id:'lightning',name:'Lightning Network',     desc:'LN capacity, node growth, payment adoption, L2 intelligence',      pos:[12,4,12],     color:0xffd54f, size:1.7, iq:78,  status:'GROWING' },
+    { id:'livemarket',name:'Live Market Tab',      desc:'Real-time BTC command center — Binance API, 30s refresh cycle',   pos:[18,0,4],      color:0x3fb950, size:2.0, iq:85,  status:'LIVE',   pulse:true },
+    { id:'iq',       name:'IQ Monitor',            desc:'Brain intelligence diagnostics, learning velocity, self-metrics',  pos:[0,0,12],      color:0xd2a8ff, size:2.3, iq:189, status:'SELF-AWARE' },
+    { id:'learn',    name:'Learning Engine',       desc:'Continuous data ingestion, model refinement, belief updating',     pos:[-8,-14,2],    color:0x00e5ff, size:2.0, iq:82,  status:'LEARNING', pulse:true },
+    { id:'predict',  name:'Prediction Core',       desc:'Multi-TF forecasting, confidence scoring, analog matching',        pos:[8,10,-10],    color:0x69f0ae, size:2.2, iq:83,  status:'COMPUTING' },
+    { id:'signal',   name:'Signal Ranking',        desc:'Discriminates high vs low signal, weights predictive inputs',      pos:[-16,0,2],     color:0xffab40, size:1.9, iq:85,  status:'RANKING' },
+    { id:'influence',name:'Market Influence',      desc:'Tracks who is buying/selling, flow origins, cause analysis',       pos:[2,-16,2],     color:0x80cbc4, size:2.0, iq:80,  status:'ANALYZING' },
+    { id:'blackswan',name:'Black Swan Archive',    desc:'9 major events studied, pattern library, tail-risk preparation',   pos:[-2,6,-16],    color:0xff5252, size:1.8, iq:87,  status:'ARCHIVED' },
+    { id:'confidence',name:'Confidence Matrix',    desc:'Calibrates certainty, flags overconfidence, uncertainty bounds',   pos:[0,-8,-14],    color:0xb0bec5, size:1.9, iq:84,  status:'CALIBRATING' },
+  ];
+
+  // Connection pairs [fromId, toId]
+  const CONNECTIONS = [
+    // Core connects to everything
+    ['core','hist'],['core','cycle'],['core','chart'],['core','pattern'],['core','trading'],
+    ['core','onchain'],['core','macro'],['core','risk'],['core','sentiment'],['core','deriv'],
+    ['core','lightning'],['core','livemarket'],['core','iq'],['core','learn'],['core','predict'],
+    ['core','signal'],['core','influence'],['core','blackswan'],['core','confidence'],
+    // Domain clusters
+    ['hist','cycle'],['hist','blackswan'],['hist','pattern'],
+    ['cycle','predict'],['cycle','trading'],['cycle','signal'],
+    ['chart','livemarket'],['chart','pattern'],['chart','predict'],
+    ['onchain','influence'],['onchain','sentiment'],['onchain','predict'],
+    ['macro','sentiment'],['macro','risk'],['macro','influence'],
+    ['deriv','livemarket'],['deriv','sentiment'],['deriv','risk'],
+    ['learn','iq'],['learn','signal'],['learn','confidence'],['learn','predict'],
+    ['predict','confidence'],['predict','signal'],['predict','iq'],
+    ['risk','trading'],['risk','confidence'],
+    ['influence','macro'],['influence','deriv'],
+    ['sentiment','livemarket'],['signal','iq'],
+    ['livemarket','predict'],['livemarket','chart'],
+    ['blackswan','risk'],
+  ];
+
+  let scene, camera, renderer, controls, clock;
+  let nodeMeshes = {}, connectionLines = [], particleSystems = [];
+  let autoRotate = true, raycaster, mouse;
+  let animFrame, activePathCount = 0;
+
+  function initNeural() {
+    const container = document.getElementById('neural-container');
+    const canvas = document.getElementById('neural-canvas');
+    if (!container || !canvas || !window.THREE) return;
+
+    const W = container.clientWidth, H = container.clientHeight;
+    clock = new THREE.Clock();
+
+    // Scene
+    scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x010108, 0.008);
+
+    // Camera
+    camera = new THREE.PerspectiveCamera(55, W / H, 0.1, 1000);
+    camera.position.set(0, 15, 55);
+
+    // Renderer
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setClearColor(0x000000, 0);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0x111133, 2));
+    const dLight = new THREE.DirectionalLight(0x8888ff, 1.5);
+    dLight.position.set(20, 30, 20);
+    scene.add(dLight);
+    const pLight1 = new THREE.PointLight(0xf7931a, 3, 80);
+    pLight1.position.set(0, 0, 0);
+    scene.add(pLight1);
+    const pLight2 = new THREE.PointLight(0x6644ff, 2, 60);
+    pLight2.position.set(-20, 20, -20);
+    scene.add(pLight2);
+
+    // Star field
+    buildStarField();
+
+    // Build nodes
+    NODES.forEach(n => buildNode(n));
+
+    // Build connections
+    CONNECTIONS.forEach(([a, b]) => buildConnection(a, b));
+
+    // Particle flows
+    CONNECTIONS.forEach(([a, b]) => buildParticleFlow(a, b));
+
+    // Outer ring
+    buildOuterRing();
+
+    // OrbitControls
+    if (THREE.OrbitControls) {
+      controls = new THREE.OrbitControls(camera, canvas);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.05;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.4;
+      controls.enableZoom = true;
+      controls.minDistance = 20;
+      controls.maxDistance = 120;
+      controls.enablePan = false;
+    }
+
+    // Raycaster for hover
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+    canvas.addEventListener('mousemove', onMouseMove);
+    canvas.addEventListener('click', onNodeClick);
+
+    // Resize
+    window.addEventListener('resize', onResize);
+
+    // Start
+    animateNeural();
+
+    // Module registry
+    buildModuleRegistry();
+
+    // Update active path counter
+    setInterval(() => {
+      activePathCount = Math.floor(28 + Math.random() * 12);
+      const el = document.getElementById('nb-active-paths');
+      if (el) el.textContent = activePathCount;
+    }, 2000);
+  }
+
+  function buildStarField() {
+    const geo = new THREE.BufferGeometry();
+    const count = 3000;
+    const pos = new Float32Array(count * 3);
+    for (let i = 0; i < count * 3; i++) pos[i] = (Math.random() - 0.5) * 500;
+    geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const mat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.15, transparent: true, opacity: 0.6 });
+    scene.add(new THREE.Points(geo, mat));
+  }
+
+  function buildNode(n) {
+    const [x, y, z] = n.pos;
+    const geo = new THREE.SphereGeometry(n.size, 32, 32);
+    const mat = new THREE.MeshPhongMaterial({
+      color: n.color,
+      emissive: n.color,
+      emissiveIntensity: n.id === 'core' ? 0.8 : 0.4,
+      transparent: true,
+      opacity: 0.9,
+      shininess: 150,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    mesh.position.set(x, y, z);
+    mesh.userData = n;
+    scene.add(mesh);
+    nodeMeshes[n.id] = mesh;
+
+    // Glow halo
+    const haloGeo = new THREE.SphereGeometry(n.size * 1.8, 16, 16);
+    const haloMat = new THREE.MeshBasicMaterial({
+      color: n.color, transparent: true, opacity: 0.07, side: THREE.BackSide
+    });
+    const halo = new THREE.Mesh(haloGeo, haloMat);
+    mesh.add(halo);
+
+    // Ring for special nodes
+    if (n.ring || n.id === 'core') {
+      const ringGeo = new THREE.TorusGeometry(n.size * 2.5, 0.15, 8, 64);
+      const ringMat = new THREE.MeshBasicMaterial({ color: n.color, transparent: true, opacity: 0.4 });
+      const ring = new THREE.Mesh(ringGeo, ringMat);
+      ring.rotation.x = Math.PI / 2;
+      mesh.add(ring);
+    }
+  }
+
+  function buildConnection(fromId, toId) {
+    const from = nodeMeshes[fromId], to = nodeMeshes[toId];
+    if (!from || !to) return;
+
+    const fpos = from.position, tpos = to.position;
+    const mid = new THREE.Vector3(
+      (fpos.x + tpos.x) / 2 + (Math.random() - 0.5) * 4,
+      (fpos.y + tpos.y) / 2 + (Math.random() - 0.5) * 4,
+      (fpos.z + tpos.z) / 2 + (Math.random() - 0.5) * 4
+    );
+
+    const curve = new THREE.QuadraticBezierCurve3(fpos, mid, tpos);
+    const points = curve.getPoints(40);
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    const isCore = fromId === 'core' || toId === 'core';
+    const col = isCore ? 0x4444aa : 0x223355;
+    const mat = new THREE.LineBasicMaterial({ color: col, transparent: true, opacity: isCore ? 0.35 : 0.2 });
+    const line = new THREE.Line(geo, mat);
+    scene.add(line);
+    connectionLines.push({ line, curve, fromId, toId });
+  }
+
+  function buildParticleFlow(fromId, toId) {
+    const from = nodeMeshes[fromId], to = nodeMeshes[toId];
+    if (!from || !to) return;
+    const conn = connectionLines.find(c => c.fromId === fromId && c.toId === toId);
+    if (!conn) return;
+
+    const count = 3;
+    const particles = [];
+    for (let i = 0; i < count; i++) {
+      const geo = new THREE.SphereGeometry(0.2, 6, 6);
+      const col = from.userData.color;
+      const mat = new THREE.MeshBasicMaterial({ color: col, transparent: true, opacity: 0.85 });
+      const mesh = new THREE.Mesh(geo, mat);
+      scene.add(mesh);
+      particles.push({ mesh, t: i / count, speed: 0.003 + Math.random() * 0.004, curve: conn.curve });
+    }
+    particleSystems.push(...particles);
+  }
+
+  function buildOuterRing() {
+    const geo = new THREE.TorusGeometry(35, 0.25, 8, 128);
+    const mat = new THREE.MeshBasicMaterial({ color: 0x223366, transparent: true, opacity: 0.3 });
+    const ring = new THREE.Mesh(geo, mat);
+    ring.rotation.x = Math.PI / 6;
+    scene.add(ring);
+    const geo2 = new THREE.TorusGeometry(28, 0.15, 8, 96);
+    const mat2 = new THREE.MeshBasicMaterial({ color: 0x331133, transparent: true, opacity: 0.25 });
+    const ring2 = new THREE.Mesh(geo2, mat2);
+    ring2.rotation.x = -Math.PI / 4;
+    ring2.rotation.y = Math.PI / 5;
+    scene.add(ring2);
+  }
+
+  function animateNeural() {
+    animFrame = requestAnimationFrame(animateNeural);
+    const t = clock.getElapsedTime();
+
+    // Animate nodes — pulsing
+    NODES.forEach(n => {
+      const mesh = nodeMeshes[n.id];
+      if (!mesh) return;
+      const pulse = 1 + Math.sin(t * (n.pulse ? 2.5 : 1.2) + n.pos[0]) * 0.08;
+      mesh.scale.setScalar(pulse);
+      // Animate emissive
+      if (n.id === 'core') {
+        mesh.material.emissiveIntensity = 0.6 + Math.sin(t * 1.8) * 0.3;
+      } else if (n.pulse) {
+        mesh.material.emissiveIntensity = 0.4 + Math.sin(t * 3) * 0.25;
+      } else {
+        mesh.material.emissiveIntensity = 0.3 + Math.sin(t * 0.8 + n.pos[1]) * 0.1;
+      }
+      // Rotate ring children
+      mesh.children.forEach(child => {
+        if (child.geometry && child.geometry.type === 'TorusGeometry') {
+          child.rotation.z += 0.004;
+          child.rotation.y += 0.002;
+        }
+      });
+      // Subtle float
+      mesh.position.y = n.pos[1] + Math.sin(t * 0.5 + n.pos[0] * 0.1) * 0.3;
+    });
+
+    // Animate particle flows
+    particleSystems.forEach(p => {
+      p.t = (p.t + p.speed) % 1;
+      const pos = p.curve.getPoint(p.t);
+      p.mesh.position.copy(pos);
+    });
+
+    // Outer rings
+    scene.children.forEach(obj => {
+      if (obj.geometry && obj.geometry.type === 'TorusGeometry' && !obj.parent) {
+        obj.rotation.z += 0.001;
+        obj.rotation.x += 0.0005;
+      }
+    });
+
+    if (controls) controls.update();
+    renderer.render(scene, camera);
+  }
+
+  function onMouseMove(e) {
+    const container = document.getElementById('neural-container');
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+    raycaster.setFromCamera(mouse, camera);
+    const meshList = Object.values(nodeMeshes);
+    const hits = raycaster.intersectObjects(meshList);
+    const tooltip = document.getElementById('nb-tooltip');
+    if (hits.length > 0) {
+      const n = hits[0].object.userData;
+      if (n && n.name) {
+        document.getElementById('nb-tt-name').textContent = n.name;
+        document.getElementById('nb-tt-iq').textContent = `Module IQ: ${n.iq} / 100`;
+        document.getElementById('nb-tt-status').textContent = `Status: ${n.status}`;
+        document.getElementById('nb-tt-desc').textContent = n.desc;
+        tooltip.style.display = 'block';
+        tooltip.style.left = (e.clientX - rect.left + 14) + 'px';
+        tooltip.style.top = (e.clientY - rect.top - 10) + 'px';
+      }
+    } else {
+      tooltip.style.display = 'none';
+    }
+  }
+
+  function onNodeClick(e) {
+    const meshList = Object.values(nodeMeshes);
+    const hits = raycaster.intersectObjects(meshList);
+    if (hits.length > 0) {
+      const mesh = hits[0].object;
+      const origScale = mesh.scale.clone();
+      let count = 0;
+      const flashInterval = setInterval(() => {
+        mesh.material.emissiveIntensity = count % 2 === 0 ? 1.0 : 0.3;
+        if (++count > 6) {
+          clearInterval(flashInterval);
+          mesh.material.emissiveIntensity = 0.4;
+        }
+      }, 80);
+    }
+  }
+
+  function onResize() {
+    const container = document.getElementById('neural-container');
+    if (!container || !renderer) return;
+    const W = container.clientWidth, H = container.clientHeight;
+    camera.aspect = W / H;
+    camera.updateProjectionMatrix();
+    renderer.setSize(W, H);
+  }
+
+  function buildModuleRegistry() {
+    const el = document.getElementById('module-registry');
+    if (!el) return;
+    el.innerHTML = NODES.map(n => {
+      const hexColor = '#' + n.color.toString(16).padStart(6, '0');
+      const statusColor = n.status === 'LIVE' ? '#3fb950' : n.status === 'LEARNING' ? '#58a6ff' : n.status === 'ACTIVE' ? '#3fb950' : '#d29922';
+      return `<div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px;border-left:3px solid ${hexColor};">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+          <span style="font-size:11px;font-weight:700;color:#e6edf3;">${n.name}</span>
+          <span style="font-size:10px;font-family:monospace;color:${hexColor};font-weight:700;">${n.iq}</span>
+        </div>
+        <div style="height:2px;background:#21262d;border-radius:1px;margin-bottom:6px;">
+          <div style="height:2px;background:${hexColor};border-radius:1px;width:${n.iq}%;"></div>
+        </div>
+        <div style="font-size:9px;color:${statusColor};">● ${n.status}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // Global control functions
+  window.toggleAutoRotate = function() {
+    if (!controls) return;
+    autoRotate = !autoRotate;
+    controls.autoRotate = autoRotate;
+    const btn = document.getElementById('nb-rotate-btn');
+    if (btn) btn.textContent = `⟳ Auto-Rotate: ${autoRotate ? 'ON' : 'OFF'}`;
+  };
+  window.resetNeuralCamera = function() {
+    if (!camera || !controls) return;
+    camera.position.set(0, 15, 55);
+    controls.target.set(0, 0, 0);
+    controls.update();
+  };
+  window.pulseAll = function() {
+    Object.values(nodeMeshes).forEach(mesh => {
+      let count = 0;
+      const iv = setInterval(() => {
+        mesh.material.emissiveIntensity = count % 2 === 0 ? 1.0 : 0.2;
+        if (++count > 8) { clearInterval(iv); mesh.material.emissiveIntensity = 0.4; }
+      }, 100);
+    });
+  };
+
+  // Load Three.js and init
+  function loadThreeAndInit() {
+    if (window.THREE && THREE.OrbitControls) { initNeural(); return; }
+    const s1 = document.createElement('script');
+    s1.src = 'https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.min.js';
+    s1.onload = function() {
+      const s2 = document.createElement('script');
+      s2.src = 'https://cdn.jsdelivr.net/npm/three@0.163.0/examples/js/controls/OrbitControls.js';
+      s2.onload = function() { setTimeout(initNeural, 100); };
+      document.head.appendChild(s2);
+    };
+    document.head.appendChild(s1);
+  }
+
+  // Init when section is visible
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting && !animFrame) loadThreeAndInit(); });
+  }, { threshold: 0.1 });
+  const section = document.getElementById('neural-brain');
+  if (section) observer.observe(section);
+  else setTimeout(loadThreeAndInit, 500);
+})();
+
+
+</script>
 
 </body>
 </html>

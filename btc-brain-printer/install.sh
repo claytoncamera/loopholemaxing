@@ -4,7 +4,8 @@
 
 set -e
 
-SCRIPT_PATH="/usr/local/bin/btc_brain_print.py"
+SCRIPT_PATH="$HOME/bin/btc_brain_print.py"
+mkdir -p "$HOME/bin"
 PLIST_PATH="$HOME/Library/LaunchAgents/com.btcbrain.printer.plist"
 REPO_RAW="https://raw.githubusercontent.com/claytoncamera/loopholemaxing/main/btc-brain-printer"
 
@@ -25,8 +26,10 @@ echo "  ✓ $(python3 --version)"
 # ── Step 2: Install reportlab ──────────────────
 echo ""
 echo "② Installing reportlab..."
-pip3 install reportlab --quiet && echo "  ✓ reportlab installed" || {
-  pip3 install --user reportlab --quiet && echo "  ✓ reportlab installed (user)"
+pip3 install reportlab --break-system-packages --quiet 2>/dev/null && echo "  ✓ reportlab installed" || {
+  pip3 install reportlab --user --quiet 2>/dev/null && echo "  ✓ reportlab installed (user)" || {
+    pip3 install reportlab --break-system-packages --user --quiet && echo "  ✓ reportlab installed"
+  }
 }
 
 # ── Step 3: Detect printer ─────────────────────
@@ -58,7 +61,7 @@ echo "  ✓ Saved to $SCRIPT_PATH ($(wc -l < $SCRIPT_PATH) lines)"
 # ── Step 5: Inject printer name ────────────────
 if [ -n "$PRINTER_NAME" ]; then
   # Replace PRINTER_NAME = "" with the detected printer
-  sed -i '' "s/PRINTER_NAME   = \"\"/PRINTER_NAME   = \"$PRINTER_NAME\"/" "$SCRIPT_PATH"
+  sed -i '' "s|PRINTER_NAME   = \"\"|PRINTER_NAME   = \"$PRINTER_NAME\"|" "$SCRIPT_PATH"
   echo "  ✓ Configured printer: $PRINTER_NAME"
 fi
 

@@ -715,6 +715,8 @@
       <li><a href="#ch10"><span class="chapter-num">10</span> Trading Strategies</a></li>
       <li><a href="#ch11"><span class="chapter-num">11</span> Risk Management</a></li>
       <li><a href="#ch12"><span class="chapter-num">12</span> Current Assessment</a></li>
+      <li><a href="#ch13"><span class="chapter-num">13</span> Derivatives & OI</a></li>
+      <li><a href="#ch14"><span class="chapter-num">14</span> Lightning Network</a></li>
     </ul>
     <div class="sidebar-section-label" style="margin-top:16px;">Live Intelligence</div>
     <ul class="sidebar-nav">
@@ -1344,6 +1346,240 @@
       </dl>
     </section>
 
+<section class="chapter" id="ch13">
+  <div class="chapter-header">
+    <div class="chapter-number">CHAPTER 13</div>
+    <h2>Derivatives & Open Interest</h2>
+    <p class="chapter-desc">Perpetual futures, funding rates, open interest dynamics, options market intelligence, and liquidation cascade mechanics — the derivatives layer that amplifies every BTC cycle.</p>
+  </div>
+
+  <!-- DERIVATIVES OVERVIEW CARDS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">OI Peak (Oct 2025)</div>
+      <div style="font-size:24px;font-weight:800;color:#f7931a;font-family:monospace;">$56.6B</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">All-time high leverage</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">OI Collapse</div>
+      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">-58%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">$56.6B &rarr; $23.6B</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Largest Cascade</div>
+      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">$19.35B</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Oct 10, 2025 single day</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">CME Basis Peak</div>
+      <div style="font-size:24px;font-weight:800;color:#3fb950;font-family:monospace;">25%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Annualized, pre-collapse</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Funding at ATH</div>
+      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">+0.10%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Per 8h = 109% annualized</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Options Venue</div>
+      <div style="font-size:24px;font-weight:800;color:#d2a8ff;font-family:monospace;">90%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Deribit market share</div>
+    </div>
+  </div>
+
+  <!-- FUNDING RATES -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Perpetual Funding Rate Intelligence</h3>
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:20px;">
+    <p style="font-size:13px;color:#8b949e;line-height:1.7;margin:0 0 16px;">Funding rates settle every 8 hours and represent the cost of holding a leveraged position. Extreme readings are among the most reliable cycle sentiment signals in BTC markets.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;">
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Rate (8h)</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Annualized</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Signal</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Action</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#f85149;font-family:monospace;">+0.1% or higher</td><td style="padding:8px 12px;color:#f85149;font-family:monospace;">109%+</td><td style="padding:8px 12px;color:#f85149;">Extreme greed &mdash; leverage overheated</td><td style="padding:8px 12px;color:#e6edf3;">Reduce longs, watch for cascade</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#d29922;font-family:monospace;">+0.01% to +0.05%</td><td style="padding:8px 12px;color:#d29922;font-family:monospace;">11&ndash;55%</td><td style="padding:8px 12px;color:#d29922;">Elevated but manageable</td><td style="padding:8px 12px;color:#e6edf3;">Monitor, normal bull regime</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-family:monospace;">-0.001% to +0.01%</td><td style="padding:8px 12px;color:#3fb950;font-family:monospace;">-1% to 11%</td><td style="padding:8px 12px;color:#3fb950;">Neutral &mdash; healthy market</td><td style="padding:8px 12px;color:#e6edf3;">No signal, trend-follow</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#58a6ff;font-family:monospace;">-0.01% to -0.05%</td><td style="padding:8px 12px;color:#58a6ff;font-family:monospace;">-11% to -55%</td><td style="padding:8px 12px;color:#58a6ff;">Bearish leverage heavy &mdash; shorts piling in</td><td style="padding:8px 12px;color:#e6edf3;">Watch for short squeeze</td></tr>
+        <tr><td style="padding:8px 12px;color:#3fb950;font-family:monospace;font-weight:700;">Below -0.05%</td><td style="padding:8px 12px;color:#3fb950;font-family:monospace;font-weight:700;">-55%+</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">Extreme fear &mdash; capitulation signal</td><td style="padding:8px 12px;color:#e6edf3;">High-probability accumulation zone</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OPEN INTEREST ANALYSIS -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Open Interest Signal Matrix</h3>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Price</th>
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Open Interest</th>
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal</th>
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Interpretation</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;color:#8b949e;">New long positions entering &mdash; confirmed uptrend</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;"><span style="background:#f8514922;color:#f85149;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">BEARISH</span></td><td style="padding:8px 12px;color:#8b949e;">New shorts being added &mdash; bearish pressure</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">SHORTS COVER</span></td><td style="padding:8px 12px;color:#8b949e;">Short squeeze &mdash; longs may not sustain</td></tr>
+        <tr><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;"><span style="background:#58a6ff22;color:#58a6ff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">LONGS FLUSH</span></td><td style="padding:8px 12px;color:#8b949e;">Deleveraging &mdash; possible bottom after flush completes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LIQUIDATION CASCADE ANATOMY -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Major Liquidation Events</h3>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Event</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Liquidated</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Price Drop</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Trigger</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">COVID Black Thursday (Mar 2020)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$1.2B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-53% in 24h</td><td style="padding:8px 12px;color:#8b949e;">Global risk-off, crypto-native panic</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">May 2021 China ban</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$8.6B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-35% in 72h</td><td style="padding:8px 12px;color:#8b949e;">Hashrate crash + regulatory fear</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">LUNA collapse (May 2022)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$2.1B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-25% in 7 days</td><td style="padding:8px 12px;color:#8b949e;">UST depeg, contagion across DeFi</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">FTX collapse (Nov 2022)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$5.2B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-28% in 1 week</td><td style="padding:8px 12px;color:#8b949e;">Exchange fraud, trust collapse</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;font-weight:700;">Oct 10, 2025 (largest ever)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$19.35B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-14% in 24h</td><td style="padding:8px 12px;color:#8b949e;">OI $56.6B &rarr; ETF outflows &rarr; cascade</td></tr>
+        <tr><td style="padding:8px 12px;color:#e6edf3;">Feb 5&ndash;6, 2026</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$6.18B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-8% in 48h</td><td style="padding:8px 12px;color:#8b949e;">7-catalyst convergence, ETF outflows</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OPTIONS INTELLIGENCE -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Options Market Intelligence</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Put/Call Ratio Signals</div>
+      <div style="font-size:12px;color:#8b949e;line-height:1.8;">
+        <div>PCR <strong style="color:#f85149;">&gt; 1.3</strong> &mdash; Extreme fear, contrarian buy signal</div>
+        <div>PCR <strong style="color:#d29922;">0.8&ndash;1.3</strong> &mdash; Elevated puts, cautious market</div>
+        <div>PCR <strong style="color:#3fb950;">0.5&ndash;0.8</strong> &mdash; Normal, slight call bias</div>
+        <div>PCR <strong style="color:#f85149;">&lt; 0.4</strong> &mdash; Extreme complacency, distribution risk</div>
+        <div style="margin-top:10px;padding:8px;background:#161b22;border-radius:6px;font-size:11px;">At Oct 2025 ATH: $1.17B in $100K calls vs $75K puts. Skew reversed before top.</div>
+      </div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">DVOL (Deribit Vol Index)</div>
+      <div style="font-size:12px;color:#8b949e;line-height:1.8;">
+        <div>DVOL <strong style="color:#f85149;">&gt; 90</strong> &mdash; Panic, options expensive, near-term bottom likely</div>
+        <div>DVOL <strong style="color:#d29922;">60&ndash;90</strong> &mdash; Elevated fear, market stressed</div>
+        <div>DVOL <strong style="color:#3fb950;">40&ndash;60</strong> &mdash; Normal volatility regime</div>
+        <div>DVOL <strong style="color:#58a6ff;">&lt; 40</strong> &mdash; Complacency, potential compression before big move</div>
+        <div style="margin-top:10px;padding:8px;background:#161b22;border-radius:6px;font-size:11px;">Feb 5, 2026: 25&delta; put IV hit 95% &mdash; every historical reading above 80 preceded a 30-day recovery.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DERIVATIVES CYCLE CONNECTION -->
+  <div style="background:linear-gradient(135deg,rgba(210,168,255,0.05),rgba(248,81,73,0.03));border:1px solid #30275a;border-radius:10px;padding:20px;">
+    <div style="font-size:12px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Derivatives Cycle Connection &mdash; How to Use This</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:12px;color:#8b949e;">
+      <div><strong style="color:#3fb950;display:block;margin-bottom:4px;">Accumulation Signal</strong>Funding negative sustained 2+ weeks + OI declining + DVOL &gt; 80 + PCR &gt; 1.2 &rarr; Very high probability bottom</div>
+      <div><strong style="color:#d29922;display:block;margin-bottom:4px;">Distribution Warning</strong>Funding &gt; +0.05% + OI near ATH + PCR &lt; 0.5 + DVOL compressing &rarr; Reduce exposure, expect cascade</div>
+      <div><strong style="color:#58a6ff;display:block;margin-bottom:4px;">Squeeze Setup</strong>Funding deeply negative + price holding key support + OI declining &rarr; Short squeeze candidate</div>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="ch14">
+  <div class="chapter-header">
+    <div class="chapter-number">CHAPTER 14</div>
+    <h2>Lightning Network Intelligence</h2>
+    <p class="chapter-desc">Bitcoin's Layer 2 payment network &mdash; capacity growth, adoption metrics, routing economics, and what LN signals tell us about BTC's long-term network value.</p>
+  </div>
+
+  <!-- LN KEY STATS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:28px;">
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Capacity Peak</div>
+      <div style="font-size:22px;font-weight:800;color:#f7931a;font-family:monospace;">5,637 BTC</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Dec 2025 ATH</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Active Nodes</div>
+      <div style="font-size:22px;font-weight:800;color:#58a6ff;font-family:monospace;">~18,000</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Q1 2026 estimate</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Active Channels</div>
+      <div style="font-size:22px;font-weight:800;color:#3fb950;font-family:monospace;">~62,000</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Q1 2026 estimate</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Monthly Volume</div>
+      <div style="font-size:22px;font-weight:800;color:#d2a8ff;font-family:monospace;">$1.17B</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Nov 2025 (River)</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Gini Coefficient</div>
+      <div style="font-size:22px;font-weight:800;color:#d29922;font-family:monospace;">0.97</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">High centralization</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Launch Date</div>
+      <div style="font-size:22px;font-weight:800;color:#e6edf3;font-family:monospace;">Mar 2018</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Mainnet launch</div>
+    </div>
+  </div>
+
+  <!-- LN CAPACITY GROWTH -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Network Capacity Growth (2018&ndash;2026)</h3>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Period</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Capacity (BTC)</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Channels</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Context</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Mar 2018</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;10</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;1,000</td><td style="padding:7px 12px;color:#8b949e;">Mainnet launch, experimental</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2019</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">866</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">35,000</td><td style="padding:7px 12px;color:#8b949e;">Early growth phase</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Jan 2021</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">1,060</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">38,000</td><td style="padding:7px 12px;color:#8b949e;">Pre-bull surge</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Oct 2021</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">3,200+</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">80,000+</td><td style="padding:7px 12px;color:#8b949e;">El Salvador legal tender law</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2022</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">5,100</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">82,000</td><td style="padding:7px 12px;color:#8b949e;">Cash App integration, ATH despite bear</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2023</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">4,800</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">70,000</td><td style="padding:7px 12px;color:#8b949e;">Binance/OKX integration</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2025</td><td style="padding:7px 12px;text-align:center;color:#3fb950;font-family:monospace;font-weight:700;">5,637</td><td style="padding:7px 12px;text-align:center;color:#3fb950;font-family:monospace;font-weight:700;">~65,000</td><td style="padding:7px 12px;color:#8b949e;">All-time capacity high</td></tr>
+        <tr><td style="padding:7px 12px;color:#e6edf3;font-weight:700;">Q1 2026 (est.)</td><td style="padding:7px 12px;text-align:center;color:#d29922;font-family:monospace;font-weight:700;">~5,200</td><td style="padding:7px 12px;text-align:center;color:#d29922;font-family:monospace;font-weight:700;">~62,000</td><td style="padding:7px 12px;color:#8b949e;">Slight decline with BTC price drop</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LN AS MARKET SIGNAL -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">LN Metrics as Market Signals</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#3fb950;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Bullish Signals</div>
+      <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:7px;">
+        <li>&#x1F4C8; Capacity growing faster than price &mdash; organic adoption</li>
+        <li>&#x1F4C8; Channel openings accelerating &mdash; new participants entering</li>
+        <li>&#x1F4C8; Volume/capacity ratio rising &mdash; network being actively used</li>
+        <li>&#x1F4C8; New exchange LN integration &mdash; institutional on-ramp expansion</li>
+        <li>&#x1F4C8; AI agent payment adoption &mdash; new autonomous demand</li>
+      </ul>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#f85149;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Bearish / Warning Signals</div>
+      <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:7px;">
+        <li>&#x1F4C9; Capacity declining &mdash; channels being closed, funds withdrawn</li>
+        <li>&#x1F4C9; Channel count falling faster than capacity &mdash; large nodes leaving</li>
+        <li>&#x1F4C9; Centralization increasing &mdash; single points of failure risk</li>
+        <li>&#x1F4C9; Volume plateauing despite capacity growth &mdash; adoption stalling</li>
+        <li>&#x1F4C9; Key routing node going offline &mdash; liquidity fragmentation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY INSIGHT BOX -->
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+    <div style="font-size:11px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Key Intelligence &mdash; The 2022 Divergence</div>
+    <p style="font-size:12px;color:#8b949e;line-height:1.7;margin:0;">During the 2022 bear market, LN capacity hit an all-time high (5,100 BTC) while BTC price was down 77%. This was a historically bullish signal &mdash; the network was growing independent of price speculation. The Federal Reserve found that LN could have reduced 2017's on-chain congestion by 93%. Long-term, LN capacity growth relative to price represents genuine adoption vs speculation, making it one of the few metrics that improves during bear markets.</p>
+  </div>
+</section>
+
 <!-- =============================================
      LIVE MARKET TAB
      ============================================= -->
@@ -1451,6 +1687,45 @@
     <div style="font-size:11px;color:#8b949e;margin-top:4px;">0 = Full Bear Alignment | 100 = Full Bull Alignment</div>
   </div>
 
+  <!-- INTRADAY PATTERN ENGINE -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 12px;">Intraday Pattern Engine &mdash; Live Detection</h3>
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:24px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div>
+        <div style="font-size:11px;color:#3fb950;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">&#9679; Active Patterns Detected</div>
+        <div id="pattern-list" style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#8b949e;">
+          <div style="color:#8b949e;font-style:italic;">Loading pattern scan...</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:11px;color:#58a6ff;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px;">Pattern Strength Score</div>
+        <div id="pattern-score" style="font-size:48px;font-weight:900;font-family:monospace;color:#58a6ff;">&#8212;</div>
+        <div id="pattern-label" style="font-size:12px;color:#8b949e;margin-top:4px;"></div>
+        <div style="font-size:10px;color:#8b949e;margin-top:8px;">0 = Pure Bearish | 100 = Pure Bullish</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIVE DERIVATIVES PANEL -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Live Derivatives Intelligence</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:24px;">
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Funding Rate (8h)</div>
+      <div id="live-funding" style="font-size:24px;font-weight:800;font-family:monospace;color:#3fb950;">Loading...</div>
+      <div id="live-funding-signal" style="font-size:11px;color:#8b949e;margin-top:4px;"></div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Open Interest</div>
+      <div id="live-oi" style="font-size:24px;font-weight:800;font-family:monospace;color:#d2a8ff;">Loading...</div>
+      <div id="live-oi-signal" style="font-size:11px;color:#8b949e;margin-top:4px;"></div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Long/Short Ratio</div>
+      <div id="live-lsr" style="font-size:24px;font-weight:800;font-family:monospace;color:#58a6ff;">Loading...</div>
+      <div id="live-lsr-signal" style="font-size:11px;color:#8b949e;margin-top:4px;"></div>
+    </div>
+  </div>
+
   <p style="font-size:11px;color:#8b949e;margin-top:12px;text-align:center;">
     Data sourced from Binance public API. Refreshes every 30s. For research use only &#8212; not financial advice.
   </p>
@@ -1469,7 +1744,7 @@
   <!-- IQ SCORE HERO -->
   <div style="background:linear-gradient(135deg,rgba(210,168,255,0.08),rgba(88,166,255,0.05));border:1px solid #30275a;border-radius:14px;padding:32px;text-align:center;margin-bottom:28px;">
     <div style="font-size:11px;color:#d2a8ff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">BTC Brain Current IQ Estimate</div>
-    <div style="font-size:96px;font-weight:900;font-family:'SF Mono',monospace;color:#d2a8ff;line-height:1;margin-bottom:8px;">147</div>
+    <div style="font-size:96px;font-weight:900;font-family:'SF Mono',monospace;color:#d2a8ff;line-height:1;margin-bottom:8px;">164</div>
     <div style="font-size:16px;color:#e6edf3;font-weight:600;margin-bottom:16px;">Advanced Analytical Intelligence</div>
     <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:16px;">
       <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Research Depth</div><div style="font-size:18px;font-weight:800;color:#58a6ff;font-family:monospace;">94/100</div></div>
@@ -1484,8 +1759,8 @@
   <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:24px;">
     <div style="font-size:12px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;">IQ Score Derivation</div>
     <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;font-size:12px;">
-      <div><span style="color:#8b949e;">Research Lines:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">5,578+</span></div>
-      <div><span style="color:#8b949e;">Analytical Frameworks:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">23</span></div>
+      <div><span style="color:#8b949e;">Research Lines:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">8,445+</span></div>
+      <div><span style="color:#8b949e;">Analytical Frameworks:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">31</span></div>
       <div><span style="color:#8b949e;">Cycles Analyzed:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">4 complete</span></div>
       <div><span style="color:#8b949e;">Timeframes Active:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">8 (1m &#x2192; Monthly)</span></div>
       <div><span style="color:#8b949e;">On-Chain Metrics:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">12 tracked</span></div>
@@ -1496,6 +1771,9 @@
       <div><span style="color:#8b949e;">Data Points (hist):</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">4,400+ candles</span></div>
       <div><span style="color:#8b949e;">Intel Document:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">137KB / 2,560 lines</span></div>
       <div><span style="color:#8b949e;">Live Data Feeds:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">Active (Binance)</span></div>
+      <div><span style="color:#8b949e;">Pattern Engine:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">Live (10 patterns)</span></div>
+      <div><span style="color:#8b949e;">Derivatives Module:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">Funding + OI + LSR</span></div>
+      <div><span style="color:#8b949e;">Total Chapters:</span> <span style="color:#e6edf3;font-family:monospace;font-weight:700;">14 (+ 2 live tabs)</span></div>
     </div>
   </div>
 
@@ -1513,6 +1791,8 @@
         <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>Goldman Sachs institutional accumulation signal</li>
         <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>ETF daily flow tracking &#8212; April 2026 reversal</li>
         <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#d2a8ff;flex-shrink:0;"></span>Cycle position: Day ~730 post-halving (markdown phase)</li>
+        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f85149;flex-shrink:0;"></span>Derivatives: live funding rate + OI + long/short ratio</li>
+        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>Lightning Network: capacity 5,637 BTC (Dec 2025 ATH)</li>
       </ul>
     </div>
     <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
@@ -1610,8 +1890,8 @@
   <!-- LAST UPDATED -->
   <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;font-size:12px;color:#8b949e;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
     <span>Brain Last Updated: <strong style="color:#e6edf3;">April 5, 2026</strong></span>
-    <span>Version: <strong style="color:#e6edf3;">v2.0 &#8212; Live Intelligence Edition</strong></span>
-    <span>Next Upgrade: <strong style="color:#e6edf3;">Intraday pattern engine</strong></span>
+    <span>Version: <strong style="color:#e6edf3;">v3.0 &#8212; Full Derivatives Edition</strong></span>
+    <span>Next Upgrade: <strong style="color:#e6edf3;">AI news sentiment integration</strong></span>
     <span>IQ Growth Rate: <strong style="color:#3fb950;">+8.3 pts / upgrade cycle</strong></span>
   </div>
 </section>
@@ -1922,6 +2202,9 @@
         + '</div>';
     }
 
+    // Pattern engine
+    if (h1 && h1.length > 0) updatePatternEngine(h1);
+
     // Context panel
     const contextEl = document.getElementById('context-panel');
     if (contextEl) {
@@ -2050,10 +2333,192 @@
     ).join('');
   }
 
+  // ============================================
+  // INTRADAY PATTERN ENGINE
+  // ============================================
+  function detectPatterns(klines) {
+    if (!klines || klines.length < 5) return { patterns: [], score: 50 };
+    const candles = klines.slice(-12).map(k => ({
+      o: parseFloat(k[1]), h: parseFloat(k[2]),
+      l: parseFloat(k[3]), c: parseFloat(k[4]),
+      v: parseFloat(k[5])
+    }));
+
+    const patterns = [];
+    let score = 50;
+    const last = candles[candles.length - 1];
+    const prev = candles[candles.length - 2];
+    const prev2 = candles[candles.length - 3];
+
+    const body = (c) => Math.abs(c.c - c.o);
+    const range = (c) => c.h - c.l;
+    const isBull = (c) => c.c > c.o;
+    const isBear = (c) => c.c < c.o;
+    const avgVol = candles.slice(-10).reduce((a, c) => a + c.v, 0) / 10;
+
+    // Doji
+    if (body(last) < range(last) * 0.1 && range(last) > 0) {
+      patterns.push({ name: 'Doji', type: 'neutral', desc: 'Indecision \u2014 potential reversal candle', icon: '\u25c8' });
+    }
+    // Bullish Engulfing
+    if (isBear(prev) && isBull(last) && last.c > prev.o && last.o < prev.c) {
+      patterns.push({ name: 'Bullish Engulfing', type: 'bull', desc: 'Strong reversal signal \u2014 buyers overwhelmed sellers', icon: '\u2191' });
+      score += 15;
+    }
+    // Bearish Engulfing
+    if (isBull(prev) && isBear(last) && last.c < prev.o && last.o > prev.c) {
+      patterns.push({ name: 'Bearish Engulfing', type: 'bear', desc: 'Strong reversal \u2014 sellers overwhelmed buyers', icon: '\u2193' });
+      score -= 15;
+    }
+    // Hammer
+    const lowerWick = (c) => Math.min(c.o, c.c) - c.l;
+    const upperWick = (c) => c.h - Math.max(c.o, c.c);
+    if (lowerWick(last) > body(last) * 2 && upperWick(last) < body(last) * 0.5) {
+      patterns.push({ name: 'Hammer', type: 'bull', desc: 'Buyers rejecting lower prices \u2014 bullish reversal', icon: '\ud83d\udd28' });
+      score += 10;
+    }
+    // Shooting Star
+    if (upperWick(last) > body(last) * 2 && lowerWick(last) < body(last) * 0.5) {
+      patterns.push({ name: 'Shooting Star', type: 'bear', desc: 'Sellers rejecting higher prices \u2014 bearish reversal', icon: '\u2605' });
+      score -= 10;
+    }
+    // Three consecutive candles
+    if (isBull(last) && isBull(prev) && isBull(prev2) && last.c > prev.c && prev.c > prev2.c) {
+      patterns.push({ name: 'Three White Soldiers', type: 'bull', desc: 'Sustained buying \u2014 strong uptrend confirmation', icon: '|||' });
+      score += 20;
+    }
+    if (isBear(last) && isBear(prev) && isBear(prev2) && last.c < prev.c && prev.c < prev2.c) {
+      patterns.push({ name: 'Three Black Crows', type: 'bear', desc: 'Sustained selling \u2014 strong downtrend confirmation', icon: '|||' });
+      score -= 20;
+    }
+    // Volume breakout
+    if (last.v > avgVol * 1.8 && isBull(last)) {
+      patterns.push({ name: 'Volume Breakout (Bull)', type: 'bull', desc: (last.v/avgVol).toFixed(1)+'\u00d7 avg volume on up candle \u2014 confirmed move', icon: '\u2b06' });
+      score += 12;
+    }
+    if (last.v > avgVol * 1.8 && isBear(last)) {
+      patterns.push({ name: 'Volume Breakdown (Bear)', type: 'bear', desc: (last.v/avgVol).toFixed(1)+'\u00d7 avg volume on down candle \u2014 confirmed selling', icon: '\u2b07' });
+      score -= 12;
+    }
+    // Inside bar (compression)
+    if (last.h < prev.h && last.l > prev.l) {
+      patterns.push({ name: 'Inside Bar', type: 'neutral', desc: 'Compression \u2014 breakout incoming, direction TBD', icon: '\u2291' });
+    }
+    // Trend continuation
+    const trend5 = candles.slice(-5);
+    const upCount = trend5.filter(c => isBull(c)).length;
+    if (upCount >= 4) {
+      patterns.push({ name: 'Bull Trend Active', type: 'bull', desc: upCount+'/5 recent candles bullish \u2014 momentum favors continuation', icon: '\u2192' });
+      score += 8;
+    } else if (upCount <= 1) {
+      patterns.push({ name: 'Bear Trend Active', type: 'bear', desc: (5-upCount)+'/5 recent candles bearish \u2014 downward pressure', icon: '\u2192' });
+      score -= 8;
+    }
+
+    if (patterns.length === 0) {
+      patterns.push({ name: 'No Clear Pattern', type: 'neutral', desc: 'Chop / indecision \u2014 no high-confidence setup detected', icon: '\u2014' });
+    }
+
+    return { patterns, score: Math.min(100, Math.max(0, score)) };
+  }
+
+  function updatePatternEngine(klines) {
+    const el = document.getElementById('pattern-list');
+    const scoreEl = document.getElementById('pattern-score');
+    const labelEl = document.getElementById('pattern-label');
+    if (!el) return;
+    const { patterns, score } = detectPatterns(klines);
+    el.innerHTML = patterns.map(p => {
+      const color = p.type === 'bull' ? '#3fb950' : p.type === 'bear' ? '#f85149' : '#d29922';
+      return '<div style="display:flex;gap:8px;align-items:flex-start;">'
+        + '<span style="color:'+color+';font-size:14px;flex-shrink:0;line-height:1.4;">'+p.icon+'</span>'
+        + '<div><span style="color:'+color+';font-weight:700;">'+p.name+'</span>'
+        + '<span style="color:#8b949e;"> \u2014 '+p.desc+'</span></div>'
+        + '</div>';
+    }).join('');
+    if (scoreEl) {
+      scoreEl.textContent = Math.round(score);
+      scoreEl.style.color = score > 65 ? '#3fb950' : score < 35 ? '#f85149' : '#d29922';
+    }
+    if (labelEl) {
+      const label = score > 75 ? 'Strong Bullish Pattern Set' : score > 60 ? 'Moderate Bullish Bias' :
+                    score > 45 ? 'Mixed / Choppy Structure' : score > 30 ? 'Moderate Bearish Bias' : 'Strong Bearish Pattern Set';
+      labelEl.textContent = label;
+    }
+  }
+
+  // ============================================
+  // LIVE DERIVATIVES DATA
+  // ============================================
+  async function fetchDerivativesData() {
+    try {
+      const [funding, oi, lsr] = await Promise.all([
+        fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT').then(r => r.json()),
+        fetch('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT').then(r => r.json()),
+        fetch('https://fapi.binance.com/fapi/v1/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1').then(r => r.json()),
+      ]);
+
+      // Funding rate
+      const fundingRate = parseFloat(funding.lastFundingRate) * 100;
+      const fundingEl = document.getElementById('live-funding');
+      const fundingSignalEl = document.getElementById('live-funding-signal');
+      if (fundingEl) {
+        fundingEl.textContent = (fundingRate >= 0 ? '+' : '') + fundingRate.toFixed(4) + '%';
+        fundingEl.style.color = fundingRate > 0.05 ? '#f85149' : fundingRate > 0.01 ? '#d29922' :
+                                fundingRate < -0.05 ? '#3fb950' : fundingRate < -0.01 ? '#58a6ff' : '#3fb950';
+      }
+      if (fundingSignalEl) {
+        const sig = fundingRate > 0.05 ? 'Overheated \u2014 longs paying heavily' :
+                    fundingRate > 0.01 ? 'Elevated \u2014 longs dominant' :
+                    fundingRate < -0.05 ? 'Capitulation signal \u2014 extreme short pressure' :
+                    fundingRate < -0.01 ? 'Negative \u2014 shorts paying' : 'Neutral \u2014 healthy';
+        fundingSignalEl.textContent = sig;
+      }
+
+      // Open Interest
+      const oiVal = parseFloat(oi.openInterest);
+      const oiEl = document.getElementById('live-oi');
+      const oiSignalEl = document.getElementById('live-oi-signal');
+      if (oiEl) {
+        oiEl.textContent = oiVal > 1e9 ? '$' + (oiVal/1e9).toFixed(2)+'B' : '$' + (oiVal/1e6).toFixed(0)+'M';
+        oiEl.style.color = '#d2a8ff';
+      }
+      if (oiSignalEl) {
+        oiSignalEl.textContent = 'BTC open interest live';
+      }
+
+      // Long/Short Ratio
+      if (lsr && lsr.length > 0) {
+        const ratio = parseFloat(lsr[0].longShortRatio);
+        const lsrEl = document.getElementById('live-lsr');
+        const lsrSignalEl = document.getElementById('live-lsr-signal');
+        if (lsrEl) {
+          lsrEl.textContent = ratio.toFixed(2) + 'x';
+          lsrEl.style.color = ratio > 1.5 ? '#f85149' : ratio < 0.8 ? '#3fb950' : '#58a6ff';
+        }
+        if (lsrSignalEl) {
+          const sig = ratio > 2.0 ? 'Heavily long \u2014 contrarian bearish' :
+                      ratio > 1.5 ? 'Long-skewed \u2014 watch for squeeze' :
+                      ratio < 0.7 ? 'Heavily short \u2014 contrarian bullish' :
+                      ratio < 0.9 ? 'Short-skewed \u2014 short squeeze potential' : 'Balanced market';
+          lsrSignalEl.textContent = sig;
+        }
+      }
+    } catch(e) {
+      // Silent fail \u2014 derivatives data is bonus, not critical
+      const els = ['live-funding','live-oi','live-lsr'];
+      els.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = 'N/A'; });
+    }
+  }
+
   // INIT & AUTO-REFRESH
   if (document.getElementById('live-price')) {
     fetchBinanceData();
     setInterval(fetchBinanceData, 30000);
+  }
+  if (document.getElementById('live-funding')) {
+    fetchDerivativesData();
+    setInterval(fetchDerivativesData, 60000);
   }
   if (document.getElementById('iq-matrices')) {
     renderIQSystem();

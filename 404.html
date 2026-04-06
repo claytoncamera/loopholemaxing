@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting — Loopholemaxing</title>
+  <script>
+    // GitHub Pages CDN 404 fix — redirect to the correct path
+    (function() {
+      var path = window.location.pathname;
+      var validPaths = ['/btc-brain/', '/btc-brain'];
+      
+      // If it's a known valid path, redirect with a cache-busting trick
+      for (var i = 0; i < validPaths.length; i++) {
+        if (path === validPaths[i] || path.startsWith('/btc-brain/')) {
+          // Store the intended path and redirect through root
+          sessionStorage.setItem('redirect', path);
+          window.location.replace('/');
+          return;
+        }
+      }
+      // Unknown path — stay on 404
+    })();
+  </script>
+  <style>
+    body { background: #0a0a0f; color: #e6edf3; font-family: system-ui; 
+           display: flex; align-items: center; justify-content: center; 
+           min-height: 100vh; margin: 0; text-align: center; }
+    h1 { font-size: 72px; color: #3b82f6; margin: 0; }
+    p { color: #8b949e; }
+    a { color: #3b82f6; }
+  </style>
+</head>
+<body>
+  <div>
+    <h1>404</h1>
+    <p>Page not found. <a href="/">Back to home →</a></p>
+  </div>
+</body>
+</html>

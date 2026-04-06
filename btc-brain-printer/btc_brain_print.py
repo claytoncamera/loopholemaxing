@@ -161,18 +161,18 @@ def generate_pdf(d, events):
                 if name == 'BB_Mono':  FONT_MONO = name
             except: pass
 
-        # Colors
-        C_ORANGE = colors.HexColor('#f7931a')
-        C_DARK   = colors.HexColor('#0d1117')
-        C_DARK2  = colors.HexColor('#161b22')
-        C_DARK3  = colors.HexColor('#21262d')
-        C_TEXT   = colors.HexColor('#e6edf3')
-        C_MUTED  = colors.HexColor('#8b949e')
-        C_GREEN  = colors.HexColor('#3fb950')
-        C_RED    = colors.HexColor('#f85149')
-        C_BLUE   = colors.HexColor('#58a6ff')
-        C_PURPLE = colors.HexColor('#d2a8ff')
-        C_YELLOW = colors.HexColor('#d29922')
+        # Colors — light/print-friendly theme (minimal ink)
+        C_ORANGE = colors.HexColor('#c45e00')   # darker orange for white bg
+        C_DARK   = colors.white                  # white background
+        C_DARK2  = colors.HexColor('#f5f5f5')   # very light gray
+        C_DARK3  = colors.HexColor('#e0e0e0')   # light gray for borders
+        C_TEXT   = colors.HexColor('#111111')   # near-black text
+        C_MUTED  = colors.HexColor('#555555')   # medium gray
+        C_GREEN  = colors.HexColor('#1a7a1a')   # dark green
+        C_RED    = colors.HexColor('#b71c1c')   # dark red
+        C_BLUE   = colors.HexColor('#1565c0')   # dark blue
+        C_PURPLE = colors.HexColor('#6a1b9a')   # dark purple
+        C_YELLOW = colors.HexColor('#e65100')   # dark amber
 
         price   = d["price"]
         change  = d["change"]
@@ -193,7 +193,7 @@ def generate_pdf(d, events):
             title=f'BTC Brain Alert — {date_s}',
             author='Perplexity Computer')
 
-        def P(text, size=10, color='#e6edf3', bold=False, center=False, mono=False):
+        def P(text, size=10, color='#111111', bold=False, center=False, mono=False):
             fn = FONT_MONO if mono else (FONT_BOLD if bold else FONT)
             align = TA_CENTER if center else TA_LEFT
             return Paragraph(f'<font name="{fn}" size="{size}" color="{color}">{text}</font>',
@@ -205,10 +205,11 @@ def generate_pdf(d, events):
         hdr = Table([[P(f'₿ BTC BRAIN — {alert_t}', 16, '#f7931a', bold=True),
                       P(f'{date_s}  {time_s}', 9, '#8b949e', mono=True, center=True)]],
                     colWidths=[4.8*inch, 2.5*inch])
-        hdr.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),C_DARK),
+        hdr.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.white),
             ('TOPPADDING',(0,0),(-1,-1),14),('BOTTOMPADDING',(0,0),(-1,-1),14),
             ('LEFTPADDING',(0,0),(0,-1),18),('RIGHTPADDING',(-1,0),(-1,-1),16),
-            ('VALIGN',(0,0),(-1,-1),'MIDDLE')]))
+            ('VALIGN',(0,0),(-1,-1),'MIDDLE'),
+            ('LINEBELOW',(0,0),(-1,-1),1.5,C_ORANGE)]))
         story += [hdr, Spacer(1, 8)]
 
         # Price row
@@ -217,34 +218,37 @@ def generate_pdf(d, events):
             P(f'{chg_sym}{change:.2f}%', 20, chg_col, bold=True, center=True),
             P(f'H: ${d["high"]:,.0f}  L: ${d["low"]:,.0f}', 10, '#8b949e', mono=True, center=True),
         ]], colWidths=[3.6*inch, 1.8*inch, 1.9*inch])
-        prow.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),C_DARK),
-            ('TOPPADDING',(0,0),(-1,-1),14),('BOTTOMPADDING',(0,0),(-1,-1),14),
+        prow.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.white),
+            ('TOPPADDING',(0,0),(-1,-1),10),('BOTTOMPADDING',(0,0),(-1,-1),10),
             ('LEFTPADDING',(0,0),(0,-1),18),('VALIGN',(0,0),(-1,-1),'MIDDLE'),
-            ('LINEAFTER',(0,0),(1,-1),0.5,C_DARK3)]))
+            ('LINEAFTER',(0,0),(1,-1),0.5,C_DARK3),
+            ('LINEBELOW',(0,0),(-1,-1),0.5,C_DARK3)]))
         story += [prow, Spacer(1, 8)]
 
         # Events box (if any)
         if events:
             ev_rows = [[P('⚡ ALERT EVENTS DETECTED', 10, '#f7931a', bold=True)]]
             for ev in events:
-                ev_rows.append([P(ev, 10, '#e6edf3')])
+                ev_rows.append([P(ev, 10, '#111111')])
             ev_tbl = Table(ev_rows, colWidths=[7.3*inch])
-            ev_tbl.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.HexColor('#1a0a0a')),
+            ev_tbl.setStyle(TableStyle([('BACKGROUND',(0,0),(-1,-1),colors.white),
                 ('TOPPADDING',(0,0),(-1,-1),8),('BOTTOMPADDING',(0,0),(-1,-1),8),
-                ('LEFTPADDING',(0,0),(-1,-1),16),('LINEAFTER',(0,0),(0,-1),3,C_RED)]))
+                ('LEFTPADDING',(0,0),(-1,-1),16),
+                ('LINEAFTER',(0,0),(0,-1),3,C_RED),
+                ('BOX',(0,0),(-1,-1),0.5,C_DARK3)]))
             story += [ev_tbl, Spacer(1, 8)]
 
         # Trend + levels
         trend_data = [
             [P('METRIC', 9, '#8b949e', bold=True), P('VALUE', 9, '#8b949e', bold=True), P('SIGNAL', 9, '#8b949e', bold=True)],
-            [P('4H Trend', 10), P(trend4h, 10, '#3fb950' if trend4h == 'BULLISH' else '#f85149' if trend4h == 'BEARISH' else '#d29922', bold=True), P('Mid-term direction', 9, '#8b949e')],
-            [P('Daily Trend', 10), P(trend1d, 10, '#3fb950' if trend1d == 'BULLISH' else '#f85149' if trend1d == 'BEARISH' else '#d29922', bold=True), P('Macro direction', 9, '#8b949e')],
-            [P('24h Volume', 10), P(f'${d["vol_usd"]/1e9:.2f}B', 10, '#58a6ff', mono=True), P('Market activity', 9, '#8b949e')],
+            [P('4H Trend', 10), P(trend4h, 10, '#3fb950' if trend4h == 'BULLISH' else '#f85149' if trend4h == 'BEARISH' else '#d29922', bold=True), P('Mid-term direction', 9, '#555555')],
+            [P('Daily Trend', 10), P(trend1d, 10, '#3fb950' if trend1d == 'BULLISH' else '#f85149' if trend1d == 'BEARISH' else '#d29922', bold=True), P('Macro direction', 9, '#555555')],
+            [P('24h Volume', 10), P(f'${d["vol_usd"]/1e9:.2f}B', 10, '#58a6ff', mono=True), P('Market activity', 9, '#555555')],
         ]
         if d["funding"] is not None:
             fc = '#f85149' if d["funding"] > 0.05 else '#3fb950' if d["funding"] < -0.05 else '#d29922'
             sig = 'Longs overleveraged' if d["funding"] > 0.05 else 'Capitulation signal' if d["funding"] < -0.05 else 'Neutral'
-            trend_data.append([P('Funding Rate', 10), P(f'{d["funding"]:+.4f}%', 10, fc, mono=True), P(sig, 9, '#8b949e')])
+            trend_data.append([P('Funding Rate', 10), P(f'{d["funding"]:+.4f}%', 10, fc, mono=True), P(sig, 9, '#555555')])
 
         ttbl = Table(trend_data, colWidths=[1.8*inch, 1.6*inch, 3.9*inch])
         ttbl.setStyle(TableStyle([
@@ -262,23 +266,24 @@ def generate_pdf(d, events):
             status = f'{diff:+.1f}% from current'
             col = '#3fb950' if lvl < price else '#f85149'
             marker = ' ← CURRENT' if abs(diff) < 2 else ''
-            level_rows.append([P(name, 9), P(f'${lvl:,.0f}', 9, col, mono=True), P(status + marker, 9, '#8b949e')])
+            level_rows.append([P(name, 9), P(f'${lvl:,.0f}', 9, col, mono=True), P(status + marker, 9, '#555555')])
         lvl_tbl = Table(level_rows, colWidths=[1.5*inch, 1.3*inch, 4.5*inch])
         lvl_tbl.setStyle(TableStyle([
-            ('BACKGROUND',(0,0),(-1,0),C_DARK3),('BACKGROUND',(0,1),(-1,-1),C_DARK2),
-            ('ROWBACKGROUNDS',(0,1),(-1,-1),[C_DARK2, C_DARK]),
+            ('BACKGROUND',(0,0),(-1,0),C_DARK3),('BACKGROUND',(0,1),(-1,-1),colors.white),
+            ('ROWBACKGROUNDS',(0,1),(-1,-1),[C_DARK2, colors.white]),
             ('GRID',(0,0),(-1,-1),0.3,C_DARK3),
             ('TOPPADDING',(0,0),(-1,-1),7),('BOTTOMPADDING',(0,0),(-1,-1),7),
             ('LEFTPADDING',(0,0),(-1,-1),10)]))
-        story += [P('KEY LEVELS', 10, '#d29922', bold=True), Spacer(1,4), lvl_tbl, Spacer(1, 8)]
+        story += [P('KEY LEVELS', 10, '#e65100', bold=True), Spacer(1,4), lvl_tbl, Spacer(1, 8)]
 
         # Footer
         foot = Table([[
-            P('loopholemaxing.com/btc-brain', 8, '#8b949e'),
-            P(f'BTC Brain v3.0  |  IQ: 164  |  {d["source"]}', 8, '#8b949e', center=True),
-            P('Not financial advice', 8, '#8b949e'),
+            P('loopholemaxing.com/btc-brain', 8, '#555555'),
+            P(f'BTC Brain v3.0  |  IQ: 164  |  {d["source"]}', 8, '#555555', center=True),
+            P('Not financial advice', 8, '#555555'),
         ]], colWidths=[2.4*inch, 3.0*inch, 1.9*inch])
-        foot.setStyle(TableStyle([('LINEABOVE',(0,0),(-1,0),0.5,C_DARK3),
+        foot.setStyle(TableStyle([('LINEABOVE',(0,0),(-1,0),0.8,C_ORANGE),
+            ('BACKGROUND',(0,0),(-1,-1),colors.white),
             ('TOPPADDING',(0,0),(-1,-1),6),('BOTTOMPADDING',(0,0),(-1,-1),6)]))
         story.append(foot)
 

@@ -355,3 +355,33 @@ img {
   .data-table { font-size: 12px; }
   .data-table th, .data-table td { padding: 8px 10px; }
 }
+
+/* ================================================
+   LIVE MARKET + IQ SYSTEM — MOBILE RESPONSIVENESS
+   ================================================ */
+@media (max-width: 768px) {
+  /* Collapse 2-col grids in new tabs */
+  #live-market [style*="grid-template-columns:1fr 1fr"],
+  #iq-system [style*="grid-template-columns:1fr 1fr"],
+  #iq-system [style*="grid-template-columns:1fr 1fr 1fr"] {
+    display: flex !important;
+    flex-direction: column !important;
+  }
+
+  /* Hourly candle strip scrollable on mobile */
+  #hourly-candles {
+    min-width: 400px;
+  }
+
+  /* Live header bar stack on mobile */
+  #live-market > div:first-of-type {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* IQ score hero reduce font size */
+  #iq-system [style*="font-size:96px"] {
+    font-size: 64px !important;
+  }
+}

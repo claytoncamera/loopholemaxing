@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PersonalVault — Secure Zero-Knowledge Vault | Loopholemaxing</title>
+  <meta name="description" content="Your encrypted personal vault. Zero-knowledge AES-256-GCM encryption — your data is only decryptable by you.">
+  <meta property="og:title" content="PersonalVault — Secure Zero-Knowledge Vault">
+  <meta property="og:description" content="Store your most sensitive documents encrypted client-side. Zero-knowledge: only you can read your data.">
+  <!-- In production (vault/ subdir of repo), styles.css loads from parent. Fallback inline below. -->
+  <link rel="stylesheet" href="../styles.css" id="shared-styles">
+
+  <style>
+    /* ============================================
+       VAULT — Page-specific styles
+       ============================================ */
+
+    .bg-grid {
+      position: fixed; inset: 0; z-index: -1;
+      background-image: radial-gradient(circle, rgba(59,130,246,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .bg-glow {
+      position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(circle, rgba(59,130,246,0.04) 0%, transparent 65%);
+      z-index: -1; pointer-events: none;
+    }
+
+    /* ── Auth Pages ─────────────────────────── */
+    .auth-wrap {
+      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      padding: 80px 16px 40px;
+    }
+    .auth-card {
+      width: 100%; max-width: 420px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; padding: 40px 36px;
+    }
+    .auth-logo {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 32px;
+    }
+    .auth-logo-icon {
+      width: 40px; height: 40px; border-radius: 10px;
+      background: rgba(59,130,246,.12); border: 1px solid rgba(59,130,246,.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--accent-blue); font-size: 18px;
+    }
+    .auth-logo-text { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: var(--text-primary); }
+    .auth-logo-sub  { font-size: 11px; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; }
+
+    .auth-title { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+    .auth-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; line-height: 1.5; }
+
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .04em;
+      text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+    .form-input {
+      width: 100%; padding: 11px 14px; background: var(--bg-secondary);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 14px; color: var(--text-primary); font-family: var(--font-body);
+      outline: none; transition: border-color var(--transition-fast);
+    }
+    .form-input:focus { border-color: var(--accent-blue); }
+    .form-input::placeholder { color: var(--text-muted); }
+
+    .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+
+    .btn-full { width: 100%; justify-content: center; margin-top: 8px; padding: 13px; font-size: 15px; }
+
+    .auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--text-muted); }
+    .auth-switch a { color: var(--accent-cyan); cursor: pointer; }
+    .auth-switch a:hover { color: var(--accent-blue); }
+
+    .auth-error {
+      background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.25);
+      border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--red);
+      margin-bottom: 16px; display: none;
+    }
+    .auth-error.show { display: block; }
+
+    .zero-knowledge-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(63,185,80,.06); border: 1px solid rgba(63,185,80,.15);
+      border-radius: 8px; padding: 10px 14px; margin-bottom: 24px;
+      font-size: 12px; color: var(--green);
+    }
+    .zero-knowledge-badge svg { flex-shrink: 0; }
+
+    /* ── App Shell ───────────────────────────── */
+    .app-wrap { display: none; }
+    .app-wrap.active { display: flex; min-height: 100vh; flex-direction: column; }
+
+    .vault-header {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(10,10,15,0.85); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border); height: 56px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 24px;
+    }
+    .vault-header-left { display: flex; align-items: center; gap: 12px; }
+    .vault-header-logo {
+      font-size: 13px; font-weight: 800; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--text-primary); text-decoration: none;
+    }
+    .vault-header-logo span { color: var(--accent-blue); }
+    .vault-breadcrumb {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--text-muted);
+    }
+    .vault-breadcrumb .sep { color: var(--border-light); }
+    .vault-breadcrumb .crumb { cursor: pointer; transition: color var(--transition-fast); }
+    .vault-breadcrumb .crumb:hover { color: var(--text-secondary); }
+    .vault-breadcrumb .crumb.active { color: var(--text-primary); cursor: default; }
+
+    .vault-header-right { display: flex; align-items: center; gap: 12px; }
+    .vault-user-badge {
+      display: flex; align-items: center; gap: 8px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 6px 12px; cursor: pointer;
+      transition: border-color var(--transition-fast); font-size: 13px; color: var(--text-secondary);
+    }
+    .vault-user-badge:hover { border-color: var(--border-light); color: var(--text-primary); }
+    .vault-user-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+
+    /* ── Main Content ─────────────────────────── */
+    .vault-main { flex: 1; padding: 80px 24px 48px; max-width: 1100px; margin: 0 auto; width: 100%; }
+
+    /* Dashboard */
+    .dash-header { margin-bottom: 36px; }
+    .dash-greeting { font-size: 22px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .dash-subtext { font-size: 14px; color: var(--text-secondary); }
+
+    .dash-stats {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px; margin-bottom: 36px;
+    }
+    .dash-stat {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px;
+    }
+    .dash-stat-val { font-size: 26px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+    .dash-stat-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+    .categories-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--accent-blue); margin-bottom: 14px; }
+    .categories-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px;
+    }
+    .cat-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: 20px; cursor: pointer;
+      transition: all var(--transition-base); text-decoration: none;
+    }
+    .cat-card:hover {
+      border-color: var(--border-light); background: var(--bg-card-hover);
+      transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+    }
+    .cat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; margin-bottom: 14px;
+    }
+    .cat-name { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .cat-count { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+
+    /* Category colors */
+    .cat-identification { background: rgba(59,130,246,.1); color: #3b82f6; }
+    .cat-insurance      { background: rgba(63,185,80,.1);  color: var(--green); }
+    .cat-financial      { background: rgba(247,147,26,.1); color: var(--accent-orange); }
+    .cat-medical        { background: rgba(248,81,73,.1);  color: var(--red); }
+    .cat-passwords      { background: rgba(210,168,255,.1);color: var(--purple); }
+    .cat-estate         { background: rgba(88,166,255,.1); color: var(--accent-cyan); }
+
+    /* ── Category / Items View ──────────────── */
+    .view-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 28px; flex-wrap: wrap; gap: 12px;
+    }
+    .view-title { font-size: 20px; font-weight: 700; color: var(--text-primary);
+      display: flex; align-items: center; gap: 10px; }
+    .view-title .badge { font-size: 12px; font-weight: 600; font-family: var(--font-mono);
+      background: rgba(255,255,255,.05); border: 1px solid var(--border);
+      border-radius: 6px; padding: 2px 10px; color: var(--text-muted); }
+
+    .items-list { display: flex; flex-direction: column; gap: 10px; }
+    .item-row {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 18px;
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; transition: all var(--transition-fast); gap: 12px;
+    }
+    .item-row:hover { border-color: var(--border-light); background: var(--bg-card-hover); }
+    .item-row-left { flex: 1; min-width: 0; }
+    .item-row-name { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-row-meta { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+    .item-row-arrow { color: var(--text-muted); flex-shrink: 0; font-size: 16px; }
+
+    .empty-state {
+      text-align: center; padding: 60px 24px;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; border-style: dashed;
+    }
+    .empty-icon { font-size: 40px; margin-bottom: 16px; }
+    .empty-text { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .empty-sub  { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+
+    /* ── Item Detail ──────────────────────────── */
+    .item-detail-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px; max-width: 680px;
+    }
+    .item-detail-title { font-size: 20px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
+    .item-detail-meta { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 24px; }
+
+    .field-row { margin-bottom: 18px; }
+    .field-lbl { font-size: 11px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+      color: var(--text-muted); margin-bottom: 6px; }
+    .field-val {
+      font-size: 14px; color: var(--text-primary); background: var(--bg-secondary);
+      border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px;
+      font-family: var(--font-mono); word-break: break-all; line-height: 1.5; position: relative;
+    }
+    .field-val.secret { filter: blur(5px); cursor: pointer; user-select: none; transition: filter .2s; }
+    .field-val.secret:hover { filter: blur(0); }
+    .field-notes {
+      font-size: 14px; color: var(--text-secondary); background: var(--bg-secondary);
+      border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;
+      line-height: 1.7; white-space: pre-wrap;
+    }
+
+    .item-actions { display: flex; gap: 10px; margin-top: 24px; flex-wrap: wrap; }
+    .btn-danger {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 9px 18px; background: transparent; color: var(--red);
+      font-size: 13px; font-weight: 600; border: 1px solid rgba(248,81,73,.3);
+      border-radius: 8px; cursor: pointer; transition: all var(--transition-base);
+    }
+    .btn-danger:hover { background: rgba(248,81,73,.08); border-color: var(--red); }
+
+    /* ── Add Item Form ─────────────────────────── */
+    .add-form-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px; max-width: 640px;
+    }
+    .add-form-title { font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 24px; }
+
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+    .form-textarea {
+      width: 100%; padding: 11px 14px; background: var(--bg-secondary);
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 14px; color: var(--text-primary); font-family: var(--font-body);
+      outline: none; transition: border-color var(--transition-fast); resize: vertical; min-height: 100px;
+    }
+    .form-textarea:focus { border-color: var(--accent-blue); }
+    .form-textarea::placeholder { color: var(--text-muted); }
+
+    /* ── Loading / Spinner ─────────────────────── */
+    .spinner-wrap {
+      display: flex; align-items: center; justify-content: center;
+      padding: 60px; color: var(--text-muted); gap: 12px; font-size: 14px;
+    }
+    .spinner {
+      width: 20px; height: 20px; border: 2px solid var(--border);
+      border-top-color: var(--accent-blue); border-radius: 50%;
+      animation: spin .6s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Toast ─────────────────────────────────── */
+    .toast-container {
+      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .toast {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: 12px 16px; font-size: 13px; color: var(--text-primary);
+      box-shadow: 0 8px 24px rgba(0,0,0,.4);
+      animation: slideIn .25s ease; max-width: 320px; line-height: 1.5;
+    }
+    .toast.success { border-color: rgba(63,185,80,.35); color: var(--green); }
+    .toast.error   { border-color: rgba(248,81,73,.35); color: var(--red); }
+    @keyframes slideIn { from { opacity:0; transform:translateX(20px); } to { opacity:1; transform:translateX(0); } }
+
+    /* ── Confirm Dialog ────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0; z-index: 8000;
+      background: rgba(0,0,0,.6); backdrop-filter: blur(4px);
+      align-items: center; justify-content: center; padding: 16px;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal-box {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 14px; padding: 28px; max-width: 400px; width: 100%;
+    }
+    .modal-title { font-size: 17px; font-weight: 700; color: var(--text-primary); margin-bottom: 10px; }
+    .modal-body  { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 24px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+    /* ── Responsive ─────────────────────────────── */
+    @media (max-width: 768px) {
+      .auth-card { padding: 28px 20px; }
+      .vault-main { padding: 72px 16px 40px; }
+      .categories-grid { grid-template-columns: 1fr 1fr; }
+      .field-grid { grid-template-columns: 1fr; }
+      .dash-stats { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 480px) {
+      .categories-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- ================================================================
+     AUTH PAGES
+     ================================================================ -->
+<div id="auth-section">
+
+  <!-- Login -->
+  <div id="page-login" class="auth-wrap">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">
+          <!-- vault lock SVG -->
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="16" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="auth-logo-text">PersonalVault</div>
+          <div class="auth-logo-sub">by loopholemaxing</div>
+        </div>
+      </div>
+
+      <div class="zero-knowledge-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        Zero-knowledge — your master password never leaves your device
+      </div>
+
+      <div class="auth-title">Welcome back</div>
+      <div class="auth-subtitle">Enter your credentials to access your encrypted vault.</div>
+
+      <div id="login-error" class="auth-error"></div>
+
+      <form id="login-form" onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input id="login-email" type="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Password</label>
+          <input id="login-pass" type="password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
+          <div class="form-hint">Your password is used to derive your encryption key client-side.</div>
+        </div>
+        <button type="submit" class="btn-primary btn-full" id="login-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Unlock Vault
+        </button>
+      </form>
+
+      <div class="auth-switch">
+        Don't have an account? <a onclick="showPage('register')">Create one</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Register -->
+  <div id="page-register" class="auth-wrap" style="display:none">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="16" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+        <div>
+          <div class="auth-logo-text">PersonalVault</div>
+          <div class="auth-logo-sub">by loopholemaxing</div>
+        </div>
+      </div>
+
+      <div class="zero-knowledge-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+        AES-256-GCM encrypted — only you can read your data
+      </div>
+
+      <div class="auth-title">Create your vault</div>
+      <div class="auth-subtitle">Your master password derives your encryption key. We never store it.</div>
+
+      <div id="register-error" class="auth-error"></div>
+
+      <form id="register-form" onsubmit="handleRegister(event)">
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input id="reg-email" type="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Master Password</label>
+          <input id="reg-pass" type="password" class="form-input" placeholder="Choose a strong password" required autocomplete="new-password" minlength="8">
+          <div class="form-hint">Minimum 8 characters. This cannot be recovered — write it down somewhere safe.</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirm Password</label>
+          <input id="reg-pass2" type="password" class="form-input" placeholder="Repeat password" required autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn-primary btn-full" id="register-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+          Create Vault
+        </button>
+      </form>
+
+      <div class="auth-switch">
+        Already have a vault? <a onclick="showPage('login')">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /auth-section -->
+
+
+<!-- ================================================================
+     VAULT APP
+     ================================================================ -->
+<div id="app-section" class="app-wrap">
+
+  <header class="vault-header">
+    <div class="vault-header-left">
+      <a href="/" class="vault-header-logo">LOOP<span>HOLE</span></a>
+      <div id="breadcrumb" class="vault-breadcrumb">
+        <span class="sep">/</span>
+        <span class="crumb active" onclick="showDashboard()">Vault</span>
+      </div>
+    </div>
+    <div class="vault-header-right">
+      <div class="vault-user-badge" onclick="handleLogout()">
+        <div class="vault-user-dot"></div>
+        <span id="user-email-display"></span>
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+    </div>
+  </header>
+
+  <main class="vault-main">
+
+    <!-- Dashboard -->
+    <div id="view-dashboard">
+      <div class="dash-header">
+        <div class="dash-greeting" id="dash-greeting">Your Vault</div>
+        <div class="dash-subtext">All data is encrypted client-side with AES-256-GCM. Only you can read it.</div>
+      </div>
+      <div class="dash-stats" id="dash-stats">
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="stat-total">—</div>
+          <div class="dash-stat-lbl">Total Items</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-val" id="stat-categories">6</div>
+          <div class="dash-stat-lbl">Categories</div>
+        </div>
+        <div class="dash-stat">
+          <div class="dash-stat-val">AES-256</div>
+          <div class="dash-stat-lbl">Encryption</div>
+        </div>
+      </div>
+      <div class="categories-label">Categories</div>
+      <div class="categories-grid" id="categories-grid">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+
+    <!-- Category Items -->
+    <div id="view-category" style="display:none">
+      <div class="view-header">
+        <div class="view-title">
+          <span id="cat-view-icon" style="font-size:22px"></span>
+          <span id="cat-view-name"></span>
+          <span class="badge" id="cat-view-count">0</span>
+        </div>
+        <button class="btn-primary" onclick="showAddItem()" style="padding:9px 18px; font-size:13px;">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Add Item
+        </button>
+      </div>
+      <div id="items-list" class="items-list"></div>
+    </div>
+
+    <!-- Item Detail -->
+    <div id="view-item-detail" style="display:none">
+      <div class="item-detail-card" id="item-detail-card">
+        <div class="item-detail-title" id="item-detail-title"></div>
+        <div class="item-detail-meta" id="item-detail-meta"></div>
+        <div id="item-detail-fields"></div>
+        <div class="item-actions">
+          <button class="btn-secondary" onclick="goBackToCategory()" style="font-size:13px;padding:9px 16px;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            Back
+          </button>
+          <button class="btn-danger" id="delete-item-btn" onclick="confirmDeleteItem()">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Item Form -->
+    <div id="view-add-item" style="display:none">
+      <div class="add-form-card">
+        <div class="add-form-title" id="add-form-title">Add Item</div>
+        <div id="add-error" class="auth-error"></div>
+        <form id="add-item-form" onsubmit="handleAddItem(event)">
+          <div class="form-group">
+            <label class="form-label">Title *</label>
+            <input id="item-title" type="text" class="form-input" placeholder="e.g. US Passport, Chase Checking, Blue Cross..." required>
+          </div>
+          <div id="dynamic-fields"></div>
+          <div class="form-group">
+            <label class="form-label">Notes</label>
+            <textarea id="item-notes" class="form-textarea" placeholder="Additional notes (optional)..."></textarea>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
+            <button type="submit" class="btn-primary" id="add-submit-btn" style="padding:11px 24px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Encrypted
+            </button>
+            <button type="button" class="btn-secondary" onclick="goBackToCategory()" style="font-size:13px;padding:11px 18px;">Cancel</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- Confirm Modal -->
+<div id="confirm-modal" class="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-title" id="modal-title">Confirm</div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()" style="font-size:13px;padding:9px 16px;">Cancel</button>
+      <button class="btn-danger" id="modal-confirm-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+
+<!-- ================================================================
+     SCRIPT
+     ================================================================ -->
+<script>
+'use strict';
+
+const API = 'https://api.loopholemaxing.com/api';
+
+// ── State ────────────────────────────────────────────────────────────
+let _accessToken  = null;
+let _refreshToken = null;
+let _userEmail    = null;
+let _cryptoKey    = null;   // CryptoKey derived from master password
+let _currentCat   = null;
+let _currentItem  = null;
+let _allItems     = [];
+
+// ── Categories Config ─────────────────────────────────────────────────
+const CATEGORIES = [
+  { id: 'IDENTIFICATION', name: 'Identification', icon: '🪪', colorClass: 'cat-identification',
+    fields: [
+      { key: 'document_type', label: 'Document Type', placeholder: 'Passport, Driver License, SSN...' },
+      { key: 'document_number', label: 'Document Number', placeholder: 'Number or ID', secret: true },
+      { key: 'issued_by', label: 'Issued By', placeholder: 'Issuing authority' },
+      { key: 'expiry_date', label: 'Expiry Date', placeholder: 'MM/DD/YYYY' },
+    ]
+  },
+  { id: 'INSURANCE', name: 'Insurance', icon: '🛡️', colorClass: 'cat-insurance',
+    fields: [
+      { key: 'provider', label: 'Provider', placeholder: 'Insurance company name' },
+      { key: 'policy_number', label: 'Policy Number', placeholder: 'Policy ID', secret: true },
+      { key: 'group_number', label: 'Group Number', placeholder: 'Group ID' },
+      { key: 'effective_date', label: 'Effective Date', placeholder: 'MM/DD/YYYY' },
+    ]
+  },
+  { id: 'FINANCIAL', name: 'Financial', icon: '💰', colorClass: 'cat-financial',
+    fields: [
+      { key: 'institution', label: 'Institution', placeholder: 'Bank or brokerage name' },
+      { key: 'account_type', label: 'Account Type', placeholder: 'Checking, Savings, IRA...' },
+      { key: 'account_number', label: 'Account Number', placeholder: 'Last 4 or full number', secret: true },
+      { key: 'routing_number', label: 'Routing Number', placeholder: 'ABA routing number', secret: true },
+    ]
+  },
+  { id: 'MEDICAL', name: 'Medical', icon: '🏥', colorClass: 'cat-medical',
+    fields: [
+      { key: 'provider', label: 'Provider / Doctor', placeholder: 'Healthcare provider' },
+      { key: 'record_number', label: 'Record Number', placeholder: 'MRN or patient ID', secret: true },
+      { key: 'blood_type', label: 'Blood Type', placeholder: 'e.g. O+' },
+      { key: 'allergies', label: 'Allergies', placeholder: 'Known allergies or conditions' },
+    ]
+  },
+  { id: 'PASSWORDS', name: 'Passwords', icon: '🔑', colorClass: 'cat-passwords',
+    fields: [
+      { key: 'service', label: 'Service / Website', placeholder: 'e.g. Gmail, Netflix, AWS' },
+      { key: 'username', label: 'Username / Email', placeholder: 'Login identifier' },
+      { key: 'password', label: 'Password', placeholder: '••••••••', secret: true },
+      { key: 'url', label: 'URL', placeholder: 'https://...' },
+    ]
+  },
+  { id: 'ESTATE', name: 'Estate', icon: '🏠', colorClass: 'cat-estate',
+    fields: [
+      { key: 'asset_type', label: 'Asset Type', placeholder: 'Property, Vehicle, Trust...' },
+      { key: 'description', label: 'Description', placeholder: 'Brief description' },
+      { key: 'value', label: 'Estimated Value', placeholder: '$0.00' },
+      { key: 'location', label: 'Location / Where Stored', placeholder: 'Physical location or attorney' },
+    ]
+  },
+];
+
+// ── Crypto ────────────────────────────────────────────────────────────
+async function deriveKey(password, salt) {
+  const enc = new TextEncoder();
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']
+  );
+  return crypto.subtle.deriveKey(
+    { name: 'PBKDF2', salt: salt, iterations: 600000, hash: 'SHA-256' },
+    keyMaterial,
+    { name: 'AES-GCM', length: 256 },
+    false, ['encrypt', 'decrypt']
+  );
+}
+
+async function encrypt(text) {
+  if (!_cryptoKey) throw new Error('No crypto key');
+  const iv = crypto.getRandomValues(new Uint8Array(12));
+  const enc = new TextEncoder();
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv }, _cryptoKey, enc.encode(text)
+  );
+  // Return: base64(iv) + ':' + base64(ciphertext)
+  const toB64 = buf => btoa(String.fromCharCode(...new Uint8Array(buf)));
+  return toB64(iv) + ':' + toB64(ciphertext);
+}
+
+async function decrypt(payload) {
+  if (!_cryptoKey) throw new Error('No crypto key');
+  const [ivB64, ctB64] = payload.split(':');
+  const fromB64 = b64 => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+  const iv = fromB64(ivB64);
+  const ciphertext = fromB64(ctB64);
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv }, _cryptoKey, ciphertext);
+  return new TextDecoder().decode(plain);
+}
+
+// Encrypt an object of fields — returns encrypted JSON string
+async function encryptData(dataObj) {
+  return encrypt(JSON.stringify(dataObj));
+}
+
+// Decrypt an encrypted data string — returns object
+async function decryptData(payload) {
+  try {
+    const plain = await decrypt(payload);
+    return JSON.parse(plain);
+  } catch { return {}; }
+}
+
+// ── API Helpers ───────────────────────────────────────────────────────
+async function apiFetch(endpoint, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (_accessToken) headers['Authorization'] = 'Bearer ' + _accessToken;
+
+  const res = await fetch(API + endpoint, { ...opts, headers });
+
+  if (res.status === 401 && _refreshToken) {
+    // Try refresh
+    const rr = await fetch(API + '/auth/refresh', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ refreshToken: _refreshToken })
+    });
+    if (rr.ok) {
+      const rd = await rr.json();
+      _accessToken  = rd.accessToken  || rd.tokens?.accessToken;
+      _refreshToken = rd.refreshToken || rd.tokens?.refreshToken;
+      // Retry
+      headers['Authorization'] = 'Bearer ' + _accessToken;
+      return fetch(API + endpoint, { ...opts, headers });
+    } else {
+      doLogout();
+      return null;
+    }
+  }
+  return res;
+}
+
+// ── Toast ─────────────────────────────────────────────────────────────
+function toast(msg, type = '') {
+  const el = document.createElement('div');
+  el.className = 'toast ' + type;
+  el.textContent = msg;
+  document.getElementById('toast-container').prepend(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────
+let _modalCallback = null;
+function showModal(title, body, callback) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-body').textContent  = body;
+  _modalCallback = callback;
+  document.getElementById('modal-confirm-btn').onclick = () => { closeModal(); callback && callback(); };
+  document.getElementById('confirm-modal').classList.add('show');
+}
+function closeModal() { document.getElementById('confirm-modal').classList.remove('show'); }
+
+// ── Auth Pages ────────────────────────────────────────────────────────
+function showPage(page) {
+  document.getElementById('page-login').style.display    = (page === 'login')    ? '' : 'none';
+  document.getElementById('page-register').style.display = (page === 'register') ? '' : 'none';
+}
+
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById('login-email').value.trim();
+  const pass  = document.getElementById('login-pass').value;
+  const errEl = document.getElementById('login-error');
+  const btn   = document.getElementById('login-btn');
+
+  errEl.classList.remove('show');
+  btn.textContent = 'Unlocking…';
+  btn.disabled = true;
+
+  try {
+    // 1. Derive key from password + email-as-salt (BEFORE network call so we can detect bad password)
+    const salt = new TextEncoder().encode(email.toLowerCase() + ':personal-vault-salt-v1');
+    const key  = await deriveKey(pass, salt);
+
+    // 2. Authenticate
+    const res = await fetch(API + '/auth/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.message || data.error || 'Invalid credentials');
+    }
+
+    _accessToken  = data.accessToken  || data.tokens?.accessToken;
+    _refreshToken = data.refreshToken || data.tokens?.refreshToken;
+    _userEmail    = email;
+    _cryptoKey    = key;
+
+    enterApp();
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.add('show');
+  } finally {
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg> Unlock Vault';
+    btn.disabled = false;
+  }
+}
+
+async function handleRegister(e) {
+  e.preventDefault();
+  const email  = document.getElementById('reg-email').value.trim();
+  const pass   = document.getElementById('reg-pass').value;
+  const pass2  = document.getElementById('reg-pass2').value;
+  const errEl  = document.getElementById('register-error');
+  const btn    = document.getElementById('register-btn');
+
+  errEl.classList.remove('show');
+
+  if (pass !== pass2) {
+    errEl.textContent = 'Passwords do not match.';
+    errEl.classList.add('show');
+    return;
+  }
+  if (pass.length < 8) {
+    errEl.textContent = 'Password must be at least 8 characters.';
+    errEl.classList.add('show');
+    return;
+  }
+
+  btn.textContent = 'Creating vault…';
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(API + '/auth/register', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password: pass })
+    });
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.message || data.error || 'Registration failed');
+
+    toast('Vault created. Please sign in.', 'success');
+    document.getElementById('login-email').value = email;
+    showPage('login');
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.add('show');
+  } finally {
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg> Create Vault';
+    btn.disabled = false;
+  }
+}
+
+// ── App Entry / Exit ──────────────────────────────────────────────────
+function enterApp() {
+  document.getElementById('auth-section').style.display = 'none';
+  document.getElementById('app-section').classList.add('active');
+  document.getElementById('user-email-display').textContent = _userEmail;
+  document.getElementById('dash-greeting').textContent = 'Welcome back, ' + _userEmail.split('@')[0];
+  showDashboard();
+}
+
+function handleLogout() {
+  showModal(
+    'Sign Out',
+    'Your vault will be locked. You will need your master password to re-enter.',
+    doLogout
+  );
+}
+
+function doLogout() {
+  if (_accessToken) {
+    apiFetch('/auth/logout', { method: 'POST' }).catch(() => {});
+  }
+  _accessToken = _refreshToken = _userEmail = _cryptoKey = null;
+  _allItems = []; _currentCat = null; _currentItem = null;
+  document.getElementById('app-section').classList.remove('active');
+  document.getElementById('auth-section').style.display = '';
+  showPage('login');
+}
+
+// ── Dashboard ─────────────────────────────────────────────────────────
+async function showDashboard() {
+  switchView('dashboard');
+  setBreadcrumb([{ label: 'Vault', active: true }]);
+  renderCategoryGrid([]);
+
+  // Load items for counts
+  try {
+    const res = await apiFetch('/vault');
+    if (res && res.ok) {
+      const data = await res.json();
+      _allItems = data.items || data || [];
+      document.getElementById('stat-total').textContent = _allItems.length;
+      const countByCat = {};
+      _allItems.forEach(it => {
+        countByCat[it.category] = (countByCat[it.category] || 0) + 1;
+      });
+      renderCategoryGrid(countByCat);
+    }
+  } catch {
+    renderCategoryGrid({});
+  }
+}
+
+function renderCategoryGrid(counts) {
+  const grid = document.getElementById('categories-grid');
+  grid.innerHTML = CATEGORIES.map(cat => `
+    <div class="cat-card" onclick="showCategory('${cat.id}')">
+      <div class="cat-icon ${cat.colorClass}">${cat.icon}</div>
+      <div class="cat-name">${cat.name}</div>
+      <div class="cat-count">${counts[cat.id] || 0} item${(counts[cat.id] || 0) !== 1 ? 's' : ''}</div>
+    </div>
+  `).join('');
+}
+
+// ── Category View ─────────────────────────────────────────────────────
+async function showCategory(catId) {
+  const cat = CATEGORIES.find(c => c.id === catId);
+  if (!cat) return;
+  _currentCat = cat;
+
+  switchView('category');
+  setBreadcrumb([
+    { label: 'Vault', active: false, onclick: 'showDashboard()' },
+    { label: cat.name, active: true }
+  ]);
+
+  document.getElementById('cat-view-icon').textContent = cat.icon;
+  document.getElementById('cat-view-name').textContent = cat.name;
+  document.getElementById('cat-view-count').textContent = '…';
+
+  const listEl = document.getElementById('items-list');
+  listEl.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div> Loading…</div>';
+
+  try {
+    const res = await apiFetch('/vault?category=' + catId);
+    if (!res || !res.ok) { listEl.innerHTML = '<div class="auth-error show">Failed to load items.</div>'; return; }
+    const data = await res.json();
+    const items = data.items || data || [];
+
+    document.getElementById('cat-view-count').textContent = items.length;
+
+    if (items.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">${cat.icon}</div>
+          <div class="empty-text">No ${cat.name} items yet</div>
+          <div class="empty-sub">Start adding your ${cat.name.toLowerCase()} documents.</div>
+          <button class="btn-primary" onclick="showAddItem()" style="font-size:14px;padding:11px 24px;">
+            Add First Item
+          </button>
+        </div>`;
+      return;
+    }
+
+    // Decrypt titles for display
+    const rows = await Promise.all(items.map(async it => {
+      let title = it.title;
+      try { if (it.encryptedData) { const d = await decryptData(it.encryptedData); title = d.title || title; } } catch {}
+      const date = new Date(it.createdAt || it.created_at || Date.now()).toLocaleDateString();
+      return `<div class="item-row" onclick="showItemDetail('${it.id}')">
+        <div class="item-row-left">
+          <div class="item-row-name">${escHtml(title)}</div>
+          <div class="item-row-meta">Added ${date}</div>
+        </div>
+        <div class="item-row-arrow">›</div>
+      </div>`;
+    }));
+    listEl.innerHTML = rows.join('');
+
+  } catch (err) {
+    listEl.innerHTML = `<div class="auth-error show">${escHtml(err.message)}</div>`;
+  }
+}
+
+// ── Item Detail ───────────────────────────────────────────────────────
+async function showItemDetail(itemId) {
+  switchView('item-detail');
+
+  const detailEl   = document.getElementById('item-detail-fields');
+  const titleEl    = document.getElementById('item-detail-title');
+  const metaEl     = document.getElementById('item-detail-meta');
+  detailEl.innerHTML = '<div class="spinner-wrap"><div class="spinner"></div> Decrypting…</div>';
+  titleEl.textContent = '…';
+
+  try {
+    const res = await apiFetch('/vault/' + itemId);
+    if (!res || !res.ok) throw new Error('Failed to load item');
+    const item = await res.json();
+    _currentItem = item;
+
+    // Decrypt
+    let data = {};
+    try { data = await decryptData(item.encryptedData); } catch {}
+
+    const cat = CATEGORIES.find(c => c.id === item.category) || {};
+
+    setBreadcrumb([
+      { label: 'Vault', active: false, onclick: 'showDashboard()' },
+      { label: cat.name || item.category, active: false, onclick: `showCategory('${item.category}')` },
+      { label: data.title || item.title || 'Item', active: true }
+    ]);
+
+    titleEl.textContent = data.title || item.title || 'Vault Item';
+    const date = new Date(item.createdAt || item.created_at || Date.now()).toLocaleString();
+    metaEl.textContent = `${cat.name || item.category} · Added ${date}`;
+
+    const fields = (cat.fields || []);
+    let html = '';
+    fields.forEach(f => {
+      const val = data[f.key] || '';
+      if (!val) return;
+      html += `<div class="field-row">
+        <div class="field-lbl">${escHtml(f.label)}</div>
+        <div class="field-val${f.secret ? ' secret' : ''}" title="${f.secret ? 'Hover to reveal' : ''}">${escHtml(val)}</div>
+      </div>`;
+    });
+    if (data.notes) {
+      html += `<div class="field-row">
+        <div class="field-lbl">Notes</div>
+        <div class="field-notes">${escHtml(data.notes)}</div>
+      </div>`;
+    }
+    if (!html) html = '<div class="form-hint" style="padding:16px 0">No additional fields stored.</div>';
+    detailEl.innerHTML = html;
+
+  } catch (err) {
+    detailEl.innerHTML = `<div class="auth-error show">${escHtml(err.message)}</div>`;
+  }
+}
+
+// ── Add Item ──────────────────────────────────────────────────────────
+function showAddItem() {
+  switchView('add-item');
+  const cat = _currentCat;
+  document.getElementById('add-form-title').textContent = cat ? 'Add ' + cat.name + ' Item' : 'Add Item';
+  setBreadcrumb([
+    { label: 'Vault', active: false, onclick: 'showDashboard()' },
+    { label: cat?.name || 'Vault', active: false, onclick: cat ? `showCategory('${cat.id}')` : 'showDashboard()' },
+    { label: 'New Item', active: true }
+  ]);
+
+  document.getElementById('item-title').value = '';
+  document.getElementById('item-notes').value = '';
+  document.getElementById('add-error').classList.remove('show');
+
+  const dynEl = document.getElementById('dynamic-fields');
+  if (!cat) { dynEl.innerHTML = ''; return; }
+
+  // Render fields in 2-col grid
+  const fields = cat.fields || [];
+  const pairs = [];
+  for (let i = 0; i < fields.length; i += 2) {
+    pairs.push(fields.slice(i, i+2));
+  }
+  dynEl.innerHTML = pairs.map(pair => `
+    <div class="field-grid" style="margin-bottom:14px;">
+      ${pair.map(f => `
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">${f.label}</label>
+          <input id="field-${f.key}" type="${f.secret ? 'password' : 'text'}"
+            class="form-input" placeholder="${escHtml(f.placeholder || '')}">
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+async function handleAddItem(e) {
+  e.preventDefault();
+  const errEl = document.getElementById('add-error');
+  const btn   = document.getElementById('add-submit-btn');
+  errEl.classList.remove('show');
+
+  const title = document.getElementById('item-title').value.trim();
+  const notes = document.getElementById('item-notes').value.trim();
+  if (!title) { errEl.textContent = 'Title is required.'; errEl.classList.add('show'); return; }
+
+  const cat = _currentCat;
+  if (!cat) { errEl.textContent = 'No category selected.'; errEl.classList.add('show'); return; }
+
+  const dataObj = { title, notes };
+  (cat.fields || []).forEach(f => {
+    const el = document.getElementById('field-' + f.key);
+    if (el) dataObj[f.key] = el.value.trim();
+  });
+
+  btn.textContent = 'Encrypting…';
+  btn.disabled = true;
+
+  try {
+    const encryptedData = await encryptData(dataObj);
+    const res = await apiFetch('/vault', {
+      method: 'POST',
+      body: JSON.stringify({ category: cat.id, title, encryptedData })
+    });
+    if (!res || !res.ok) {
+      const d = await res?.json().catch(() => ({}));
+      throw new Error(d.message || 'Failed to save item');
+    }
+    toast('Item saved & encrypted', 'success');
+    showCategory(cat.id);
+  } catch (err) {
+    errEl.textContent = err.message;
+    errEl.classList.add('show');
+  } finally {
+    btn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Encrypted';
+    btn.disabled = false;
+  }
+}
+
+// ── Delete Item ───────────────────────────────────────────────────────
+function confirmDeleteItem() {
+  if (!_currentItem) return;
+  showModal(
+    'Delete Item',
+    'This will permanently delete this encrypted item. This cannot be undone.',
+    deleteCurrentItem
+  );
+}
+
+async function deleteCurrentItem() {
+  if (!_currentItem) return;
+  try {
+    const res = await apiFetch('/vault/' + _currentItem.id, { method: 'DELETE' });
+    if (!res || !res.ok) throw new Error('Delete failed');
+    toast('Item deleted', 'success');
+    showCategory(_currentItem.category);
+    _currentItem = null;
+  } catch (err) {
+    toast(err.message, 'error');
+  }
+}
+
+// ── Navigation Helpers ────────────────────────────────────────────────
+function switchView(name) {
+  ['dashboard', 'category', 'item-detail', 'add-item'].forEach(v => {
+    document.getElementById('view-' + v).style.display = (v === name) ? '' : 'none';
+  });
+}
+
+function goBackToCategory() {
+  if (_currentCat) showCategory(_currentCat.id);
+  else showDashboard();
+}
+
+function setBreadcrumb(crumbs) {
+  const el = document.getElementById('breadcrumb');
+  el.innerHTML = crumbs.map((c, i) => {
+    if (c.active) return `<span class="sep">/</span><span class="crumb active">${escHtml(c.label)}</span>`;
+    return `<span class="sep">/</span><span class="crumb" onclick="${c.onclick}">${escHtml(c.label)}</span>`;
+  }).join('');
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// ── Init ──────────────────────────────────────────────────────────────
+// Check if API is reachable on load
+fetch(API.replace('/api', '') + '/health').catch(() => {});
+</script>
+</body>
+</html>

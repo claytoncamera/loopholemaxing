@@ -1623,7 +1623,7 @@
       <div>MODULES: <span style="color:#d2a8ff;font-weight:700;">20</span></div>
       <div>CONNECTIONS: <span style="color:#58a6ff;font-weight:700;">47</span></div>
       <div>ACTIVE PATHWAYS: <span id="nb-active-paths" style="color:#3fb950;font-weight:700;">—</span></div>
-      <div>IQ: <span style="color:#f7931a;font-weight:700;">189</span></div>
+      <div>IQ: <span id="nb-iq-live" style="color:#f7931a;font-weight:700;">189</span></div>
     </div>
 
     <!-- Pulse indicator -->
@@ -1904,7 +1904,7 @@
   <!-- IQ SCORE HERO -->
   <div style="background:linear-gradient(135deg,rgba(210,168,255,0.08),rgba(88,166,255,0.05));border:1px solid #30275a;border-radius:14px;padding:32px;text-align:center;margin-bottom:28px;">
     <div style="font-size:11px;color:#d2a8ff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:12px;">BTC Brain Current IQ Estimate</div>
-    <div style="font-size:96px;font-weight:900;font-family:'SF Mono',monospace;color:#d2a8ff;line-height:1;margin-bottom:8px;">189</div>
+    <div id="iq-hero-score" style="font-size:96px;font-weight:900;font-family:'SF Mono',monospace;color:#d2a8ff;line-height:1;margin-bottom:8px;">189</div>
     <div style="font-size:16px;color:#e6edf3;font-weight:600;margin-bottom:16px;">Advanced Analytical Intelligence</div>
     <div style="display:flex;justify-content:center;gap:32px;flex-wrap:wrap;margin-top:16px;">
       <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Research Depth</div><div style="font-size:18px;font-weight:800;color:#58a6ff;font-family:monospace;">94/100</div></div>
@@ -3076,6 +3076,7 @@
     NODES.forEach(buildNode);
     CONNECTIONS.forEach(function(pair) { buildConnection(pair[0], pair[1]); });
     buildParticleSystem();
+    window._btcParticleMeta = particleMeta;
     buildRings();
 
     // OrbitControls
@@ -3102,6 +3103,8 @@
     });
 
     buildModuleRegistry();
+    window._btcNeuralMeshes = nodeMeshes;
+    window._btcNeuralNodes = NODES;
     startLoop();
     updateActiveCount();
     setInterval(updateActiveCount, 2500);
@@ -3423,6 +3426,9 @@
       while (el.children.length > 18) el.removeChild(el.lastChild);
     };
 
+    // Expose feed push globally for SIIE integration
+    window._btcBrainFeedPush = function(type, msg) { addEvent({ type: type, msg: msg }); };
+
     // Immediate first events
     addEvent(EVENTS[0]);
     addEvent(EVENTS[1]);
@@ -3605,6 +3611,649 @@
     updateAwarenessScore();
     setInterval(updateAwarenessScore, 45000);
   }
+})();
+
+
+
+// ================================================================
+// SELF-IMPROVING INTELLIGENCE ENGINE (SIIE) v1.0
+// Persistent memory · Dynamic IQ · Self-repair · Prediction tracking
+// The BTC Brain never stops learning. Growth is permanent.
+// ================================================================
+(function() {
+  'use strict';
+
+  var MEM_KEY = 'btc_brain_siie_v1';
+
+  // ── Default memory schema ─────────────────────────────────────
+  function freshMemory() {
+    return {
+      birth:             Date.now(),
+      session_count:     0,
+      total_uptime_min:  0,
+      last_session_time: Date.now(),
+      data_ingested:     0,
+      iq_score:          189,
+      repairs_completed: 0,
+      accuracy_score:    0.65,
+      predictions:       [],
+      repair_log:        [],
+      milestones:        [],
+      module_health:     {},
+      pathway_strength:  {},
+      iq_log:            [],
+      learning_events:   0,
+    };
+  }
+
+  function loadMem() {
+    try {
+      var raw = localStorage.getItem(MEM_KEY);
+      if (raw) {
+        var m = JSON.parse(raw);
+        var def = freshMemory();
+        Object.keys(def).forEach(function(k) { if (!(k in m)) m[k] = def[k]; });
+        return m;
+      }
+    } catch(e) {}
+    return freshMemory();
+  }
+
+  function saveMem() {
+    try { localStorage.setItem(MEM_KEY, JSON.stringify(MEM)); } catch(e) {}
+  }
+
+  var MEM = loadMem();
+
+  // ── Session init ──────────────────────────────────────────────
+  var sessionStart  = Date.now();
+  var dataThisSession = 0;
+  var lastFetch     = 0;
+  var repairQueue   = {};
+  var lastLearningMsg = 0;
+
+  MEM.session_count = (MEM.session_count || 0) + 1;
+  var gapMin = (Date.now() - (MEM.last_session_time || Date.now())) / 60000;
+  MEM.total_uptime_min = (MEM.total_uptime_min || 0) + Math.min(gapMin, 720);
+  MEM.last_session_time = Date.now();
+  saveMem();
+
+  // ── Module definitions (20 — matching 3D brain node IDs) ─────
+  var MODS = [
+    { id:'core',      name:'Neural Core',          base:95, peers:['chart','pattern','predict','learn'] },
+    { id:'hist',      name:'Historical Brain',     base:94, peers:['cycle','blackswan','pattern'] },
+    { id:'cycle',     name:'Cycle Intelligence',   base:91, peers:['hist','macro','predict'] },
+    { id:'chart',     name:'Live Chart Brain',     base:87, peers:['livemarket','pattern','predict'] },
+    { id:'pattern',   name:'Pattern Recognition',  base:89, peers:['chart','onchain','signal'] },
+    { id:'trading',   name:'Trading Brain',        base:88, peers:['pattern','risk','signal'] },
+    { id:'onchain',   name:'On-Chain Intelligence',base:88, peers:['influence','sentiment','predict'] },
+    { id:'macro',     name:'Macro Brain',          base:87, peers:['sentiment','risk','influence'] },
+    { id:'risk',      name:'Risk Engine',          base:91, peers:['trading','confidence','blackswan'] },
+    { id:'sentiment', name:'Sentiment Brain',      base:86, peers:['macro','livemarket','deriv'] },
+    { id:'deriv',     name:'Derivatives Engine',   base:90, peers:['livemarket','sentiment','risk'] },
+    { id:'lightning', name:'Lightning Network',    base:62, peers:['onchain'] },
+    { id:'livemarket',name:'Live Market Tab',      base:85, peers:['chart','deriv','sentiment'] },
+    { id:'iq',        name:'IQ Monitor',           base:90, peers:['core','learn','signal'] },
+    { id:'learn',     name:'Learning Engine',      base:72, peers:['core','iq','signal','predict'] },
+    { id:'predict',   name:'Prediction Core',      base:83, peers:['pattern','cycle','macro','signal'] },
+    { id:'signal',    name:'Signal Ranking',       base:85, peers:['pattern','livemarket','iq'] },
+    { id:'influence', name:'Market Influence',     base:80, peers:['macro','deriv','onchain'] },
+    { id:'blackswan', name:'Black Swan Archive',   base:87, peers:['hist','risk','macro'] },
+    { id:'confidence',name:'Confidence Matrix',    base:84, peers:['predict','signal','risk'] },
+  ];
+
+  // ── Connection registry (47 links) ───────────────────────────
+  var CONN_KEYS = [
+    'core-hist','core-cycle','core-chart','core-pattern','core-trading',
+    'core-onchain','core-macro','core-risk','core-sentiment','core-deriv',
+    'core-lightning','core-livemarket','core-iq','core-learn','core-predict',
+    'core-signal','core-influence','core-blackswan','core-confidence',
+    'hist-cycle','hist-blackswan','hist-pattern',
+    'cycle-predict','cycle-trading','cycle-signal',
+    'chart-livemarket','chart-pattern','chart-predict',
+    'onchain-influence','onchain-sentiment','onchain-predict',
+    'macro-sentiment','macro-risk','macro-influence',
+    'deriv-livemarket','deriv-sentiment','deriv-risk',
+    'learn-iq','learn-signal','learn-confidence','learn-predict',
+    'predict-confidence','predict-signal','predict-iq',
+    'risk-trading','risk-confidence',
+    'influence-macro','influence-deriv',
+    'sentiment-livemarket','signal-iq',
+    'livemarket-predict','blackswan-risk',
+  ];
+
+  // Initialize module health and pathway strength from memory or defaults
+  MODS.forEach(function(m) {
+    if (!MEM.module_health[m.id]) {
+      MEM.module_health[m.id] = m.base + (Math.random() * 4 - 2);
+    }
+  });
+  CONN_KEYS.forEach(function(k) {
+    if (!MEM.pathway_strength[k]) {
+      var parts = k.split('-');
+      var m1 = MODS.find(function(m){ return m.id === parts[0]; });
+      var m2 = MODS.find(function(m){ return m.id === parts[1]; });
+      var avg = ((m1 ? m1.base : 80) + (m2 ? m2.base : 80)) / 2;
+      MEM.pathway_strength[k] = avg + (Math.random() * 6 - 3);
+    }
+  });
+
+  // ── Technical Analysis Engine ─────────────────────────────────
+  function rsi(closes, period) {
+    period = period || 14;
+    if (closes.length < period + 1) return 50;
+    var gains = 0, losses = 0;
+    for (var i = closes.length - period; i < closes.length; i++) {
+      var d = closes[i] - closes[i - 1];
+      if (d > 0) gains += d; else losses -= d;
+    }
+    var ag = gains / period, al = losses / period;
+    if (al === 0) return 100;
+    return 100 - (100 / (1 + ag / al));
+  }
+
+  function ema(closes, period) {
+    if (closes.length < period) return closes[closes.length - 1] || 0;
+    var k = 2 / (period + 1);
+    var val = closes.slice(0, period).reduce(function(a, b){ return a + b; }, 0) / period;
+    for (var i = period; i < closes.length; i++) val = closes[i] * k + val * (1 - k);
+    return val;
+  }
+
+  function analyzeTrend(klines) {
+    if (!klines || klines.length < 20) return { dir:'neutral', strength:50, rsi:50, regime:'ranging', price:0 };
+    var closes  = klines.map(function(k){ return parseFloat(k[4]); });
+    var volumes = klines.map(function(k){ return parseFloat(k[5]); });
+    var r14     = rsi(closes, 14);
+    var e20     = ema(closes, Math.min(20, closes.length));
+    var e50     = ema(closes, Math.min(50, closes.length));
+    var price   = closes[closes.length - 1];
+    var vsEma20 = (price - e20) / e20 * 100;
+    var avgVol  = volumes.slice(-10).reduce(function(a,b){ return a+b; },0) / 10;
+    var lastVol = volumes[volumes.length - 1];
+    var volBias = lastVol > avgVol * 1.2 ? 'high' : lastVol < avgVol * 0.7 ? 'low' : 'normal';
+    var dir = 'neutral', strength = 50;
+    if      (r14 > 55 && vsEma20 > 0.3) { dir = 'bullish'; strength = Math.min(94, 55 + (r14-50)*0.9 + Math.max(0, vsEma20)*1.8); }
+    else if (r14 < 45 && vsEma20 < -0.3) { dir = 'bearish'; strength = Math.min(94, 55 + (50-r14)*0.9 + Math.abs(Math.min(0, vsEma20))*1.8); }
+    var vol2 = Math.abs(vsEma20);
+    var regime = vol2 > 4 ? 'trending' : vol2 > 1.5 ? 'active' : 'ranging';
+    return { dir:dir, strength:strength, rsi:r14, ema20:e20, ema50:e50, price:price, vsEma20:vsEma20, volBias:volBias, regime:regime };
+  }
+
+  // ── IQ Computation Formula ────────────────────────────────────
+  // IQ grows permanently with: data ingested, uptime, prediction accuracy,
+  // self-repairs completed, avg module health, and session count.
+  function computeIQ() {
+    var base         = 147;
+    var v_bonus      = 42;   // v1 → v5 accumulated
+    var data_bonus   = Math.floor((MEM.data_ingested || 0) / 150);
+    var time_bonus   = Math.floor((MEM.total_uptime_min || 0) / 120) * 0.5;
+    var acc_bonus    = Math.floor((MEM.accuracy_score || 0.65) * 18);
+    var repair_bonus = Math.floor((MEM.repairs_completed || 0) * 0.4);
+    var sess_bonus   = Math.floor((MEM.session_count || 1) / 5) * 0.5;
+    var hv           = Object.values(MEM.module_health);
+    var avg_health   = hv.length ? hv.reduce(function(a,b){ return a+b; },0)/hv.length : 80;
+    var health_bonus = Math.floor(avg_health / 12);
+    return Math.round((base + v_bonus + data_bonus + time_bonus + acc_bonus + repair_bonus + sess_bonus + health_bonus) * 10) / 10;
+  }
+
+  // ── Module Health Update ──────────────────────────────────────
+  function updateHealth(trend) {
+    var now = Date.now();
+    var freshness = Math.max(0, 100 - (now - lastFetch) / 30000 * 18);
+
+    MODS.forEach(function(mod) {
+      var h = MEM.module_health[mod.id] || mod.base;
+      var delta = 0;
+
+      // Live data modules: degrade if data is stale, improve when fresh
+      if (mod.id === 'livemarket' || mod.id === 'chart') {
+        delta += (freshness - 62) * 0.14;
+      }
+      // Learning engine: gets stronger the more data we ingest this session
+      if (mod.id === 'learn') {
+        delta += dataThisSession > 5 ? 0.7 : 0.2;
+      }
+      // Prediction core: driven by accuracy score
+      if (mod.id === 'predict') {
+        delta += ((MEM.accuracy_score || 0.65) - 0.60) * 3.5;
+      }
+      // Signal and pattern: stronger when there's a clear market direction
+      if (trend && (mod.id === 'pattern' || mod.id === 'signal')) {
+        delta += trend.dir !== 'neutral' ? 0.45 : -0.15;
+      }
+      // Derivatives: stronger in trending regimes
+      if (trend && mod.id === 'deriv') {
+        delta += trend.regime === 'trending' ? 0.35 : -0.08;
+      }
+      // IQ monitor: always tracking, gets stronger with data
+      if (mod.id === 'iq') {
+        delta += 0.1;
+      }
+
+      // Peer cross-validation: health converges toward peer average
+      if (mod.peers.length > 0) {
+        var peerAvg = mod.peers.map(function(pid){ return MEM.module_health[pid] || 80; })
+                                .reduce(function(a,b){ return a+b; }, 0) / mod.peers.length;
+        delta += (peerAvg - h) * 0.028;
+      }
+
+      // Mean reversion toward base health (prevents runaway drift)
+      delta += (mod.base - h) * 0.042;
+
+      MEM.module_health[mod.id] = Math.max(28, Math.min(100, h + delta));
+    });
+
+    // Update pathway strengths based on connected module health
+    CONN_KEYS.forEach(function(k) {
+      var parts = k.split('-');
+      var h1 = MEM.module_health[parts[0]] || 80;
+      var h2 = MEM.module_health[parts[1]] || 80;
+      var target = (h1 + h2) / 2;
+      var cur = MEM.pathway_strength[k] || target;
+      MEM.pathway_strength[k] = cur + (target - cur) * 0.13;
+    });
+  }
+
+  // ── Self-Repair Engine ────────────────────────────────────────
+  var lastRepairScan = 0;
+
+  function runRepair() {
+    var now = Date.now();
+    if (now - lastRepairScan < 42000) return;
+    lastRepairScan = now;
+
+    var weak = MODS.filter(function(m) {
+      return (MEM.module_health[m.id] || m.base) < 63 && !repairQueue[m.id];
+    });
+
+    weak.slice(0, 2).forEach(function(mod) {
+      repairQueue[mod.id] = true;
+      var healthBefore = Math.round(MEM.module_health[mod.id] || 50);
+      var severity = healthBefore < 48 ? 'CRITICAL' : 'MODERATE';
+
+      feedPush('repair', severity + ' — ' + mod.name + ' health ' + healthBefore + '% — initiating pathway reconstruction');
+
+      var tick = 0;
+      var iv = setInterval(function() {
+        tick++;
+        MEM.module_health[mod.id] = Math.min(mod.base, (MEM.module_health[mod.id] || 50) + 3.2);
+
+        // Strengthen all connected pathways
+        CONN_KEYS.forEach(function(k) {
+          var parts = k.split('-');
+          if (parts[0] === mod.id || parts[1] === mod.id) {
+            MEM.pathway_strength[k] = Math.min(96, (MEM.pathway_strength[k] || 70) + 1.9);
+          }
+        });
+
+        if (tick >= 8) {
+          clearInterval(iv);
+          delete repairQueue[mod.id];
+          MEM.repairs_completed = (MEM.repairs_completed || 0) + 1;
+          MEM.module_health[mod.id] = mod.base + Math.random() * 3;
+          var healthAfter = Math.round(MEM.module_health[mod.id]);
+          MEM.repair_log = MEM.repair_log || [];
+          MEM.repair_log.push({ time: now, module: mod.name, before: healthBefore, after: healthAfter });
+          if (MEM.repair_log.length > 50) MEM.repair_log = MEM.repair_log.slice(-50);
+          feedPush('learning', 'Repair complete — ' + mod.name + ': ' + healthBefore + '% → ' + healthAfter + '% | pathways reconstructed | repairs_total: ' + MEM.repairs_completed);
+          flashNode(mod.id);
+          saveMem();
+        }
+      }, 2400);
+    });
+  }
+
+  // ── Prediction Tracking Engine ────────────────────────────────
+  function runPredictions(trend, price) {
+    if (!trend || !price || price < 1000) return;
+    var now = Date.now();
+
+    // Resolve predictions older than 4h
+    var unresolved = (MEM.predictions || []).filter(function(p){ return !p.resolved && now - p.time > 4 * 3600000; });
+    unresolved.forEach(function(p) {
+      var correct;
+      if      (p.dir === 'bullish') correct = price > p.entry * 1.0045;
+      else if (p.dir === 'bearish') correct = price < p.entry * 0.9955;
+      else correct = Math.abs(price - p.entry) / p.entry < 0.004;
+      p.resolved = true;
+      p.exit = price;
+      p.correct = correct;
+      MEM.learning_events = (MEM.learning_events || 0) + 1;
+      var entry_str = '$' + Math.round(p.entry).toLocaleString();
+      var exit_str  = '$' + Math.round(price).toLocaleString();
+      feedPush(correct ? 'learning' : 'signal',
+        'Prediction resolved: ' + p.dir.toUpperCase() + ' ' + entry_str + ' → ' + exit_str + ' | ' + (correct ? '✓ CORRECT' : '✗ INCORRECT') + ' | acc now ' + Math.round((MEM.accuracy_score||0.65)*100) + '%');
+    });
+
+    // Recompute accuracy from full resolved set
+    var resolved = (MEM.predictions || []).filter(function(p){ return p.resolved; });
+    if (resolved.length >= 3) {
+      MEM.accuracy_score = resolved.filter(function(p){ return p.correct; }).length / resolved.length;
+    }
+
+    // Make new 4h prediction (one per 4h window max)
+    var recent = (MEM.predictions || []).filter(function(p){ return now - p.time < 4 * 3600000; });
+    if (recent.length === 0 && trend.dir !== 'neutral') {
+      MEM.predictions = MEM.predictions || [];
+      MEM.predictions.push({ time: now, dir: trend.dir, entry: price, confidence: Math.round(trend.strength), resolved: false });
+      if (MEM.predictions.length > 80) MEM.predictions = MEM.predictions.slice(-80);
+      feedPush('predict',
+        '4h prediction: ' + trend.dir.toUpperCase() + ' | $' + Math.round(price).toLocaleString() + ' | RSI ' + Math.round(trend.rsi) + ' | Confidence ' + Math.round(trend.strength) + '% | vol ' + trend.volBias);
+    }
+  }
+
+  // ── IQ Milestone Tracking ─────────────────────────────────────
+  var IQ_THRESHOLDS = [190,192,195,198,200,203,206,210,215,220,225,230,240,250,260,275,300];
+
+  function checkMilestones(iq) {
+    IQ_THRESHOLDS.forEach(function(t) {
+      if (iq >= t && (MEM.milestones || []).indexOf(t) === -1) {
+        MEM.milestones = MEM.milestones || [];
+        MEM.milestones.push(t);
+        MEM.iq_log = MEM.iq_log || [];
+        MEM.iq_log.push({ time: Date.now(), iq: t, event: 'milestone' });
+        feedPush('learning', '🧠 IQ MILESTONE REACHED: ' + t + ' — new cognitive threshold unlocked — strengthening all neural pathways');
+        setTimeout(function() { if (window.pulseAll) window.pulseAll(); }, 700);
+      }
+    });
+  }
+
+  // ── Activity Feed Integration ─────────────────────────────────
+  var F_COLORS = {
+    repair:'#f85149', learning:'#3fb950', predict:'#d2a8ff', signal:'#f7931a',
+    live:'#3fb950', pattern:'#d2a8ff', onchain:'#58a6ff', macro:'#d29922'
+  };
+  var F_LABELS = {
+    repair:'REPAIR', learning:'LEARNING', predict:'PREDICT', signal:'SIGNAL',
+    live:'LIVE MARKET', pattern:'PATTERN', onchain:'ON-CHAIN', macro:'MACRO'
+  };
+
+  function feedPush(type, msg) {
+    if (window._btcBrainFeedPush) { window._btcBrainFeedPush(type.toLowerCase(), msg); return; }
+    var el = document.getElementById('brain-feed-stream');
+    if (!el) return;
+    var t   = type.toLowerCase();
+    var col = F_COLORS[t] || '#8b949e';
+    var lbl = F_LABELS[t] || type.toUpperCase();
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #161b22;opacity:0;transition:opacity .4s;';
+    row.innerHTML = '<span style="font-size:9px;font-weight:700;color:'+col+';font-family:monospace;white-space:nowrap;padding-top:2px;min-width:76px;">'+lbl+'</span>'
+                  + '<span style="font-size:11px;color:#e6edf3;line-height:1.5;">'+msg+'</span>';
+    el.insertBefore(row, el.firstChild);
+    setTimeout(function(){ row.style.opacity='1'; }, 20);
+    while (el.children.length > 20) el.removeChild(el.lastChild);
+  }
+
+  // ── 3D Neural Brain Visual Updates ───────────────────────────
+  function flashNode(modId) {
+    var meshes = window._btcNeuralMeshes;
+    if (!meshes || !meshes[modId]) return;
+    var mesh = meshes[modId];
+    var cnt = 0;
+    var iv = setInterval(function() {
+      mesh.material.emissiveIntensity = cnt % 2 === 0 ? 1.8 : 0.08;
+      if (++cnt > 12) { clearInterval(iv); mesh.material.emissiveIntensity = 0.35; }
+    }, 85);
+  }
+
+  function updateNeuralVisuals() {
+    var meshes = window._btcNeuralMeshes;
+    if (!meshes) return;
+
+    MODS.forEach(function(mod) {
+      var mesh = meshes[mod.id];
+      if (!mesh || !mesh.material) return;
+      var h = MEM.module_health[mod.id] || mod.base;
+      // Map health 28–100 → emissive intensity 0.08–0.72
+      var targetIntensity = 0.08 + (h - 28) / 72 * 0.64;
+      // Smooth approach (lerp)
+      var cur = mesh.material.emissiveIntensity;
+      mesh.material.emissiveIntensity = cur + (targetIntensity - cur) * 0.04;
+
+      // Repair flicker: orange-tinted when under repair
+      if (repairQueue[mod.id]) {
+        mesh.material.color.setHex(0xff6600);
+      } else {
+        // Restore original color
+        var nodes = window._btcNeuralNodes;
+        if (nodes) {
+          var node = nodes.find(function(n){ return n.id === mod.id; });
+          if (node && mesh.material.color.getHex() !== node.col) {
+            mesh.material.color.setHex(node.col);
+          }
+        }
+      }
+
+      // Update IQ value in node data
+      var nodes = window._btcNeuralNodes;
+      if (nodes) {
+        var node = nodes.find(function(n){ return n.id === mod.id; });
+        if (node) node.iq = Math.round(h);
+      }
+    });
+
+    // Modulate particle speed based on avg module health (smarter brain = faster particles)
+    var pm = window._btcParticleMeta;
+    if (pm && pm.length) {
+      var hv = Object.values(MEM.module_health);
+      var avgH = hv.reduce(function(a,b){ return a+b; },0) / hv.length;
+      var speedMult = 0.55 + (avgH / 100) * 0.9;
+      pm.forEach(function(p) {
+        if (!p.baseSpeed) p.baseSpeed = p.speed;
+        p.speed = p.baseSpeed * speedMult;
+      });
+    }
+  }
+
+  // ── DOM Updates ───────────────────────────────────────────────
+  function updateDOM() {
+    var iq = computeIQ();
+    MEM.iq_score = iq;
+
+    // IQ hero score
+    var hero = document.getElementById('iq-hero-score');
+    if (hero) hero.textContent = Math.round(iq);
+
+    // Neural Brain IQ badge
+    var nbIQ = document.getElementById('nb-iq-live');
+    if (nbIQ) nbIQ.textContent = Math.round(iq);
+
+    // All animated score elements
+    document.querySelectorAll('.iq-animated-score').forEach(function(el) {
+      el.textContent = Math.round(iq);
+    });
+
+    // SIIE panel live stats
+    setVal('siie-data-points', (MEM.data_ingested || 0).toLocaleString());
+    setVal('siie-sessions',    MEM.session_count || 1);
+    setVal('siie-accuracy',    Math.round((MEM.accuracy_score || 0.65) * 100) + '%');
+    setVal('siie-repairs',     MEM.repairs_completed || 0);
+    setVal('siie-learning-events', (MEM.learning_events || 0).toLocaleString());
+    var hrs = Math.floor((MEM.total_uptime_min || 0) / 60);
+    var min = Math.floor((MEM.total_uptime_min || 0) % 60);
+    setVal('siie-uptime', hrs + 'h ' + min + 'm');
+
+    // Module registry in Neural Brain tab
+    updateModuleRegistry();
+
+    checkMilestones(iq);
+  }
+
+  function setVal(id, val) {
+    var el = document.getElementById(id);
+    if (el) el.textContent = val;
+  }
+
+  function updateModuleRegistry() {
+    var el    = document.getElementById('module-registry');
+    var nodes = window._btcNeuralNodes;
+    if (!el || !nodes) return;
+
+    el.innerHTML = nodes.map(function(n) {
+      var hex        = '#' + n.col.toString(16).padStart(6,'0');
+      var modHealth  = MEM.module_health[n.id];
+      var displayIQ  = modHealth ? Math.round(modHealth) : n.iq;
+      var scoreColor = displayIQ >= 85 ? '#3fb950' : displayIQ >= 70 ? '#d29922' : '#f85149';
+      var isRepairing = !!repairQueue[n.id];
+      var statusColor = isRepairing ? '#f85149'
+                      : (n.st==='LIVE'||n.st==='ACTIVE')   ? '#3fb950'
+                      : (n.st==='LEARNING'||n.st==='COMPUTING') ? '#58a6ff'
+                      : '#d29922';
+      var statusText = isRepairing ? '⚙ REPAIRING...' : '● ' + n.st;
+      var barWidth = Math.min(100, displayIQ);
+
+      return '<div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:12px;border-left:3px solid '+hex+';">'
+           + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">'
+           + '<span style="font-size:11px;font-weight:700;color:#e6edf3;">'+n.name+'</span>'
+           + '<span style="font-size:10px;font-family:monospace;color:'+scoreColor+';font-weight:700;">'+displayIQ+'</span></div>'
+           + '<div style="height:2px;background:#21262d;border-radius:1px;margin-bottom:6px;">'
+           + '<div style="height:2px;background:'+hex+';border-radius:1px;width:'+barWidth+'%;transition:width 1.8s ease;"></div></div>'
+           + '<div style="font-size:9px;color:'+statusColor+';">'+statusText+'</div></div>';
+    }).join('');
+  }
+
+  // ── SIIE Stats Panel (injected into IQ System tab) ────────────
+  function injectSIIEPanel() {
+    if (document.getElementById('siie-panel')) return;
+    var iqSection = document.getElementById('iq-system');
+    if (!iqSection) return;
+
+    var panel = document.createElement('div');
+    panel.id = 'siie-panel';
+    panel.innerHTML =
+      '<div style="background:linear-gradient(135deg,rgba(63,185,80,0.06),rgba(0,229,255,0.04));border:1px solid #1a3a2a;border-radius:14px;padding:24px;margin-bottom:28px;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">'
+    + '<div>'
+    + '<div style="font-size:10px;color:#3fb950;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">SELF-IMPROVING INTELLIGENCE ENGINE · ACTIVE</div>'
+    + '<div style="font-size:14px;font-weight:700;color:#e6edf3;">Persistent Memory · Self-Repair · Continuous Growth · Prediction Tracking</div>'
+    + '</div>'
+    + '<div style="display:flex;align-items:center;gap:8px;">'
+    + '<span style="width:8px;height:8px;border-radius:50%;background:#3fb950;display:inline-block;animation:pulse-dot 2s infinite;"></span>'
+    + '<span style="font-size:11px;color:#3fb950;font-weight:700;font-family:monospace;">LIVE</span>'
+    + '</div>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;">'
+    + siieCard('siie-data-points',      '0',    'Data Points Ingested', '#58a6ff')
+    + siieCard('siie-sessions',         '1',    'Sessions',             '#3fb950')
+    + siieCard('siie-accuracy',         '65%',  'Prediction Accuracy',  '#d2a8ff')
+    + siieCard('siie-repairs',          '0',    'Self-Repairs',         '#f85149')
+    + siieCard('siie-uptime',           '0h 0m','Total Uptime',         '#d29922')
+    + siieCard('siie-learning-events',  '0',    'Learning Events',      '#00e5ff')
+    + '</div>'
+    + '<div style="margin-top:16px;padding-top:14px;border-top:1px solid #1a3a2a;font-size:10px;color:#8b949e;line-height:1.7;">'
+    + 'All metrics persist across sessions via local memory. IQ grows with data ingested, uptime, accuracy, and self-repairs. '
+    + 'Modules auto-repair when health falls below 63%. Predictions are logged and resolved every 4 hours. Growth has no ceiling.'
+    + '</div>'
+    + '</div>';
+
+    var heroBlock = iqSection.querySelector('#iq-hero-score');
+    var insertAfter = heroBlock ? heroBlock.closest('[style*="gradient"]') : null;
+    if (insertAfter) {
+      insertAfter.insertAdjacentElement('afterend', panel);
+    } else {
+      var header = iqSection.querySelector('.chapter-header');
+      if (header) header.insertAdjacentElement('afterend', panel);
+      else iqSection.insertBefore(panel, iqSection.firstChild);
+    }
+  }
+
+  function siieCard(id, val, label, color) {
+    return '<div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:14px;text-align:center;">'
+         + '<div id="'+id+'" style="font-size:22px;font-weight:900;color:'+color+';font-family:monospace;margin-bottom:4px;">'+val+'</div>'
+         + '<div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">'+label+'</div>'
+         + '</div>';
+  }
+
+  // ── Main Learning Tick ────────────────────────────────────────
+  function learningTick(trend, ticker) {
+    lastFetch = Date.now();
+    dataThisSession++;
+    MEM.data_ingested = (MEM.data_ingested || 0) + 1;
+
+    updateHealth(trend);
+    updateNeuralVisuals();
+
+    if (ticker) {
+      var price = parseFloat(ticker.lastPrice || ticker.last || 0);
+      runPredictions(trend, price);
+    }
+
+    runRepair();
+    updateDOM();
+
+    // Periodic learning status message (~every 5 minutes)
+    var now = Date.now();
+    if (now - lastLearningMsg > 295000) {
+      lastLearningMsg = now;
+      var hv  = Object.values(MEM.module_health);
+      var avgH = Math.round(hv.reduce(function(a,b){ return a+b; },0) / hv.length);
+      var iq  = Math.round(MEM.iq_score || 189);
+      var acc = Math.round((MEM.accuracy_score || 0.65) * 100);
+      feedPush('learning', 'Intelligence cycle #' + (MEM.data_ingested) + ' — avg health ' + avgH + '% | IQ ' + iq + ' | accuracy ' + acc + '% | ' + (MEM.repairs_completed||0) + ' repairs | ' + (MEM.session_count) + ' sessions');
+    }
+
+    saveMem();
+  }
+
+  // ── Hook into existing Binance data fetch ─────────────────────
+  // Patches updateLiveMarket so every data fetch feeds the SIIE
+  var _origUpdateLiveMarket = window.updateLiveMarket;
+  if (typeof _origUpdateLiveMarket === 'function') {
+    window.updateLiveMarket = function(ticker, kl1h, kl4h, kl15m) {
+      _origUpdateLiveMarket(ticker, kl1h, kl4h, kl15m);
+      var trend = analyzeTrend(kl1h);
+      learningTick(trend, ticker);
+    };
+  }
+
+  // ── Standalone fallback loop (runs if hook hasn't fired) ──────
+  function standaloneTick() {
+    if (Date.now() - lastFetch < 22000) return; // skip if hook fired recently
+    fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=50')
+      .then(function(r){ return r.json(); })
+      .then(function(klines) {
+        fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
+          .then(function(r){ return r.json(); })
+          .then(function(ticker){ learningTick(analyzeTrend(klines), ticker); });
+      })
+      .catch(function(){ learningTick(null, null); });
+  }
+
+  // ── Boot Sequence ─────────────────────────────────────────────
+  function boot() {
+    injectSIIEPanel();
+    updateDOM();
+
+    // Startup message
+    var sess = MEM.session_count;
+    if (sess <= 1) {
+      feedPush('learning', '🌱 BTC Brain initialized — SIIE engine online — persistent intelligence begins now');
+    } else {
+      var hrs2 = Math.round((MEM.total_uptime_min || 0) / 60 * 10) / 10;
+      feedPush('learning', '⚡ Session ' + sess + ' resumed — ' + hrs2 + 'h accumulated uptime | ' + (MEM.data_ingested||0) + ' lifetime data points | IQ ' + Math.round(computeIQ()));
+    }
+
+    // Expose debug interface
+    window._btcBrainSIIE = { mem: MEM, computeIQ: computeIQ, modules: MODS, reset: function(){ localStorage.removeItem(MEM_KEY); location.reload(); } };
+
+    standaloneTick();
+    setInterval(standaloneTick, 33000);
+
+    // Accumulate uptime every 5 minutes
+    setInterval(function() {
+      MEM.total_uptime_min = (MEM.total_uptime_min || 0) + 5;
+      updateDOM();
+      saveMem();
+    }, 300000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function(){ setTimeout(boot, 700); });
+  } else {
+    setTimeout(boot, 700);
+  }
+
 })();
 
 

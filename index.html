@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loopholemaxing — Find Every Edge</title>
+  <meta name="description" content="Research systems, tools, and creations built by obsessive analysis. BTC Intelligence Brain — 15 chapters, live market intelligence, 3D neural visualization.">
+  <meta property="og:title" content="Loopholemaxing — Find Every Edge">
+  <meta property="og:description" content="Research systems built by obsessive analysis. BTC Brain v5.0 — live intelligence, neural visualization, continuous learning.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .bg-grid {
+      position: fixed; inset: 0; z-index: -1;
+      background-image: radial-gradient(circle, rgba(59,130,246,0.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .bg-glow {
+      position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
+      width: 800px; height: 700px;
+      background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 65%);
+      z-index: -1;
+    }
+    .hero {
+      min-height: 82vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 120px var(--space-lg) var(--space-4xl);
+    }
+    .hero h1 {
+      font-size: clamp(40px, 7vw, 72px); font-weight: 800;
+      line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary);
+      margin-bottom: var(--space-lg);
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #3b82f6, #a78bfa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-sub { font-size: clamp(15px, 2vw, 18px); color: var(--text-secondary); max-width: 520px; line-height: 1.65; margin-bottom: var(--space-xl); }
+    .hero-stats { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; margin-top: var(--space-xl); }
+    .hero-stat { text-align: center; }
+    .hero-stat-val { font-size: 28px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
+    .hero-stat-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+
+    .creations { padding: var(--space-4xl) var(--space-lg); max-width: var(--max-width); margin: 0 auto; }
+    .creations-header { text-align: center; margin-bottom: var(--space-3xl); }
+    .creations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--space-lg); }
+
+    .creation-card { position: relative; overflow: hidden; display: flex; flex-direction: column; }
+    .card-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; margin-bottom: var(--space-md); width: fit-content; }
+    .tag-live { background: rgba(63,185,80,.15); color: var(--green); }
+    .tag-soon { background: rgba(139,148,158,.1); color: var(--text-muted); }
+
+    .creation-card h3 { font-size: 20px; font-weight: 700; margin-bottom: var(--space-sm); color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+    .creation-card h3 .icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .icon-btc { background: rgba(247,147,26,.12); color: #f7931a; }
+    .icon-ph  { background: rgba(59,130,246,.1);  color: var(--accent-blue); }
+    .creation-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.65; flex: 1; margin-bottom: var(--space-md); }
+    .card-meta { display: flex; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-md); }
+    .card-meta-item { font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); background: rgba(255,255,255,.04); padding: 3px 8px; border-radius: 4px; }
+    .card-action { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent-blue); transition: color .2s; }
+    .card-action:hover { color: #7dd3fc; }
+    .creation-card.coming-soon { opacity: .5; }
+    .creation-card.coming-soon .card-action { pointer-events: none; color: var(--text-muted); }
+
+    /* Feature strip */
+    .feature-strip { background: rgba(255,255,255,.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 28px var(--space-lg); overflow-x: auto; }
+    .feature-strip-inner { display: flex; gap: 48px; max-width: var(--max-width); margin: 0 auto; white-space: nowrap; }
+    .feature-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); flex-shrink: 0; }
+    .feature-item strong { color: var(--text-primary); }
+
+    .site-footer { border-top: 1px solid var(--border); padding: var(--space-xl) var(--space-lg); text-align: center; color: var(--text-muted); font-size: 13px; }
+    .site-footer a { color: var(--text-secondary); }
+    .footer-tagline { margin-top: 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+
+    @media (max-width: 768px) {
+      .hero { padding: 90px var(--space-md) var(--space-3xl); }
+      .creations-grid { grid-template-columns: 1fr; }
+      .hero-stats { gap: 20px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <!-- Header -->
+  <header class="top-header">
+    <a href="/" class="logo">Loopholemaxing</a>
+    <nav><ul class="nav-links">
+      <li><a href="#creations">Creations</a></li>
+      <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
+    </ul></nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="card-tag tag-live" style="margin-bottom:20px;">&#9679; Live Intelligence System</div>
+    <h1>Find Every <span>Edge.</span></h1>
+    <p class="hero-sub">Systems, research, and tools built by obsessive analysis. Each creation is a deep dive into something worth understanding.</p>
+    <a href="/btc-brain/" class="btn-primary" style="margin-top:4px;">Open BTC Brain &rarr;</a>
+
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hero-stat-val">189</div><div class="hero-stat-lbl">Brain IQ</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">15</div><div class="hero-stat-lbl">Chapters</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">10,085+</div><div class="hero-stat-lbl">Research Lines</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">20</div><div class="hero-stat-lbl">Neural Modules</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">47</div><div class="hero-stat-lbl">Neural Connections</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">24/7</div><div class="hero-stat-lbl">Auto-Learning</div></div>
+    </div>
+  </section>
+
+  <!-- Feature Strip -->
+  <div class="feature-strip">
+    <div class="feature-strip-inner">
+      <div class="feature-item">&#128308; <strong>Live Market</strong> &mdash; Real-time BTC data, 30s refresh</div>
+      <div class="feature-item">&#129504; <strong>3D Neural Brain</strong> &mdash; Interactive intelligence visualization</div>
+      <div class="feature-item">&#128202; <strong>15 Chapters</strong> &mdash; Full BTC research library</div>
+      <div class="feature-item">&#9889; <strong>Pattern Engine</strong> &mdash; 10 intraday patterns detected live</div>
+      <div class="feature-item">&#128200; <strong>Derivatives Intel</strong> &mdash; Funding, OI, LSR from Binance Futures</div>
+      <div class="feature-item">&#127919; <strong>Prediction Framework</strong> &mdash; Scenario probability weighting</div>
+      <div class="feature-item">&#128424;&#65039; <strong>Auto-Print</strong> &mdash; Daily alert PDF to your printer</div>
+      <div class="feature-item">&#128218; <strong>10,085+ Lines</strong> &mdash; Deep research archive</div>
+    </div>
+  </div>
+
+  <!-- Creations -->
+  <section class="creations" id="creations">
+    <div class="creations-header">
+      <p class="section-label">Library</p>
+      <h2 class="section-title">Creations</h2>
+      <p class="section-subtitle" style="max-width:560px;margin:0 auto;">Each project is self-contained &mdash; deep research, real data, no filler. More coming.</p>
+    </div>
+
+    <div class="creations-grid">
+
+      <!-- BTC Brain -->
+      <div class="card creation-card">
+        <span class="card-tag tag-live">Live &mdash; v5.0</span>
+        <h3><span class="icon icon-btc">&#8383;</span> BTC Intelligence Brain</h3>
+        <p>A 15-chapter Bitcoin research and trading intelligence system that never stops learning. Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, risk management &mdash; live market data, a 3D neural visualization, and a real-time brain activity feed. IQ: 189 and growing.</p>
+        <div class="card-meta">
+          <span class="card-meta-item">15 chapters</span>
+          <span class="card-meta-item">20 neural modules</span>
+          <span class="card-meta-item">10 charts</span>
+          <span class="card-meta-item">IQ 189</span>
+          <span class="card-meta-item">24/7 learning</span>
+        </div>
+        <a href="/btc-brain/" class="card-action">Open BTC Brain &rarr;</a>
+      </div>
+
+      <!-- PersonalVault -->
+      <div class="card creation-card">
+        <span class="card-tag tag-live">Live &mdash; v1.0</span>
+        <h3><span class="icon icon-ph">&#128274;</span> PersonalVault</h3>
+        <p>A zero-knowledge encrypted personal vault for your most sensitive documents. AES-256-GCM encryption runs entirely in your browser &mdash; the server never sees your data. Store IDs, insurance policies, financial accounts, medical records, passwords, and estate documents with military-grade security.</p>
+        <div class="card-meta">
+          <span class="card-meta-item">6 categories</span>
+          <span class="card-meta-item">AES-256-GCM</span>
+          <span class="card-meta-item">zero-knowledge</span>
+          <span class="card-meta-item">PBKDF2 key derivation</span>
+        </div>
+        <a href="/vault/" class="card-action">Open Vault &rarr;</a>
+      </div>
+
+      <!-- Placeholder -->
+      <div class="card creation-card coming-soon">
+        <span class="card-tag tag-soon">Coming Soon</span>
+        <h3><span class="icon icon-ph">+</span> Next Creation</h3>
+        <p>Something new is being built. When it's ready, it'll show up here &mdash; fully researched, fully functional, no half-measures.</p>
+        <div class="card-meta"><span class="card-meta-item">TBD</span></div>
+        <span class="card-action">Coming Soon</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div>Loopholemaxing.com &mdash; Clayton Camera &mdash; 2026 &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="footer-tagline">Research. Analyze. Execute.</div>
+  </footer>
+
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">&uarr;</button>
+
+  <script>
+    const scrollBtn = document.getElementById('scrollTop');
+    window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 300));
+    scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+    // Animate cards
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }});
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.creation-card').forEach(el => {
+      el.style.opacity='0'; el.style.transform='translateY(16px)';
+      el.style.transition='opacity .5s ease, transform .5s ease'; obs.observe(el);
+    });
+
+    // Animate hero stats
+    document.querySelectorAll('.hero-stat-val').forEach(el => {
+      const txt = el.textContent;
+      const num = parseFloat(txt.replace(/[^0-9.]/g,''));
+      if (!isNaN(num) && num > 10 && !txt.includes('/')) {
+        const suffix = txt.replace(/[0-9.,]/g,'');
+        let cur = Math.max(0, num - 20), step = Math.ceil(num/40);
+        el.textContent = Math.round(cur) + suffix;
+        const iv = setInterval(() => {
+          cur = Math.min(num, cur + step);
+          el.textContent = Math.round(cur).toLocaleString() + suffix;
+          if (cur >= num) clearInterval(iv);
+        }, 30);
+      }
+    });
+  </script>
+</body>
+</html>

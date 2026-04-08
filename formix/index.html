@@ -1,0 +1,730 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FORMIX — Ant Protein. Redefined.</title>
+    <meta name="description" content="The world's most bioavailable protein source, powered by nature's most efficient organism. FORMIX ant-based protein for peak performance." />
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                black: '#0A0A0A',
+                dark: '#111111',
+                card: '#161616',
+                border: '#1E1E1E',
+                accent: '#C8FF00',
+                'accent-dim': '#A8D900',
+                muted: '#6B7280',
+                light: '#F5F5F5',
+              }
+            },
+            fontFamily: {
+              sans: ['Inter', 'system-ui', 'sans-serif'],
+            },
+          }
+        }
+      }
+    </script>
+    <style>
+      * { box-sizing: border-box; }
+      html { scroll-behavior: smooth; }
+      body {
+        background-color: #0A0A0A;
+        color: #F5F5F5;
+        font-family: 'Inter', system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        margin: 0;
+      }
+      ::-webkit-scrollbar { width: 6px; }
+      ::-webkit-scrollbar-track { background: #0A0A0A; }
+      ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+      ::-webkit-scrollbar-thumb:hover { background: #C8FF00; }
+
+      .text-gradient {
+        background: linear-gradient(135deg, #C8FF00 0%, #90EE00 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .glow-accent-sm { box-shadow: 0 0 15px rgba(200, 255, 0, 0.2); }
+      .glow-accent { box-shadow: 0 0 30px rgba(200, 255, 0, 0.2), 0 0 60px rgba(200, 255, 0, 0.05); }
+      .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease; }
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(200,255,0,0.08);
+        border-color: rgba(200, 255, 0, 0.3) !important;
+      }
+      .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+      .animate-on-scroll.visible { opacity: 1; transform: translateY(0); }
+      .line-through-white { text-decoration: line-through; color: rgba(255,255,255,0.3); }
+      @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+      .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+      @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+      .float { animation: float 4s ease-in-out infinite; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const { useState, useEffect, useRef } = React;
+
+      // ─── Scroll Animation Hook ─────────────────────────────────────────────
+      function useScrollAnim(delay = 0) {
+        const ref = useRef(null);
+        useEffect(() => {
+          const el = ref.current;
+          if (!el) return;
+          const timer = setTimeout(() => {
+            const obs = new IntersectionObserver(
+              ([entry]) => { if (entry.isIntersecting) { el.classList.add('visible'); obs.unobserve(el); } },
+              { threshold: 0.1, rootMargin: '0px 0px -40px 0px' }
+            );
+            obs.observe(el);
+            return () => obs.disconnect();
+          }, delay * 1000);
+          return () => clearTimeout(timer);
+        }, []);
+        return ref;
+      }
+
+      // ─── Nav ───────────────────────────────────────────────────────────────
+      function Nav() {
+        const [scrolled, setScrolled] = useState(false);
+        const [menuOpen, setMenuOpen] = useState(false);
+        useEffect(() => {
+          const fn = () => setScrolled(window.scrollY > 20);
+          window.addEventListener('scroll', fn);
+          return () => window.removeEventListener('scroll', fn);
+        }, []);
+        const links = [
+          { label: 'Why Ant Protein', href: '#why' },
+          { label: 'Products', href: '#products' },
+          { label: 'Science', href: '#science' },
+          { label: 'Reviews', href: '#reviews' },
+        ];
+        return (
+          <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-opacity-95 backdrop-blur-md border-b border-brand-border' : ''}`}
+            style={{ backgroundColor: scrolled ? 'rgba(10,10,10,0.95)' : 'transparent', borderBottom: scrolled ? '1px solid #1E1E1E' : 'none' }}>
+            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+              <a href="#hero" className="flex items-center gap-2 group">
+                <div className="w-7 h-7 rounded-full bg-brand-accent flex items-center justify-center">
+                  <span className="text-black font-black text-xs">F</span>
+                </div>
+                <span className="font-black text-lg tracking-tight text-white">FORM<span className="text-brand-accent">IX</span></span>
+              </a>
+              <div className="hidden md:flex items-center gap-8">
+                {links.map(link => (
+                  <a key={link.href} href={link.href} className="text-sm font-medium text-brand-muted hover:text-white transition-colors">{link.label}</a>
+                ))}
+              </div>
+              <div className="hidden md:flex items-center gap-3">
+                <a href="#waitlist" className="text-sm font-semibold text-brand-muted hover:text-white transition-colors">Join Waitlist</a>
+                <a href="#products" className="px-4 py-2 bg-brand-accent text-black text-sm font-bold rounded-full hover:bg-brand-accent-dim transition-colors">Shop Now</a>
+              </div>
+              <button className="md:hidden p-2 text-brand-muted hover:text-white" onClick={() => setMenuOpen(!menuOpen)}>
+                <div className="w-5 flex flex-col gap-1">
+                  <span className={`block h-0.5 bg-current transition-all duration-300 ${menuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
+                  <span className={`block h-0.5 bg-current transition-all duration-300 ${menuOpen ? 'opacity-0' : ''}`} />
+                  <span className={`block h-0.5 bg-current transition-all duration-300 ${menuOpen ? '-rotate-45 -translate-y-1.5' : ''}`} />
+                </div>
+              </button>
+            </div>
+            {menuOpen && (
+              <div style={{ backgroundColor: '#111111', borderBottom: '1px solid #1E1E1E' }} className="md:hidden px-6 py-4 flex flex-col gap-4">
+                {links.map(link => (
+                  <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="text-sm font-medium text-brand-muted hover:text-white transition-colors">{link.label}</a>
+                ))}
+                <a href="#products" onClick={() => setMenuOpen(false)} className="mt-2 text-center py-2.5 bg-brand-accent text-black text-sm font-bold rounded-full">Shop Now</a>
+              </div>
+            )}
+          </nav>
+        );
+      }
+
+      // ─── Hero ──────────────────────────────────────────────────────────────
+      function Hero() {
+        const ref = useScrollAnim(0.1);
+        const mockupRef = useScrollAnim(0.3);
+        return (
+          <section id="hero" className="relative min-h-screen flex items-center pt-16 overflow-hidden" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse 800px 600px at 50% 0%, rgba(200,255,0,0.05) 0%, transparent 70%)' }} />
+            <div className="absolute inset-0 opacity-30" style={{ backgroundImage: 'linear-gradient(rgba(200,255,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(200,255,0,0.03) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+            <div className="relative z-10 max-w-7xl mx-auto px-6 py-20 w-full">
+              <div className="grid lg:grid-cols-2 gap-16 items-center">
+                {/* Copy */}
+                <div ref={ref} className="animate-on-scroll space-y-8">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ border: '1px solid rgba(200,255,0,0.3)', backgroundColor: 'rgba(200,255,0,0.05)' }}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-accent pulse-dot" />
+                    <span className="text-brand-accent text-xs font-bold uppercase tracking-widest">Early Access Now Open</span>
+                  </div>
+                  <div>
+                    <h1 className="text-5xl sm:text-6xl lg:text-7xl font-black leading-none tracking-tight">
+                      <span className="text-white">The Future</span><br />
+                      <span className="text-white">of Performance</span><br />
+                      <span className="text-gradient">Nutrition</span><br />
+                      <span className="text-white">Has Arrived.</span>
+                    </h1>
+                  </div>
+                  <p className="text-brand-muted text-lg leading-relaxed max-w-md">
+                    28g of complete protein per serving. All 9 essential amino acids. Zero compromise.
+                    Powered by nature's most efficient organism — and 2 billion people already know it.
+                  </p>
+                  <div className="flex flex-wrap items-center gap-4">
+                    <a href="#products" className="px-8 py-4 bg-brand-accent text-black font-bold text-base rounded-full hover:bg-brand-accent-dim transition-all glow-accent-sm" style={{ transform: 'scale(1)', transition: 'all 0.2s' }}>Shop Now</a>
+                    <a href="#waitlist" className="px-8 py-4 font-semibold text-base rounded-full hover:bg-white/5 transition-all" style={{ border: '1px solid rgba(255,255,255,0.2)', color: 'white' }}>Join the Waitlist</a>
+                  </div>
+                  <div className="flex flex-wrap gap-2 pt-2">
+                    {[['⚡', '28g Protein'], ['♻', 'Sustainable'], ['🔬', 'Science-Backed'], ['✦', 'Early Access']].map(([icon, label]) => (
+                      <div key={label} className="flex items-center gap-2 px-4 py-2 rounded-full" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)' }}>
+                        <span className="text-brand-accent text-sm">{icon}</span>
+                        <span className="text-xs font-semibold uppercase tracking-wider" style={{ color: 'rgba(255,255,255,0.8)' }}>{label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                {/* Product Mockup */}
+                <div ref={mockupRef} className="animate-on-scroll">
+                  <div className="relative w-full max-w-sm mx-auto float">
+                    <div className="absolute inset-0 rounded-3xl blur-3xl scale-110" style={{ backgroundColor: 'rgba(200,255,0,0.08)' }} />
+                    <div className="relative rounded-3xl overflow-hidden p-8" style={{ border: '1px solid #1E1E1E', background: 'linear-gradient(to bottom, #161616, #111111)' }}>
+                      <div className="flex items-center justify-between mb-6">
+                        <span className="px-3 py-1 bg-brand-accent text-black text-xs font-bold rounded-full uppercase tracking-wider">Best Seller</span>
+                        <span className="text-brand-muted text-xs font-medium">30 servings</span>
+                      </div>
+                      <div className="relative h-56 flex items-center justify-center mb-6">
+                        <div className="relative w-32 h-48">
+                          <div className="absolute inset-0 rounded-3xl" style={{ background: 'linear-gradient(to bottom, #1a1f0a, #0d1005)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                          <div className="absolute inset-x-0 top-8 bottom-8" style={{ background: 'linear-gradient(to bottom, rgba(200,255,0,0.15), rgba(200,255,0,0.05))', borderTop: '1px solid rgba(200,255,0,0.2)', borderBottom: '1px solid rgba(200,255,0,0.2)' }} />
+                          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1">
+                            <span className="text-brand-accent font-black text-xl tracking-tight">FORM</span>
+                            <span className="font-black text-xl tracking-tight" style={{ color: 'rgba(255,255,255,0.9)' }}>IX</span>
+                            <span className="text-xs uppercase tracking-widest mt-1" style={{ color: 'rgba(255,255,255,0.3)', fontSize: '9px' }}>Ant Protein</span>
+                          </div>
+                          <div className="absolute -top-2 inset-x-3 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, #2a2a2a, #1a1a1a)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                          <div className="absolute -bottom-2 inset-x-3 h-4 rounded-full" style={{ background: 'linear-gradient(to bottom, #1a1a1a, #2a2a2a)', border: '1px solid rgba(255,255,255,0.1)' }} />
+                        </div>
+                        <div className="absolute top-4 right-8 w-2 h-2 rounded-full" style={{ backgroundColor: 'rgba(200,255,0,0.6)' }} />
+                        <div className="absolute bottom-6 left-8 w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'rgba(200,255,0,0.4)' }} />
+                      </div>
+                      <div className="mb-4">
+                        <h3 className="text-white font-bold text-lg">Performance Protein Powder</h3>
+                        <p className="text-brand-muted text-sm">Complete amino profile · 28g protein / serving</p>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 mb-5">
+                        {[['28g', 'Protein'], ['140', 'Calories'], ['9/9', 'Aminos']].map(([v, l]) => (
+                          <div key={l} className="text-center py-2 rounded-xl" style={{ backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.05)' }}>
+                            <div className="text-brand-accent font-bold text-sm">{v}</div>
+                            <div className="uppercase tracking-wide" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>{l}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div><span className="text-white font-bold text-2xl">$49</span><span className="text-brand-muted text-sm">.99</span></div>
+                        <a href="#products" className="px-5 py-2.5 bg-brand-accent text-black text-sm font-bold rounded-full hover:bg-brand-accent-dim transition-colors">Add to Cart</a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              {/* Stats bar */}
+              <div className="mt-20 pt-10 grid grid-cols-2 md:grid-cols-4 gap-6" style={{ borderTop: '1px solid #1E1E1E' }}>
+                {[['3×', 'More protein than beef per gram'], ['95%', 'Lower carbon footprint'], ['2B+', 'People already eat insects'], ['9/9', 'Essential amino acids']].map(([v, l]) => (
+                  <div key={l} className="text-center">
+                    <div className="text-3xl font-black text-brand-accent mb-1">{v}</div>
+                    <div className="text-xs uppercase tracking-wide leading-tight text-brand-muted">{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // ─── Problem ───────────────────────────────────────────────────────────
+      function Problem() {
+        const sRef = useScrollAnim();
+        const cRef = useScrollAnim(0.1);
+        const problems = [
+          { stat: '14.5%', label: 'of global greenhouse gases', detail: 'come from livestock production', icon: '🌍' },
+          { stat: '8×', label: 'more land required', detail: 'to produce the same protein from beef vs. insects', icon: '🌾' },
+          { stat: '1,000L', label: 'of water per gram', detail: 'of protein from conventional sources', icon: '💧' },
+        ];
+        const compare = [
+          { label: 'Feed conversion ratio', ant: '1.7 kg/kg', beef: '10 kg/kg' },
+          { label: 'GHG emissions', ant: '< 0.01 kg CO₂', beef: '2.8 kg CO₂' },
+          { label: 'Protein per 100g', ant: '67g', beef: '25g' },
+          { label: 'Land use per kg', ant: '~0 m²', beef: '200 m²' },
+        ];
+        return (
+          <section id="science" className="relative py-28 overflow-hidden" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-2xl h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(200,255,0,0.3), transparent)' }} />
+            <div className="max-w-7xl mx-auto px-6">
+              <div ref={sRef} className="animate-on-scroll max-w-3xl mb-16">
+                <span className="inline-block text-brand-accent text-xs font-bold uppercase tracking-widest mb-4">The Problem</span>
+                <h2 className="text-4xl sm:text-5xl font-black leading-tight mb-6 text-white">
+                  Traditional protein is{' '}
+                  <span style={{ textDecoration: 'line-through', color: 'rgba(255,255,255,0.25)' }}>working</span>{' '}
+                  breaking the planet.
+                </h2>
+                <p className="text-brand-muted text-lg leading-relaxed">
+                  Whey, beef, soy — the protein sources we've relied on for decades are expensive to produce, environmentally destructive, and nutritionally incomplete. The supplement industry hasn't innovated. It's just repackaged the same flawed ingredients for 40 years. There's a better way.
+                </p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-6 mb-16">
+                {problems.map((p, i) => {
+                  const r = useScrollAnim(i * 0.1);
+                  return (
+                    <div key={p.stat} ref={r} className="animate-on-scroll card-hover p-6 rounded-2xl" style={{ border: '1px solid #1E1E1E', backgroundColor: '#161616' }}>
+                      <div className="text-3xl mb-4">{p.icon}</div>
+                      <div className="text-4xl font-black text-brand-accent mb-2">{p.stat}</div>
+                      <div className="text-white font-semibold mb-1">{p.label}</div>
+                      <div className="text-brand-muted text-sm">{p.detail}</div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div ref={cRef} className="animate-on-scroll relative rounded-3xl overflow-hidden p-10 md:p-14" style={{ border: '1px solid rgba(200,255,0,0.2)', background: 'linear-gradient(135deg, rgba(200,255,0,0.08), #161616, #111111)' }}>
+                <div className="absolute top-0 right-0 w-64 h-64 rounded-full blur-3xl" style={{ background: 'rgba(200,255,0,0.08)' }} />
+                <div className="relative grid md:grid-cols-2 gap-10 items-center">
+                  <div>
+                    <span className="inline-block text-brand-accent text-xs font-bold uppercase tracking-widest mb-4">The Solution</span>
+                    <h3 className="text-3xl sm:text-4xl font-black text-white leading-tight mb-4">Ants produce protein more efficiently than any animal on Earth.</h3>
+                    <p className="text-brand-muted leading-relaxed">Insects require 12× less feed, 2,000× less water, and emit 100× fewer greenhouse gases per kilogram of protein than cattle. And ant protein specifically contains formic acid bioactives — compounds found nowhere else in nature — with emerging evidence for recovery and performance benefits.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    {compare.map(row => (
+                      <div key={row.label} className="p-4 rounded-xl" style={{ backgroundColor: 'rgba(0,0,0,0.4)', border: '1px solid #1E1E1E' }}>
+                        <div className="uppercase tracking-wider mb-2" style={{ fontSize: '10px', color: 'rgba(255,255,255,0.4)' }}>{row.label}</div>
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center justify-between">
+                            <span style={{ fontSize: '10px', color: '#6B7280' }}>FORMIX</span>
+                            <span className="text-brand-accent text-xs font-bold">{row.ant}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span style={{ fontSize: '10px', color: '#6B7280' }}>Beef</span>
+                            <span className="text-xs font-bold" style={{ color: 'rgba(255,255,255,0.3)', textDecoration: 'line-through' }}>{row.beef}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // ─── Why Ant ───────────────────────────────────────────────────────────
+      function WhyAnt() {
+        const hRef = useScrollAnim();
+        const features = [
+          { icon: '⚡', title: 'Exceptional Protein Density', desc: 'Up to 67g of protein per 100g — nearly 3× the density of beef and 2× whey. Complete with all 9 essential amino acids your muscles demand.', highlight: '67g / 100g' },
+          { icon: '♻', title: 'Radically Sustainable', desc: 'Insects require 95% less land, 99% less water, and produce a fraction of the greenhouse gases of conventional livestock. Fuel performance without fueling climate change.', highlight: '95% less land' },
+          { icon: '🔬', title: 'Formic Acid Bioactives', desc: 'Unique to ant protein — formic acid bioactives found nowhere else in the food supply. Emerging research points to anti-inflammatory and recovery benefits exclusive to this source.', highlight: 'Unique to ants' },
+          { icon: '🧬', title: 'Future-Forward Food Science', desc: 'Where elite biohackers, performance athletes, and food scientists are already looking. FORMIX puts you at the frontier — not 10 years behind it.', highlight: 'Cutting-edge' },
+          { icon: '🏆', title: 'Premium Performance Formula', desc: 'Precision-formulated for athletes and high-performers who refuse to compromise. Clean label, no fillers, no proprietary blends — just pure, measurable results.', highlight: 'Zero fillers' },
+        ];
+        return (
+          <section id="why" className="relative py-28 overflow-hidden" style={{ backgroundColor: '#111111' }}>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, #1E1E1E, transparent)' }} />
+            <div className="max-w-7xl mx-auto px-6">
+              <div ref={hRef} className="animate-on-scroll text-center max-w-2xl mx-auto mb-16">
+                <span className="inline-block text-brand-accent text-xs font-bold uppercase tracking-widest mb-4">Why Ant Protein</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight mb-4">
+                  Nature's most efficient protein source.{' '}
+                  <span className="text-gradient">Finally in your shaker.</span>
+                </h2>
+                <p className="text-brand-muted text-lg">2 billion people across 80+ countries have been eating insects for millennia. The other 6 billion are about to find out why.</p>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {features.map((f, i) => {
+                  const r = useScrollAnim(i * 0.1);
+                  return (
+                    <div key={f.title} ref={r} className="animate-on-scroll card-hover group p-7 rounded-2xl relative overflow-hidden" style={{ border: '1px solid #1E1E1E', backgroundColor: '#161616' }}>
+                      <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: 'linear-gradient(135deg, rgba(200,255,0,0.04), transparent)' }} />
+                      <div className="relative">
+                        <div className="text-3xl mb-4">{f.icon}</div>
+                        <div className="inline-block px-3 py-1 rounded-full text-brand-accent text-xs font-bold mb-3" style={{ backgroundColor: 'rgba(200,255,0,0.1)', border: '1px solid rgba(200,255,0,0.2)' }}>{f.highlight}</div>
+                        <h3 className="text-white font-bold text-lg mb-3 leading-tight">{f.title}</h3>
+                        <p className="text-brand-muted text-sm leading-relaxed">{f.desc}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // ─── Products ──────────────────────────────────────────────────────────
+      function Products() {
+        const hRef = useScrollAnim();
+        const products = [
+          {
+            id: 'powder', name: 'Performance Protein Powder', tagline: 'The foundation of elite recovery',
+            desc: 'Our flagship ant protein powder delivers 28g of complete protein per serving with all 9 essential amino acids. Mixes clean, tastes great, performs differently.',
+            price: '49.99', orig: '64.99', servings: '30 servings', badge: 'Best Seller', badgeStyle: { backgroundColor: '#C8FF00', color: '#000' },
+            stats: [['28g', 'Protein'], ['140', 'Cal'], ['2.5g', 'Leucine']], accent: '#C8FF00',
+            flavor: 'Vanilla Bean · Dark Chocolate · Unflavored', cta: 'Add to Cart',
+          },
+          {
+            id: 'bars', name: 'Ant Protein Bars', tagline: 'Performance you can take anywhere',
+            desc: "Packed with 20g of ant protein in a clean, chewy bar format. No sugar spikes, no compromises. The perfect on-the-go fuel for athletes who don't slow down.",
+            price: '39.99', orig: null, servings: '12 bars', badge: 'New', badgeStyle: { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' },
+            stats: [['20g', 'Protein'], ['210', 'Cal'], ['4g', 'Sugar']], accent: '#A0C040',
+            flavor: 'Salted Caramel · Peanut Butter · Dark Cocoa', cta: 'Add to Cart',
+          },
+          {
+            id: 'bites', name: 'Ant Energy Bites', tagline: 'Micro-dose. Maximum energy.',
+            desc: "A first-of-its-kind product: bite-sized energy spheres powered by ant protein and natural formic acid bioactives. The pre-workout snack that actually works.",
+            price: '29.99', orig: null, servings: '20 bites', badge: 'Launching Soon', badgeStyle: { backgroundColor: 'rgba(200,255,0,0.15)', color: '#C8FF00', border: '1px solid rgba(200,255,0,0.3)' },
+            stats: [['12g', 'Protein'], ['80', 'Cal'], ['0g', 'Added Sugar']], accent: '#80FF40',
+            flavor: 'Lemon Zest · Mint Chip · Mixed Berry', cta: 'Pre-Order',
+          },
+        ];
+        return (
+          <section id="products" className="relative py-28 overflow-hidden" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, #1E1E1E, transparent)' }} />
+            <div className="max-w-7xl mx-auto px-6">
+              <div ref={hRef} className="animate-on-scroll mb-16 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+                <div>
+                  <span className="inline-block text-brand-accent text-xs font-bold uppercase tracking-widest mb-4">Product Lineup</span>
+                  <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight">Pick your weapon.</h2>
+                </div>
+                <p className="text-brand-muted max-w-xs text-sm leading-relaxed">Every product is formulated for one goal: measurable performance. No fluff, no filler, no excuses.</p>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {products.map((p, i) => {
+                  const r = useScrollAnim(i * 0.1);
+                  return (
+                    <div key={p.id} ref={r} className="animate-on-scroll card-hover group rounded-3xl overflow-hidden flex flex-col" style={{ border: '1px solid #1E1E1E', backgroundColor: '#161616' }}>
+                      {/* Image area */}
+                      <div className="relative h-64 flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(to bottom, #111111, #161616)' }}>
+                        <div className="absolute inset-0 opacity-10 group-hover:opacity-25 transition-opacity duration-500" style={{ background: `radial-gradient(circle at center, ${p.accent}, transparent 70%)` }} />
+                        {p.id === 'powder' && (
+                          <div className="relative group-hover:scale-105 transition-transform duration-500">
+                            <div className="w-28 h-44 rounded-3xl flex flex-col items-center justify-center gap-1" style={{ background: 'linear-gradient(to bottom, #1a1f0a, #0d1005)', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 20px 40px rgba(0,0,0,0.5)' }}>
+                              <span className="font-black text-lg tracking-tight" style={{ color: p.accent }}>FORM</span>
+                              <span className="font-black text-lg tracking-tight text-white">IX</span>
+                              <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.2em' }}>Protein</span>
+                            </div>
+                          </div>
+                        )}
+                        {p.id === 'bars' && (
+                          <div className="flex flex-col gap-2 group-hover:scale-105 transition-transform duration-500">
+                            {[0,1,2].map(j => (
+                              <div key={j} className="w-44 h-10 rounded-xl flex items-center px-4 gap-2" style={{ background: 'linear-gradient(to right, #1a1510, #0d0a05)', border: '1px solid rgba(255,255,255,0.1)', transform: `rotate(${(j-1)*2}deg)` }}>
+                                <span className="font-black text-xs tracking-tight" style={{ color: p.accent }}>FORMIX</span>
+                                <span style={{ fontSize: '8px', color: 'rgba(255,255,255,0.3)' }}>PROTEIN BAR</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {p.id === 'bites' && (
+                          <div className="grid grid-cols-4 gap-2 group-hover:scale-105 transition-transform duration-500">
+                            {Array.from({ length: 12 }).map((_, j) => (
+                              <div key={j} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: `radial-gradient(circle, ${p.accent}30, ${p.accent}08)`, border: '1px solid rgba(255,255,255,0.1)' }}>
+                                <span className="font-black" style={{ fontSize: '7px', color: p.accent }}>F</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <div className="absolute top-4 left-4 px-3 py-1 text-xs font-bold rounded-full" style={p.badgeStyle}>{p.badge}</div>
+                      </div>
+                      {/* Info */}
+                      <div className="p-6 flex flex-col flex-1">
+                        <div className="flex-1">
+                          <p className="text-xs uppercase tracking-widest mb-1 text-brand-muted">{p.tagline}</p>
+                          <h3 className="text-white font-bold text-xl mb-3">{p.name}</h3>
+                          <p className="text-brand-muted text-sm leading-relaxed mb-4">{p.desc}</p>
+                          <div className="grid grid-cols-3 gap-2 mb-4">
+                            {p.stats.map(([v, l]) => (
+                              <div key={l} className="text-center py-2.5 rounded-xl" style={{ backgroundColor: 'rgba(0,0,0,0.4)', border: '1px solid #1E1E1E' }}>
+                                <div className="font-bold text-sm" style={{ color: p.accent }}>{v}</div>
+                                <div style={{ color: 'rgba(255,255,255,0.3)', fontSize: '9px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{l}</div>
+                              </div>
+                            ))}
+                          </div>
+                          <p style={{ color: 'rgba(255,255,255,0.2)', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em' }} className="mb-5">{p.flavor}</p>
+                        </div>
+                        <div className="flex items-center justify-between pt-4" style={{ borderTop: '1px solid #1E1E1E' }}>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-white font-black text-2xl">${p.price}</span>
+                            {p.orig && <span className="text-brand-muted text-sm line-through">${p.orig}</span>}
+                            <span className="text-brand-muted text-xs">/ {p.servings}</span>
+                          </div>
+                          <button className="px-5 py-2.5 rounded-full text-sm font-bold transition-all hover:scale-105" style={{ backgroundColor: p.accent, color: '#0A0A0A' }}>{p.cta}</button>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Bundle */}
+              <div className="mt-8 p-6 md:p-8 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-6" style={{ border: '1px solid rgba(200,255,0,0.2)', background: 'linear-gradient(to right, rgba(200,255,0,0.05), #161616)' }}>
+                <div>
+                  <div className="text-brand-accent text-xs font-bold uppercase tracking-widest mb-1">Limited Offer</div>
+                  <h4 className="text-white font-black text-xl">Founding Member Bundle — Save 30%</h4>
+                  <p className="text-brand-muted text-sm mt-1">All 3 products. Priority shipping. Lifetime founder pricing. First access to new drops.</p>
+                </div>
+                <div className="flex items-center gap-4 flex-shrink-0">
+                  <div className="text-right">
+                    <div className="text-brand-muted text-sm line-through">$119.97</div>
+                    <div className="text-white font-black text-2xl">$83.99</div>
+                  </div>
+                  <button className="px-6 py-3 bg-brand-accent text-black font-bold rounded-full hover:bg-brand-accent-dim transition-colors whitespace-nowrap">Get the Bundle</button>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // ─── How It Works ──────────────────────────────────────────────────────
+      function HowItWorks() {
+        const hRef = useScrollAnim();
+        const steps = [
+          { num: '01', icon: '🎯', title: 'Choose Your Product', desc: 'Select from our precision-formulated lineup. Protein powder for recovery, bars for convenience, or energy bites for peak performance moments.' },
+          { num: '02', icon: '⚡', title: 'Fuel Your Performance', desc: 'Experience 28g of complete protein per serving, backed by unique formic acid bioactives found exclusively in ant protein. Your body will notice the difference.' },
+          { num: '03', icon: '🚀', title: 'Join the Future', desc: "Be part of the movement. The global alternative protein market hits $290B by 2035. You're not late — you're early. This is the edge most athletes don't know exists yet." },
+        ];
+        return (
+          <section className="relative py-28 overflow-hidden" style={{ backgroundColor: '#111111' }}>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, #1E1E1E, transparent)' }} />
+            <div className="max-w-7xl mx-auto px-6">
+              <div ref={hRef} className="animate-on-scroll text-center max-w-xl mx-auto mb-16">
+                <span className="inline-block text-brand-accent text-xs font-bold uppercase tracking-widest mb-4">How It Works</span>
+                <h2 className="text-4xl sm:text-5xl font-black text-white leading-tight">Three steps to performing at a level most people don't know is possible.</h2>
+              </div>
+              <div className="grid md:grid-cols-3 gap-8 relative">
+                <div className="hidden md:block absolute top-12 h-px" style={{ left: 'calc(16.67% + 1rem)', right: 'calc(16.67% + 1rem)', background: 'linear-gradient(to right, rgba(200,255,0,0.2), rgba(200,255,0,0.4), rgba(200,255,0,0.2))' }} />
+                {steps.map((s, i) => {
+                  const r = useScrollAnim(i * 0.15);
+                  return (
+                    <div key={s.num} ref={r} className="animate-on-scroll flex flex-col items-center text-center gap-4">
+                      <div className="relative w-24 h-24 rounded-full flex flex-col items-center justify-center z-10" style={{ border: '2px solid rgba(200,255,0,0.3)', backgroundColor: '#161616' }}>
+                        <div className="absolute inset-0 rounded-full" style={{ backgroundColor: 'rgba(200,255,0,0.04)' }} />
+                        <span className="text-2xl mb-0.5">{s.icon}</span>
+                        <span className="text-brand-accent font-bold uppercase tracking-wider" style={{ fontSize: '10px' }}>{s.num}</span>
+                      </div>
+                      <h3 className="text-white font-bold text-xl">{s.title}</h3>
+                      <p className="text-brand-muted text-sm leading-relaxed max-w-xs">{s.desc}</p>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // ─── Reviews ───────────────────────────────────────────────────────────
+      function Reviews() {
+        const hRef = useScrollAnim();
+        const testimonials = [
+          { name: 'Marcus T.', role: 'CrossFit L3 Coach · 12 years', av: 'MT', quote: "I was skeptical — like, ant protein? But the bloodwork doesn't lie. My recovery times dropped noticeably within 3 weeks. The amino acid profile is legitimately elite.", highlight: 'Recovery times dropped' },
+          { name: 'Dr. Sarah K.', role: 'Sports Dietitian', av: 'SK', quote: 'From a nutritional standpoint, the complete amino acid profile and the formic acid bioactives make this genuinely interesting. I recommend it to my performance athletes.', highlight: 'Nutritionally sound' },
+          { name: 'Jake R.', role: 'Competitive Triathlete', av: 'JR', quote: "I've tried everything. Whey, plant, collagen. FORMIX is different. I don't know what formic acid bioactives are doing but my joints feel better and my times are down.", highlight: 'PRs within 6 weeks' },
+          { name: 'Priya M.', role: 'Biohacker · Huberman Protocol', av: 'PM', quote: "This is exactly the kind of unconventional edge I look for. Novel protein source, unique bioactives, clean label. I've told everyone in my biohacking group about FORMIX.", highlight: "The biohacker's protein" },
+          { name: 'Tyler N.', role: 'Olympic Weightlifter', av: 'TN', quote: "The vanilla flavor is legitimately good — doesn't taste like you're eating bugs. Mixes clean, no clumping. Converts fast.", highlight: 'Best tasting protein' },
+          { name: 'Leila C.', role: 'Environmental Scientist & Athlete', av: 'LC', quote: "Finally — a protein source I can use without feeling guilty about my carbon footprint. Same performance as whey, fraction of the environmental cost. It's a no-brainer.", highlight: '95% lower footprint' },
+        ];
+        return (
+          <section id="reviews" className="relative py-28 overflow-hidden" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, #1E1E1E, transparent)' }} />
+            <div className="max-w-7xl mx-auto px-6">
+              <div ref={hRef} className="animate-on-scroll mb-16 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
+                <div>
+                  <span className="inline-block text-brand-accent text-xs font-bold uppercase tracking-widest mb-4">Reviews</span>
+                  <h2 className="text-4xl sm:text-5xl font-black text-white">The results speak.</h2>
+                </div>
+                <div className="flex items-center gap-6">
+                  {[['4.9', 'Average Rating', true], ['1,240+', 'Verified Reviews', false], ['94%', 'Would Recommend', false]].map(([v, l, isAccent]) => (
+                    <div key={l} className="text-center">
+                      <div className={`text-3xl font-black ${isAccent ? 'text-brand-accent' : 'text-white'}`}>{v}</div>
+                      {isAccent && <div className="flex gap-0.5 justify-center text-brand-accent text-sm">★★★★★</div>}
+                      <div className="text-brand-muted text-xs">{l}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                {testimonials.map((t, i) => {
+                  const r = useScrollAnim(i * 0.08);
+                  return (
+                    <div key={t.name} ref={r} className="animate-on-scroll card-hover p-6 rounded-2xl flex flex-col gap-4" style={{ border: '1px solid #1E1E1E', backgroundColor: '#161616' }}>
+                      <div className="flex gap-0.5 text-brand-accent">★★★★★</div>
+                      <div>
+                        <p className="text-sm leading-relaxed mb-2" style={{ color: 'rgba(255,255,255,0.8)' }}>"{t.quote}"</p>
+                        <div className="inline-block px-2.5 py-1 rounded-full text-brand-accent font-bold uppercase tracking-wider" style={{ backgroundColor: 'rgba(200,255,0,0.1)', fontSize: '10px' }}>{t.highlight}</div>
+                      </div>
+                      <div className="flex items-center gap-3 pt-2" style={{ borderTop: '1px solid #1E1E1E' }}>
+                        <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'linear-gradient(135deg, rgba(200,255,0,0.3), rgba(200,255,0,0.1))', border: '1px solid rgba(200,255,0,0.2)' }}>
+                          <span className="text-brand-accent text-xs font-black">{t.av}</span>
+                        </div>
+                        <div>
+                          <div className="text-white text-sm font-semibold">{t.name}</div>
+                          <div className="text-brand-muted" style={{ fontSize: '11px' }}>{t.role}</div>
+                        </div>
+                        <div className="ml-auto text-xs" style={{ color: 'rgba(255,255,255,0.2)' }}>✓ Verified</div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-8 text-xs font-medium uppercase tracking-widest text-brand-muted">
+                {['Lab Tested', 'Third-Party Verified', 'Allergen Free', 'No Artificial Additives', 'cGMP Certified'].map(item => (
+                  <div key={item} className="flex items-center gap-2"><span className="text-brand-accent">✓</span><span>{item}</span></div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // ─── Waitlist ──────────────────────────────────────────────────────────
+      function Waitlist() {
+        const [email, setEmail] = useState('');
+        const [submitted, setSubmitted] = useState(false);
+        const ref = useScrollAnim();
+        return (
+          <section id="waitlist" className="relative py-28 overflow-hidden">
+            <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, #111111, #0A0A0A, #111111)' }} />
+            <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(200,255,0,0.04) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(200,255,0,0.04) 0%, transparent 50%)' }} />
+            <div className="absolute top-0 left-0 right-0 h-px" style={{ background: 'linear-gradient(to right, transparent, rgba(200,255,0,0.3), transparent)' }} />
+            <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'linear-gradient(rgba(200,255,0,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(200,255,0,0.02) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+            <div ref={ref} className="animate-on-scroll relative z-10 max-w-3xl mx-auto px-6 text-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full mb-8" style={{ border: '1px solid rgba(200,255,0,0.3)', backgroundColor: 'rgba(200,255,0,0.05)' }}>
+                <span className="w-1.5 h-1.5 rounded-full bg-brand-accent pulse-dot" />
+                <span className="text-brand-accent text-xs font-bold uppercase tracking-widest">Founding Member Access</span>
+              </div>
+              <h2 className="text-4xl sm:text-6xl font-black text-white leading-none tracking-tight mb-6">
+                Be the first to{' '}<span className="text-gradient">fuel the future.</span>
+              </h2>
+              <p className="text-brand-muted text-lg leading-relaxed mb-10 max-w-xl mx-auto">
+                Join 8,400+ athletes, biohackers, and performance-obsessives on the FORMIX waitlist. Get founding member pricing, first access to new products, and content the mainstream supplement industry doesn't want you to see.
+              </p>
+              {!submitted ? (
+                <form onSubmit={(e) => { e.preventDefault(); if (email) setSubmitted(true); }} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto mb-6">
+                  <input
+                    type="email" value={email} onChange={e => setEmail(e.target.value)}
+                    placeholder="your@email.com" required
+                    className="flex-1 px-5 py-3.5 text-white placeholder-brand-muted text-sm rounded-full focus:outline-none transition-all"
+                    style={{ backgroundColor: '#161616', border: '1px solid #1E1E1E' }}
+                    onFocus={e => e.target.style.borderColor = 'rgba(200,255,0,0.4)'}
+                    onBlur={e => e.target.style.borderColor = '#1E1E1E'}
+                  />
+                  <button type="submit" className="px-8 py-3.5 bg-brand-accent text-black font-bold text-sm rounded-full hover:bg-brand-accent-dim transition-all whitespace-nowrap glow-accent-sm">Join the Waitlist</button>
+                </form>
+              ) : (
+                <div className="flex flex-col items-center gap-3 mb-6">
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(200,255,0,0.15)', border: '1px solid rgba(200,255,0,0.4)' }}>
+                    <span className="text-brand-accent text-2xl">✓</span>
+                  </div>
+                  <p className="text-white font-semibold text-lg">You're on the list.</p>
+                  <p className="text-brand-muted text-sm">We'll hit you first when founding access opens. Welcome to the frontier.</p>
+                </div>
+              )}
+              <p style={{ color: 'rgba(107,114,128,0.5)', fontSize: '12px' }}>No spam. Unsubscribe anytime. We hate empty inboxes as much as you do.</p>
+              <div className="mt-12 flex flex-wrap items-center justify-center gap-8">
+                {[['8,400+', 'On the waitlist'], ['30%', 'Founding member discount'], ['Day 1', 'Priority shipping']].map(([v, l]) => (
+                  <div key={l} className="text-center">
+                    <div className="text-brand-accent font-black text-xl">{v}</div>
+                    <div className="text-brand-muted text-xs uppercase tracking-wide">{l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      // ─── Footer ────────────────────────────────────────────────────────────
+      function Footer() {
+        const year = new Date().getFullYear();
+        return (
+          <footer style={{ backgroundColor: '#111111', borderTop: '1px solid #1E1E1E' }}>
+            <div className="max-w-7xl mx-auto px-6 py-16">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-10 mb-12">
+                <div className="col-span-2 md:col-span-1">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-7 h-7 rounded-full bg-brand-accent flex items-center justify-center">
+                      <span className="text-black font-black text-xs">F</span>
+                    </div>
+                    <span className="font-black text-lg tracking-tight text-white">FORM<span className="text-brand-accent">IX</span></span>
+                  </div>
+                  <p className="text-brand-muted text-sm leading-relaxed mb-4 max-w-xs">Ant protein. Redefined. For athletes who refuse to accept the status quo.</p>
+                  <div className="flex gap-3">
+                    {['X', 'IG', 'YT', 'TK'].map(s => (
+                      <div key={s} className="w-8 h-8 rounded-full flex items-center justify-center text-brand-muted hover:text-white transition-colors cursor-pointer text-xs font-bold" style={{ border: '1px solid #1E1E1E' }}>{s}</div>
+                    ))}
+                  </div>
+                </div>
+                {[
+                  { heading: 'Products', items: ['Protein Powder', 'Protein Bars', 'Energy Bites', 'Founding Bundle'] },
+                  { heading: 'Company', items: ['About FORMIX', 'Our Science', 'Sustainability', 'Careers'] },
+                  { heading: 'Support', items: ['FAQ', 'Shipping & Returns', 'Track Order', 'Contact Us'] },
+                ].map(col => (
+                  <div key={col.heading}>
+                    <h4 className="text-white text-sm font-bold uppercase tracking-wider mb-4">{col.heading}</h4>
+                    <ul className="space-y-2.5">
+                      {col.items.map(item => (
+                        <li key={item}><a href="#" className="text-brand-muted hover:text-white text-sm transition-colors">{item}</a></li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
+              <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderTop: '1px solid #1E1E1E' }}>
+                <p className="text-brand-muted text-xs">© {year} FORMIX Nutrition. All rights reserved.</p>
+                <div className="flex items-center gap-4 text-brand-muted text-xs">
+                  <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+                  <span>·</span>
+                  <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+                </div>
+                <div className="flex items-center gap-1 text-brand-muted text-xs">
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#4ade80', animation: 'pulse-dot 2s ease-in-out infinite' }} />
+                  <span>All systems operational</span>
+                </div>
+              </div>
+            </div>
+          </footer>
+        );
+      }
+
+      // ─── App ───────────────────────────────────────────────────────────────
+      function App() {
+        return (
+          <div style={{ minHeight: '100vh', backgroundColor: '#0A0A0A' }}>
+            <Nav />
+            <main>
+              <Hero />
+              <Problem />
+              <WhyAnt />
+              <Products />
+              <HowItWorks />
+              <Reviews />
+              <Waitlist />
+            </main>
+            <Footer />
+          </div>
+        );
+      }
+
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

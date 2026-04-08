@@ -1,0 +1,57 @@
+name: BTC Brain Daily Intelligence
+
+on:
+  # Run every day at 6:00 AM EDT (10:00 UTC)
+  schedule:
+    - cron: '0 10 * * *'
+
+  # Allow manual trigger from GitHub UI (Actions tab → Run workflow)
+  workflow_dispatch:
+    inputs:
+      always_send:
+        description: 'Force send alert even if no significant events'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+jobs:
+  run-engine:
+    name: BTC Brain Intelligence Run
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: btc-brain-engine/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r btc-brain-engine/requirements.txt
+
+      - name: Run BTC Brain Engine
+        env:
+          MAILGUN_API_KEY:  ${{ secrets.MAILGUN_API_KEY }}
+          MAILGUN_DOMAIN:   ${{ vars.MAILGUN_DOMAIN || 'loopholemaxing.com' }}
+          ALERT_EMAIL_TO:   ${{ vars.ALERT_EMAIL_TO  || 'clayton.camera@icloud.com' }}
+          ALERT_EMAIL_FROM: ${{ vars.ALERT_EMAIL_FROM || 'alerts@loopholemaxing.com' }}
+          MOVE_THRESHOLD_PCT: ${{ vars.MOVE_THRESHOLD_PCT || '3.0' }}
+          ALWAYS_SEND:      ${{ github.event.inputs.always_send || 'false' }}
+          LOG_DIR:          /tmp/btc-brain-logs
+
+        run: python btc-brain-engine/engine.py
+
+      - name: Upload logs as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: btc-brain-logs-${{ github.run_number }}
+          path: /tmp/btc-brain-logs/
+          retention-days: 30
+          if-no-files-found: ignore

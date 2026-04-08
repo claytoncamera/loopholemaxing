@@ -4,7 +4,7 @@ BTC Brain Automation Engine
 ============================
 Production-grade daily intelligence runner.
 Fetches live BTC data, detects significant events,
-generates a PDF alert, and sends email via Mailgun.
+generates a PDF alert, and sends email via Resend.
 
 Designed to run on GitHub Actions (free) or Railway (always-on).
 """
@@ -17,16 +17,15 @@ import urllib.request, urllib.error
 
 # ── Configuration (loaded from environment variables) ────────────────
 CONFIG = {
-    # Email
-    "MAILGUN_API_KEY":    os.getenv("MAILGUN_API_KEY",   ""),
-    "MAILGUN_DOMAIN":     os.getenv("MAILGUN_DOMAIN",    "loopholemaxing.com"),
+    # Email — Resend API
+    "RESEND_API_KEY":     os.getenv("RESEND_API_KEY",    ""),
+    "ALERT_EMAIL_FROM":   os.getenv("ALERT_EMAIL_FROM",  "BTC Brain <btcbrain@orbitroute.ai>"),
     "ALERT_EMAIL_TO":     os.getenv("ALERT_EMAIL_TO",    "clayton.camera@icloud.com"),
-    "ALERT_EMAIL_FROM":   os.getenv("ALERT_EMAIL_FROM",  "alerts@loopholemaxing.com"),
 
     # Thresholds for alert triggers
     "MOVE_THRESHOLD_PCT": float(os.getenv("MOVE_THRESHOLD_PCT", "3.0")),
 
-    # Always send (useful for daily digest mode)
+    # Always send (useful for daily digest mode / testing)
     "ALWAYS_SEND":        os.getenv("ALWAYS_SEND", "false").lower() == "true",
 
     # Logging
@@ -418,12 +417,12 @@ def generate_pdf(data: dict, analysis: dict) -> str | None:
         return None
 
 
-# ── Email via Mailgun ────────────────────────────────────────────────
+# ── Email via Resend ─────────────────────────────────────────────────
 def send_email(data: dict, analysis: dict, pdf_path: str | None) -> bool:
-    """Send alert email via Mailgun API."""
-    api_key = CONFIG["MAILGUN_API_KEY"]
+    """Send alert email via Resend API (resend.com)."""
+    api_key = CONFIG["RESEND_API_KEY"]
     if not api_key:
-        log.warning("MAILGUN_API_KEY not set — skipping email")
+        log.warning("RESEND_API_KEY not set — skipping email")
         return False
 
     price  = data["price"]
@@ -438,79 +437,72 @@ def send_email(data: dict, analysis: dict, pdf_path: str | None) -> bool:
 
     body_lines = [
         f"BTC/USD: ${price:,.2f}  ({change:+.2f}%)",
-        f"Volume: ${data['vol_usd']/1e9:.2f}B  |  MCap: ${data['mcap']/1e12:.3f}T",
+        f"Volume:  ${data['vol_usd']/1e9:.2f}B  |  MCap: ${data['mcap']/1e12:.3f}T",
         "",
     ]
     if events:
-        body_lines.append("── EVENTS DETECTED ──────────")
+        body_lines.append("── EVENTS ──────────────────────")
         for ev in events:
             body_lines.append(f"  {ev['msg']}")
         body_lines.append("")
     body_lines += [
-        f"7H Trend:       {analysis['trend']}",
-        f"Nearest Resist: ${analysis['nearest_resist']:,.0f}" if analysis["nearest_resist"] else "Nearest Resist: N/A",
-        f"Nearest Support:${analysis['nearest_support']:,.0f}" if analysis["nearest_support"] else "Nearest Support: N/A",
+        f"7H Trend:        {analysis['trend']}",
+        f"Nearest Resist:  ${analysis['nearest_resist']:,.0f}"  if analysis["nearest_resist"]  else "Nearest Resist:  N/A",
+        f"Nearest Support: ${analysis['nearest_support']:,.0f}" if analysis["nearest_support"] else "Nearest Support: N/A",
+        "",
+        "── KEY LEVELS ──────────────────",
+    ]
+    for name, level in sorted(KEY_LEVELS.items(), key=lambda x: -x[1]):
+        pct = (price - level) / level * 100
+        body_lines.append(f"  {name:<22} ${level:>7,.0f}  ({pct:+.1f}%)")
+    body_lines += [
         "",
         f"Brain IQ: 189  |  v5.0 Living Intelligence Edition",
         f"loopholemaxing.com/btc-brain",
         "",
-        "─" * 40,
-        f"Data source: {data['source']}",
-        f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S EDT')}",
+        "─" * 38,
+        f"Source:    {data['source']}",
+        f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M EDT')}",
         "Not financial advice.",
     ]
     body_text = "\n".join(body_lines)
 
-    # Multipart form for Mailgun API
-    boundary = "----BrainAlertBoundary"
-    def field(name, value):
-        return (
-            f"------BrainAlertBoundary\r\n"
-            f'Content-Disposition: form-data; name="{name}"\r\n\r\n'
-            f"{value}\r\n"
-        )
+    # Build Resend JSON payload
+    payload: dict = {
+        "from":    CONFIG["ALERT_EMAIL_FROM"],
+        "to":      [CONFIG["ALERT_EMAIL_TO"]],
+        "subject": subject,
+        "text":    body_text,
+    }
 
-    post_data = (
-        field("from",    CONFIG["ALERT_EMAIL_FROM"])
-        + field("to",    CONFIG["ALERT_EMAIL_TO"])
-        + field("subject", subject)
-        + field("text",  body_text)
-    )
-
+    # Attach PDF as base64
     if pdf_path:
         try:
             with open(pdf_path, "rb") as f:
-                pdf_bytes = f.read()
+                pdf_b64 = base64.b64encode(f.read()).decode()
             fname = f"btc_brain_{datetime.now().strftime('%Y%m%d')}.pdf"
-            post_data += (
-                f"------BrainAlertBoundary\r\n"
-                f'Content-Disposition: form-data; name="attachment"; filename="{fname}"\r\n'
-                f"Content-Type: application/pdf\r\n\r\n"
-            )
-            post_data_bytes = post_data.encode() + pdf_bytes + b"\r\n------BrainAlertBoundary--\r\n"
+            payload["attachments"] = [{"filename": fname, "content": pdf_b64}]
+            log.info(f"  PDF attached: {fname}")
         except Exception as e:
-            log.warning(f"Could not attach PDF: {e}")
-            post_data_bytes = (post_data + "------BrainAlertBoundary--\r\n").encode()
-    else:
-        post_data_bytes = (post_data + "------BrainAlertBoundary--\r\n").encode()
+            log.warning(f"  Could not attach PDF: {e}")
 
+    # POST to Resend
     try:
-        auth = base64.b64encode(f"api:{api_key}".encode()).decode()
         req = urllib.request.Request(
-            f"https://api.mailgun.net/v3/{CONFIG['MAILGUN_DOMAIN']}/messages",
-            data=post_data_bytes,
+            "https://api.resend.com/emails",
+            data=json.dumps(payload).encode(),
             headers={
-                "Authorization": f"Basic {auth}",
-                "Content-Type":  f"multipart/form-data; boundary=----BrainAlertBoundary",
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type":  "application/json",
             },
             method="POST",
         )
         with urllib.request.urlopen(req, timeout=15) as r:
             resp = json.loads(r.read())
-            log.info(f"  ✓ Email sent: {resp.get('message','ok')} → {CONFIG['ALERT_EMAIL_TO']}")
+            log.info(f"  ✓ Email sent via Resend: id={resp.get('id')} → {CONFIG['ALERT_EMAIL_TO']}")
             return True
     except urllib.error.HTTPError as e:
-        log.error(f"  Mailgun HTTP {e.code}: {e.read().decode()[:200]}")
+        log.error(f"  Resend HTTP {e.code}: {e.read().decode()[:300]}")
     except Exception as e:
         log.error(f"  Email failed: {e}", exc_info=True)
     return False

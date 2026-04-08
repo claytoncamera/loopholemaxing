@@ -37,8 +37,8 @@ jobs:
 
       - name: Run BTC Brain Engine
         env:
-          MAILGUN_API_KEY:  ${{ secrets.MAILGUN_API_KEY }}
-          MAILGUN_DOMAIN:   ${{ vars.MAILGUN_DOMAIN || 'loopholemaxing.com' }}
+          RESEND_API_KEY:   ${{ secrets.RESEND_API_KEY }}
+          
           ALERT_EMAIL_TO:   ${{ vars.ALERT_EMAIL_TO  || 'clayton.camera@icloud.com' }}
           ALERT_EMAIL_FROM: ${{ vars.ALERT_EMAIL_FROM || 'alerts@loopholemaxing.com' }}
           MOVE_THRESHOLD_PCT: ${{ vars.MOVE_THRESHOLD_PCT || '3.0' }}

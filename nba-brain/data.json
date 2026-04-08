@@ -1,0 +1,173 @@
+{
+  "slate": [
+    {
+      "game_id": "bos-nyk-001",
+      "matchup": "Celtics @ Knicks",
+      "spread": 4.5,
+      "total": 228.5,
+      "moneyline_home": 165,
+      "projected_spread": 0.0,
+      "projected_total": 234.3,
+      "pace_projection": 97.8,
+      "injury_flag": "HIGH",
+      "rest_differential": -2,
+      "travel_stress_score": 1.02,
+      "edge_score": 11.6,
+      "signals": [
+        {
+          "label": "Schedule Stress",
+          "module": "Schedule Stress",
+          "side": "Celtics",
+          "edge": 4.5,
+          "confidence": "high",
+          "rationale": "Rest/travel asymmetry is materially different than market pricing."
+        },
+        {
+          "label": "Pace Matrix",
+          "module": "Pace Matrix",
+          "side": "Over",
+          "edge": 5.8,
+          "confidence": "high",
+          "rationale": "Tempo and efficiency projection diverges from consensus total."
+        },
+        {
+          "label": "Market Pulse",
+          "module": "Market Pulse",
+          "side": "Celtics",
+          "edge": 1.3,
+          "confidence": "medium",
+          "rationale": "Public-heavy home ticket split conflicts with modeled fair spread."
+        }
+      ]
+    },
+    {
+      "game_id": "lal-den-002",
+      "matchup": "Lakers @ Nuggets",
+      "spread": -6.5,
+      "total": 233.5,
+      "moneyline_home": -235,
+      "projected_spread": 2.5,
+      "projected_total": 226.1,
+      "pace_projection": 97.4,
+      "injury_flag": "HIGH",
+      "rest_differential": 1,
+      "travel_stress_score": -4.02,
+      "edge_score": 16.4,
+      "signals": [
+        {
+          "label": "Schedule Stress",
+          "module": "Schedule Stress",
+          "side": "Nuggets",
+          "edge": 9.0,
+          "confidence": "high",
+          "rationale": "Rest/travel asymmetry is materially different than market pricing."
+        },
+        {
+          "label": "Pace Matrix",
+          "module": "Pace Matrix",
+          "side": "Under",
+          "edge": 7.4,
+          "confidence": "high",
+          "rationale": "Tempo and efficiency projection diverges from consensus total."
+        }
+      ]
+    }
+  ],
+  "props": [
+    {
+      "player": "Jalen Brunson",
+      "team": "Knicks",
+      "market_type": "Points",
+      "line": 28.5,
+      "projected": 25.9,
+      "minutes_projection": 34.0,
+      "usage_rate": 31.2,
+      "volatility": 8.4,
+      "matchup_note": "Possible limiter tag plus Celtics wing pressure.",
+      "edge_score": 2.6
+    },
+    {
+      "player": "Nikola Jokic",
+      "team": "Nuggets",
+      "market_type": "Assists",
+      "line": 9.5,
+      "projected": 10.8,
+      "minutes_projection": 36.2,
+      "usage_rate": 29.8,
+      "volatility": 4.9,
+      "matchup_note": "Lakers help rotations invite short-roll distribution.",
+      "edge_score": 1.9
+    },
+    {
+      "player": "Anthony Davis",
+      "team": "Lakers",
+      "market_type": "Rebounds",
+      "line": 12.5,
+      "projected": 10.7,
+      "minutes_projection": 31.5,
+      "usage_rate": 25.4,
+      "volatility": 7.6,
+      "matchup_note": "Questionable tag adds minutes downside in altitude spot.",
+      "edge_score": 2.1
+    }
+  ],
+  "arbitrage": [
+    {
+      "market": "Celtics/Knicks spread",
+      "books": [
+        "FanDuel",
+        "DraftKings"
+      ],
+      "prices": [
+        "Celtics -4.0 (-110)",
+        "Knicks +5.0 (-110)"
+      ],
+      "arb_pct": 0.0,
+      "middle_band": "4 and 5",
+      "warning": "Middle only. Books may limit correlated scalp behavior."
+    },
+    {
+      "market": "Lakers/Nuggets moneyline",
+      "books": [
+        "Caesars",
+        "Pinnacle"
+      ],
+      "prices": [
+        "Lakers +205",
+        "Nuggets -185"
+      ],
+      "arb_pct": 1.4,
+      "middle_band": "N/A",
+      "warning": "True arb margin is small; account for limits and grading latency."
+    }
+  ],
+  "clv": [
+    {
+      "date": "2026-04-03",
+      "market": "Spread",
+      "bet": "Celtics -3.5",
+      "played_line": -3.5,
+      "close_line": -5.0,
+      "clv": 1.5,
+      "outcome": "pending"
+    },
+    {
+      "date": "2026-04-04",
+      "market": "Total",
+      "bet": "Lakers/Nuggets under 236.5",
+      "played_line": 236.5,
+      "close_line": 233.5,
+      "clv": 3.0,
+      "outcome": "win"
+    },
+    {
+      "date": "2026-04-05",
+      "market": "Prop",
+      "bet": "Jokic assists over 8.5",
+      "played_line": 8.5,
+      "close_line": 9.5,
+      "clv": 1.0,
+      "outcome": "loss"
+    }
+  ]
+}

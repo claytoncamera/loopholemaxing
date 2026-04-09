@@ -106,7 +106,7 @@
       <div class="hero-stat"><div class="hero-stat-val">5</div><div class="hero-stat-lbl">Creations</div></div>
       <div class="hero-stat"><div class="hero-stat-val">15</div><div class="hero-stat-lbl">BTC Chapters</div></div>
       <div class="hero-stat"><div class="hero-stat-val">12</div><div class="hero-stat-lbl">NBA Modules</div></div>
-      <div class="hero-stat"><div class="hero-stat-val">189</div><div class="hero-stat-lbl">Brain IQ</div></div>
+      <div class="hero-stat"><div class="hero-stat-val" id="homepage-btc-iq">189</div><div class="hero-stat-lbl">Brain IQ</div></div>
       <div class="hero-stat"><div class="hero-stat-val">AES-256</div><div class="hero-stat-lbl">Vault Crypto</div></div>
       <div class="hero-stat"><div class="hero-stat-val">24/7</div><div class="hero-stat-lbl">Auto-Learning</div></div>
     </div>
@@ -138,12 +138,12 @@
       <div class="card creation-card">
         <span class="card-tag tag-live">Live &mdash; v5.0</span>
         <h3><span class="icon icon-btc">&#8383;</span> BTC Intelligence Brain</h3>
-        <p>A 15-chapter Bitcoin research and trading intelligence system that never stops learning. Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, risk management &mdash; live market data, a 3D neural visualization, and a real-time brain activity feed. IQ: 189 and growing.</p>
+        <p>A 15-chapter Bitcoin research and trading intelligence system that never stops learning. Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, risk management &mdash; live market data, a 3D neural visualization, and a real-time brain activity feed. IQ: <span id="homepage-btc-iq-desc">189</span> and growing.</p>
         <div class="card-meta">
           <span class="card-meta-item">15 chapters</span>
           <span class="card-meta-item">20 neural modules</span>
           <span class="card-meta-item">10 charts</span>
-          <span class="card-meta-item">IQ 189</span>
+          <span class="card-meta-item" id="homepage-btc-iq-badge">IQ 189</span>
           <span class="card-meta-item">24/7 learning</span>
         </div>
         <a href="/btc-brain/" class="card-action">Open BTC Brain &rarr;</a>
@@ -239,6 +239,26 @@
       el.style.opacity='0'; el.style.transform='translateY(16px)';
       el.style.transition='opacity .5s ease, transform .5s ease'; obs.observe(el);
     });
+
+    // ── SIIE IQ Sync: read live IQ from BTC Brain's localStorage ──────────
+    (function() {
+      try {
+        var raw = localStorage.getItem('btc_brain_siie_v1');
+        if (raw) {
+          var mem = JSON.parse(raw);
+          var liveIQ = mem && mem.iq_score && mem.iq_score > 189 ? Math.round(mem.iq_score) : 189;
+          // Update hero stat
+          var hero = document.getElementById('homepage-btc-iq');
+          if (hero) hero.textContent = liveIQ;
+          // Update card description span
+          var desc = document.getElementById('homepage-btc-iq-desc');
+          if (desc) desc.textContent = liveIQ;
+          // Update card meta badge
+          var badge = document.getElementById('homepage-btc-iq-badge');
+          if (badge) badge.textContent = 'IQ ' + liveIQ;
+        }
+      } catch(e) {}
+    })();
 
     // Animate hero stats
     document.querySelectorAll('.hero-stat-val').forEach(el => {

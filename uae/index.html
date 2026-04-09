@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Universal Analyst Engine</title>
+  <style>
+    :root {
+      --bg: #0d0f14;
+      --surface: #161a22;
+      --surface2: #1e2330;
+      --border: #2a3040;
+      --accent: #4f8ef7;
+      --accent2: #7c3aed;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --font: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 14px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .logo { display: flex; align-items: center; gap: 10px; }
+    .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
+    .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
+    .status-bar { display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--muted); }
+    .status-indicator { display: flex; align-items: center; gap: 6px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; }
+    .dot.green { background: var(--green); }
+    .dot.yellow { background: var(--yellow); }
+    .dot.red { background: var(--red); }
+
+    /* ── Layout ── */
+    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
+    .grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
+    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+    /* ── Cards ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .card-title { font-weight: 600; font-size: 13px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--muted); }
+    .card-body { padding: 0; }
+
+    /* ── Domain selector ── */
+    .domain-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+    .tab {
+      padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+      border: 1px solid var(--border); background: var(--surface2); color: var(--muted);
+      transition: all 0.15s;
+    }
+    .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+    .tab:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+
+    /* ── Rankings table ── */
+    .rankings-table { width: 100%; border-collapse: collapse; }
+    .rankings-table th {
+      text-align: left; padding: 10px 18px; font-size: 11px; font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+    .rankings-table td { padding: 12px 18px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .rankings-table tr:last-child td { border-bottom: none; }
+    .rankings-table tr:hover td { background: var(--surface2); }
+    .rank { font-weight: 700; color: var(--muted); font-family: var(--font); width: 40px; }
+    .entity-name { font-weight: 500; }
+    .score-badge {
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--font); font-size: 13px; font-weight: 700;
+      padding: 3px 10px; border-radius: 6px; min-width: 52px;
+    }
+    .score-high { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
+    .score-mid { background: rgba(79, 142, 247, 0.15); color: #4f8ef7; }
+    .score-low { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+    .confidence { color: var(--muted); font-size: 12px; font-family: var(--font); }
+    .explanation { color: var(--muted); font-size: 12px; max-width: 300px; }
+
+    /* ── Alert feed ── */
+    .alert-item {
+      padding: 14px 18px; border-bottom: 1px solid var(--border);
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .alert-item:last-child { border-bottom: none; }
+    .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .alert-content { flex: 1; min-width: 0; }
+    .alert-title { font-weight: 600; font-size: 13px; margin-bottom: 3px; }
+    .alert-body { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .alert-meta { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
+    .badge {
+      display: inline-block; padding: 2px 8px; border-radius: 4px;
+      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
+    }
+    .badge-critical { background: rgba(239,68,68,0.15); color: #ef4444; }
+    .badge-high { background: rgba(234,179,8,0.15); color: #eab308; }
+    .badge-medium { background: rgba(79,142,247,0.15); color: #4f8ef7; }
+    .badge-low { background: rgba(100,116,139,0.15); color: #94a3b8; }
+    .alert-time { color: var(--muted); font-size: 11px; font-family: var(--font); }
+
+    /* ── Metrics strip ── */
+    .metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+    @media (max-width: 700px) { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
+    .metric-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 4px;
+    }
+    .metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+    .metric-value { font-size: 26px; font-weight: 700; font-family: var(--font); }
+    .metric-delta { font-size: 12px; display: flex; align-items: center; gap: 3px; }
+    .delta-up { color: var(--green); }
+    .delta-down { color: var(--red); }
+
+    /* ── Loading / empty states ── */
+    .loading { padding: 40px; text-align: center; color: var(--muted); }
+    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .empty { padding: 40px; text-align: center; color: var(--muted); }
+
+    /* ── Config banner ── */
+    .config-banner {
+      background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2);
+      border-radius: 8px; padding: 12px 18px; margin-bottom: 20px;
+      font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px;
+    }
+    .config-banner code { font-family: var(--font); background: var(--surface2); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+
+    footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    <span class="logo-text">Universal Analyst Engine</span>
+  </div>
+  <div class="status-bar">
+    <div class="status-indicator" id="api-status">
+      <div class="dot yellow" id="api-dot"></div>
+      <span id="api-status-text">Connecting...</span>
+    </div>
+    <span id="last-updated"></span>
+  </div>
+</header>
+
+<div class="container">
+
+  <!-- Config banner — shown if API URL not set -->
+  <div class="config-banner" id="config-banner" style="display:none">
+    <span>⚙️</span>
+    <span>Set your API URL: edit <code>UAE_API_URL</code> in this file, or set it via the URL parameter <code>?api=https://your-railway-url</code></span>
+  </div>
+
+  <!-- Metrics strip -->
+  <div class="metrics-strip">
+    <div class="metric-card">
+      <div class="metric-label">Entities Tracked</div>
+      <div class="metric-value" id="metric-entities">—</div>
+      <div class="metric-delta"><span id="metric-entities-delta">Loading...</span></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Open Alerts</div>
+      <div class="metric-value" id="metric-alerts">—</div>
+      <div class="metric-delta"><span id="metric-alerts-delta">Loading...</span></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Scores Today</div>
+      <div class="metric-value" id="metric-scores">—</div>
+      <div class="metric-delta"><span id="metric-scores-delta">Loading...</span></div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Avg Confidence</div>
+      <div class="metric-value" id="metric-confidence">—</div>
+      <div class="metric-delta"><span id="metric-confidence-delta">Loading...</span></div>
+    </div>
+  </div>
+
+  <!-- Domain selector -->
+  <div class="domain-tabs">
+    <div class="tab active" data-domain="sports" onclick="switchDomain(this)">Sports</div>
+    <div class="tab" data-domain="brand" onclick="switchDomain(this)">Brand</div>
+    <div class="tab" data-domain="politics" onclick="switchDomain(this)">Politics</div>
+    <div class="tab" data-domain="entertainment" onclick="switchDomain(this)">Entertainment</div>
+  </div>
+
+  <!-- Main grid: rankings + alerts -->
+  <div class="grid">
+    <!-- Rankings -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title" id="rankings-title">Sports Rankings — Momentum</span>
+        <select id="score-type-select" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font-size:12px;" onchange="loadRankings()">
+          <option value="momentum">Momentum</option>
+          <option value="sentiment">Sentiment</option>
+          <option value="anomaly">Anomaly</option>
+          <option value="fragility">Fragility</option>
+        </select>
+      </div>
+      <div class="card-body" id="rankings-body">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading rankings...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert feed -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Live Alert Feed</span>
+        <span style="font-size:11px;color:var(--muted)" id="alert-count">0 open</span>
+      </div>
+      <div class="card-body" id="alerts-body">
+        <div class="loading">
+          <div class="spinner"></div>
+          <div>Loading alerts...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  Universal Analyst Engine · <a href="https://github.com/claytoncamera/universal-analyst-engine" style="color:var(--accent);text-decoration:none">GitHub</a> · Built on Railway
+</footer>
+
+<script>
+  // ── Configuration ──────────────────────────────────────────────────────
+  // Priority: URL param ?api=... → window.UAE_API_URL → default
+  const params = new URLSearchParams(location.search);
+  const API_BASE = params.get('api')
+    || window.UAE_API_URL
+    || 'https://uae-api.up.railway.app';  // UPDATE THIS after Railway deploy
+
+  const TOKEN_KEY = 'uae_access_token';
+
+  let currentDomain = 'sports';
+
+  // ── Auth helpers ───────────────────────────────────────────────────────
+  function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
+
+  async function apiFetch(path, opts = {}) {
+    const token = getToken();
+    const res = await fetch(`${API_BASE}/api/v1${path}`, {
+      ...opts,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+        ...(opts.headers || {}),
+      },
+    });
+    if (res.status === 401) {
+      localStorage.removeItem(TOKEN_KEY);
+      renderLoginPrompt();
+      throw new Error('Unauthorized');
+    }
+    return res;
+  }
+
+  // ── Status check ───────────────────────────────────────────────────────
+  async function checkApiStatus() {
+    try {
+      const r = await fetch(`${API_BASE}/api/v1/health/live`, { signal: AbortSignal.timeout(5000) });
+      const dot = document.getElementById('api-dot');
+      const txt = document.getElementById('api-status-text');
+      if (r.ok) {
+        dot.className = 'dot green';
+        txt.textContent = 'API Online';
+      } else {
+        dot.className = 'dot red';
+        txt.textContent = 'API Error';
+      }
+    } catch {
+      document.getElementById('api-dot').className = 'dot red';
+      document.getElementById('api-status-text').textContent = 'API Offline';
+      document.getElementById('config-banner').style.display = 'flex';
+    }
+    document.getElementById('last-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString();
+  }
+
+  // ── Rankings ───────────────────────────────────────────────────────────
+  async function loadRankings() {
+    const scoreType = document.getElementById('score-type-select').value;
+    document.getElementById('rankings-title').textContent =
+      `${currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1)} Rankings — ${scoreType.charAt(0).toUpperCase() + scoreType.slice(1)}`;
+
+    const body = document.getElementById('rankings-body');
+    body.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading...</div></div>';
+
+    try {
+      const r = await apiFetch(`/rankings/?domain=${currentDomain}&score_type=${scoreType}&limit=20`);
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      renderRankings(data);
+    } catch (e) {
+      body.innerHTML = `<div class="empty">⚡ ${e.message === 'Unauthorized' ? 'Please log in to view rankings.' : 'No data yet — ingestion pipeline running.'}</div>`;
+    }
+  }
+
+  function getScoreClass(score) {
+    if (score >= 65) return 'score-high';
+    if (score >= 40) return 'score-mid';
+    return 'score-low';
+  }
+
+  function renderRankings(items) {
+    const body = document.getElementById('rankings-body');
+    if (!items.length) {
+      body.innerHTML = '<div class="empty">No entities scored yet. Ingestion pipeline warming up.</div>';
+      return;
+    }
+    const rows = items.map(item => `
+      <tr>
+        <td class="rank">#${item.rank}</td>
+        <td class="entity-name">${item.entity_name || '—'}</td>
+        <td><span class="score-badge ${getScoreClass(item.score_value)}">${item.score_value.toFixed(1)}</span></td>
+        <td class="confidence">${(item.confidence * 100).toFixed(0)}%</td>
+        <td class="explanation">${(item.explanation || '').substring(0, 60)}${(item.explanation || '').length > 60 ? '…' : ''}</td>
+      </tr>
+    `).join('');
+    body.innerHTML = `
+      <table class="rankings-table">
+        <thead>
+          <tr>
+            <th>Rank</th><th>Entity</th><th>Score</th><th>Conf</th><th>Key Drivers</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  }
+
+  // ── Alerts ─────────────────────────────────────────────────────────────
+  async function loadAlerts() {
+    const body = document.getElementById('alerts-body');
+    try {
+      const r = await apiFetch('/alerts/?limit=20');
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const data = await r.json();
+      document.getElementById('alert-count').textContent = `${data.length} open`;
+      renderAlerts(data);
+    } catch (e) {
+      body.innerHTML = `<div class="empty">${e.message === 'Unauthorized' ? 'Log in to view alerts.' : 'No alerts yet.'}</div>`;
+    }
+  }
+
+  const SEVERITY_ICONS = { critical: '🔴', high: '🟡', medium: '🔵', low: '⚪' };
+
+  function renderAlerts(items) {
+    const body = document.getElementById('alerts-body');
+    if (!items.length) {
+      body.innerHTML = '<div class="empty">No open alerts. System monitoring active.</div>';
+      return;
+    }
+    body.innerHTML = items.map(a => `
+      <div class="alert-item">
+        <div class="alert-icon">${SEVERITY_ICONS[a.severity] || '⚪'}</div>
+        <div class="alert-content">
+          <div class="alert-title">${a.title}</div>
+          <div class="alert-body">${a.body.substring(0, 100)}${a.body.length > 100 ? '…' : ''}</div>
+          <div class="alert-meta">
+            <span class="badge badge-${a.severity}">${a.severity}</span>
+            <span class="badge" style="background:var(--surface2);color:var(--muted)">${a.domain}</span>
+            <span class="alert-time">${formatTime(a.created_at)}</span>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  // ── Domain switch ──────────────────────────────────────────────────────
+  function switchDomain(el) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentDomain = el.dataset.domain;
+    loadRankings();
+  }
+
+  // ── Metrics ────────────────────────────────────────────────────────────
+  async function loadMetrics() {
+    try {
+      const [entR, alertR] = await Promise.all([
+        apiFetch('/entities/?limit=1'),
+        apiFetch('/alerts/?limit=1'),
+      ]);
+      // These just need to succeed to confirm the API is live
+      document.getElementById('metric-entities').textContent = entR.ok ? '—' : '0';
+      document.getElementById('metric-alerts').textContent = alertR.ok ? '—' : '0';
+    } catch {}
+  }
+
+  // ── Login prompt ────────────────────────────────────────────────────────
+  function renderLoginPrompt() {
+    ['rankings-body', 'alerts-body'].forEach(id => {
+      document.getElementById(id).innerHTML = `
+        <div class="empty" style="padding:32px">
+          <div style="margin-bottom:16px">🔐 Authentication required</div>
+          <form onsubmit="doLogin(event)" style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">
+            <input id="login-user" placeholder="Username" style="padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px"/>
+            <input id="login-pass" type="password" placeholder="Password" style="padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px"/>
+            <button type="submit" style="padding:8px;background:var(--accent);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px">Sign In</button>
+          </form>
+        </div>`;
+    });
+  }
+
+  async function doLogin(e) {
+    e.preventDefault();
+    const user = document.getElementById('login-user')?.value;
+    const pass = document.getElementById('login-pass')?.value;
+    if (!user || !pass) return;
+    try {
+      const form = new URLSearchParams({ username: user, password: pass });
+      const r = await fetch(`${API_BASE}/api/v1/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: form,
+      });
+      if (r.ok) {
+        const data = await r.json();
+        localStorage.setItem(TOKEN_KEY, data.access_token);
+        init();
+      } else {
+        alert('Login failed. Check credentials.');
+      }
+    } catch (err) {
+      alert('Login error: ' + err.message);
+    }
+  }
+
+  // ── Helpers ─────────────────────────────────────────────────────────────
+  function formatTime(ts) {
+    if (!ts) return '';
+    const d = new Date(ts);
+    const now = new Date();
+    const diff = (now - d) / 1000;
+    if (diff < 60) return 'just now';
+    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+    return d.toLocaleDateString();
+  }
+
+  // ── Init ────────────────────────────────────────────────────────────────
+  async function init() {
+    await checkApiStatus();
+    if (!getToken()) {
+      renderLoginPrompt();
+      return;
+    }
+    await Promise.all([loadRankings(), loadAlerts(), loadMetrics()]);
+  }
+
+  // Refresh every 60 seconds
+  init();
+  setInterval(init, 60000);
+</script>
+</body>
+</html>

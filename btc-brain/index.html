@@ -3105,6 +3105,8 @@
     buildModuleRegistry();
     window._btcNeuralMeshes = nodeMeshes;
     window._btcNeuralNodes = NODES;
+    window._btcBrainBuildNode = buildNode;
+    window._btcBrainBuildConnection = buildConnection;
     startLoop();
     updateActiveCount();
     setInterval(updateActiveCount, 2500);
@@ -4253,6 +4255,571 @@
   } else {
     setTimeout(boot, 700);
   }
+
+})();
+
+
+
+// ================================================================
+// SELF-IMPROVING INTELLIGENCE ENGINE v2.0 — Neural Expansion Module
+// Dynamic module spawning · Multi-timeframe predictions ·
+// Advanced TA · Consensus signals · Infinite brain growth
+// ================================================================
+(function() {
+  'use strict';
+
+  // ── v2 Memory ─────────────────────────────────────────────────
+  var V2_KEY = 'btc_brain_siie_v2';
+
+  function loadV2() {
+    try {
+      var raw = localStorage.getItem(V2_KEY);
+      if (raw) {
+        var m = JSON.parse(raw);
+        var def = freshV2();
+        Object.keys(def).forEach(function(k){ if (!(k in m)) m[k] = def[k]; });
+        return m;
+      }
+    } catch(e) {}
+    return freshV2();
+  }
+
+  function freshV2() {
+    return {
+      dynamic_modules:          [],
+      multi_tf_predictions:     [],
+      consensus_log:            [],
+      structure_history:        [],
+      divergence_events:        [],
+      spawn_log:                [],
+      total_multi_tf_preds:     0,
+      multi_tf_correct:         0,
+      last_structure:           'unknown',
+      last_divergence:          'none',
+      fear_greed:               50,
+      last_fg_fetch:            0,
+      last_consensus_dir:       'neutral',
+    };
+  }
+
+  function saveV2() {
+    try { localStorage.setItem(V2_KEY, JSON.stringify(V2MEM)); } catch(e) {}
+  }
+
+  var V2MEM = loadV2();
+  var lastV2Tick = 0;
+
+  // ── 12 Dynamic Spawn Rules ────────────────────────────────────
+  // Each fires once when its milestone is crossed. Once spawned,
+  // the module is permanent — it grows stronger each session.
+  var SPAWN_RULES = [
+    { m:'data_30',   id:'liquidity',   name:'Liquidity Intelligence',       col:0x00d4ff, r:2.0, peers:['livemarket','deriv','risk'],      desc:'Order book depth, bid/ask pressure, funding rate analysis' },
+    { m:'data_75',   id:'volprofile',  name:'Volume Profile Engine',        col:0xff6b35, r:2.1, peers:['livemarket','pattern','signal'],  desc:'Buy/sell volume pressure, VWAP approximation, relative volume' },
+    { m:'data_150',  id:'structure',   name:'Market Structure Brain',       col:0x7ee8a2, r:2.0, peers:['pattern','trading','chart'],      desc:'Swing HH/HL/LH/LL detection, trend structure classification' },
+    { m:'data_300',  id:'divergence',  name:'Divergence Engine',            col:0xff4d6d, r:1.9, peers:['pattern','signal','predict'],     desc:'RSI/price divergence detection, hidden divergence analysis' },
+    { m:'data_500',  id:'momentum',    name:'Momentum Cascade Brain',       col:0xffd60a, r:2.2, peers:['signal','trading','structure'],   desc:'Momentum acceleration, velocity, exhaustion identification' },
+    { m:'data_750',  id:'levels',      name:'Support/Resistance Memory',    col:0xc77dff, r:2.0, peers:['chart','pattern','predict'],      desc:'Key price level detection, level memory, price magnetism zones' },
+    { m:'data_1000', id:'timepattern', name:'Time-Pattern Engine',          col:0x52b788, r:1.9, peers:['hist','macro','signal'],          desc:'Day-of-week effects, session-based seasonality, time-of-day bias' },
+    { m:'data_1500', id:'feargreed',   name:'Fear & Greed Intelligence',    col:0xf4a261, r:2.1, peers:['sentiment','macro','predict'],    desc:'Crowd psychology composite, extreme sentiment signal system' },
+    { m:'repairs_5', id:'selfheal',    name:'Self-Healing Meta-Core',       col:0xff006e, r:2.0, peers:['core','learn','iq'],              desc:'Meta-repair intelligence, adaptive recovery, resilience scoring' },
+    { m:'preds_10',  id:'calibration', name:'Prediction Calibration',       col:0x90e0ef, r:2.0, peers:['predict','confidence','iq'],     desc:'Accuracy calibration, Brier scoring, overconfidence correction' },
+    { m:'iq_195',    id:'synthesis',   name:'Intelligence Synthesis Core',  col:0xffd700, r:2.4, peers:['core','iq','predict','learn'],   desc:'Cross-system synthesis, emergent pattern recognition, meta-learning' },
+    { m:'streak_5',  id:'patternconf', name:'Pattern Confidence Engine',    col:0xa8e6cf, r:2.0, peers:['pattern','confidence','signal'], desc:'Prediction streak tracking, confidence under pressure, hot-hand analysis' },
+  ];
+
+  // ── Outer ring positions for dynamic nodes ───────────────────
+  var DYN_POSITIONS = [
+    [ 4.8,  1.0, -1.5], [-4.6, -0.8,  2.0], [ 3.8, -1.4, -4.2],
+    [-3.5,  1.2,  4.5], [ 5.2,  0.4,  2.8], [-5.0,  1.6, -0.8],
+    [ 2.4, -1.8, -5.1], [-2.8, -0.4,  5.3], [ 5.4, -1.2,  0.6],
+    [-4.2,  1.8, -3.2], [ 1.8,  1.4,  5.6], [-5.2, -1.6,  1.8],
+  ];
+
+  // ── Technical Analysis Suite ──────────────────────────────────
+  function rsi14(closes) {
+    if (closes.length < 15) return 50;
+    var g = 0, l = 0;
+    for (var i = closes.length - 14; i < closes.length; i++) {
+      var d = closes[i] - closes[i-1];
+      if (d > 0) g += d; else l -= d;
+    }
+    var ag = g/14, al = l/14;
+    return al === 0 ? 100 : 100 - 100/(1 + ag/al);
+  }
+
+  function rsiSeries(closes, period) {
+    period = period || 14;
+    var out = [];
+    for (var i = period; i < closes.length; i++) {
+      var g = 0, l = 0;
+      for (var j = i - period + 1; j <= i; j++) {
+        var d = closes[j] - closes[j-1];
+        if (d > 0) g += d; else l -= d;
+      }
+      var ag = g/period, al = l/period;
+      out.push(al === 0 ? 100 : 100 - 100/(1 + ag/al));
+    }
+    return out;
+  }
+
+  function ema(closes, period) {
+    if (closes.length < period) return closes[closes.length-1]||0;
+    var k = 2/(period+1);
+    var val = closes.slice(0,period).reduce(function(a,b){return a+b;},0)/period;
+    for (var i = period; i < closes.length; i++) val = closes[i]*k + val*(1-k);
+    return val;
+  }
+
+  function trendOf(klines) {
+    if (!klines || klines.length < 15) return { dir:'neutral', strength:50, rsi:50, price:0 };
+    var closes = klines.map(function(k){ return parseFloat(k[4]); });
+    var r = rsi14(closes);
+    var e20 = ema(closes, Math.min(20, closes.length));
+    var price = closes[closes.length-1];
+    var vsE = (price - e20)/e20*100;
+    var dir = 'neutral', strength = 50;
+    if (r > 55 && vsE > 0.3)  { dir='bullish'; strength=Math.min(94,55+(r-50)*0.9+Math.max(0,vsE)*1.5); }
+    if (r < 45 && vsE < -0.3) { dir='bearish'; strength=Math.min(94,55+(50-r)*0.9+Math.abs(Math.min(0,vsE))*1.5); }
+    return { dir:dir, strength:strength, rsi:r, price:price };
+  }
+
+  function consensus(trends) {
+    var valid = trends.filter(function(t){ return t && t.dir; });
+    var bulls = valid.filter(function(t){ return t.dir==='bullish'; }).length;
+    var bears = valid.filter(function(t){ return t.dir==='bearish'; }).length;
+    var n = valid.length;
+    var dir = 'neutral', strength = 0;
+    if (n > 0 && bulls/n >= 0.6) { dir='bullish'; strength=Math.round(bulls/n*100); }
+    if (n > 0 && bears/n >= 0.6) { dir='bearish'; strength=Math.round(bears/n*100); }
+    return { dir:dir, strength:strength, bulls:bulls, bears:bears, total:n };
+  }
+
+  function marketStructure(closes) {
+    if (closes.length < 12) return { s:'unknown', conf:0 };
+    var highs=[], lows=[];
+    for (var i=2; i<closes.length-2; i++) {
+      if (closes[i]>=closes[i-1]&&closes[i]>=closes[i-2]&&closes[i]>=closes[i+1]&&closes[i]>=closes[i+2]) highs.push(closes[i]);
+      if (closes[i]<=closes[i-1]&&closes[i]<=closes[i-2]&&closes[i]<=closes[i+1]&&closes[i]<=closes[i+2]) lows.push(closes[i]);
+    }
+    var lh=highs.slice(-3), ll=lows.slice(-3);
+    if (lh.length<2||ll.length<2) return { s:'accumulating', conf:45 };
+    var hhh = lh[lh.length-1]>lh[lh.length-2];
+    var hhl = ll[ll.length-1]>ll[ll.length-2];
+    var llh = lh[lh.length-1]<lh[lh.length-2];
+    var lll = ll[ll.length-1]<ll[ll.length-2];
+    if (hhh&&hhl)  return { s:'uptrend',   conf:78 };
+    if (lll&&llh)  return { s:'downtrend', conf:78 };
+    if (hhh&&lll)  return { s:'expanding', conf:55 };
+    return { s:'ranging', conf:62 };
+  }
+
+  function divergence(closes, rsiArr) {
+    if (closes.length<20||rsiArr.length<10) return 'none';
+    var cp=closes.slice(-20), rp=rsiArr.slice(-Math.min(20,rsiArr.length));
+    var mid=Math.floor(cp.length/2), midR=Math.floor(rp.length/2);
+    var pH1=Math.max.apply(null,cp.slice(0,mid)), pH2=Math.max.apply(null,cp.slice(mid));
+    var pL1=Math.min.apply(null,cp.slice(0,mid)), pL2=Math.min.apply(null,cp.slice(mid));
+    var rH1=Math.max.apply(null,rp.slice(0,midR)), rH2=Math.max.apply(null,rp.slice(midR));
+    var rL1=Math.min.apply(null,rp.slice(0,midR)), rL2=Math.min.apply(null,rp.slice(midR));
+    if (pH2>pH1*1.003&&rH2<rH1-2.5) return 'bearish';
+    if (pL2<pL1*0.997&&rL2>rL1+2.5) return 'bullish';
+    return 'none';
+  }
+
+  function volumeProfile(klines) {
+    if (!klines||klines.length<10) return { pressure:'neutral', relVol:1.0, buyPct:50 };
+    var vols=klines.map(function(k){return parseFloat(k[5]);});
+    var avgV=vols.slice(0,-1).reduce(function(a,b){return a+b;},0)/(vols.length-1||1);
+    var relVol=(vols[vols.length-1]||0)/(avgV||1);
+    var bv=0, sv=0;
+    klines.slice(-10).forEach(function(k){
+      var v=parseFloat(k[5]),o=parseFloat(k[1]),c=parseFloat(k[4]);
+      if(c>o) bv+=v; else sv+=v;
+    });
+    var tot=bv+sv;
+    var buyPct=tot>0?Math.round(bv/tot*100):50;
+    return { pressure:buyPct>57?'buying':buyPct<43?'selling':'neutral', relVol:Math.round(relVol*10)/10, buyPct:buyPct };
+  }
+
+  // ── Fear & Greed (max fetch once per hour) ────────────────────
+  function fetchFG() {
+    if (Date.now()-V2MEM.last_fg_fetch < 3600000) return Promise.resolve(V2MEM.fear_greed);
+    return fetch('https://api.alternative.me/fng/?limit=1')
+      .then(function(r){return r.json();})
+      .then(function(d){ V2MEM.fear_greed=parseInt(d.data[0].value,10); V2MEM.last_fg_fetch=Date.now(); return V2MEM.fear_greed; })
+      .catch(function(){ return V2MEM.fear_greed||50; });
+  }
+
+  // ── Module spawn logic ────────────────────────────────────────
+  function checkMilestones() {
+    var v1 = window._btcBrainSIIE && window._btcBrainSIIE.mem;
+    if (!v1) return;
+
+    var data = v1.data_ingested||0;
+    var reps  = v1.repairs_completed||0;
+    var preds = (v1.predictions||[]).filter(function(p){return p.resolved;}).length;
+    var iq    = v1.iq_score||189;
+
+    var predsAll = (v1.predictions||[]).filter(function(p){return p.resolved;});
+    var streak = 0;
+    for (var i=predsAll.length-1; i>=0; i--) { if(predsAll[i].correct) streak++; else break; }
+
+    var conds = {
+      data_30:data>=30, data_75:data>=75, data_150:data>=150, data_300:data>=300,
+      data_500:data>=500, data_750:data>=750, data_1000:data>=1000, data_1500:data>=1500,
+      repairs_5:reps>=5, preds_10:preds>=10, iq_195:iq>=195, streak_5:streak>=5,
+    };
+
+    SPAWN_RULES.forEach(function(rule) {
+      if (V2MEM.dynamic_modules.some(function(m){return m.id===rule.id;})) return;
+      if (!conds[rule.m]) return;
+      spawnModule(rule);
+    });
+  }
+
+  function spawnModule(rule) {
+    var idx = V2MEM.dynamic_modules.length;
+    var pos = DYN_POSITIONS[idx] || [5+Math.random()*2, (Math.random()-0.5)*2, 5+Math.random()*2];
+
+    var mod = {
+      id:rule.id, name:rule.name, col:rule.col, r:rule.r, peers:rule.peers,
+      desc:rule.desc, spawned_at:Date.now(), health:52, stage:'SPAWNING', pos:pos,
+    };
+    V2MEM.dynamic_modules.push(mod);
+    V2MEM.spawn_log.push({ time:Date.now(), name:rule.name, milestone:rule.m });
+    if (V2MEM.spawn_log.length>40) V2MEM.spawn_log=V2MEM.spawn_log.slice(-40);
+
+    // Inject into Three.js scene
+    var build = window._btcBrainBuildNode;
+    if (build && !window._btcNeuralMeshes[rule.id]) {
+      try {
+        build({ id:rule.id, name:rule.name, col:rule.col, r:rule.r, p:pos, iq:52, st:'SPAWNING', desc:rule.desc });
+        var conn = window._btcBrainBuildConnection;
+        if (conn) rule.peers.forEach(function(pid){ try{conn(rule.id,pid);}catch(e){} });
+      } catch(e) {}
+    }
+
+    // Inject into node registry array
+    var nodes = window._btcNeuralNodes;
+    if (nodes && !nodes.find(function(n){return n.id===rule.id;})) {
+      nodes.push({ id:rule.id, name:rule.name, col:rule.col, r:rule.r, p:pos, iq:52, st:'SPAWNING', desc:rule.desc });
+    }
+
+    // Inject into v1 module health
+    if (window._btcBrainSIIE && window._btcBrainSIIE.mem) {
+      window._btcBrainSIIE.mem.module_health[rule.id] = 52;
+    }
+
+    // Flash connected peers
+    rule.peers.forEach(function(pid) {
+      var m = window._btcNeuralMeshes && window._btcNeuralMeshes[pid];
+      if (m&&m.material) { var c=0; var iv=setInterval(function(){ m.material.emissiveIntensity=c%2===0?1.5:0.1; if(++c>10){clearInterval(iv);m.material.emissiveIntensity=0.35;} },110); }
+    });
+
+    feed('learning', '🧬 NEW MODULE SPAWNED: '+ rule.name +' — integrating into neural architecture — pathways forming');
+    feed('learning', '   → '+ rule.desc);
+    saveV2();
+  }
+
+  // ── Dynamic module health progression ────────────────────────
+  function updateDynHealth(t1h, vp, ms, div) {
+    V2MEM.dynamic_modules.forEach(function(mod) {
+      var h = mod.health||52;
+      var delta = 0;
+      var ageDays = (Date.now()-mod.spawned_at)/86400000;
+
+      // All modules grow with age (slow) + general data intake
+      delta += Math.min(0.25, ageDays*0.12);
+
+      // Module-specific signal drivers
+      if (mod.id==='liquidity')   delta += 0.20;
+      if (mod.id==='volprofile')  delta += (vp&&vp.relVol>1.1)?0.35:0.10;
+      if (mod.id==='structure')   delta += (ms&&ms.conf>60)?0.40:0.12;
+      if (mod.id==='divergence')  delta += (div&&div!=='none')?0.55:0.10;
+      if (mod.id==='momentum')    delta += (t1h&&t1h.dir!=='neutral')?0.38:0.10;
+      if (mod.id==='levels')      delta += 0.22;
+      if (mod.id==='timepattern') delta += 0.18;
+      if (mod.id==='feargreed')   delta += 0.20;
+      if (mod.id==='selfheal')    delta += 0.28;
+      if (mod.id==='calibration') delta += 0.25;
+      if (mod.id==='synthesis')   delta += 0.32;
+      if (mod.id==='patternconf') delta += 0.22;
+
+      // Reversion toward 82 target
+      delta += (82-h)*0.030;
+
+      mod.health = Math.max(30, Math.min(98, h+delta));
+      mod.stage = mod.health<55?'SPAWNING':mod.health<68?'LEARNING':mod.health<80?'CALIBRATING':'INTEGRATED';
+
+      // Sync to v1 health tracking
+      if (window._btcBrainSIIE && window._btcBrainSIIE.mem) {
+        window._btcBrainSIIE.mem.module_health[mod.id] = mod.health;
+      }
+
+      // Update node registry
+      var nodes = window._btcNeuralNodes;
+      if (nodes) {
+        var node = nodes.find(function(n){return n.id===mod.id;});
+        if (node) { node.iq=Math.round(mod.health); node.st=mod.stage; }
+      }
+
+      // Update 3D mesh brightness
+      var mesh = window._btcNeuralMeshes && window._btcNeuralMeshes[mod.id];
+      if (mesh&&mesh.material) {
+        var target = 0.08+(mod.health-30)/70*0.64;
+        mesh.material.emissiveIntensity += (target-mesh.material.emissiveIntensity)*0.04;
+      }
+    });
+  }
+
+  // ── Multi-timeframe prediction system ─────────────────────────
+  var TF_CFG = [
+    { tf:'15m', wMs:15*60*1000,   thr:0.002 },
+    { tf:'1h',  wMs:60*60*1000,   thr:0.003 },
+    { tf:'4h',  wMs:4*60*60*1000, thr:0.005 },
+  ];
+
+  function runMultiTF(trends, price) {
+    if (!price||price<1000) return;
+    var now = Date.now();
+
+    // Resolve old predictions
+    (V2MEM.multi_tf_predictions||[]).forEach(function(p) {
+      if (p.resolved||now-p.time<p.wMs) return;
+      var correct = p.dir==='bullish'?price>p.entry*(1+p.thr):p.dir==='bearish'?price<p.entry*(1-p.thr):Math.abs(price-p.entry)/p.entry<p.thr;
+      p.resolved=true; p.exit=price; p.correct=correct;
+      if (correct) V2MEM.multi_tf_correct=(V2MEM.multi_tf_correct||0)+1;
+      feed(correct?'learning':'signal','['+p.tf+'] Resolved: '+p.dir.toUpperCase()+' $'+Math.round(p.entry).toLocaleString()+' → $'+Math.round(price).toLocaleString()+' | '+(correct?'✓ CORRECT':'✗ MISS'));
+    });
+
+    // Make new predictions per TF
+    TF_CFG.forEach(function(cfg,i) {
+      var t = trends[i];
+      if (!t||t.dir==='neutral') return;
+      var recent = (V2MEM.multi_tf_predictions||[]).filter(function(p){return p.tf===cfg.tf&&!p.resolved&&now-p.time<cfg.wMs;});
+      if (recent.length>0) return;
+      V2MEM.multi_tf_predictions=V2MEM.multi_tf_predictions||[];
+      V2MEM.multi_tf_predictions.push({ tf:cfg.tf, dir:t.dir, entry:price, confidence:Math.round(t.strength), wMs:cfg.wMs, thr:cfg.thr, time:now, resolved:false });
+      V2MEM.total_multi_tf_preds=(V2MEM.total_multi_tf_preds||0)+1;
+    });
+    if ((V2MEM.multi_tf_predictions||[]).length>200) V2MEM.multi_tf_predictions=V2MEM.multi_tf_predictions.slice(-200);
+
+    // Consensus signal
+    var con = consensus(trends);
+    if (con.dir!=='neutral'&&con.strength>=66&&con.dir!==V2MEM.last_consensus_dir) {
+      V2MEM.last_consensus_dir=con.dir;
+      V2MEM.consensus_log=V2MEM.consensus_log||[];
+      V2MEM.consensus_log.push({ time:now, dir:con.dir, strength:con.strength });
+      if (V2MEM.consensus_log.length>60) V2MEM.consensus_log=V2MEM.consensus_log.slice(-60);
+      feed('signal','🎯 MULTI-TF CONSENSUS: '+con.dir.toUpperCase()+' — '+con.bulls+'/'+con.total+' timeframes aligned | '+Math.round(con.strength)+'% strength | $'+Math.round(price).toLocaleString());
+    }
+  }
+
+  // ── IQ boost from v2 data ─────────────────────────────────────
+  function applyV2IQBoost() {
+    var v1 = window._btcBrainSIIE && window._btcBrainSIIE.mem;
+    if (!v1) return;
+
+    var resolved = (V2MEM.multi_tf_predictions||[]).filter(function(p){return p.resolved;});
+    if (resolved.length>=5) {
+      var acc = (V2MEM.multi_tf_correct||0)/resolved.length;
+      // Blend multi-TF accuracy into v1 accuracy (weighted avg)
+      v1.accuracy_score = (v1.accuracy_score||0.65)*0.6 + acc*0.4;
+    }
+
+    // Dynamic module IQ boost: each integrated module adds to brain IQ
+    var integratedCount = V2MEM.dynamic_modules.filter(function(m){return m.stage==='INTEGRATED';}).length;
+    // This will be picked up by computeIQ() through module_health
+  }
+
+  // ── Feed push ─────────────────────────────────────────────────
+  function feed(type, msg) {
+    if (window._btcBrainFeedPush) window._btcBrainFeedPush(type, msg);
+  }
+
+  // ── v2 Panel (injected into IQ System tab) ────────────────────
+  function injectPanel() {
+    if (document.getElementById('siie-v2-panel')) return;
+    var anchor = document.getElementById('siie-panel');
+    if (!anchor) return;
+    var el = document.createElement('div');
+    el.id = 'siie-v2-panel';
+    anchor.insertAdjacentElement('afterend', el);
+  }
+
+  var lastPanelRender = 0;
+
+  function renderPanel(t15, t1h, t4h, con, vp, ms, div) {
+    var now = Date.now();
+    if (now-lastPanelRender<6000) return;
+    lastPanelRender=now;
+    var el = document.getElementById('siie-v2-panel');
+    if (!el) return;
+
+    var totalMods  = 20 + V2MEM.dynamic_modules.length;
+    var nextRule   = SPAWN_RULES.find(function(r){ return !V2MEM.dynamic_modules.some(function(m){return m.id===r.id;}); });
+    var resolvedTF = (V2MEM.multi_tf_predictions||[]).filter(function(p){return p.resolved;});
+    var mtAcc      = resolvedTF.length>0 ? Math.round((V2MEM.multi_tf_correct||0)/resolvedTF.length*100)+'%' : '—';
+
+    var conColor = con.dir==='bullish'?'#3fb950':con.dir==='bearish'?'#f85149':'#8b949e';
+    var conText  = con.dir!=='neutral'?con.dir.toUpperCase()+' ('+con.bulls+'/'+con.total+' TF)':'NO CONSENSUS';
+    var msColor  = ms.s==='uptrend'?'#3fb950':ms.s==='downtrend'?'#f85149':'#d29922';
+    var divColor = div==='bullish'?'#3fb950':div==='bearish'?'#f85149':'#8b949e';
+    var fg       = V2MEM.fear_greed||50;
+    var fgColor  = fg>65?'#f85149':fg<35?'#3fb950':'#d29922';
+    var fgLabel  = fg>75?'EXTREME GREED':fg>55?'GREED':fg<25?'EXTREME FEAR':fg<45?'FEAR':'NEUTRAL';
+
+    el.innerHTML =
+      '<div style="background:linear-gradient(135deg,rgba(210,168,255,0.06),rgba(255,215,0,0.04));border:1px solid #2a1f3d;border-radius:14px;padding:24px;margin-bottom:28px;">'
+    + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">'
+    + '<div><div style="font-size:10px;color:#d2a8ff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">NEURAL EXPANSION ENGINE · v2.0</div>'
+    + '<div style="font-size:14px;font-weight:700;color:#e6edf3;">'+totalMods+' Active Modules · '+V2MEM.dynamic_modules.length+'/12 Dynamic · Infinite Expansion</div></div>'
+    + '<span style="font-size:9px;background:#2a1f3d;color:#d2a8ff;padding:4px 10px;border-radius:20px;font-family:monospace;font-weight:700;">v2.0 LIVE</span>'
+    + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:16px;">'
+    + v2card('Multi-TF Accuracy', mtAcc, '#d2a8ff')
+    + v2card('TF Consensus', conText, conColor)
+    + v2card('Market Structure', ms.s.toUpperCase(), msColor)
+    + v2card('RSI Divergence', div==='none'?'NONE':div.toUpperCase()+' DIV', divColor)
+    + v2card('Fear & Greed', fg+' — '+fgLabel, fgColor)
+    + v2card('Dynamic Modules', V2MEM.dynamic_modules.length+' / 12', '#ffd700')
+    + '</div>'
+
+    + (V2MEM.dynamic_modules.length>0
+      ? '<div style="margin-bottom:14px;"><div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">ACTIVE DYNAMIC MODULES</div>'
+      + '<div style="display:flex;flex-wrap:wrap;gap:6px;">'
+      + V2MEM.dynamic_modules.map(function(m){
+          var hex='#'+m.col.toString(16).padStart(6,'0');
+          var sc=m.stage==='INTEGRATED'?'#3fb950':m.stage==='CALIBRATING'?'#d29922':m.stage==='LEARNING'?'#58a6ff':'#8b949e';
+          return '<div style="background:#0d1117;border:1px solid '+hex+'40;border-radius:6px;padding:5px 10px;">'
+               + '<span style="color:'+hex+';font-weight:700;font-size:10px;">'+m.name+'</span>'
+               + '<span style="color:'+sc+';font-size:9px;margin-left:6px;">'+m.stage+'</span>'
+               + '<span style="color:#8b949e;font-size:9px;margin-left:5px;">'+Math.round(m.health)+'%</span></div>';
+        }).join('')
+      + '</div></div>' : '')
+
+    + (nextRule
+      ? '<div style="padding:10px 14px;background:#0d1117;border:1px dashed #2a1f3d;border-radius:8px;font-size:10px;color:#8b949e;">'
+      + '⟶ Forming: <span style="color:#d2a8ff;font-weight:700;">'+nextRule.name+'</span> — '+nextRule.desc+'</div>'
+      : '<div style="padding:10px 14px;background:#0d1117;border:1px solid #1a3a2a;border-radius:8px;font-size:10px;color:#3fb950;">✓ All 12 expansion modules integrated — brain fully expanded</div>')
+    + '</div>';
+  }
+
+  function v2card(label, val, color) {
+    return '<div style="background:#0d1117;border:1px solid #21262d;border-radius:8px;padding:10px 12px;">'
+         + '<div style="font-size:9px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;">'+label+'</div>'
+         + '<div style="font-size:12px;font-weight:700;color:'+color+';font-family:monospace;">'+val+'</div></div>';
+  }
+
+  // ── Main v2 tick ──────────────────────────────────────────────
+  function v2Tick(kl15, kl1h, kl4h, ticker, fg) {
+    lastV2Tick = Date.now();
+
+    var t15 = trendOf(kl15), t1h = trendOf(kl1h), t4h = trendOf(kl4h);
+    var con = consensus([t15, t1h, t4h]);
+    var closes1h = (kl1h||[]).map(function(k){return parseFloat(k[4]);});
+    var rsiArr = rsiSeries(closes1h, 14);
+    var ms  = marketStructure(closes1h);
+    var div = divergence(closes1h, rsiArr);
+    var vp  = volumeProfile(kl1h);
+    var price = ticker ? parseFloat(ticker.lastPrice||ticker.last||0) : 0;
+
+    // Update state
+    V2MEM.last_structure  = ms.s;
+    V2MEM.last_divergence = div;
+    if (ms.s!=='unknown') {
+      V2MEM.structure_history=V2MEM.structure_history||[];
+      V2MEM.structure_history.push({ time:Date.now(), s:ms.s, conf:ms.conf });
+      if (V2MEM.structure_history.length>100) V2MEM.structure_history=V2MEM.structure_history.slice(-100);
+    }
+
+    // Structure change alert
+    var sh = V2MEM.structure_history;
+    if (sh.length>=2 && sh[sh.length-1].s!==sh[sh.length-2].s) {
+      feed('pattern','📐 STRUCTURE SHIFT: '+sh[sh.length-2].s.toUpperCase()+' → '+sh[sh.length-1].s.toUpperCase()+' | conf: '+sh[sh.length-1].conf+'%');
+    }
+
+    // Divergence alert
+    if (div!=='none') {
+      var recentDiv=(V2MEM.divergence_events||[]).filter(function(e){return Date.now()-e.time<4*3600000&&e.type===div;});
+      if (recentDiv.length===0) {
+        V2MEM.divergence_events=V2MEM.divergence_events||[];
+        V2MEM.divergence_events.push({ time:Date.now(), type:div });
+        if (V2MEM.divergence_events.length>30) V2MEM.divergence_events=V2MEM.divergence_events.slice(-30);
+        feed('pattern','⚡ RSI DIVERGENCE: '+div.toUpperCase()+' — price vs RSI misalignment detected on 1h | Structure: '+ms.s);
+      }
+    }
+
+    // Volume pressure alert
+    if (vp.pressure!=='neutral' && vp.relVol>1.4) {
+      feed('onchain','📊 VOLUME SURGE: '+vp.pressure.toUpperCase()+' pressure — '+vp.relVol+'x avg | buy/sell: '+vp.buyPct+'% / '+(100-vp.buyPct)+'%');
+    }
+
+    checkMilestones();
+    updateDynHealth(t1h, vp, ms, div);
+    runMultiTF([t15, t1h, t4h], price);
+    applyV2IQBoost();
+    renderPanel(t15, t1h, t4h, con, vp, ms, div);
+    saveV2();
+  }
+
+  // ── Multi-timeframe data fetcher ──────────────────────────────
+  function fetchAll() {
+    if (Date.now()-lastV2Tick < 28000) return;
+    var fg  = fetchFG();
+    var p15 = fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=40').then(function(r){return r.json();}).catch(function(){return null;});
+    var p1h = fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=60').then(function(r){return r.json();}).catch(function(){return null;});
+    var p4h = fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=30').then(function(r){return r.json();}).catch(function(){return null;});
+    var ptk = fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT').then(function(r){return r.json();}).catch(function(){return null;});
+    Promise.all([p15,p1h,p4h,ptk,fg]).then(function(r){ v2Tick(r[0],r[1],r[2],r[3],r[4]); }).catch(function(){ v2Tick(null,null,null,null,null); });
+  }
+
+  // ── Boot ──────────────────────────────────────────────────────
+  function boot() {
+    injectPanel();
+
+    // Re-inject any previously spawned dynamic modules into scene
+    V2MEM.dynamic_modules.forEach(function(mod) {
+      var nodes = window._btcNeuralNodes;
+      if (nodes && !nodes.find(function(n){return n.id===mod.id;})) {
+        nodes.push({ id:mod.id, name:mod.name, col:mod.col, r:mod.r, p:mod.pos, iq:Math.round(mod.health), st:mod.stage, desc:mod.desc });
+      }
+      var build = window._btcBrainBuildNode;
+      if (build && !window._btcNeuralMeshes[mod.id]) {
+        try {
+          build({ id:mod.id, name:mod.name, col:mod.col, r:mod.r, p:mod.pos||[5,0,5], iq:Math.round(mod.health), st:mod.stage, desc:mod.desc });
+          var conn = window._btcBrainBuildConnection;
+          if (conn) mod.peers.forEach(function(pid){ try{conn(mod.id,pid);}catch(e){} });
+        } catch(e) {}
+      }
+      if (window._btcBrainSIIE && window._btcBrainSIIE.mem) {
+        window._btcBrainSIIE.mem.module_health[mod.id] = mod.health;
+      }
+    });
+
+    var dynCount = V2MEM.dynamic_modules.length;
+    if (dynCount > 0) {
+      feed('learning','🧬 Neural Expansion v2.0 online — '+dynCount+'/12 dynamic modules active | '+V2MEM.total_multi_tf_preds+' multi-TF predictions | structure: '+V2MEM.last_structure);
+    } else {
+      feed('learning','🧬 Neural Expansion v2.0 initialized — watching for spawn milestones — first module at 30 data points');
+    }
+
+    window._btcBrainSIIEv2 = { mem:V2MEM, spawn:spawnModule, rules:SPAWN_RULES };
+
+    fetchAll();
+    setInterval(fetchAll, 35000);
+  }
+
+  // Wait for SIIE v1 and Three.js to initialize, then boot
+  var bootAttempts = 0;
+  var bootCheck = setInterval(function() {
+    bootAttempts++;
+    var ready = window._btcBrainSIIE && window._btcBrainBuildNode && document.getElementById('module-registry');
+    if (ready || bootAttempts > 24) {
+      clearInterval(bootCheck);
+      setTimeout(boot, 1500);
+    }
+  }, 500);
 
 })();
 

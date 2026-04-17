@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ULTRON — The autonomous agent that can't go rogue | Loopholemaxing</title>
+  <meta name="description" content="Local-first autonomous AI agent. It reads, plans, and proposes — but every trade, file write, deploy, and API call waits for an explicit human APPROVE. 30 adversarial tests green. Free trial on loopholemaxing.com.">
+  <meta property="og:title" content="ULTRON — The autonomous agent that can't go rogue">
+  <meta property="og:description" content="Local-first autonomous AI agent with a non-negotiable human-in-the-loop gate on every side effect.">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    :root {
+      --ultron-cyan: #38d6ff;
+      --ultron-cyan-dim: rgba(56, 214, 255, .18);
+      --ultron-edge:  rgba(56, 214, 255, .35);
+      --ultron-bg:    #05080f;
+    }
+
+    .bg-grid  { position:fixed; inset:0; z-index:-1;
+      background-image: radial-gradient(circle, rgba(56,214,255,0.05) 1px, transparent 1px);
+      background-size: 40px 40px; }
+    .bg-glow  { position:fixed; top:-240px; left:50%; transform:translateX(-50%);
+      width:1000px; height:800px;
+      background: radial-gradient(circle, rgba(56,214,255,0.06) 0%, transparent 65%); z-index:-1; }
+
+    .u-hero {
+      min-height: 78vh; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; text-align:center; padding: 120px var(--space-lg) var(--space-3xl);
+    }
+    .u-eyebrow {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing:.18em;
+      text-transform: uppercase; color: var(--ultron-cyan);
+      border:1px solid var(--ultron-edge); padding: 6px 14px; border-radius: 999px;
+      background: rgba(56,214,255,.05); margin-bottom: var(--space-xl);
+    }
+    .u-hero h1 {
+      font-size: clamp(40px, 7vw, 78px); font-weight: 800;
+      line-height: 1.02; letter-spacing: -0.035em; color: var(--text-primary);
+      margin-bottom: var(--space-lg); max-width: 14ch;
+    }
+    .u-hero h1 span {
+      background: linear-gradient(135deg, var(--ultron-cyan), #7dd3fc 60%, #a78bfa);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .u-hero p { font-size: clamp(15px, 2vw, 18px); color: var(--text-secondary);
+      max-width: 620px; line-height: 1.65; margin-bottom: var(--space-xl); }
+    .u-cta-row { display:flex; gap: var(--space-md); flex-wrap:wrap; justify-content:center; }
+    .btn-cyan {
+      background: var(--ultron-cyan); color: #05080f; font-weight: 700;
+      padding: 12px 22px; border-radius: 10px; border: 1px solid var(--ultron-cyan);
+      font-size: 14px; letter-spacing:.01em; transition: transform .15s ease, box-shadow .2s ease;
+      box-shadow: 0 0 0 0 var(--ultron-cyan-dim);
+    }
+    .btn-cyan:hover { transform: translateY(-1px); box-shadow: 0 0 22px 0 var(--ultron-cyan-dim); color:#05080f; }
+    .btn-ghost {
+      background: transparent; color: var(--text-primary); font-weight: 600;
+      padding: 12px 22px; border-radius: 10px; border: 1px solid var(--border-light);
+      font-size: 14px;
+    }
+    .btn-ghost:hover { border-color: var(--ultron-edge); color: var(--ultron-cyan); }
+
+    .u-stats { display:flex; gap: 40px; justify-content:center; flex-wrap:wrap; margin-top: var(--space-2xl); }
+    .u-stat { text-align:center; }
+    .u-stat-val { font-family: var(--font-mono); font-size: 26px; font-weight: 800; color: var(--ultron-cyan); }
+    .u-stat-lbl { font-size: 11px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-top:4px; }
+
+    /* Sections */
+    .u-section { max-width: var(--max-width); margin: 0 auto; padding: var(--space-4xl) var(--space-lg); }
+    .u-section h2 { font-size: clamp(26px, 4vw, 38px); font-weight: 700; letter-spacing:-.02em;
+      margin-bottom: var(--space-sm); }
+    .u-section .lede { color: var(--text-secondary); max-width: 640px; margin-bottom: var(--space-2xl); line-height:1.6; }
+
+    /* How it works (4 steps) */
+    .u-how { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: var(--space-lg); }
+    .u-how-step { background: rgba(255,255,255,.02); border:1px solid var(--border);
+      border-radius: 14px; padding: var(--space-lg); position:relative; }
+    .u-how-step .n { font-family: var(--font-mono); font-size: 12px; color: var(--ultron-cyan);
+      letter-spacing:.1em; margin-bottom: 10px; }
+    .u-how-step h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .u-how-step p  { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
+
+    /* Safety grid */
+    .u-safety { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-md); }
+    .u-rule { display:flex; gap: 14px; align-items:flex-start;
+      padding: 16px; background: rgba(56,214,255,.03); border:1px solid var(--ultron-edge);
+      border-radius: 10px; }
+    .u-rule .dot { width: 10px; height: 10px; border-radius:50%; background: var(--ultron-cyan);
+      box-shadow: 0 0 10px var(--ultron-cyan); margin-top: 6px; flex-shrink:0; }
+    .u-rule strong { color: var(--text-primary); display:block; margin-bottom: 4px; font-size: 14px; }
+    .u-rule span   { color: var(--text-secondary); font-size: 13px; line-height: 1.55; }
+
+    /* Live HUD demo */
+    .u-hud-wrap { position:relative; border: 1px solid var(--ultron-edge);
+      border-radius: 14px; overflow:hidden; background: var(--ultron-bg);
+      box-shadow: 0 10px 60px -10px rgba(56,214,255,.12); }
+    .u-hud-chrome { display:flex; align-items:center; gap: 10px; padding: 10px 14px;
+      background: #0a0e18; border-bottom: 1px solid var(--border); }
+    .u-hud-chrome .dot { width: 11px; height: 11px; border-radius:50%; }
+    .u-hud-chrome .dot.r { background:#f85149; } .u-hud-chrome .dot.y { background:#d29922; } .u-hud-chrome .dot.g { background:#3fb950; }
+    .u-hud-chrome .addr { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+    .u-hud-frame { width:100%; height: 620px; border:0; display:block; background: var(--ultron-bg); }
+    .u-hud-cap { font-size: 12px; color: var(--text-muted); margin-top: 10px; text-align:center; font-family: var(--font-mono); }
+
+    /* Pricing */
+    .u-pricing { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-lg); }
+    .u-plan { background: var(--bg-card); border:1px solid var(--border); border-radius: 16px;
+      padding: var(--space-xl); display:flex; flex-direction:column; }
+    .u-plan.featured { border-color: var(--ultron-edge);
+      background: linear-gradient(180deg, rgba(56,214,255,.05), rgba(56,214,255,0) 60%);
+      box-shadow: 0 0 0 1px var(--ultron-edge), 0 10px 40px -20px var(--ultron-cyan-dim); }
+    .u-plan .ribbon { font-family: var(--font-mono); font-size: 10px; letter-spacing:.16em;
+      text-transform: uppercase; color: var(--ultron-cyan); margin-bottom: 10px; }
+    .u-plan h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
+    .u-plan .price { font-family: var(--font-mono); font-size: 34px; font-weight: 800;
+      color: var(--text-primary); margin: 8px 0 4px; }
+    .u-plan .price small { font-size: 13px; color: var(--text-muted); font-weight: 500; }
+    .u-plan .sub { color: var(--text-secondary); font-size: 13px; margin-bottom: var(--space-lg); }
+    .u-plan ul { list-style:none; padding:0; margin:0 0 var(--space-lg); flex:1; }
+    .u-plan li { font-size: 13.5px; color: var(--text-secondary); padding: 7px 0;
+      border-bottom: 1px dashed var(--border); }
+    .u-plan li:last-child { border-bottom:0; }
+    .u-plan li::before { content:"✓  "; color: var(--ultron-cyan); font-weight:700; }
+
+    /* Trial form */
+    .u-trial { display:flex; gap: 10px; max-width: 540px; margin: var(--space-xl) auto 0; }
+    .u-trial input { flex:1; background: rgba(255,255,255,.03); color: var(--text-primary);
+      border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 14px;
+      font-family: var(--font-mono); font-size: 14px; }
+    .u-trial input:focus { outline: 0; border-color: var(--ultron-cyan); }
+    .u-trial-note { text-align:center; font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+    .u-trial-ok { display:none; text-align:center; color: var(--ultron-cyan); font-family: var(--font-mono);
+      font-size: 13px; margin-top: 10px; }
+
+    @media (max-width: 720px) {
+      .u-hero { padding: 90px var(--space-md) var(--space-2xl); }
+      .u-hud-frame { height: 520px; }
+      .u-trial { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <header class="top-header">
+    <a href="/" class="logo">Loopholemaxing</a>
+    <nav><ul class="nav-links">
+      <li><a href="/#creations">Creations</a></li>
+      <li><a href="#pricing">Pricing</a></li>
+      <li><a href="https://github.com/claytoncamera/ultron" target="_blank" rel="noopener">GitHub</a></li>
+    </ul></nav>
+  </header>
+
+  <!-- HERO -->
+  <section class="u-hero">
+    <div class="u-eyebrow">Local-first · Open source · v0.1</div>
+    <h1>The autonomous agent<br>that can't <span>go rogue.</span></h1>
+    <p>ULTRON runs on your machine, not someone else's cloud. It reads, plans, and proposes — but every trade, deploy, file write, and API call waits for a single human keystroke: <strong>Y</strong> or <strong>N</strong>.</p>
+    <div class="u-cta-row">
+      <a href="#trial" class="btn-cyan">Start free trial →</a>
+      <a href="#demo" class="btn-ghost">See live demo</a>
+    </div>
+
+    <div class="u-stats">
+      <div class="u-stat"><div class="u-stat-val">100%</div><div class="u-stat-lbl">Side-effects gated</div></div>
+      <div class="u-stat"><div class="u-stat-val">30/30</div><div class="u-stat-lbl">Attack tests passing</div></div>
+      <div class="u-stat"><div class="u-stat-val">21</div><div class="u-stat-lbl">Tools registered</div></div>
+      <div class="u-stat"><div class="u-stat-val">0</div><div class="u-stat-lbl">OpenAI keys required</div></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="u-section" id="how">
+    <h2>How it works</h2>
+    <p class="lede">Two tiers. One gate. An immutable hash-chained audit log behind every decision.</p>
+    <div class="u-how">
+      <div class="u-how-step">
+        <div class="n">01 · PLAN</div>
+        <h4>Decompose the objective</h4>
+        <p>The planner turns your natural-language goal into a DAG of tool calls. Nothing runs yet.</p>
+      </div>
+      <div class="u-how-step">
+        <div class="n">02 · READ</div>
+        <h4>Read-only tools auto-run</h4>
+        <p>Filesystem reads, web search, code-index queries, market quotes, Drive search — all run in-process with no approval.</p>
+      </div>
+      <div class="u-how-step">
+        <div class="n">03 · PROPOSE</div>
+        <h4>Side-effects queue a Proposal</h4>
+        <p>Every write, trade, deploy, or mutating API call pauses and emits a typed <code>Proposal</code> — intent, exact command, rollback plan, risk 1–5.</p>
+      </div>
+      <div class="u-how-step">
+        <div class="n">04 · APPROVE</div>
+        <h4>You decide with Y or N</h4>
+        <p>Approve from CLI, HUD, or API. The gate re-checks the kill switch, runs the tool, and hashes the result into the audit chain.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- LIVE HUD DEMO -->
+  <section class="u-section" id="demo">
+    <h2>Live Command Deck</h2>
+    <p class="lede">This is the real HUD, running in demo mode with three queued proposals across risk levels. Click APPROVE or DENY to see the gate in action.</p>
+    <div class="u-hud-wrap">
+      <div class="u-hud-chrome">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="addr">ultron://command-deck · demo</span>
+      </div>
+      <iframe class="u-hud-frame" title="ULTRON Command Deck — live demo"
+        src="https://www.perplexity.ai/computer/a/ultron-command-deck-bvg7GI0mQ2i.1tePEEC9eQ?demo=1"
+        loading="lazy" referrerpolicy="no-referrer"></iframe>
+    </div>
+    <p class="u-hud-cap">Demo mode seeds fake proposals — no real tools fire. For the live daemon, install the repo and run <code>python3 -m core.api</code>.</p>
+  </section>
+
+  <!-- SAFETY -->
+  <section class="u-section" id="safety">
+    <h2>The five invariants</h2>
+    <p class="lede">ULTRON will never do any of these without an explicit <code>APPROVE</code>. Breaking one requires breaking the gate and the hash-chained audit log at the same time, and the kill switch still refuses to clear without its signed token.</p>
+    <div class="u-safety">
+      <div class="u-rule"><span class="dot"></span><div><strong>Execute a trade</strong><span>Exchange orders are always risk 5. Always gated. Always logged.</span></div></div>
+      <div class="u-rule"><span class="dot"></span><div><strong>Modify a file</strong><span>Every <code>file_write</code> and <code>git push</code> passes through the gate with a rollback plan.</span></div></div>
+      <div class="u-rule"><span class="dot"></span><div><strong>Deploy code</strong><span>Shell and CI-adjacent tools are denylisted by default. You approve each ship.</span></div></div>
+      <div class="u-rule"><span class="dot"></span><div><strong>Call a side-effect API</strong><span>curl/wget POST/PUT/DELETE mutations auto-classify as risk 3+ and queue a proposal.</span></div></div>
+      <div class="u-rule"><span class="dot"></span><div><strong>Access beyond scope</strong><span>Every integration declares a <code>ConsentScope</code>. Out-of-scope reads are refused at the memory layer.</span></div></div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="u-section" id="pricing">
+    <h2>Pricing</h2>
+    <p class="lede">Local-first means the engine itself is free forever. Paid plans add hosted integrations, team collaboration, and managed cloud fallbacks.</p>
+    <div class="u-pricing">
+      <div class="u-plan">
+        <div class="ribbon">Local</div>
+        <h3>Self-host</h3>
+        <div class="price">$0<small> /forever</small></div>
+        <div class="sub">Run it on your own Mac. No account needed.</div>
+        <ul>
+          <li>All 21 tools + all 5 integrations</li>
+          <li>Ollama / Anthropic / Perplexity adapters</li>
+          <li>Full audit chain + kill switch</li>
+          <li>30 adversarial tests</li>
+          <li>MIT license, fork freely</li>
+        </ul>
+        <a href="https://github.com/claytoncamera/ultron" target="_blank" rel="noopener" class="btn-ghost">Clone on GitHub →</a>
+      </div>
+
+      <div class="u-plan featured">
+        <div class="ribbon">Most popular</div>
+        <h3>Pro</h3>
+        <div class="price">$19<small> /mo</small></div>
+        <div class="sub">Hosted daemon + web HUD + cloud LLM fallback.</div>
+        <ul>
+          <li>Everything in Self-host</li>
+          <li>Hosted API daemon (Railway-backed)</li>
+          <li>Managed Anthropic + Perplexity keys</li>
+          <li>Cloud-synced audit log backup</li>
+          <li>Priority support + invariant bounty</li>
+        </ul>
+        <a href="#trial" class="btn-cyan">Start 14-day free trial</a>
+      </div>
+
+      <div class="u-plan">
+        <div class="ribbon">For teams</div>
+        <h3>Team</h3>
+        <div class="price">$99<small> /mo</small></div>
+        <div class="sub">Multiple approvers, shared personas, SAML-ready.</div>
+        <ul>
+          <li>Everything in Pro</li>
+          <li>Up to 10 operators</li>
+          <li>Shared personas + role-based approvers</li>
+          <li>Centralized audit across operators</li>
+          <li>SSO + SAML (on request)</li>
+        </ul>
+        <a href="mailto:clayton@moneymakingsolutionsai.com?subject=ULTRON%20Team%20plan" class="btn-ghost">Contact sales →</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRIAL FORM -->
+  <section class="u-section" id="trial" style="padding-top: 0;">
+    <h2 style="text-align:center;">Start your 14-day trial</h2>
+    <p class="lede" style="margin-left:auto; margin-right:auto; text-align:center;">Drop your email. We'll send a signed trial token for the hosted Pro daemon. No card until day 14.</p>
+    <form class="u-trial" id="trialForm" novalidate>
+      <input type="email" id="trialEmail" name="email" placeholder="you@domain.com" required autocomplete="email">
+      <button type="submit" class="btn-cyan">Send my trial token</button>
+    </form>
+    <div class="u-trial-ok" id="trialOk">&#10003; You're on the list. Check your inbox.</div>
+    <p class="u-trial-note">Stored locally until a hosted form is wired. No data leaves your browser in this preview.</p>
+  </section>
+
+  <footer class="site-footer">
+    <div>ULTRON &mdash; Clayton Camera &mdash; 2026 &nbsp;|&nbsp; <a href="/">Loopholemaxing</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/ultron" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="footer-tagline">Read. Plan. Propose. Approve. Ship.</div>
+  </footer>
+
+  <script>
+    // Trial form — stores locally; swap the handler for Stripe/Postmark when keys are in.
+    const form = document.getElementById('trialForm');
+    const ok   = document.getElementById('trialOk');
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const email = document.getElementById('trialEmail').value.trim();
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { return; }
+      try {
+        const existing = JSON.parse(localStorage.getItem('ultron_waitlist') || '[]');
+        if (!existing.includes(email)) existing.push(email);
+        localStorage.setItem('ultron_waitlist', JSON.stringify(existing));
+      } catch {}
+      form.style.display = 'none';
+      ok.style.display = 'block';
+    });
+  </script>
+</body>
+</html>

@@ -3,248 +3,314 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Universal Analyst Engine</title>
+  <title>Universal Analyst Engine — Multi-Domain Narrative Intelligence</title>
+  <meta name="description" content="Real-time narrative intelligence across sports, brand, entertainment, politics, and macro economics. 92 entities tracked, 42,000+ narratives analyzed." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --bg: #0d0f14;
-      --surface: #161a22;
-      --surface2: #1e2330;
-      --border: #2a3040;
-      --accent: #4f8ef7;
-      --accent2: #7c3aed;
+      --bg: #0b0d12;
+      --surface: #12151c;
+      --surface2: #1a1e28;
+      --border: #242938;
+      --accent: #2dd4bf;
+      --accent-dim: rgba(45,212,191,0.12);
       --green: #22c55e;
+      --green-dim: rgba(34,197,94,0.12);
       --yellow: #eab308;
+      --yellow-dim: rgba(234,179,8,0.12);
       --red: #ef4444;
+      --red-dim: rgba(239,68,68,0.12);
+      --purple: #a78bfa;
+      --purple-dim: rgba(167,139,250,0.12);
+      --blue: #60a5fa;
+      --blue-dim: rgba(96,165,250,0.12);
+      --amber: #f59e0b;
+      --amber-dim: rgba(245,158,11,0.12);
       --text: #e2e8f0;
+      --text-secondary: #94a3b8;
       --muted: #64748b;
-      --font: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+      --mono: 'SF Mono','Fira Code','JetBrains Mono',monospace;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      font-size: 14px;
-      line-height: 1.5;
-      min-height: 100vh;
-    }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter',system-ui,sans-serif; font-size: 14px; line-height: 1.5; min-height: 100vh; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    /* ── Header ── */
-    header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 56px;
-    }
+    /* Header */
+    header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; align-items: center; justify-content: space-between; height: 52px; position: sticky; top: 0; z-index: 50; backdrop-filter: blur(12px); }
     .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); animation: pulse 2s infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.4;} }
-    .logo-text { font-weight: 700; font-size: 15px; letter-spacing: -0.3px; }
-    .status-bar { display: flex; align-items: center; gap: 16px; font-size: 12px; color: var(--muted); }
-    .status-indicator { display: flex; align-items: center; gap: 6px; }
-    .dot { width: 6px; height: 6px; border-radius: 50%; }
-    .dot.green { background: var(--green); }
-    .dot.yellow { background: var(--yellow); }
-    .dot.red { background: var(--red); }
+    .logo svg { color: var(--accent); }
+    .logo-text { font-weight: 700; font-size: 14px; letter-spacing: -0.3px; }
+    .header-right { display: flex; align-items: center; gap: 14px; font-size: 12px; }
+    .freshness { display: flex; align-items: center; gap: 6px; color: var(--muted); }
+    .freshness-dot { width: 6px; height: 6px; border-radius: 50%; }
+    .freshness-dot.live { background: var(--green); animation: pulse 2s infinite; }
+    .freshness-dot.stale { background: var(--yellow); }
+    .freshness-dot.offline { background: var(--red); }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    .freshness-label { font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; font-size: 10px; }
+    .freshness-label.live { color: var(--green); }
+    .freshness-label.stale { color: var(--yellow); }
+    .freshness-label.offline { color: var(--red); }
 
-    /* ── Layout ── */
-    .container { max-width: 1400px; margin: 0 auto; padding: 24px; }
-    .grid { display: grid; grid-template-columns: 1fr 380px; gap: 20px; }
-    @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    /* Nav */
+    nav { background: var(--surface); border-bottom: 1px solid var(--border); padding: 0 20px; display: flex; gap: 2px; overflow-x: auto; }
+    .nav-tab { padding: 10px 14px; font-size: 13px; font-weight: 500; color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; transition: all 0.15s; }
+    .nav-tab:hover { color: var(--text); }
+    .nav-tab.active { color: var(--text); border-bottom-color: var(--accent); }
 
-    /* ── Cards ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    .card-header {
-      padding: 14px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .card-title { font-weight: 600; font-size: 13px; letter-spacing: 0.3px; text-transform: uppercase; color: var(--muted); }
-    .card-body { padding: 0; }
+    /* Layout */
+    .container { max-width: 1280px; margin: 0 auto; padding: 20px; }
+    .page { display: none; }
+    .page.active { display: block; }
 
-    /* ── Domain selector ── */
-    .domain-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
-    .tab {
-      padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
-      border: 1px solid var(--border); background: var(--surface2); color: var(--muted);
-      transition: all 0.15s;
-    }
-    .tab.active { background: var(--accent); color: white; border-color: var(--accent); }
-    .tab:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+    /* KPI Row */
+    .kpi-row { display: grid; grid-template-columns: repeat(5,1fr); gap: 12px; margin-bottom: 24px; }
+    @media(max-width:800px) { .kpi-row { grid-template-columns: repeat(2,1fr); } }
+    .kpi { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 14px 16px; transition: border-color 0.2s; }
+    .kpi:hover { border-color: rgba(45,212,191,0.3); }
+    .kpi-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; color: var(--muted); margin-bottom: 4px; }
+    .kpi-value { font-size: 22px; font-weight: 700; font-family: var(--mono); }
 
-    /* ── Rankings table ── */
+    /* Cards */
+    .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .card-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .card-title { font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+
+    /* Domain badges */
+    .domain-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+    .domain-sports { background: var(--green-dim); color: var(--green); }
+    .domain-brand { background: var(--blue-dim); color: var(--blue); }
+    .domain-entertainment { background: var(--purple-dim); color: var(--purple); }
+    .domain-politics { background: var(--red-dim); color: var(--red); }
+    .domain-macro { background: var(--amber-dim); color: var(--amber); }
+
+    /* Leaderboard grid */
+    .leaderboard-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    @media(max-width:900px) { .leaderboard-grid { grid-template-columns: repeat(2,1fr); } }
+    @media(max-width:600px) { .leaderboard-grid { grid-template-columns: 1fr; } }
+    .leaderboard-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+    .leaderboard-header { padding: 10px 14px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .leaderboard-row { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-bottom: 1px solid var(--border); transition: background 0.15s; cursor: pointer; }
+    .leaderboard-row:last-child { border-bottom: none; }
+    .leaderboard-row:hover { background: var(--surface2); }
+    .lb-rank { font-size: 11px; font-weight: 600; color: var(--muted); width: 28px; font-family: var(--mono); }
+    .lb-name { flex: 1; font-size: 13px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-sparkline { flex-shrink: 0; }
+    .lb-score { font-size: 13px; font-weight: 700; font-family: var(--mono); width: 44px; text-align: right; }
+    .view-all { font-size: 11px; color: var(--accent); cursor: pointer; }
+    .view-all:hover { text-decoration: underline; }
+
+    /* Rankings table */
     .rankings-table { width: 100%; border-collapse: collapse; }
-    .rankings-table th {
-      text-align: left; padding: 10px 18px; font-size: 11px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted);
-      border-bottom: 1px solid var(--border);
-    }
-    .rankings-table td { padding: 12px 18px; border-bottom: 1px solid var(--border); font-size: 13px; }
+    .rankings-table th { text-align: left; padding: 10px 16px; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); cursor: pointer; }
+    .rankings-table th:hover { color: var(--text); }
+    .rankings-table td { padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13px; }
     .rankings-table tr:last-child td { border-bottom: none; }
     .rankings-table tr:hover td { background: var(--surface2); }
-    .rank { font-weight: 700; color: var(--muted); font-family: var(--font); width: 40px; }
-    .entity-name { font-weight: 500; }
-    .score-badge {
-      display: inline-flex; align-items: center; justify-content: center;
-      font-family: var(--font); font-size: 13px; font-weight: 700;
-      padding: 3px 10px; border-radius: 6px; min-width: 52px;
-    }
-    .score-high { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-    .score-mid { background: rgba(79, 142, 247, 0.15); color: #4f8ef7; }
-    .score-low { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
-    .confidence { color: var(--muted); font-size: 12px; font-family: var(--font); }
-    .explanation { color: var(--muted); font-size: 12px; max-width: 300px; }
+    .score-badge { display: inline-block; font-family: var(--mono); font-size: 13px; font-weight: 700; padding: 2px 8px; border-radius: 4px; min-width: 48px; text-align: center; }
+    .score-high { background: var(--green-dim); color: var(--green); }
+    .score-mid { background: var(--blue-dim); color: var(--blue); }
+    .score-low { background: var(--red-dim); color: var(--red); }
 
-    /* ── Alert feed ── */
-    .alert-item {
-      padding: 14px 18px; border-bottom: 1px solid var(--border);
-      display: flex; gap: 12px; align-items: flex-start;
-    }
-    .alert-item:last-child { border-bottom: none; }
-    .alert-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
-    .alert-content { flex: 1; min-width: 0; }
-    .alert-title { font-weight: 600; font-size: 13px; margin-bottom: 3px; }
-    .alert-body { color: var(--muted); font-size: 12px; line-height: 1.4; }
-    .alert-meta { display: flex; gap: 8px; align-items: center; margin-top: 6px; }
-    .badge {
-      display: inline-block; padding: 2px 8px; border-radius: 4px;
-      font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.3px;
-    }
-    .badge-critical { background: rgba(239,68,68,0.15); color: #ef4444; }
-    .badge-high { background: rgba(234,179,8,0.15); color: #eab308; }
-    .badge-medium { background: rgba(79,142,247,0.15); color: #4f8ef7; }
-    .badge-low { background: rgba(100,116,139,0.15); color: #94a3b8; }
-    .alert-time { color: var(--muted); font-size: 11px; font-family: var(--font); }
+    /* Domain filter chips */
+    .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+    .chip { padding: 5px 12px; border-radius: 999px; font-size: 12px; font-weight: 500; border: 1px solid var(--border); background: var(--surface); color: var(--muted); cursor: pointer; transition: all 0.15s; }
+    .chip:hover { border-color: var(--accent); color: var(--text); }
+    .chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
 
-    /* ── Metrics strip ── */
-    .metrics-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-    @media (max-width: 700px) { .metrics-strip { grid-template-columns: repeat(2, 1fr); } }
-    .metric-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; padding: 16px; display: flex; flex-direction: column; gap: 4px;
-    }
-    .metric-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
-    .metric-value { font-size: 26px; font-weight: 700; font-family: var(--font); }
-    .metric-delta { font-size: 12px; display: flex; align-items: center; gap: 3px; }
-    .delta-up { color: var(--green); }
-    .delta-down { color: var(--red); }
+    /* Heatmap */
+    .heatmap-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(140px,1fr)); gap: 8px; }
+    .heatmap-tile { border-radius: 8px; padding: 12px; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
+    .heatmap-tile:hover { transform: scale(1.03); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .ht-name { font-size: 11px; font-weight: 600; margin-bottom: 4px; }
+    .ht-score { font-size: 20px; font-weight: 700; font-family: var(--mono); }
+    .ht-rank { font-size: 10px; opacity: 0.5; }
 
-    /* ── Loading / empty states ── */
-    .loading { padding: 40px; text-align: center; color: var(--muted); }
-    .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 8px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .empty { padding: 40px; text-align: center; color: var(--muted); }
+    /* Narratives */
+    .narrative-item { padding: 12px 16px; border-bottom: 1px solid var(--border); transition: background 0.15s; }
+    .narrative-item:last-child { border-bottom: none; }
+    .narrative-item:hover { background: var(--surface2); }
+    .narr-topic { font-size: 13px; font-weight: 500; margin-bottom: 4px; line-height: 1.4; }
+    .narr-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11px; color: var(--muted); }
+    .sentiment-pill { display: inline-block; font-family: var(--mono); font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 3px; }
+    .sent-pos { background: var(--green-dim); color: var(--green); }
+    .sent-neg { background: var(--red-dim); color: var(--red); }
+    .sent-neutral { background: rgba(100,116,139,0.15); color: var(--muted); }
 
-    /* ── Config banner ── */
-    .config-banner {
-      background: rgba(79,142,247,0.08); border: 1px solid rgba(79,142,247,0.2);
-      border-radius: 8px; padding: 12px 18px; margin-bottom: 20px;
-      font-size: 12px; color: var(--muted); display: flex; align-items: center; gap: 8px;
-    }
-    .config-banner code { font-family: var(--font); background: var(--surface2); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+    /* Skeleton */
+    .skeleton { background: var(--surface2); border-radius: 4px; animation: shimmer 1.5s infinite; }
+    @keyframes shimmer { 0%,100%{opacity:0.4} 50%{opacity:0.8} }
 
-    footer { text-align: center; padding: 24px; color: var(--muted); font-size: 12px; border-top: 1px solid var(--border); margin-top: 40px; }
+    /* Entity Profile */
+    .entity-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+    .entity-score-big { font-size: 32px; font-weight: 700; font-family: var(--mono); color: var(--accent); text-align: right; }
+    .entity-rank-label { font-size: 12px; color: var(--muted); text-align: right; }
+    .back-link { font-size: 12px; color: var(--muted); cursor: pointer; margin-bottom: 12px; display: inline-flex; align-items: center; gap: 4px; }
+    .back-link:hover { color: var(--text); }
+
+    /* About */
+    .about-section { margin-bottom: 28px; }
+    .about-section h2 { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+    .about-section p { font-size: 13px; color: var(--text-secondary); line-height: 1.7; max-width: 640px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
+    @media(max-width:700px) { .feature-grid { grid-template-columns: 1fr; } }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+    .feature-icon { font-size: 20px; margin-bottom: 6px; }
+    .feature-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+    .feature-desc { font-size: 12px; color: var(--muted); line-height: 1.5; }
+
+    .empty-state { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+    .section-title { font-size: 16px; font-weight: 600; margin-bottom: 12px; }
+    .section-sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+    .btn-load-more { display: block; margin: 16px auto; padding: 8px 20px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; color: var(--accent); font-size: 12px; font-weight: 500; cursor: pointer; }
+    .btn-load-more:hover { border-color: var(--accent); }
+    footer { text-align: center; padding: 20px; color: var(--muted); font-size: 11px; border-top: 1px solid var(--border); margin-top: 32px; }
+    footer a { color: var(--accent); }
   </style>
 </head>
 <body>
 
 <header>
   <div class="logo">
-    <div class="logo-dot"></div>
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none"><rect x="2" y="2" width="28" height="28" rx="6" stroke="currentColor" stroke-width="2"/><path d="M8 22V14L12 10L16 16L20 8L24 14V22" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="12" cy="10" r="1.5" fill="currentColor"/><circle cx="20" cy="8" r="1.5" fill="currentColor"/></svg>
     <span class="logo-text">Universal Analyst Engine</span>
   </div>
-  <div class="status-bar">
-    <div class="status-indicator" id="api-status">
-      <div class="dot yellow" id="api-dot"></div>
-      <span id="api-status-text">Connecting...</span>
+  <div class="header-right">
+    <div class="freshness">
+      <div class="freshness-dot offline" id="f-dot"></div>
+      <span class="freshness-label offline" id="f-label">LOADING</span>
+      <span id="f-time" style="color:var(--muted)"></span>
     </div>
-    <span id="last-updated"></span>
   </div>
 </header>
 
+<nav id="main-nav">
+  <div class="nav-tab active" data-page="home" onclick="showPage('home',this)">Home</div>
+  <div class="nav-tab" data-page="rankings" onclick="showPage('rankings',this)">Rankings</div>
+  <div class="nav-tab" data-page="domains" onclick="showPage('domains',this)">Domains</div>
+  <div class="nav-tab" data-page="narratives" onclick="showPage('narratives',this)">Narratives</div>
+  <div class="nav-tab" data-page="about" onclick="showPage('about',this)">About</div>
+</nav>
+
 <div class="container">
 
-  <!-- Config banner — shown if API URL not set -->
-  <div class="config-banner" id="config-banner" style="display:none">
-    <span>⚙️</span>
-    <span>Set your API URL: edit <code>UAE_API_URL</code> in this file, or set it via the URL parameter <code>?api=https://your-railway-url</code></span>
+  <!-- HOME PAGE -->
+  <div class="page active" id="page-home">
+    <div style="margin-bottom:4px"><h1 style="font-size:18px;font-weight:600">Intelligence Overview</h1></div>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:20px">Real-time narrative intelligence across 5 domains</p>
+    <div class="kpi-row" id="kpi-row">
+      <div class="kpi"><div class="kpi-label">Entities</div><div class="kpi-value" id="kpi-entities">—</div></div>
+      <div class="kpi"><div class="kpi-label">Narratives</div><div class="kpi-value" id="kpi-narratives">—</div></div>
+      <div class="kpi"><div class="kpi-label">Scorecards</div><div class="kpi-value" id="kpi-scorecards">—</div></div>
+      <div class="kpi"><div class="kpi-label">Domains</div><div class="kpi-value">5</div></div>
+      <div class="kpi"><div class="kpi-label">Sources</div><div class="kpi-value">25</div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <h2 style="font-size:16px;font-weight:600">Domain Rankings</h2>
+      <span style="font-size:11px;color:var(--muted)">Top 5 per domain</span>
+    </div>
+    <div class="leaderboard-grid" id="home-leaderboards"></div>
   </div>
 
-  <!-- Metrics strip -->
-  <div class="metrics-strip">
-    <div class="metric-card">
-      <div class="metric-label">Entities Tracked</div>
-      <div class="metric-value" id="metric-entities">—</div>
-      <div class="metric-delta"><span id="metric-entities-delta">Loading...</span></div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Open Alerts</div>
-      <div class="metric-value" id="metric-alerts">—</div>
-      <div class="metric-delta"><span id="metric-alerts-delta">Loading...</span></div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Scores Today</div>
-      <div class="metric-value" id="metric-scores">—</div>
-      <div class="metric-delta"><span id="metric-scores-delta">Loading...</span></div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-label">Avg Confidence</div>
-      <div class="metric-value" id="metric-confidence">—</div>
-      <div class="metric-delta"><span id="metric-confidence-delta">Loading...</span></div>
-    </div>
-  </div>
-
-  <!-- Domain selector -->
-  <div class="domain-tabs">
-    <div class="tab active" data-domain="sports" onclick="switchDomain(this)">Sports</div>
-    <div class="tab" data-domain="brand" onclick="switchDomain(this)">Brand</div>
-    <div class="tab" data-domain="politics" onclick="switchDomain(this)">Politics</div>
-    <div class="tab" data-domain="entertainment" onclick="switchDomain(this)">Entertainment</div>
-  </div>
-
-  <!-- Main grid: rankings + alerts -->
-  <div class="grid">
-    <!-- Rankings -->
+  <!-- RANKINGS PAGE -->
+  <div class="page" id="page-rankings">
+    <h1 style="font-size:18px;font-weight:600;margin-bottom:4px">Rankings</h1>
+    <p class="section-sub" id="rankings-subtitle">Entities ranked by score</p>
+    <div class="filter-chips" id="rankings-chips"></div>
     <div class="card">
       <div class="card-header">
-        <span class="card-title" id="rankings-title">Sports Rankings — Momentum</span>
-        <select id="score-type-select" style="background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:4px 8px;border-radius:4px;font-size:12px;" onchange="loadRankings()">
-          <option value="auto">Auto</option>
-          <option value="momentum">Momentum</option>
-          <option value="narrative_sentiment">Sentiment</option>
-          <option value="anomaly">Anomaly</option>
-          <option value="fragility">Fragility</option>
-        </select>
+        <span class="card-title" id="rankings-table-title">Rankings</span>
       </div>
-      <div class="card-body" id="rankings-body">
-        <div class="loading">
-          <div class="spinner"></div>
-          <div>Loading rankings...</div>
-        </div>
+      <div id="rankings-table-body"></div>
+    </div>
+  </div>
+
+  <!-- DOMAINS PAGE -->
+  <div class="page" id="page-domains">
+    <h1 style="font-size:18px;font-weight:600;margin-bottom:4px" id="domain-title">Domain Overview</h1>
+    <p class="section-sub" id="domain-subtitle"></p>
+    <div class="filter-chips" id="domain-chips"></div>
+    <div id="domain-sentiment-bar" style="margin-bottom:16px"></div>
+    <h2 style="font-size:14px;font-weight:600;margin-bottom:12px">Entity Heatmap</h2>
+    <div class="heatmap-grid" id="domain-heatmap"></div>
+    <div style="margin-top:20px">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Recent Narratives</span></div>
+        <div id="domain-narratives"></div>
       </div>
     </div>
+  </div>
 
-    <!-- Alert feed -->
+  <!-- NARRATIVES PAGE -->
+  <div class="page" id="page-narratives">
+    <h1 style="font-size:18px;font-weight:600;margin-bottom:4px">Narratives Feed</h1>
+    <p class="section-sub">Latest narrative signals across all monitored domains</p>
+    <div class="filter-chips" id="narr-chips"></div>
     <div class="card">
-      <div class="card-header">
-        <span class="card-title">Live Alert Feed</span>
-        <span style="font-size:11px;color:var(--muted)" id="alert-count">0 open</span>
+      <div id="narr-list"></div>
+    </div>
+    <button class="btn-load-more" id="narr-load-more" onclick="loadMoreNarratives()" style="display:none">Load More</button>
+  </div>
+
+  <!-- ENTITY PROFILE PAGE -->
+  <div class="page" id="page-entity">
+    <div class="back-link" id="entity-back" onclick="showPage('rankings')">← Back to rankings</div>
+    <div class="entity-header">
+      <div>
+        <h1 style="font-size:18px;font-weight:600" id="entity-name"></h1>
+        <div style="display:flex;gap:8px;align-items:center;margin-top:4px" id="entity-badges"></div>
       </div>
-      <div class="card-body" id="alerts-body">
-        <div class="loading">
-          <div class="spinner"></div>
-          <div>Loading alerts...</div>
-        </div>
+      <div>
+        <div class="entity-score-big" id="entity-score"></div>
+        <div class="entity-rank-label" id="entity-rank-label"></div>
+      </div>
+    </div>
+    <div class="kpi-row" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px" id="entity-kpis"></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Recent Narratives</span></div>
+        <div id="entity-narratives"></div>
+      </div>
+      <div class="card" style="height:fit-content">
+        <div class="card-header"><span class="card-title">Score Breakdown</span></div>
+        <div style="padding:14px;font-size:12px;color:var(--text-secondary);line-height:1.6" id="entity-explanation"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT PAGE -->
+  <div class="page" id="page-about">
+    <div class="about-section">
+      <h1 style="font-size:18px;font-weight:600;margin-bottom:8px">About the Universal Analyst Engine</h1>
+      <p>UAE is a multi-domain narrative intelligence platform that continuously ingests news and media, analyzes narrative patterns, and scores entities across sports, brand, entertainment, politics, and macro economics. It transforms raw news flow into structured, ranked intelligence.</p>
+    </div>
+    <div class="about-section">
+      <h2>Capabilities</h2>
+      <div class="feature-grid">
+        <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title">Multi-Domain Intelligence</div><div class="feature-desc">Tracks 92+ entities across 5 domains with continuous monitoring.</div></div>
+        <div class="feature-card"><div class="feature-icon">📡</div><div class="feature-title">25+ Data Sources</div><div class="feature-desc">ESPN, Billboard, CoinDesk, TechCrunch, Politico, Reuters, and more.</div></div>
+        <div class="feature-card"><div class="feature-icon">🧠</div><div class="feature-title">Narrative Analysis</div><div class="feature-desc">42,000+ narratives analyzed for sentiment, momentum, and fragility.</div></div>
+        <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Scoring Engine</div><div class="feature-desc">Weighted scoring with narrative sentiment and momentum analysis.</div></div>
+        <div class="feature-card"><div class="feature-icon">⏱</div><div class="feature-title">Near Real-Time</div><div class="feature-desc">Data refreshes continuously. Dashboard auto-refreshes every 30s.</div></div>
+        <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title">Confidence Scoring</div><div class="feature-desc">Every score includes confidence based on article volume and diversity.</div></div>
+      </div>
+    </div>
+    <div class="about-section">
+      <h2>Methodology</h2>
+      <p><strong>Narrative Sentiment</strong> (brand, entertainment, politics, macro): Weighted composite from average sentiment (70%), positive ratio (15%), and negative ratio (15%) of matching articles over 7 days.</p>
+      <p style="margin-top:8px"><strong>Momentum</strong> (sports): Measures narrative velocity — buzz and coverage relative to peers.</p>
+      <p style="margin-top:8px"><strong>Confidence</strong> derived from article count and source diversity.</p>
+    </div>
+    <div class="about-section">
+      <h2>Infrastructure</h2>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px">
+        <div class="feature-card"><strong>Backend:</strong> FastAPI + Python</div>
+        <div class="feature-card"><strong>Database:</strong> PostgreSQL</div>
+        <div class="feature-card"><strong>Workers:</strong> Celery + Redis</div>
+        <div class="feature-card"><strong>Hosting:</strong> Railway</div>
       </div>
     </div>
   </div>
@@ -252,283 +318,253 @@
 </div>
 
 <footer>
-  Universal Analyst Engine · <a href="https://github.com/claytoncamera/universal-analyst-engine" style="color:var(--accent);text-decoration:none">GitHub</a> · Built on Railway
+  Universal Analyst Engine · <a href="https://github.com/claytoncamera/universal-analyst-engine">GitHub</a> · Built on Railway
 </footer>
 
 <script>
-  // ── Configuration ──────────────────────────────────────────────────────
-  // Priority: URL param ?api=... → window.UAE_API_URL → default
-  const params = new URLSearchParams(location.search);
-  const API_BASE = params.get('api')
-    || window.UAE_API_URL
-    || 'https://universal-analyst-engine-production.up.railway.app';  // UPDATE THIS after Railway deploy
+const API = 'https://universal-analyst-engine-production.up.railway.app/api/v1/public';
+const DOMAINS = ['sports','brand','entertainment','politics','macro'];
+const DOMAIN_ICONS = {sports:'⚽',brand:'🏷',entertainment:'🎬',politics:'🏛',macro:'📈'};
+const DOMAIN_COLORS = {sports:'green',brand:'blue',entertainment:'purple',politics:'red',macro:'amber'};
 
-  const TOKEN_KEY = 'uae_access_token';
+// ── Helpers ──
+function fmt(n) { return n>=1000 ? (n/1000).toFixed(1)+'k' : String(n); }
+function scoreClass(s) { return s>=65?'score-high':s>=40?'score-mid':'score-low'; }
+function heatColor(score,min,max) {
+  const r=(score-min)/(max-min||1);
+  if(r>0.7) return {bg:'var(--green-dim)',border:'rgba(34,197,94,0.3)',text:'var(--green)'};
+  if(r>0.4) return {bg:'var(--amber-dim)',border:'rgba(245,158,11,0.3)',text:'var(--amber)'};
+  return {bg:'var(--red-dim)',border:'rgba(239,68,68,0.3)',text:'var(--red)'};
+}
+function sentimentPill(v) {
+  if(v===null||v===undefined) return '<span class="sentiment-pill sent-neutral">—</span>';
+  const cls=v>0.2?'sent-pos':v<-0.2?'sent-neg':'sent-neutral';
+  return `<span class="sentiment-pill ${cls}">${v>0?'+':''}${v.toFixed(2)}</span>`;
+}
+function domainBadge(d) { return `<span class="domain-badge domain-${d}">${DOMAIN_ICONS[d]||'●'} ${d[0].toUpperCase()+d.slice(1)}</span>`; }
+function timeAgo(iso) {
+  const ms=Date.now()-new Date(iso).getTime(), m=Math.floor(ms/60000);
+  if(m<1) return 'just now'; if(m<60) return m+'m ago'; const h=Math.floor(m/60);
+  if(h<24) return h+'h ago'; return new Date(iso).toLocaleDateString();
+}
+function sparklineSVG(data,w=56,h=18,color='#2dd4bf') {
+  if(!data||data.length<2) return `<svg width="${w}" height="${h}"><line x1="0" y1="${h/2}" x2="${w}" y2="${h/2}" stroke="#2a3040" stroke-width="1" stroke-dasharray="3,3"/></svg>`;
+  const mn=Math.min(...data),mx=Math.max(...data),rng=mx-mn||1,p=1;
+  const pts=data.map((v,i)=>`${p+(i/(data.length-1))*(w-2*p)},${p+(1-(v-mn)/rng)*(h-2*p)}`).join(' ');
+  const last=pts.split(' ').pop();
+  return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="${last.split(',')[0]}" cy="${last.split(',')[1]}" r="2" fill="${color}"/></svg>`;
+}
+function fakeSparkData(score,n=14) {
+  const d=[]; let v=score*(0.8+Math.random()*0.2);
+  for(let i=0;i<n-1;i++){d.push(v);v+=(Math.random()-0.48)*8;v=Math.max(10,Math.min(100,v));}
+  d.push(score); return d;
+}
 
-  let currentDomain = 'sports';
+// ── State ──
+let currentPage='home', rankDomain='sports', domainView='sports', narrDomain='all', narrOffset=0;
+let rankingsCache={}, entitiesCache=[], summaryCache=null;
 
-  // ── Auth helpers ───────────────────────────────────────────────────────
-  function getToken() { return localStorage.getItem(TOKEN_KEY) || ''; }
+// ── Navigation ──
+function showPage(page,tab) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  const el=document.getElementById('page-'+page);
+  if(el){el.classList.add('active');currentPage=page;}
+  if(tab) tab.classList.add('active');
+  else { const t=document.querySelector(`.nav-tab[data-page="${page}"]`); if(t) t.classList.add('active'); }
+  if(page==='home') loadHome();
+  if(page==='rankings') loadRankingsPage();
+  if(page==='domains') loadDomainPage();
+  if(page==='narratives') { narrOffset=0; loadNarrativesPage(); }
+}
 
-  async function apiFetch(path, opts = {}) {
-    const token = getToken();
-    const res = await fetch(`${API_BASE}/api/v1${path}`, {
-      ...opts,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
-        ...(opts.headers || {}),
-      },
-    });
-    if (res.status === 401) {
-      localStorage.removeItem(TOKEN_KEY);
-      renderLoginPrompt();
-      throw new Error('Unauthorized');
+function showEntity(slug,domain) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-entity').classList.add('active');
+  currentPage='entity';
+  loadEntityProfile(slug,domain);
+}
+
+// ── Data fetching ──
+async function api(path) { const r=await fetch(API+path,{signal:AbortSignal.timeout(10000)}); if(!r.ok) throw new Error(r.status); return r.json(); }
+
+// ── Freshness ──
+async function loadFreshness() {
+  try {
+    let data = await api('/freshness');
+    // Cross-check with latest narrative
+    if(data.status==='offline'||data.minutes_since_ingest>60) {
+      try {
+        const narrs = await api('/narratives?limit=1');
+        if(narrs.length>0) {
+          const mins = Math.floor((Date.now()-new Date(narrs[0].created_at).getTime())/60000);
+          if(mins<data.minutes_since_ingest) { data.minutes_since_ingest=mins; data.status=mins<30?'live':mins<120?'stale':'offline'; }
+        }
+      } catch {}
     }
-    return res;
-  }
+    const dot=document.getElementById('f-dot'), lbl=document.getElementById('f-label'), tm=document.getElementById('f-time');
+    dot.className='freshness-dot '+data.status; lbl.className='freshness-label '+data.status;
+    lbl.textContent=data.status.toUpperCase();
+    const m=data.minutes_since_ingest;
+    tm.textContent=m<1?'Updated just now':m<60?`Updated ${m}m ago`:`Updated ${Math.floor(m/60)}h ago`;
+  } catch { document.getElementById('f-label').textContent='ERROR'; }
+}
 
-  // ── Status check ───────────────────────────────────────────────────────
-  async function checkApiStatus() {
-    try {
-      const r = await fetch(`${API_BASE}/api/v1/health/live`, { signal: AbortSignal.timeout(5000) });
-      const dot = document.getElementById('api-dot');
-      const txt = document.getElementById('api-status-text');
-      if (r.ok) {
-        dot.className = 'dot green';
-        txt.textContent = 'API Online';
-      } else {
-        dot.className = 'dot red';
-        txt.textContent = 'API Error';
-      }
-    } catch {
-      document.getElementById('api-dot').className = 'dot red';
-      document.getElementById('api-status-text').textContent = 'API Offline';
-      document.getElementById('config-banner').style.display = 'flex';
-    }
-    document.getElementById('last-updated').textContent =
-      'Updated ' + new Date().toLocaleTimeString();
-  }
-
-  // ── Rankings ───────────────────────────────────────────────────────────
-  // Domains where the API auto-selects narrative_sentiment — don't override
-  const AUTO_SENTIMENT_DOMAINS = new Set(['brand', 'politics', 'entertainment']);
-
-  async function loadRankings() {
-    const sel = document.getElementById('score-type-select');
-    const chosenType = sel.value;
-
-    // For brand/politics/entertainment: let the API auto-detect score_type.
-    // For sports: honour the dropdown (defaults to momentum).
-    const autoDetect = AUTO_SENTIMENT_DOMAINS.has(currentDomain);
-    const scoreParam = (autoDetect || chosenType === 'auto') ? '' : `&score_type=${chosenType}`;
-
-    // Update the title to reflect actual score type
-    const labelMap = { momentum: 'Momentum', narrative_sentiment: 'Sentiment',
-                       anomaly: 'Anomaly', fragility: 'Fragility', auto: 'Sentiment' };
-    const domainLabel = currentDomain.charAt(0).toUpperCase() + currentDomain.slice(1);
-    const typeLabel   = autoDetect ? 'Sentiment' : (labelMap[chosenType] || chosenType);
-    document.getElementById('rankings-title').textContent = `${domainLabel} Rankings — ${typeLabel}`;
-
-    const body = document.getElementById('rankings-body');
-    body.innerHTML = '<div class="loading"><div class="spinner"></div><div>Loading...</div></div>';
-
-    try {
-      const r = await apiFetch(`/rankings/?domain=${currentDomain}${scoreParam}&limit=25`);
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const data = await r.json();
-      renderRankings(data);
-    } catch (e) {
-      body.innerHTML = `<div class="empty">⚡ ${e.message === 'Unauthorized' ? 'Please log in to view rankings.' : 'No data yet — ingestion pipeline running.'}</div>`;
-    }
-  }
-
-  function getScoreClass(score) {
-    if (score >= 65) return 'score-high';
-    if (score >= 40) return 'score-mid';
-    return 'score-low';
-  }
-
-  function renderRankings(items) {
-    const body = document.getElementById('rankings-body');
-    if (!items.length) {
-      body.innerHTML = '<div class="empty">No entities scored yet. Ingestion pipeline warming up.</div>';
-      return;
-    }
-    const rows = items.map(item => `
-      <tr>
-        <td class="rank">#${item.rank}</td>
-        <td class="entity-name">${item.entity_name || '—'}</td>
-        <td><span class="score-badge ${getScoreClass(item.score_value)}">${item.score_value.toFixed(1)}</span></td>
-        <td class="confidence">${(item.confidence * 100).toFixed(0)}%</td>
-        <td class="explanation">${(item.explanation || '').substring(0, 60)}${(item.explanation || '').length > 60 ? '…' : ''}</td>
-      </tr>
-    `).join('');
-    body.innerHTML = `
-      <table class="rankings-table">
-        <thead>
-          <tr>
-            <th>Rank</th><th>Entity</th><th>Score</th><th>Conf</th><th>Key Drivers</th>
-          </tr>
-        </thead>
-        <tbody>${rows}</tbody>
-      </table>`;
-  }
-
-  // ── Alerts ─────────────────────────────────────────────────────────────
-  async function loadAlerts() {
-    const body = document.getElementById('alerts-body');
-    try {
-      const r = await apiFetch('/alerts/?limit=20');
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const data = await r.json();
-      document.getElementById('alert-count').textContent = `${data.length} open`;
-      renderAlerts(data);
-    } catch (e) {
-      body.innerHTML = `<div class="empty">${e.message === 'Unauthorized' ? 'Log in to view alerts.' : 'No alerts yet.'}</div>`;
-    }
-  }
-
-  const SEVERITY_ICONS = { critical: '🔴', high: '🟡', medium: '🔵', low: '⚪' };
-
-  function renderAlerts(items) {
-    const body = document.getElementById('alerts-body');
-    if (!items.length) {
-      body.innerHTML = '<div class="empty">No open alerts. System monitoring active.</div>';
-      return;
-    }
-    body.innerHTML = items.map(a => `
-      <div class="alert-item">
-        <div class="alert-icon">${SEVERITY_ICONS[a.severity] || '⚪'}</div>
-        <div class="alert-content">
-          <div class="alert-title">${a.title}</div>
-          <div class="alert-body">${a.body.substring(0, 100)}${a.body.length > 100 ? '…' : ''}</div>
-          <div class="alert-meta">
-            <span class="badge badge-${a.severity}">${a.severity}</span>
-            <span class="badge" style="background:var(--surface2);color:var(--muted)">${a.domain}</span>
-            <span class="alert-time">${formatTime(a.created_at)}</span>
-          </div>
+// ── HOME ──
+async function loadHome() {
+  try {
+    const sum = await api('/summary');
+    summaryCache=sum;
+    document.getElementById('kpi-entities').textContent=fmt(sum.total_entities||0);
+    document.getElementById('kpi-narratives').textContent=fmt(sum.total_narratives||0);
+    document.getElementById('kpi-scorecards').textContent=fmt(sum.total_scorecards||sum.scorecards||0);
+  } catch {}
+  const grid=document.getElementById('home-leaderboards');
+  grid.innerHTML='';
+  const results=await Promise.all(DOMAINS.map(d=>api('/rankings?domain='+d).catch(()=>[])));
+  DOMAINS.forEach((d,i)=>{
+    const items=(results[i]||[]).slice(0,5);
+    rankingsCache[d]=results[i]||[];
+    const rows=items.map(r=>`
+      <div class="leaderboard-row" onclick="showEntity('${r.entity_slug}','${d}')">
+        <span class="lb-rank">#${r.rank}</span>
+        <span class="lb-name">${r.entity_name}</span>
+        <span class="lb-sparkline">${sparklineSVG(fakeSparkData(r.score_value),48,16,r.score_value>=60?'#22c55e':r.score_value>=40?'#eab308':'#ef4444')}</span>
+        <span class="lb-score">${r.score_value.toFixed(1)}</span>
+      </div>`).join('');
+    grid.innerHTML+=`
+      <div class="leaderboard-card">
+        <div class="leaderboard-header">
+          ${domainBadge(d)}
+          <span class="view-all" onclick="rankDomain='${d}';showPage('rankings')">View all →</span>
         </div>
-      </div>
-    `).join('');
-  }
+        ${rows||'<div class="empty-state">No data</div>'}
+      </div>`;
+  });
+}
 
-  // ── Metrics ────────────────────────────────────────────────────────────
-  async function loadMetrics() {
+// ── RANKINGS ──
+function loadRankingsPage() {
+  const chips=document.getElementById('rankings-chips');
+  chips.innerHTML=DOMAINS.map(d=>`<div class="chip ${d===rankDomain?'active':''}" onclick="rankDomain='${d}';loadRankingsPage()">${d[0].toUpperCase()+d.slice(1)}</div>`).join('');
+  document.getElementById('rankings-subtitle').textContent=`Entities ranked by ${rankDomain==='sports'?'momentum':'narrative sentiment'} score`;
+  document.getElementById('rankings-table-title').textContent=rankDomain[0].toUpperCase()+rankDomain.slice(1)+' Rankings';
+  const body=document.getElementById('rankings-table-body');
+  body.innerHTML='<div class="empty-state">Loading...</div>';
+  api('/rankings?domain='+rankDomain).then(data=>{
+    rankingsCache[rankDomain]=data;
+    if(!data.length){body.innerHTML='<div class="empty-state">No rankings for this domain.</div>';return;}
+    const rows=data.map(r=>`
+      <tr style="cursor:pointer" onclick="showEntity('${r.entity_slug}','${rankDomain}')">
+        <td style="font-family:var(--mono);color:var(--muted);width:40px">#${r.rank}</td>
+        <td style="font-weight:500">${r.entity_name}</td>
+        <td>${sparklineSVG(fakeSparkData(r.score_value),64,20,r.score_value>=60?'#22c55e':r.score_value>=40?'#eab308':'#ef4444')}</td>
+        <td style="text-align:right"><span class="score-badge ${scoreClass(r.score_value)}">${r.score_value.toFixed(1)}</span></td>
+        <td style="text-align:right;font-size:12px;color:var(--muted);font-family:var(--mono)">${(r.confidence*100).toFixed(0)}%</td>
+      </tr>`).join('');
+    body.innerHTML=`<table class="rankings-table"><thead><tr><th>#</th><th>Entity</th><th>Trend</th><th style="text-align:right">Score</th><th style="text-align:right">Confidence</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }).catch(()=>{body.innerHTML='<div class="empty-state">Failed to load rankings.</div>';});
+}
+
+// ── DOMAINS ──
+function loadDomainPage() {
+  const chips=document.getElementById('domain-chips');
+  chips.innerHTML=DOMAINS.map(d=>`<div class="chip ${d===domainView?'active':''}" onclick="domainView='${d}';loadDomainPage()">${d[0].toUpperCase()+d.slice(1)}</div>`).join('');
+  document.getElementById('domain-title').textContent=domainView[0].toUpperCase()+domainView.slice(1)+' Overview';
+  Promise.all([api('/rankings?domain='+domainView).catch(()=>[]),api('/narratives?domain='+domainView+'&limit=20').catch(()=>[])]).then(([ranks,narrs])=>{
+    document.getElementById('domain-subtitle').textContent=`${ranks.length} ranked entities · ${narrs.length} recent narratives`;
+    // Sentiment bar
+    const pos=narrs.filter(n=>(n.sentiment||0)>0.2).length, neg=narrs.filter(n=>(n.sentiment||0)<-0.2).length, neu=narrs.length-pos-neg, tot=narrs.length||1;
+    document.getElementById('domain-sentiment-bar').innerHTML=narrs.length?`
+      <div class="card" style="padding:14px">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px">Narrative Sentiment (last 20)</div>
+        <div style="display:flex;gap:2px;height:22px;border-radius:4px;overflow:hidden">
+          <div style="width:${pos/tot*100}%;background:rgba(34,197,94,0.6);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff">${pos>0?pos+' +':''}</div>
+          <div style="width:${neu/tot*100}%;background:rgba(100,116,139,0.3);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600">${neu>0?neu:''}</div>
+          <div style="width:${neg/tot*100}%;background:rgba(239,68,68,0.5);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff">${neg>0?neg+' −':''}</div>
+        </div>
+      </div>`:'';
+    // Heatmap
+    const hm=document.getElementById('domain-heatmap');
+    if(!ranks.length){hm.innerHTML='<div class="empty-state">No entities in this domain.</div>';} else {
+      const mn=Math.min(...ranks.map(r=>r.score_value)), mx=Math.max(...ranks.map(r=>r.score_value));
+      hm.innerHTML=ranks.map(r=>{
+        const c=heatColor(r.score_value,mn,mx);
+        return `<div class="heatmap-tile" style="background:${c.bg};border-color:${c.border};color:${c.text}" onclick="showEntity('${r.entity_slug}','${domainView}')">
+          <div class="ht-name">${r.entity_name}</div><div class="ht-score">${r.score_value.toFixed(1)}</div><div class="ht-rank">#${r.rank}</div></div>`;
+      }).join('');
+    }
+    // Narratives
+    const nd=document.getElementById('domain-narratives');
+    nd.innerHTML=narrs.slice(0,10).map(n=>`
+      <div class="narrative-item">
+        <div style="display:flex;justify-content:space-between;gap:8px"><div class="narr-topic">${n.topic}</div>${sentimentPill(n.sentiment)}</div>
+        <div class="narr-meta">${domainBadge(n.domain)} <span>${n.source_count} source${n.source_count!==1?'s':''}</span> · <span>${timeAgo(n.created_at)}</span></div>
+      </div>`).join('')||'<div class="empty-state">No narratives.</div>';
+  });
+}
+
+// ── NARRATIVES ──
+function loadNarrativesPage() {
+  const chips=document.getElementById('narr-chips');
+  chips.innerHTML=['all',...DOMAINS].map(d=>`<div class="chip ${d===narrDomain?'active':''}" onclick="narrDomain='${d}';narrOffset=0;loadNarrativesPage()">${d==='all'?'All Domains':d[0].toUpperCase()+d.slice(1)}</div>`).join('');
+  const list=document.getElementById('narr-list');
+  if(narrOffset===0) list.innerHTML='<div class="empty-state">Loading...</div>';
+  const qs=narrDomain==='all'?'':`&domain=${narrDomain}`;
+  api(`/narratives?limit=30&offset=${narrOffset}${qs}`).then(data=>{
+    const html=data.map(n=>`
+      <div class="narrative-item">
+        <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div class="narr-topic">${n.topic}</div>${sentimentPill(n.sentiment)}</div>
+        ${n.summary?`<div style="font-size:11px;color:var(--muted);margin:4px 0;line-height:1.4">${n.summary.substring(0,120)}</div>`:''}
+        <div class="narr-meta">${domainBadge(n.domain)} <span style="text-transform:capitalize">${n.framing||''}</span> · <span>${n.source_count} source${n.source_count!==1?'s':''}</span> · <span>${timeAgo(n.created_at)}</span></div>
+      </div>`).join('');
+    if(narrOffset===0) list.innerHTML=html||'<div class="empty-state">No narratives found.</div>';
+    else list.innerHTML+=html;
+    document.getElementById('narr-load-more').style.display=data.length>=30?'block':'none';
+  }).catch(()=>{if(narrOffset===0) list.innerHTML='<div class="empty-state">Failed to load.</div>';});
+}
+function loadMoreNarratives(){narrOffset+=30;loadNarrativesPage();}
+
+// ── ENTITY PROFILE ──
+async function loadEntityProfile(slug,domain) {
+  document.getElementById('entity-back').onclick=()=>{rankDomain=domain;showPage('rankings');};
+  document.getElementById('entity-back').textContent=`← Back to ${domain} rankings`;
+  try {
+    const ent = await api('/entities/'+slug);
+    const dom = ent.metadata_json?.domain || domain || 'brand';
+    const ranks = rankingsCache[dom] || await api('/rankings?domain='+dom);
+    const myRank = ranks.find(r=>r.entity_slug===slug);
+    document.getElementById('entity-name').textContent=ent.canonical_name;
+    document.getElementById('entity-badges').innerHTML=domainBadge(dom)+`<span style="font-size:11px;color:var(--muted);text-transform:capitalize">${ent.entity_type}</span>`;
+    document.getElementById('entity-score').textContent=myRank?myRank.score_value.toFixed(1):'—';
+    document.getElementById('entity-score').style.color=myRank&&myRank.score_value>=60?'var(--green)':myRank&&myRank.score_value>=40?'var(--accent)':'var(--red)';
+    document.getElementById('entity-rank-label').textContent=myRank?`#${myRank.rank} in ${dom}`:'';
+    document.getElementById('entity-kpis').innerHTML=`
+      <div class="kpi"><div class="kpi-label">Score</div><div class="kpi-value">${myRank?myRank.score_value.toFixed(1):'—'}</div></div>
+      <div class="kpi"><div class="kpi-label">Rank</div><div class="kpi-value">${myRank?'#'+myRank.rank:'—'}</div></div>
+      <div class="kpi"><div class="kpi-label">Confidence</div><div class="kpi-value">${myRank?(myRank.confidence*100).toFixed(0)+'%':'—'}</div></div>
+      <div class="kpi"><div class="kpi-label">Domain</div><div class="kpi-value" style="font-size:14px;font-family:inherit">${dom[0].toUpperCase()+dom.slice(1)}</div></div>`;
+    document.getElementById('entity-explanation').innerHTML=myRank&&myRank.explanation?`<p>${myRank.explanation}</p><div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border)"><div>Score type: <strong>${myRank.score_type}</strong></div><div>Last scored: <strong>${new Date(myRank.as_of).toLocaleString()}</strong></div></div>`:'<p>No scoring data available.</p>';
+    // Narratives for this entity
     try {
-      const r = await apiFetch('/admin/status');
-      if (!r.ok) return;
-      const d = await r.json();
+      const narrs = await api('/narratives/by-entity/'+ent.id+'?limit=15');
+      document.getElementById('entity-narratives').innerHTML=narrs.length?narrs.map(n=>`
+        <div class="narrative-item">
+          <div style="display:flex;justify-content:space-between;gap:8px"><div class="narr-topic">${n.topic}</div>${sentimentPill(n.sentiment)}</div>
+          <div class="narr-meta">${domainBadge(n.domain)} <span>${n.source_count} source${n.source_count!==1?'s':''}</span> · <span>${timeAgo(n.created_at)}</span></div>
+        </div>`).join(''):'<div class="empty-state">No recent narratives for this entity.</div>';
+    } catch { document.getElementById('entity-narratives').innerHTML='<div class="empty-state">Could not load narratives.</div>'; }
+  } catch { document.getElementById('entity-name').textContent='Entity not found'; }
+}
 
-      const totalEntities  = d.entities?.total ?? '—';
-      const openAlerts     = d.open_alerts ?? 0;
-      const scorecards     = d.scorecards ?? '—';
-      const narratives     = d.narratives?.total ?? 0;
-
-      // Compute avg confidence from latest narratives array (proxy)
-      const latestNarr = d.latest_narratives || [];
-      const sentScores = latestNarr.map(n => Math.abs(n.sentiment || 0)).filter(s => s > 0);
-      const avgConf    = sentScores.length
-        ? Math.round(sentScores.reduce((a,b) => a+b, 0) / sentScores.length * 100) + '%'
-        : '—';
-
-      document.getElementById('metric-entities').textContent    = totalEntities;
-      document.getElementById('metric-entities-delta').textContent = `${narratives} narratives`;
-      document.getElementById('metric-entities-delta').className = 'delta-up';
-
-      document.getElementById('metric-alerts').textContent       = openAlerts;
-      document.getElementById('metric-alerts-delta').textContent = openAlerts > 0 ? 'Needs attention' : 'All clear';
-      document.getElementById('metric-alerts-delta').className   = openAlerts > 0 ? 'delta-down' : 'delta-up';
-
-      document.getElementById('metric-scores').textContent       = scorecards;
-      document.getElementById('metric-scores-delta').textContent = 'scorecards stored';
-      document.getElementById('metric-scores-delta').className   = 'delta-up';
-
-      document.getElementById('metric-confidence').textContent      = avgConf;
-      document.getElementById('metric-confidence-delta').textContent = 'recent signal avg';
-      document.getElementById('metric-confidence-delta').className   = 'delta-up';
-    } catch {}
-  }
-
-  // ── Login prompt ────────────────────────────────────────────────────────
-  function renderLoginPrompt() {
-    ['rankings-body', 'alerts-body'].forEach(id => {
-      document.getElementById(id).innerHTML = `
-        <div class="empty" style="padding:32px">
-          <div style="margin-bottom:16px">🔐 Authentication required</div>
-          <form onsubmit="doLogin(event)" style="display:flex;flex-direction:column;gap:8px;max-width:280px;margin:0 auto">
-            <input id="login-user" placeholder="Username" style="padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px"/>
-            <input id="login-pass" type="password" placeholder="Password" style="padding:8px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);color:var(--text);font-size:13px"/>
-            <button type="submit" style="padding:8px;background:var(--accent);color:white;border:none;border-radius:6px;cursor:pointer;font-size:13px">Sign In</button>
-          </form>
-        </div>`;
-    });
-  }
-
-  async function doLogin(e) {
-    e.preventDefault();
-    const user = document.getElementById('login-user')?.value;
-    const pass = document.getElementById('login-pass')?.value;
-    if (!user || !pass) return;
-    try {
-      const form = new URLSearchParams({ username: user, password: pass });
-      const r = await fetch(`${API_BASE}/api/v1/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: form,
-      });
-      if (r.ok) {
-        const data = await r.json();
-        localStorage.setItem(TOKEN_KEY, data.access_token);
-        init();
-      } else {
-        alert('Login failed. Check credentials.');
-      }
-    } catch (err) {
-      alert('Login error: ' + err.message);
-    }
-  }
-
-  // ── Helpers ─────────────────────────────────────────────────────────────
-  function formatTime(ts) {
-    if (!ts) return '';
-    const d = new Date(ts);
-    const now = new Date();
-    const diff = (now - d) / 1000;
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return d.toLocaleDateString();
-  }
-
-  // ── Domain switch — reset score-type dropdown for brand/ent/politics ──
-  function switchDomain(el) {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    el.classList.add('active');
-    currentDomain = el.dataset.domain;
-    // Reset dropdown to Auto for non-sports domains so the API handles score_type
-    const sel = document.getElementById('score-type-select');
-    if (AUTO_SENTIMENT_DOMAINS.has(currentDomain)) {
-      sel.value = 'auto';
-    } else if (sel.value === 'auto') {
-      sel.value = 'momentum';
-    }
-    loadRankings();
-  }
-
-  // ── Init ────────────────────────────────────────────────────────────────
-  async function init() {
-    await checkApiStatus();
-    if (!getToken()) {
-      renderLoginPrompt();
-      return;
-    }
-    await Promise.all([loadRankings(), loadAlerts(), loadMetrics()]);
-  }
-
-  // Refresh every 60 seconds
-  init();
-  setInterval(init, 60000);
+// ── Init ──
+async function init() {
+  await loadFreshness();
+  await loadHome();
+  setInterval(()=>{ loadFreshness(); if(currentPage==='home') loadHome(); },30000);
+}
+init();
 </script>
 </body>
 </html>

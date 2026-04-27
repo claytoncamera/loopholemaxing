@@ -2019,6 +2019,96 @@
   <!-- UPGRADED IQ SYSTEM — inject this content INSIDE the existing iq-system section, AFTER the existing "Last Updated" div -->
 <!-- IQ v4.0 additions only: Predictive Quality, Cognitive Processes, Learning Diagnostics -->
 
+  <!-- MEASURED FORECAST ACCURACY (reads from /btc-brain/ledger/public/accuracy.json) -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 12px;">Measured Forecast Accuracy</h3>
+  <div id="measured-accuracy-panel" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:20px;">
+    <div style="font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">
+      Source: <span style="color:#d2a8ff;font-family:monospace;">ledger/public/accuracy.json</span>
+      <span style="color:#8b949e;"> · append-only forecast ledger · resolved against exact-horizon candle close</span>
+    </div>
+    <div id="measured-accuracy-status" style="font-size:13px;color:#d29922;margin-bottom:12px;">
+      Accuracy measuring — waiting for enough resolved forecasts.
+    </div>
+    <div id="measured-accuracy-grid" style="display:none;grid-template-columns:repeat(4,1fr);gap:14px;text-align:center;">
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Sample size</div>
+        <div id="ma-n" style="font-size:22px;font-weight:800;color:#e6edf3;font-family:monospace;">—</div>
+        <div style="font-size:10px;color:#8b949e;">resolved forecasts</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Hit rate</div>
+        <div id="ma-hit" style="font-size:22px;font-weight:800;color:#3fb950;font-family:monospace;">—</div>
+        <div id="ma-baseline" style="font-size:10px;color:#8b949e;">vs baseline —</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Brier</div>
+        <div id="ma-brier" style="font-size:22px;font-weight:800;color:#58a6ff;font-family:monospace;">—</div>
+        <div style="font-size:10px;color:#8b949e;">lower is better</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Log-loss</div>
+        <div id="ma-logloss" style="font-size:22px;font-weight:800;color:#d2a8ff;font-family:monospace;">—</div>
+        <div style="font-size:10px;color:#8b949e;">lower is better</div>
+      </div>
+    </div>
+    <div id="ma-rolling" style="display:none;margin-top:14px;font-size:11px;color:#8b949e;font-family:monospace;"></div>
+    <div id="ma-updated" style="margin-top:12px;font-size:10px;color:#8b949e;"></div>
+  </div>
+  <script>
+  (function(){
+    function fmtPct(x){ return (x==null) ? '—' : (Math.round(x*1000)/10).toFixed(1)+'%'; }
+    function fmt3(x){ return (x==null) ? '—' : (Math.round(x*1000)/1000).toFixed(3); }
+    function applyAccuracy(d){
+      var status = document.getElementById('measured-accuracy-status');
+      var grid   = document.getElementById('measured-accuracy-grid');
+      var rolling= document.getElementById('ma-rolling');
+      var updated= document.getElementById('ma-updated');
+      if(!d || !d.global || !d.global.display_ready){
+        status.textContent = 'Accuracy measuring — waiting for enough resolved forecasts.';
+        status.style.color = '#d29922';
+        grid.style.display = 'none';
+        rolling.style.display = 'none';
+        if(d && d.total_forecasts!=null){
+          updated.textContent = 'Ledger size: '+d.total_forecasts+' issued · '+
+            d.total_resolved+' resolved · min for display n≥'+d.min_n_display+
+            ' · last refresh '+(d.generated_at||'unknown');
+        }
+        return;
+      }
+      var g = d.global;
+      status.textContent = 'Out-of-sample measured accuracy ('+g.n+' resolved forecasts)';
+      status.style.color = '#3fb950';
+      grid.style.display = 'grid';
+      document.getElementById('ma-n').textContent       = g.n;
+      document.getElementById('ma-hit').textContent     = fmtPct(g.hit_rate);
+      document.getElementById('ma-brier').textContent   = fmt3(g.brier);
+      document.getElementById('ma-logloss').textContent = fmt3(g.logloss);
+      var bl = (g.baseline_hit_rate==null) ? '' :
+        'baseline '+fmtPct(g.baseline_hit_rate)+' · brier '+fmt3(g.baseline_brier);
+      document.getElementById('ma-baseline').textContent = bl;
+      var rolls = ['7d','30d','90d'].map(function(k){
+        var r = d.rolling && d.rolling[k];
+        if(!r) return k+': —';
+        return k+': n='+r.n+' · hit '+fmtPct(r.hit_rate)+' · brier '+fmt3(r.brier);
+      }).join('  |  ');
+      rolling.textContent = rolls;
+      rolling.style.display = 'block';
+      updated.textContent = 'Last updated: '+(d.generated_at||'unknown')+
+        ' · '+d.total_resolved+' / '+d.total_forecasts+' resolved · '+
+        d.metrics_version;
+    }
+    function load(){
+      fetch('ledger/public/accuracy.json', {cache:'no-store'})
+        .then(function(r){ if(!r.ok) throw new Error('no accuracy.json'); return r.json(); })
+        .then(applyAccuracy)
+        .catch(function(){ applyAccuracy(null); });
+    }
+    if(document.readyState==='loading'){
+      document.addEventListener('DOMContentLoaded', load);
+    } else { load(); }
+  })();
+  </script>
+
   <!-- PREDICTIVE INTELLIGENCE PANEL -->
   <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 12px;">Predictive Intelligence Framework</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
@@ -2139,7 +2229,7 @@
       <div>
         <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Signal Accuracy</div>
         <div style="font-size:26px;font-weight:800;color:#3fb950;font-family:monospace;">64%</div>
-        <div style="font-size:10px;color:#8b949e;">confirmed signals</div>
+        <div style="font-size:10px;color:#8b949e;">illustrative · see Measured Accuracy panel</div>
       </div>
       <div>
         <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">False Signal Rate</div>

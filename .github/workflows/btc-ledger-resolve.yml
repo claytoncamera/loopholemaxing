@@ -1,0 +1,56 @@
+name: BTC Ledger Resolve & Metrics
+
+on:
+  schedule:
+    # Every hour at :07 to avoid the top-of-hour API rush.
+    - cron: '7 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  resolve:
+    name: Resolve open forecasts and refresh accuracy.json
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run unit tests
+        run: |
+          cd btc-brain/ledger
+          python tests/test_ledger.py
+
+      - name: Resolve due forecasts
+        run: |
+          python btc-brain/ledger/scripts/resolve.py \
+            --root btc-brain/ledger/data \
+          | tee /tmp/resolve.json
+
+      - name: Rebuild accuracy.json
+        run: |
+          python btc-brain/ledger/scripts/metrics.py \
+            --root btc-brain/ledger/data \
+            --out  btc-brain/ledger/public/accuracy.json
+
+      - name: Commit ledger updates
+        run: |
+          git config user.name  "btc-brain-bot"
+          git config user.email "btc-brain-bot@users.noreply.github.com"
+          git add btc-brain/ledger/data/resolutions.jsonl \
+                  btc-brain/ledger/public/accuracy.json
+          if git diff --cached --quiet; then
+            echo "No ledger changes to commit."
+          else
+            git commit -m "chore(ledger): resolve due forecasts + refresh accuracy.json"
+            git push
+          fi

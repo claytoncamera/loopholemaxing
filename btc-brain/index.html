@@ -709,6 +709,34 @@
     allocate capital based on anything shown here.
   </div>
 
+  <!-- Phase 2: Source Health Banner (rendered only if artifact loads) -->
+  <div id="source-health-banner" role="status" aria-live="polite" hidden
+       style="background:#0d1117;border-bottom:1px solid #21262d;color:#8b949e;
+              padding:8px 18px;font-size:11px;line-height:1.4;text-align:center;
+              font-family:ui-monospace,Menlo,Consolas,monospace;">
+    <span id="source-health-summary">Source health: loading…</span>
+    <span id="source-health-detail" style="color:#6e7681;"></span>
+  </div>
+  <noscript>
+    <div style="background:#1a1206;border-bottom:1px solid #3a2a0a;color:#f0c674;
+                padding:8px 18px;font-size:12px;text-align:center;">
+      JavaScript is disabled — live source-health and key-level artifacts are unavailable.
+    </div>
+  </noscript>
+
+  <!-- Phase 2: Dynamic Key Levels Panel (rendered only if artifact loads) -->
+  <section id="dynamic-key-levels" hidden aria-labelledby="dyn-kl-title"
+           style="margin:14px 18px;padding:12px 14px;border:1px solid #21262d;
+                  border-radius:8px;background:#0d1117;font-family:ui-monospace,Menlo,Consolas,monospace;">
+    <div id="dyn-kl-title" style="color:#f7931a;font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-bottom:8px;">
+      Dynamic Key Levels <span id="dyn-kl-source" style="color:#8b949e;font-weight:400;text-transform:none;letter-spacing:0;"></span>
+    </div>
+    <div id="dyn-kl-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;font-size:12px;color:#e6edf3;">
+      <!-- Filled by JS. If artifact is missing or status=failed, the panel stays hidden. -->
+    </div>
+    <div id="dyn-kl-note" style="margin-top:8px;color:#8b949e;font-size:11px;"></div>
+  </section>
+
   <!-- Sidebar Overlay (mobile) -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
@@ -5040,6 +5068,136 @@
 })();
 
 
+</script>
+
+<!-- Phase 2: Source health + dynamic key levels reader (transparent, never fabricates) -->
+<script>
+(function () {
+  'use strict';
+  // Resolve relative to this page so it works at /btc-brain/ on Pages.
+  var HEALTH_URL = 'data/public/source_health.json';
+  var LEVELS_URL = 'data/public/key_levels.json';
+
+  function fmtNum(n) {
+    if (n === null || n === undefined || isNaN(n)) return '—';
+    if (Math.abs(n) >= 1000) return Math.round(n).toLocaleString();
+    return Number(n).toFixed(2);
+  }
+
+  function ageSeconds(iso) {
+    if (!iso) return null;
+    var t = Date.parse(iso);
+    if (isNaN(t)) return null;
+    return Math.max(0, Math.floor((Date.now() - t) / 1000));
+  }
+
+  function fmtAge(sec) {
+    if (sec === null) return 'unknown age';
+    if (sec < 90) return sec + 's ago';
+    if (sec < 5400) return Math.round(sec / 60) + 'm ago';
+    return Math.round(sec / 3600) + 'h ago';
+  }
+
+  function setHealth(text, color, detail) {
+    var b = document.getElementById('source-health-banner');
+    var s = document.getElementById('source-health-summary');
+    var d = document.getElementById('source-health-detail');
+    if (!b || !s) return;
+    b.hidden = false;
+    s.textContent = text;
+    s.style.color = color || '#8b949e';
+    if (d) d.textContent = detail ? ' · ' + detail : '';
+  }
+
+  function renderLevels(doc) {
+    var panel = document.getElementById('dynamic-key-levels');
+    var grid = document.getElementById('dyn-kl-grid');
+    var src = document.getElementById('dyn-kl-source');
+    var note = document.getElementById('dyn-kl-note');
+    if (!panel || !grid) return;
+    // Never render fabricated levels.
+    if (!doc || !doc.data || doc.status === 'failed') {
+      panel.hidden = true;
+      return;
+    }
+    var d = doc.data;
+    var rows = [
+      ['Pivot (P)', d.pivot_classic],
+      ['R1', d.r1], ['R2', d.r2],
+      ['S1', d.s1], ['S2', d.s2],
+      ['Recent High (24h)', d.recent_high],
+      ['Recent Low (24h)', d.recent_low],
+      ['SMA 20d', d.sma_20], ['SMA 50d', d.sma_50], ['SMA 200d', d.sma_200],
+      ['Session VWAP', d.vwap_session]
+    ];
+    grid.innerHTML = rows.map(function (r) {
+      var v = r[1];
+      var color = (v === null || v === undefined) ? '#6e7681' : '#e6edf3';
+      var tag = (v === null || v === undefined) ? 'unavailable' : fmtNum(v);
+      return '<div><div style="color:#8b949e;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">' +
+             r[0] + '</div><div style="color:' + color + ';font-weight:700;">' + tag + '</div></div>';
+    }).join('');
+    panel.hidden = false;
+    var srcInfo = doc.inputs || {};
+    var label = '· computed from real closed candles';
+    if (srcInfo.candles_1h_source) label += ' · 1h:' + srcInfo.candles_1h_source;
+    if (srcInfo.candles_1d_source) label += ' · 1d:' + srcInfo.candles_1d_source;
+    if (src) src.textContent = label;
+    if (note) {
+      var msgs = [];
+      if (doc.status !== 'ok') msgs.push('status: ' + doc.status);
+      if (d.notes && d.notes.length) msgs = msgs.concat(d.notes);
+      note.textContent = msgs.join(' · ');
+    }
+  }
+
+  function loadHealth() {
+    fetch(HEALTH_URL, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(function (h) {
+        var overall = h.overall || 'unknown';
+        var color = overall === 'ok' ? '#3fb950'
+                  : overall === 'degraded' ? '#d29922'
+                  : overall === 'failed' ? '#f85149'
+                  : '#8b949e';
+        var parts = [];
+        var srcs = h.sources || {};
+        Object.keys(srcs).forEach(function (k) {
+          var v = srcs[k] || {};
+          parts.push(k + ':' + (v.source || '?') + '(' + (v.status || '?') + ')');
+        });
+        var when = ageSeconds(h.generated_at);
+        setHealth(
+          'Source health: ' + overall.toUpperCase(),
+          color,
+          parts.join(' · ') + (when !== null ? ' · refreshed ' + fmtAge(when) : '')
+        );
+      })
+      .catch(function () {
+        // Artifact missing — keep banner hidden so we never imply live data
+        // when there isn't any. Old paths in this page already render
+        // their own "stale/unavailable" copy.
+        var b = document.getElementById('source-health-banner');
+        if (b) b.hidden = true;
+      });
+  }
+
+  function loadLevels() {
+    fetch(LEVELS_URL, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(renderLevels)
+      .catch(function () {
+        var p = document.getElementById('dynamic-key-levels');
+        if (p) p.hidden = true;
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function () { loadHealth(); loadLevels(); });
+  } else {
+    loadHealth(); loadLevels();
+  }
+})();
 </script>
 
 </body>

@@ -88,9 +88,14 @@ else
 fi
 
 echo
-if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ]; then
+echo "== Phase 7 trust scan (btc-brain/index.html) =="
+bash tests/phase7-trust-scan.sh
+T8=$?
+
+echo
+if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ]; then
   echo "ALL CHECKS PASSED"
   exit 0
 fi
-echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7"
+echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8"
 exit 1

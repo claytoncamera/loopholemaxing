@@ -1,0 +1,3335 @@
+{
+  "fixture_only": true,
+  "generated_at": "2026-04-27T20:24:43Z",
+  "horizons": {
+    "12h": {
+      "models": {
+        "last_direction": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-last_direction-12h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=12h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2520 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6972 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "12h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.24966981132075475,
+              "hit_rate": 0.5283018867924528,
+              "log_loss": 0.6924929891811618,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5333333333333333,
+              "brier": 0.25983333333333336,
+              "hit_rate": 0.4266666666666667,
+              "log_loss": 0.7128881994872517,
+              "n": 225
+            },
+            "chop": {
+              "base_rate": 0.610062893081761,
+              "brier": 0.24338050314465406,
+              "hit_rate": 0.5911949685534591,
+              "log_loss": 0.6798721907244226,
+              "n": 159
+            }
+          }
+        },
+        "logistic": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-logistic-12h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=12h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.3189 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.8602 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.2458874229313813 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "12h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.33931162411535987,
+              "hit_rate": 0.2578616352201258,
+              "log_loss": 0.8837672387933384,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5333333333333333,
+              "brier": 0.3077119647945473,
+              "hit_rate": 0.52,
+              "log_loss": 0.8558785218533419,
+              "n": 225
+            },
+            "chop": {
+              "base_rate": 0.610062893081761,
+              "brier": 0.3143043451993781,
+              "hit_rate": 0.44654088050314467,
+              "log_loss": 0.8425975733718744,
+              "n": 159
+            }
+          }
+        },
+        "majority": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-majority-12h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=12h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2562 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.7056 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "12h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.2650680465805504,
+              "hit_rate": 0.2830188679245283,
+              "log_loss": 0.723461906891539,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5333333333333333,
+              "brier": 0.24696042719127606,
+              "hit_rate": 0.56,
+              "log_loss": 0.6870656145751589,
+              "n": 225
+            },
+            "chop": {
+              "base_rate": 0.610062893081761,
+              "brier": 0.26026931539526,
+              "hit_rate": 0.3710691823899371,
+              "log_loss": 0.7139738167104162,
+              "n": 159
+            }
+          }
+        },
+        "mean_reversion": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-mean_reversion-12h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=12h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2519 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6970 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "12h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.2538219315538533,
+              "hit_rate": 0.4716981132075472,
+              "log_loss": 0.7008196504114903,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5333333333333333,
+              "brier": 0.2483753488617725,
+              "hit_rate": 0.5733333333333334,
+              "log_loss": 0.6899008523013374,
+              "n": 225
+            },
+            "chop": {
+              "base_rate": 0.610062893081761,
+              "brier": 0.25502381700197185,
+              "hit_rate": 0.4088050314465409,
+              "log_loss": 0.7032138077242056,
+              "n": 159
+            }
+          }
+        },
+        "momentum": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-momentum-12h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=12h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2493 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6918 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "12h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.24761561459642656,
+              "hit_rate": 0.5283018867924528,
+              "log_loss": 0.6883611163825042,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5333333333333333,
+              "brier": 0.2527303448513805,
+              "hit_rate": 0.4266666666666667,
+              "log_loss": 0.6986111679204989,
+              "n": 225
+            },
+            "chop": {
+              "base_rate": 0.610062893081761,
+              "brier": 0.24625534361004484,
+              "hit_rate": 0.5911949685534591,
+              "log_loss": 0.6856473742199379,
+              "n": 159
+            }
+          }
+        },
+        "random": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-random-12h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=12h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.3183 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.9125 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.2371130274214167 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "12h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.3378028565282288,
+              "hit_rate": 0.4591194968553459,
+              "log_loss": 0.9795821681350109,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5333333333333333,
+              "brier": 0.3135521078414252,
+              "hit_rate": 0.49333333333333335,
+              "log_loss": 0.8877482236351988,
+              "n": 225
+            },
+            "chop": {
+              "base_rate": 0.610062893081761,
+              "brier": 0.3056274554554966,
+              "hit_rate": 0.5283018867924528,
+              "log_loss": 0.8804460061978039,
+              "n": 159
+            }
+          }
+        },
+        "siie_lite": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-siie_lite-12h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=12h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2525 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6985 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.07532362461961425 need<=0.08",
+                "name": "ece",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "12h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.24656295676033035,
+              "hit_rate": 0.5031446540880503,
+              "log_loss": 0.6863295971607575,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5333333333333333,
+              "brier": 0.27041579437708224,
+              "hit_rate": 0.4311111111111111,
+              "log_loss": 0.7348197116191569,
+              "n": 225
+            },
+            "chop": {
+              "base_rate": 0.610062893081761,
+              "brier": 0.23322311120876352,
+              "hit_rate": 0.6163522012578616,
+              "log_loss": 0.6592303039364406,
+              "n": 159
+            }
+          }
+        },
+        "tree": {
+          "skip_reason": "dependency_missing (xgboost/lightgbm not installed)",
+          "skipped": true
+        }
+      },
+      "n_folds": 3,
+      "n_labeled": 788
+    },
+    "1h": {
+      "models": {
+        "last_direction": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-last_direction-1h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=1h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2471 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6874 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "1h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.24526729559748428,
+              "hit_rate": 0.5723270440251572,
+              "log_loss": 0.6836584302614443,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5194805194805194,
+              "brier": 0.24925324675324675,
+              "hit_rate": 0.5324675324675324,
+              "log_loss": 0.6916570661664942,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.5786163522012578,
+              "brier": 0.24589622641509437,
+              "hit_rate": 0.5660377358490566,
+              "log_loss": 0.6849205101071182,
+              "n": 159
+            }
+          }
+        },
+        "logistic": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-logistic-1h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=1h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2628 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.7224 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.08090712698998476 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "1h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.24739336088549665,
+              "hit_rate": 0.5345911949685535,
+              "log_loss": 0.687366576703438,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5194805194805194,
+              "brier": 0.2683463575054309,
+              "hit_rate": 0.49783549783549785,
+              "log_loss": 0.7330397296273774,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.5786163522012578,
+              "brier": 0.2702146090771211,
+              "hit_rate": 0.5471698113207547,
+              "log_loss": 0.7419291635365681,
+              "n": 159
+            }
+          }
+        },
+        "majority": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-majority-1h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=1h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2498 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6928 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "1h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.25262307737250017,
+              "hit_rate": 0.5157232704402516,
+              "log_loss": 0.6984046988321398,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5194805194805194,
+              "brier": 0.24956394999703482,
+              "hit_rate": 0.5194805194805194,
+              "log_loss": 0.6922753903673095,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.5786163522012578,
+              "brier": 0.24735408835046493,
+              "hit_rate": 0.5786163522012578,
+              "log_loss": 0.6878478171969563,
+              "n": 159
+            }
+          }
+        },
+        "mean_reversion": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-mean_reversion-1h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=1h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2532 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6996 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "1h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.2552392977829861,
+              "hit_rate": 0.4276729559748428,
+              "log_loss": 0.703664588223463,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5194805194805194,
+              "brier": 0.2515505187966511,
+              "hit_rate": 0.4675324675324675,
+              "log_loss": 0.6962561219926667,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.5786163522012578,
+              "brier": 0.25367960741396745,
+              "hit_rate": 0.4339622641509434,
+              "log_loss": 0.7005203412318627,
+              "n": 159
+            }
+          }
+        },
+        "momentum": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-momentum-1h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=1h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2480 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6892 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "1h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.24620674969069814,
+              "hit_rate": 0.5723270440251572,
+              "log_loss": 0.6855332405746463,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5194805194805194,
+              "brier": 0.24952818350202147,
+              "hit_rate": 0.5324675324675324,
+              "log_loss": 0.6922017200367854,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.5786163522012578,
+              "brier": 0.24759873645679722,
+              "hit_rate": 0.5660377358490566,
+              "log_loss": 0.6883392070175345,
+              "n": 159
+            }
+          }
+        },
+        "random": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-random-1h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=1h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.3338 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.9562 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.27356578952842536 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "1h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.34118705600023574,
+              "hit_rate": 0.44025157232704404,
+              "log_loss": 0.973404319957263,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5194805194805194,
+              "brier": 0.34458304619170216,
+              "hit_rate": 0.4329004329004329,
+              "log_loss": 0.9883654339509212,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.5786163522012578,
+              "brier": 0.3107972278862726,
+              "hit_rate": 0.5094339622641509,
+              "log_loss": 0.8923705133828075,
+              "n": 159
+            }
+          }
+        },
+        "siie_lite": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-siie_lite-1h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=1h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2486 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6904 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.03099228714832774 need<=0.08",
+                "name": "ece",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "1h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.2449211303243093,
+              "hit_rate": 0.5283018867924528,
+              "log_loss": 0.6829469822601167,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5194805194805194,
+              "brier": 0.2557097014186476,
+              "hit_rate": 0.5108225108225108,
+              "log_loss": 0.7048120782002877,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.5786163522012578,
+              "brier": 0.24189063507692465,
+              "hit_rate": 0.5723270440251572,
+              "log_loss": 0.676759347692423,
+              "n": 159
+            }
+          }
+        },
+        "tree": {
+          "skip_reason": "dependency_missing (xgboost/lightgbm not installed)",
+          "skipped": true
+        }
+      },
+      "n_folds": 3,
+      "n_labeled": 799
+    },
+    "24h": {
+      "models": {
+        "last_direction": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-last_direction-24h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=24h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2531 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6993 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "24h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.2534433962264151,
+              "hit_rate": 0.49056603773584906,
+              "log_loss": 0.7000654682552051,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.6203703703703703,
+              "brier": 0.26083333333333336,
+              "hit_rate": 0.4166666666666667,
+              "log_loss": 0.7148949064418731,
+              "n": 216
+            },
+            "chop": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.24212264150943397,
+              "hit_rate": 0.6037735849056604,
+              "log_loss": 0.6773480310330748,
+              "n": 159
+            }
+          }
+        },
+        "logistic": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-logistic-24h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=24h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.3723 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=1.1721 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.31602759975035133 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "24h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.3929209975254634,
+              "hit_rate": 0.46540880503144655,
+              "log_loss": 1.1899552382132195,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.6203703703703703,
+              "brier": 0.2972437534596427,
+              "hit_rate": 0.6388888888888888,
+              "log_loss": 1.0796906253716634,
+              "n": 216
+            },
+            "chop": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.4537859117414603,
+              "hit_rate": 0.3710691823899371,
+              "log_loss": 1.279815987689775,
+              "n": 159
+            }
+          }
+        },
+        "majority": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-majority-24h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=24h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2637 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.7207 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "24h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.2614237373388727,
+              "hit_rate": 0.3836477987421384,
+              "log_loss": 0.7160557336096521,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.6203703703703703,
+              "brier": 0.2564439617417045,
+              "hit_rate": 0.46296296296296297,
+              "log_loss": 0.7060869644723853,
+              "n": 216
+            },
+            "chop": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.2759227829632758,
+              "hit_rate": 0.2830188679245283,
+              "log_loss": 0.7451845357861748,
+              "n": 159
+            }
+          }
+        },
+        "mean_reversion": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-mean_reversion-24h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=24h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2509 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6949 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "24h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.25143109266282315,
+              "hit_rate": 0.5094339622641509,
+              "log_loss": 0.696026541986031,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.6203703703703703,
+              "brier": 0.24703040122528505,
+              "hit_rate": 0.5833333333333334,
+              "log_loss": 0.687200029787426,
+              "n": 216
+            },
+            "chop": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.25555288829571526,
+              "hit_rate": 0.39622641509433965,
+              "log_loss": 0.7042688523621272,
+              "n": 159
+            }
+          }
+        },
+        "momentum": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-momentum-24h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=24h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2504 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6939 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "24h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.2500087547469504,
+              "hit_rate": 0.49056603773584906,
+              "log_loss": 0.6931588479654721,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.6203703703703703,
+              "brier": 0.2540771211754227,
+              "hit_rate": 0.4166666666666667,
+              "log_loss": 0.7013157129909124,
+              "n": 216
+            },
+            "chop": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.24572479789621743,
+              "hit_rate": 0.6037735849056604,
+              "log_loss": 0.6845893800501859,
+              "n": 159
+            }
+          }
+        },
+        "random": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-random-24h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=24h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.3231 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.9403 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.22959736881153048 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "24h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.3297589674828516,
+              "hit_rate": 0.48427672955974843,
+              "log_loss": 0.9604295021693703,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.6203703703703703,
+              "brier": 0.3232278500084359,
+              "hit_rate": 0.49537037037037035,
+              "log_loss": 0.9443306604590219,
+              "n": 216
+            },
+            "chop": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.3161154946697996,
+              "hit_rate": 0.5283018867924528,
+              "log_loss": 0.9145397161839749,
+              "n": 159
+            }
+          }
+        },
+        "siie_lite": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-siie_lite-24h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=24h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2483 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6899 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.07133720164611397 need<=0.08",
+                "name": "ece",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "24h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5534591194968553,
+              "brier": 0.25874795368331355,
+              "hit_rate": 0.4591194968553459,
+              "log_loss": 0.7110244671323771,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.6203703703703703,
+              "brier": 0.25670288480262626,
+              "hit_rate": 0.5231481481481481,
+              "log_loss": 0.7071791914232795,
+              "n": 216
+            },
+            "chop": {
+              "base_rate": 0.5157232704402516,
+              "brier": 0.22640091832522974,
+              "hit_rate": 0.6477987421383647,
+              "log_loss": 0.6454539937591325,
+              "n": 159
+            }
+          }
+        },
+        "tree": {
+          "skip_reason": "dependency_missing (xgboost/lightgbm not installed)",
+          "skipped": true
+        }
+      },
+      "n_folds": 3,
+      "n_labeled": 776
+    },
+    "4h": {
+      "models": {
+        "last_direction": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-last_direction-4h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=4h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2513 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6958 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "4h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5283018867924528,
+              "brier": 0.24778301886792453,
+              "hit_rate": 0.5471698113207547,
+              "log_loss": 0.68870674964414,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5670995670995671,
+              "brier": 0.2600757575757576,
+              "hit_rate": 0.42424242424242425,
+              "log_loss": 0.7133746739004933,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.6163522012578616,
+              "brier": 0.24212264150943397,
+              "hit_rate": 0.6037735849056604,
+              "log_loss": 0.6773480310330747,
+              "n": 159
+            }
+          }
+        },
+        "logistic": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-logistic-4h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=4h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2794 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.7588 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.15180627421929416 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "4h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5283018867924528,
+              "brier": 0.2970041504447426,
+              "hit_rate": 0.36477987421383645,
+              "log_loss": 0.7923182789267188,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5670995670995671,
+              "brier": 0.2530935843578972,
+              "hit_rate": 0.5714285714285714,
+              "log_loss": 0.7020426328559753,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.6163522012578616,
+              "brier": 0.29998543512650194,
+              "hit_rate": 0.4716981132075472,
+              "log_loss": 0.8078197573162506,
+              "n": 159
+            }
+          }
+        },
+        "majority": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-majority-4h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=4h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2495 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6922 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "4h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5283018867924528,
+              "brier": 0.2572224293106531,
+              "hit_rate": 0.32075471698113206,
+              "log_loss": 0.707629796830273,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5670995670995671,
+              "brier": 0.24690078759953432,
+              "hit_rate": 0.5584415584415584,
+              "log_loss": 0.6869389629460508,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.6163522012578616,
+              "brier": 0.24561870680180647,
+              "hit_rate": 0.44025157232704404,
+              "log_loss": 0.6843451976898349,
+              "n": 159
+            }
+          }
+        },
+        "mean_reversion": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-mean_reversion-4h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=4h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2514 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6959 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "4h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5283018867924528,
+              "brier": 0.2529469647935151,
+              "hit_rate": 0.4528301886792453,
+              "log_loss": 0.6990660978364216,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5670995670995671,
+              "brier": 0.24730011770520602,
+              "hit_rate": 0.5757575757575758,
+              "log_loss": 0.6877474220249417,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.6163522012578616,
+              "brier": 0.2557773285167408,
+              "hit_rate": 0.39622641509433965,
+              "log_loss": 0.7047225545430872,
+              "n": 159
+            }
+          }
+        },
+        "momentum": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-momentum-4h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=4h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2499 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6928 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=None (insufficient samples)",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "4h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5283018867924528,
+              "brier": 0.24849908268016918,
+              "hit_rate": 0.5471698113207547,
+              "log_loss": 0.6901317309616876,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5670995670995671,
+              "brier": 0.2537785845934665,
+              "hit_rate": 0.42424242424242425,
+              "log_loss": 0.7007104200045102,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.6163522012578616,
+              "brier": 0.24550101535402385,
+              "hit_rate": 0.6037735849056604,
+              "log_loss": 0.6841369937063101,
+              "n": 159
+            }
+          }
+        },
+        "random": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-random-4h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=4h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.3197 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.9173 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.23895741065775147 need<=0.08",
+                "name": "ece",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "4h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'ece', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5283018867924528,
+              "brier": 0.30898015715393323,
+              "hit_rate": 0.49056603773584906,
+              "log_loss": 0.8834569410621809,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5670995670995671,
+              "brier": 0.33290515663543735,
+              "hit_rate": 0.4805194805194805,
+              "log_loss": 0.9597931646464648,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.6163522012578616,
+              "brier": 0.3112136599893427,
+              "hit_rate": 0.5094339622641509,
+              "log_loss": 0.8893806265554838,
+              "n": 159
+            }
+          }
+        },
+        "siie_lite": {
+          "promotion_gate_evaluation": {
+            "candidate_id": "shadow-siie_lite-4h-fixture",
+            "config": {
+              "max_brier": 0.245,
+              "max_ece": 0.08,
+              "max_log_loss": 0.68,
+              "min_baseline_brier_margin": 0.005,
+              "min_oof_folds": 3,
+              "min_resolved_per_horizon": 30,
+              "min_resolved_total": 30,
+              "min_shadow_days": 14,
+              "must_beat_baseline_brier": true,
+              "must_have_out_of_sample": true,
+              "no_drift_lookback": 100,
+              "no_severe_drift": true,
+              "regime_coverage_min": 2,
+              "require_manual_approval": true
+            },
+            "gates": [
+              {
+                "detail": "resolved=0 need>=30",
+                "name": "resolved_total",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "horizon=4h resolved=0 need>=30",
+                "name": "resolved_per_horizon",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "shadow_days=0.0 need>=14",
+                "name": "shadow_days",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "brier=0.2463 need<=0.245",
+                "name": "brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "log_loss=0.6858 need<=0.68",
+                "name": "log_loss",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "ece=0.04300739245086637 need<=0.08",
+                "name": "ece",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "no baseline_briers supplied",
+                "name": "beats_baseline_brier",
+                "passed": false,
+                "severity": "blocking"
+              },
+              {
+                "detail": "alarms_in_last_100=0 need=0",
+                "name": "no_severe_drift",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "walkforward_folds=3 need>=3",
+                "name": "out_of_sample",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "coarse_regimes_with_samples=3 need>=2",
+                "name": "regime_coverage",
+                "passed": true,
+                "severity": "blocking"
+              },
+              {
+                "detail": "not_yet_approved",
+                "name": "manual_approval",
+                "passed": false,
+                "severity": "blocking"
+              }
+            ],
+            "horizon": "4h",
+            "ready_for_promotion": false,
+            "summary": "NOT READY \u2014 failing gates: ['resolved_total', 'resolved_per_horizon', 'shadow_days', 'brier', 'log_loss', 'beats_baseline_brier', 'manual_approval']",
+            "version": "phase4-promotion-gates-v0.1.0"
+          },
+          "regime_sliced_metrics": {
+            "bear": {
+              "base_rate": 0.5283018867924528,
+              "brier": 0.24092593644042365,
+              "hit_rate": 0.5283018867924528,
+              "log_loss": 0.674856213649529,
+              "n": 159
+            },
+            "bull": {
+              "base_rate": 0.5670995670995671,
+              "brier": 0.25800748842275345,
+              "hit_rate": 0.4805194805194805,
+              "log_loss": 0.7095147627652508,
+              "n": 231
+            },
+            "chop": {
+              "base_rate": 0.6163522012578616,
+              "brier": 0.2347724793384719,
+              "hit_rate": 0.610062893081761,
+              "log_loss": 0.6623158930021014,
+              "n": 159
+            }
+          }
+        },
+        "tree": {
+          "skip_reason": "dependency_missing (xgboost/lightgbm not installed)",
+          "skipped": true
+        }
+      },
+      "n_folds": 3,
+      "n_labeled": 796
+    }
+  },
+  "notes": [
+    "Regime-sliced metrics are derived from the Phase 3 walk-forward OOF predictions (regime_sliced block) \u2014 *not* from live ledger outcomes. Live-ledger-backed metrics require Phase 1 ledger resolutions and are gated by promotion_gate_evaluation below.",
+    "Phase 4 NEVER auto-promotes. promotion_gate_evaluation is advisory and is expected to report NOT READY in fixture mode."
+  ],
+  "promotion_gates_version": "phase4-promotion-gates-v0.1.0",
+  "regime_detector_version": "phase4-regime-v0.1.0",
+  "regime_distribution": {
+    "coarse_counts": {
+      "bear": 457,
+      "bull": 603,
+      "chop": 116,
+      "unknown": 24
+    },
+    "coarse_proportions": {
+      "bear": 0.38083333333333336,
+      "bull": 0.5025,
+      "chop": 0.09666666666666666,
+      "unknown": 0.02
+    },
+    "fine_counts": {
+      "chop_high_vol": 71,
+      "chop_low_vol": 45,
+      "trend_down_high_vol": 283,
+      "trend_down_low_vol": 174,
+      "trend_up_high_vol": 325,
+      "trend_up_low_vol": 278,
+      "unknown": 24
+    },
+    "fine_proportions": {
+      "chop_high_vol": 0.059166666666666666,
+      "chop_low_vol": 0.0375,
+      "trend_down_high_vol": 0.23583333333333334,
+      "trend_down_low_vol": 0.145,
+      "trend_up_high_vol": 0.2708333333333333,
+      "trend_up_low_vol": 0.23166666666666666,
+      "unknown": 0.02
+    },
+    "n": 1200,
+    "warmup_n": 24
+  },
+  "schema_version": "phase4-regime-report-v1"
+}

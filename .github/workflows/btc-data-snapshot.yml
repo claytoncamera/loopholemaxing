@@ -1,0 +1,64 @@
+name: BTC Brain Data Snapshot (Phase 2)
+
+# Phase 2 — Data Foundation snapshotter.
+# Runs the public-only feed abstraction, writes JSON artifacts under
+# btc-brain/data/public/, and commits them so GitHub Pages serves them.
+# No secrets: every endpoint hit is a public, no-key API.
+
+on:
+  schedule:
+    # Every 30 minutes at :13 / :43 to avoid the top-of-hour API rush.
+    - cron: '13,43 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: btc-brain-data-snapshot
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    name: Refresh data snapshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run Phase 2 unit tests (offline, no network)
+        run: |
+          cd btc-brain/data
+          python tests/test_phase2.py
+
+      - name: Write snapshot artifacts
+        run: |
+          python btc-brain/data/scripts/snapshot.py \
+            --out btc-brain/data/public
+
+      - name: Show artifact summary
+        run: |
+          for f in btc-brain/data/public/*.json; do
+            echo "── $f ──"
+            python -c "import json,sys; d=json.load(open('$f')); print('status=', d.get('status'), 'source=', d.get('source'), 'kind=', d.get('kind'))"
+          done
+
+      - name: Commit snapshot updates
+        run: |
+          git config user.name  "btc-brain-bot"
+          git config user.email "btc-brain-bot@users.noreply.github.com"
+          git add btc-brain/data/public/*.json
+          if git diff --cached --quiet; then
+            echo "No snapshot changes to commit."
+          else
+            git commit -m "chore(data): refresh BTC Brain Phase 2 snapshots"
+            git push
+          fi

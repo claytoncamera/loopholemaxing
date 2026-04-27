@@ -24,9 +24,41 @@ else
 fi
 
 echo
-if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ]; then
+echo "== Phase 1 ledger tests =="
+if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+  PY="$(command -v python3 || command -v python)"
+  ( cd "$ROOT/btc-brain/ledger" && "$PY" tests/test_ledger.py >/tmp/p1.log 2>&1 )
+  T4=$?
+  if [ $T4 -ne 0 ]; then
+    echo "FAILED phase 1 ledger:"; sed 's/^/  /' /tmp/p1.log
+  else
+    echo "OK: phase 1 ledger"
+  fi
+else
+  echo "SKIP: python not installed"
+  T4=0
+fi
+
+echo
+echo "== Phase 2 data foundation tests =="
+if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+  PY="$(command -v python3 || command -v python)"
+  ( cd "$ROOT/btc-brain/data" && "$PY" tests/test_phase2.py >/tmp/p2.log 2>&1 )
+  T5=$?
+  if [ $T5 -ne 0 ]; then
+    echo "FAILED phase 2 data:"; sed 's/^/  /' /tmp/p2.log
+  else
+    echo "OK: phase 2 data foundation"
+  fi
+else
+  echo "SKIP: python not installed"
+  T5=0
+fi
+
+echo
+if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ]; then
   echo "ALL CHECKS PASSED"
   exit 0
 fi
-echo "FAILED: truth=$T1 secret=$T2 closed=$T3"
+echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5"
 exit 1

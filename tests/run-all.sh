@@ -56,9 +56,25 @@ else
 fi
 
 echo
-if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ]; then
+echo "== Phase 3 model baselines tests =="
+if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+  PY="$(command -v python3 || command -v python)"
+  ( cd "$ROOT/btc-brain/models" && "$PY" tests/test_phase3.py >/tmp/p3.log 2>&1 )
+  T6=$?
+  if [ $T6 -ne 0 ]; then
+    echo "FAILED phase 3 models:"; sed 's/^/  /' /tmp/p3.log
+  else
+    echo "OK: phase 3 model baselines"
+  fi
+else
+  echo "SKIP: python not installed"
+  T6=0
+fi
+
+echo
+if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ]; then
   echo "ALL CHECKS PASSED"
   exit 0
 fi
-echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5"
+echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6"
 exit 1

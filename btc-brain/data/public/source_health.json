@@ -6,16 +6,51 @@
     "derivatives": 1800,
     "sentiment": 86400
   },
-  "generated_at": "2026-04-27T00:00:00Z",
+  "generated_at": "2026-04-27T20:45:02Z",
   "kind": "source_health",
-  "overall": "failed",
+  "overall": "degraded",
   "schema_version": "phase2-data-v1",
   "sources": {
-    "bootstrap": {
-      "error": "no snapshot has been written yet",
-      "fetched_at": "2026-04-27T00:00:00Z",
-      "source": "none",
-      "status": "failed"
+    "candles_1d": {
+      "error": null,
+      "fetched_at": "2026-04-27T20:45:00Z",
+      "latency_ms": 49,
+      "source": "coinbase",
+      "status": "ok"
+    },
+    "candles_1h": {
+      "error": null,
+      "fetched_at": "2026-04-27T20:45:00Z",
+      "latency_ms": 112,
+      "source": "coinbase",
+      "status": "ok"
+    },
+    "candles_4h": {
+      "error": null,
+      "fetched_at": "2026-04-27T20:45:00Z",
+      "latency_ms": 248,
+      "source": "kraken",
+      "status": "ok"
+    },
+    "derivatives": {
+      "error": null,
+      "fetched_at": "2026-04-27T20:45:01Z",
+      "latency_ms": 463,
+      "source": "okx",
+      "status": "degraded"
+    },
+    "key_levels": {
+      "error": null,
+      "fetched_at": "2026-04-27T20:45:02Z",
+      "source": "computed",
+      "status": "ok"
+    },
+    "sentiment": {
+      "error": null,
+      "fetched_at": "2026-04-27T20:45:02Z",
+      "latency_ms": 267,
+      "source": "alternative.me",
+      "status": "ok"
     }
   }
 }

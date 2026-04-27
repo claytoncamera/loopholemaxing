@@ -1,0 +1,46 @@
+{
+  "attempts": [
+    {
+      "error": "all binance derivatives endpoints failed",
+      "fetched_at": "2026-04-27T20:45:01Z",
+      "kind": "derivatives",
+      "latency_ms": 287,
+      "notes": [
+        "funding:fail:GET https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT failed: HTTP Error 451: ",
+        "open_interest:fail:GET https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT failed: HTTP Error 451: ",
+        "long_short:fail:GET https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1 failed: HTTP Error 451: "
+      ],
+      "source": "binance",
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "fetched_at": "2026-04-27T20:45:01Z",
+      "kind": "derivatives",
+      "latency_ms": 463,
+      "notes": [
+        "missing:mark_price,long_short_ratio,long_account_pct,short_account_pct"
+      ],
+      "source": "okx",
+      "status": "degraded"
+    }
+  ],
+  "data": {
+    "funding_rate": -2.52018124353e-05,
+    "long_account_pct": null,
+    "long_short_ratio": null,
+    "mark_price": null,
+    "next_funding_time_ms": 1777363200000,
+    "open_interest_btc": 33046.151000000216,
+    "short_account_pct": null
+  },
+  "error": null,
+  "fetched_at": "2026-04-27T20:45:01Z",
+  "kind": "derivatives",
+  "notes": [
+    "missing:mark_price,long_short_ratio,long_account_pct,short_account_pct"
+  ],
+  "schema_version": "phase2-data-v1",
+  "source": "okx",
+  "status": "degraded"
+}

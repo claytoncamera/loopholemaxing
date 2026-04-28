@@ -20,7 +20,7 @@ from typing import Iterable, Iterator
 LEDGER_VERSION = "1"
 
 # ── Allowed enums ────────────────────────────────────────────────────────────
-HORIZONS = {"1h", "4h", "1d", "7d", "30d"}
+HORIZONS = {"1h", "4h", "12h", "24h", "1d", "7d", "30d"}
 DIRECTIONS = {"up", "down"}
 REGIMES = {"bull", "bear", "chop", "unknown"}
 FORECAST_STATUSES = {"open", "resolved", "voided", "superseded"}

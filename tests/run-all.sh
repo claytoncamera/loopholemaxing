@@ -34,6 +34,14 @@ if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
   else
     echo "OK: phase 1 ledger"
   fi
+  ( cd "$ROOT/btc-brain/ledger" && "$PY" tests/test_schedule_forecasts.py >/tmp/p1b.log 2>&1 )
+  T4B=$?
+  if [ $T4B -ne 0 ]; then
+    echo "FAILED phase 1 scheduled issuer:"; sed 's/^/  /' /tmp/p1b.log
+    T4=1
+  else
+    echo "OK: phase 1 scheduled issuer"
+  fi
 else
   echo "SKIP: python not installed"
   T4=0

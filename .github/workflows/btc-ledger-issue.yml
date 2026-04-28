@@ -1,0 +1,93 @@
+name: BTC Ledger Issue Forecasts
+
+# Append-only baseline/shadow forecast issuance for BTCUSD across horizons
+# 1h, 4h, 12h, 24h. Reads only public artifacts, never uses live ticker.
+# This is a *shadow* model — model_version is suffixed with "-shadow" and
+# the public UI must remain truth-gated until accuracy.json marks a bucket
+# display_ready (n >= min_n_display).
+
+on:
+  schedule:
+    # Hourly at :17 — offset from the data snapshot (:13/:43) so the latest
+    # closed candle is on disk, and offset from the resolver (:07) so the
+    # two ledger workflows don't push commits at the same minute.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+    inputs:
+      horizons:
+        description: 'Comma-separated horizons (default 1h,4h,12h,24h)'
+        required: false
+        default: '1h,4h,12h,24h'
+      dry_run:
+        description: 'If true, do not append to the ledger'
+        required: false
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+permissions:
+  contents: write
+
+concurrency:
+  group: btc-brain-ledger-issue
+  cancel-in-progress: false
+
+jobs:
+  issue:
+    name: Issue baseline/shadow forecasts and resolve due ones
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run ledger unit tests
+        run: |
+          cd btc-brain/ledger
+          python tests/test_ledger.py
+
+      - name: Issue scheduled forecasts (baseline / shadow)
+        run: |
+          DRY="${{ github.event.inputs.dry_run || 'false' }}"
+          HORIZONS="${{ github.event.inputs.horizons || '1h,4h,12h,24h' }}"
+          ARGS=(
+            --root btc-brain/ledger/data
+            --candles btc-brain/data/public/candles_1h.json
+            --horizons "$HORIZONS"
+          )
+          if [ "$DRY" = "true" ]; then ARGS+=(--dry-run); fi
+          python btc-brain/ledger/scripts/schedule_forecasts.py "${ARGS[@]}" \
+            | tee /tmp/issue.json
+
+      - name: Resolve due forecasts
+        run: |
+          python btc-brain/ledger/scripts/resolve.py \
+            --root btc-brain/ledger/data \
+            | tee /tmp/resolve.json
+
+      - name: Rebuild accuracy.json
+        run: |
+          python btc-brain/ledger/scripts/metrics.py \
+            --root btc-brain/ledger/data \
+            --out  btc-brain/ledger/public/accuracy.json
+
+      - name: Commit ledger updates
+        run: |
+          git config user.name  "btc-brain-bot"
+          git config user.email "btc-brain-bot@users.noreply.github.com"
+          git add btc-brain/ledger/data/forecasts.jsonl \
+                  btc-brain/ledger/data/resolutions.jsonl \
+                  btc-brain/ledger/public/accuracy.json
+          if git diff --cached --quiet; then
+            echo "No ledger changes to commit."
+          else
+            git commit -m "chore(ledger): issue scheduled forecasts + resolve due"
+            git push
+          fi

@@ -9,7 +9,7 @@ Two append-only JSONL streams.
 | `forecast_id`          | string  | yes      | UUIDv4. Primary key. Never reused. |
 | `issued_at`            | string  | yes      | ISO-8601 UTC, e.g. `2026-04-27T13:00:00Z`. |
 | `asset`                | string  | yes      | `BTCUSD` for now. |
-| `horizon`              | string  | yes      | One of `1h`, `4h`, `1d`, `7d`, `30d`. |
+| `horizon`              | string  | yes      | One of `1h`, `4h`, `12h`, `24h`, `1d`, `7d`, `30d`. |
 | `target_time`          | string  | yes      | ISO-8601 UTC. Exact resolution moment. |
 | `target_rule`          | string  | yes      | How outcome is decided. Enum: `close_above_entry`, `close_below_entry`, `close_above_level:<price>`, `close_below_level:<price>`. |
 | `direction`            | string  | yes      | `up` or `down`. Direction the forecast is betting on. |

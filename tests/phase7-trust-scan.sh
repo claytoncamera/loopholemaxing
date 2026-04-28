@@ -184,6 +184,38 @@ else
   FAIL=1
 fi
 
+# 12. Every artifact path the Phase 7 frontend references MUST exist on
+# disk under btc-brain/ so GitHub Pages serves a real file. A 404 here
+# silently degrades the Trust panel — not acceptable for the public UX.
+# Empty/stub artifacts are fine; missing files are not.
+BRAIN="$ROOT/btc-brain"
+for path in \
+  "data/public/source_health.json" \
+  "models/public/registry.json" \
+  "models/public/phase4/phase4_report.json" \
+  "models/public/confidence_intervals.json" \
+  "ledger/data/forecasts.jsonl" \
+  "ledger/data/resolutions.jsonl" \
+  "ledger/public/accuracy.json" \
+  "data/public/briefings/index.json"
+do
+  full="$BRAIN/$path"
+  if [ ! -f "$full" ]; then
+    echo "FAIL [12] artifact file missing on disk: $path"
+    FAIL=1
+    continue
+  fi
+  case "$path" in
+    *.json)
+      if ! python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$full" >/dev/null 2>&1; then
+        echo "FAIL [12] artifact file is not valid JSON: $path"
+        FAIL=1
+      fi
+      ;;
+  esac
+done
+say "OK [12] all Phase 7 artifact files exist on disk and JSON parses"
+
 if [ "$FAIL" -eq 0 ]; then
   echo "ALL PHASE 7 TRUST-SCAN INVARIANTS HELD"
 else

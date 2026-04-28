@@ -2664,6 +2664,7 @@
         var v = srcs[k] || {};
         var st = (v.status || 'unknown').toLowerCase();
         var color = st === 'ok' ? '#3fb950'
+                  : st === 'partial_ok' ? '#58a6ff'
                   : st === 'degraded' ? '#d29922'
                   : st === 'failed' ? '#f85149'
                   : '#8b949e';
@@ -2694,6 +2695,7 @@
       grid.style.display = 'grid';
       var overall = (h.overall || 'unknown').toUpperCase();
       var overallColor = overall === 'OK' ? '#3fb950'
+                       : overall === 'PARTIAL_OK' ? '#58a6ff'
                        : overall === 'DEGRADED' ? '#d29922'
                        : overall === 'FAILED' ? '#f85149'
                        : '#8b949e';
@@ -5774,6 +5776,7 @@
       .then(function (h) {
         var overall = h.overall || 'unknown';
         var color = overall === 'ok' ? '#3fb950'
+                  : overall === 'partial_ok' ? '#58a6ff'
                   : overall === 'degraded' ? '#d29922'
                   : overall === 'failed' ? '#f85149'
                   : '#8b949e';

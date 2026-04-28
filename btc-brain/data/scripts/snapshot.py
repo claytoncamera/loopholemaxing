@@ -92,11 +92,28 @@ def snapshot_candles(out_dir: Path, intervals=("1h", "4h", "1d")) -> dict:
 
 def snapshot_derivatives(out_dir: Path) -> FeedResult:
     chain = derivs_feed.default_provider_chain()
-    # Accept degraded (some sub-fields missing) since it's still useful.
+    # Two-pass acceptance:
+    #   1. Accept the first provider that returns full `ok`.
+    #   2. If none, accept the first that returns `partial_ok` (core
+    #      fields present, only the rich/optional sub-fields missing).
+    #   3. Otherwise fall back to whatever is left (degraded / failed).
+    # This way Binance 451 → OKX partial → Bybit ok upgrades the live
+    # status from degraded to ok without ever fabricating a sub-field.
     chosen, attempts = run_with_fallback(
         chain,
-        accept=lambda r: r.status in (STATUS_OK, "degraded"),
+        accept=lambda r: r.status == STATUS_OK,
     )
+    if chosen.status != STATUS_OK:
+        # Re-walk the attempts already collected to pick the best one.
+        for a in attempts:
+            if a.status == derivs_feed.STATUS_PARTIAL_OK:
+                chosen = a
+                break
+        else:
+            for a in attempts:
+                if a.status == "degraded" and a.data:
+                    chosen = a
+                    break
     artifact = _wrap_artifact("derivatives", chosen, attempts)
     write_json(out_dir / "derivatives.json", artifact)
     return chosen
@@ -165,8 +182,10 @@ def snapshot_source_health(out_dir: Path, parts: dict) -> dict:
         if s == "failed":
             overall = "failed"
             break
-        if s in ("degraded", "stale") and overall == "ok":
+        if s == "degraded" and overall in ("ok", "partial_ok"):
             overall = "degraded"
+        elif s in ("partial_ok", "stale") and overall == "ok":
+            overall = "partial_ok"
     artifact = {
         "schema_version": SCHEMA_VERSION,
         "kind": "source_health",

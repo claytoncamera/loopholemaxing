@@ -213,20 +213,231 @@ class TestDerivatives(unittest.TestCase):
         self.assertAlmostEqual(chosen.data["funding_rate"], 0.00012)
         self.assertAlmostEqual(chosen.data["open_interest_btc"], 73250.0)
 
-    def test_okx_fallback(self):
+    def test_binance_451_falls_through(self):
+        """Binance returning 451 must not poison the chain — OKX/Bybit
+        get a chance and the artifact carries non-fabricated data."""
+        def fetcher(url, *a, **kw):
+            if "fapi.binance.com" in url:
+                raise HttpError("HTTP Error 451: ")
+            if "okx.com" in url and "funding-rate" in url:
+                return {"data": [{"fundingRate": "0.0001", "nextFundingTime": "1745740800000"}]}
+            if "okx.com" in url and "open-interest" in url:
+                return {"data": [{"oiCcy": "70000.0"}]}
+            if "okx.com" in url and "mark-price" in url:
+                return {"data": [{"markPx": "65000.0"}]}
+            if "okx.com" in url and "rubik" in url:
+                raise HttpError("rubik blocked")
+            if "bybit.com" in url and "tickers" in url:
+                return {"result": {"list": [{
+                    "fundingRate": "0.00009", "markPrice": "65010.0",
+                    "openInterest": "72000.0", "nextFundingTime": "1745740800000",
+                }]}}
+            if "bybit.com" in url and "account-ratio" in url:
+                return {"result": {"list": [{"buyRatio": "0.55", "sellRatio": "0.45"}]}}
+            raise HttpError(f"unexpected: {url}")
+        chain = derivs_feed.default_provider_chain(fetcher=fetcher)
+        chosen, attempts = run_with_fallback(
+            chain,
+            accept=lambda r: r.status == STATUS_OK,
+        )
+        self.assertEqual(chosen.source, "bybit")
+        self.assertEqual(chosen.status, STATUS_OK)
+        self.assertAlmostEqual(chosen.data["funding_rate"], 0.00009)
+        self.assertAlmostEqual(chosen.data["open_interest_btc"], 72000.0)
+        self.assertIsNotNone(chosen.data["long_short_ratio"])
+        # First attempt must be the Binance failure.
+        self.assertEqual(attempts[0].source, "binance")
+        self.assertEqual(attempts[0].status, STATUS_FAILED)
+
+    def test_okx_partial_ok_when_only_rich_fields_missing(self):
+        """OKX returns funding + OI + mark but no long/short — the
+        result is partial_ok, not degraded, and no fields are fabricated."""
         def fetcher(url, *a, **kw):
             if "okx.com" in url and "funding-rate" in url:
                 return {"data": [{"fundingRate": "0.0001", "nextFundingTime": "1745740800000"}]}
             if "okx.com" in url and "open-interest" in url:
                 return {"data": [{"oiCcy": "70000.0"}]}
-            raise HttpError("simulated")
-        chain = derivs_feed.default_provider_chain(fetcher=fetcher)
-        chosen, attempts = run_with_fallback(
-            chain, accept=lambda r: r.status in (STATUS_OK, "degraded")
-        )
-        self.assertEqual(chosen.source, "okx")
-        self.assertIn(chosen.status, (STATUS_OK, "degraded"))
-        self.assertAlmostEqual(chosen.data["funding_rate"], 0.0001)
+            if "okx.com" in url and "mark-price" in url:
+                return {"data": [{"markPx": "65000.0"}]}
+            if "okx.com" in url and "rubik" in url:
+                raise HttpError("rubik unavailable")
+            raise HttpError("unexpected url")
+        result = derivs_feed.fetch_okx_derivatives(fetcher=fetcher)
+        self.assertEqual(result.source, "okx")
+        self.assertEqual(result.status, derivs_feed.STATUS_PARTIAL_OK)
+        self.assertAlmostEqual(result.data["funding_rate"], 0.0001)
+        self.assertAlmostEqual(result.data["open_interest_btc"], 70000.0)
+        self.assertAlmostEqual(result.data["mark_price"], 65000.0)
+        # Long/short fields stay null — never fabricated.
+        self.assertIsNone(result.data["long_short_ratio"])
+        self.assertIsNone(result.data["long_account_pct"])
+        self.assertIsNone(result.data["short_account_pct"])
+
+    def test_okx_degraded_when_core_field_missing(self):
+        """If OI is missing, core is incomplete → degraded (not partial_ok)."""
+        def fetcher(url, *a, **kw):
+            if "okx.com" in url and "funding-rate" in url:
+                return {"data": [{"fundingRate": "0.0001"}]}
+            if "okx.com" in url and "open-interest" in url:
+                raise HttpError("oi blocked")
+            if "okx.com" in url and "mark-price" in url:
+                return {"data": [{"markPx": "65000.0"}]}
+            if "okx.com" in url and "rubik" in url:
+                raise HttpError("blocked")
+            raise HttpError("nope")
+        result = derivs_feed.fetch_okx_derivatives(fetcher=fetcher)
+        self.assertEqual(result.status, "degraded")
+        self.assertIsNone(result.data["open_interest_btc"])
+        self.assertIsNone(result.data["long_short_ratio"])
+
+    def test_bybit_full_ok(self):
+        def fetcher(url, *a, **kw):
+            if "bybit.com" in url and "tickers" in url:
+                return {"result": {"list": [{
+                    "fundingRate": "0.00007", "markPrice": "65020.0",
+                    "openInterest": "71000.0", "nextFundingTime": "1745740800000",
+                }]}}
+            if "bybit.com" in url and "account-ratio" in url:
+                return {"result": {"list": [{"buyRatio": "0.6", "sellRatio": "0.4"}]}}
+            raise HttpError("unexpected")
+        result = derivs_feed.fetch_bybit_derivatives(fetcher=fetcher)
+        self.assertEqual(result.source, "bybit")
+        self.assertEqual(result.status, STATUS_OK)
+        self.assertAlmostEqual(result.data["mark_price"], 65020.0)
+        self.assertAlmostEqual(result.data["long_account_pct"], 0.6)
+        self.assertAlmostEqual(result.data["short_account_pct"], 0.4)
+        self.assertAlmostEqual(result.data["long_short_ratio"], 1.5)
+
+    def test_no_fabrication_when_all_providers_partial_or_fail(self):
+        """If every provider is degraded/partial, the artifact data must
+        contain only fields actually supplied by that provider — no
+        cross-provider field stitching, no fabricated values."""
+        def fetcher(url, *a, **kw):
+            if "fapi.binance.com" in url:
+                raise HttpError("HTTP Error 451: ")
+            if "okx.com" in url and "funding-rate" in url:
+                return {"data": [{"fundingRate": "0.0001", "nextFundingTime": "1745740800000"}]}
+            if "okx.com" in url and "open-interest" in url:
+                return {"data": [{"oiCcy": "70000.0"}]}
+            if "okx.com" in url and "mark-price" in url:
+                raise HttpError("mark blocked")
+            if "okx.com" in url and "rubik" in url:
+                raise HttpError("rubik blocked")
+            if "bybit.com" in url:
+                raise HttpError("bybit blocked")
+            if "deribit.com" in url:
+                raise HttpError("deribit blocked")
+            raise HttpError("unexpected")
+        result = derivs_feed.fetch_okx_derivatives(fetcher=fetcher)
+        # Each null field must be exactly what the API didn't return.
+        self.assertIsNone(result.data["mark_price"])
+        self.assertIsNone(result.data["long_short_ratio"])
+        # Present fields must be the parsed real values.
+        self.assertAlmostEqual(result.data["funding_rate"], 0.0001)
+        self.assertAlmostEqual(result.data["open_interest_btc"], 70000.0)
+
+    def test_okx_long_short_ratio_parsed_from_rubik(self):
+        """When OKX rubik returns a long/short series, the most recent
+        ratio is parsed and surfaced (no fabrication of pct breakdown)."""
+        def fetcher(url, *a, **kw):
+            if "okx.com" in url and "funding-rate" in url:
+                return {"data": [{"fundingRate": "0.0001", "nextFundingTime": "1745740800000"}]}
+            if "okx.com" in url and "open-interest" in url:
+                return {"data": [{"oiCcy": "70000.0"}]}
+            if "okx.com" in url and "mark-price" in url:
+                return {"data": [{"markPx": "65000.0"}]}
+            if "okx.com" in url and "rubik" in url:
+                # data is [[ts, ratio], …] with most recent last.
+                return {"code": "0", "data": [["1745740500000", "1.10"], ["1745740800000", "1.23"]]}
+            raise HttpError("unexpected")
+        result = derivs_feed.fetch_okx_derivatives(fetcher=fetcher)
+        self.assertAlmostEqual(result.data["long_short_ratio"], 1.23)
+        # We do NOT synthesise long/short percentages from a single ratio.
+        self.assertIsNone(result.data["long_account_pct"])
+        self.assertIsNone(result.data["short_account_pct"])
+
+    def test_snapshot_prefers_full_ok_over_partial(self):
+        """If OKX returns partial_ok and Bybit returns full ok, the
+        snapshot writer must pick Bybit even though OKX came first."""
+        from feeds import base as feed_base
+        def fetcher(url, *a, **kw):
+            if "fapi.binance.com" in url:
+                raise HttpError("HTTP Error 451: ")
+            if "okx.com" in url and "funding-rate" in url:
+                return {"data": [{"fundingRate": "0.0001", "nextFundingTime": "1745740800000"}]}
+            if "okx.com" in url and "open-interest" in url:
+                return {"data": [{"oiCcy": "70000.0"}]}
+            if "okx.com" in url and "mark-price" in url:
+                return {"data": [{"markPx": "65000.0"}]}
+            if "okx.com" in url and "rubik" in url:
+                raise HttpError("rubik blocked")
+            if "bybit.com" in url and "tickers" in url:
+                return {"result": {"list": [{
+                    "fundingRate": "0.00009", "markPrice": "65010.0",
+                    "openInterest": "72000.0", "nextFundingTime": "1745740800000",
+                }]}}
+            if "bybit.com" in url and "account-ratio" in url:
+                return {"result": {"list": [{"buyRatio": "0.55", "sellRatio": "0.45"}]}}
+            raise HttpError(f"unexpected: {url}")
+        original_chain = derivs_feed.default_provider_chain
+        derivs_feed.default_provider_chain = lambda: [
+            lambda: derivs_feed.fetch_binance_derivatives(fetcher=fetcher),
+            lambda: derivs_feed.fetch_okx_derivatives(fetcher=fetcher),
+            lambda: derivs_feed.fetch_bybit_derivatives(fetcher=fetcher),
+        ]
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp)
+                chosen = snap.snapshot_derivatives(out)
+                self.assertEqual(chosen.source, "bybit")
+                self.assertEqual(chosen.status, STATUS_OK)
+                doc = json.loads((out / "derivatives.json").read_text())
+                self.assertEqual(doc["source"], "bybit")
+                self.assertEqual(doc["status"], "ok")
+                # All provider attempts must be recorded for transparency.
+                sources = [a["source"] for a in doc["attempts"]]
+                self.assertIn("binance", sources)
+                self.assertIn("okx", sources)
+                self.assertIn("bybit", sources)
+        finally:
+            derivs_feed.default_provider_chain = original_chain
+
+    def test_snapshot_picks_partial_ok_when_no_full_ok(self):
+        """If no provider returns full ok, the snapshot picks the best
+        available (partial_ok over degraded), preserving truthfulness."""
+        def fetcher(url, *a, **kw):
+            if "fapi.binance.com" in url:
+                raise HttpError("HTTP Error 451: ")
+            if "okx.com" in url and "funding-rate" in url:
+                return {"data": [{"fundingRate": "0.0001", "nextFundingTime": "1745740800000"}]}
+            if "okx.com" in url and "open-interest" in url:
+                return {"data": [{"oiCcy": "70000.0"}]}
+            if "okx.com" in url and "mark-price" in url:
+                return {"data": [{"markPx": "65000.0"}]}
+            if "okx.com" in url and "rubik" in url:
+                raise HttpError("rubik blocked")
+            if "bybit.com" in url:
+                raise HttpError("bybit unavailable")
+            if "deribit.com" in url:
+                raise HttpError("deribit unavailable")
+            raise HttpError(f"unexpected: {url}")
+        original_chain = derivs_feed.default_provider_chain
+        derivs_feed.default_provider_chain = lambda: [
+            lambda: derivs_feed.fetch_binance_derivatives(fetcher=fetcher),
+            lambda: derivs_feed.fetch_okx_derivatives(fetcher=fetcher),
+            lambda: derivs_feed.fetch_bybit_derivatives(fetcher=fetcher),
+            lambda: derivs_feed.fetch_deribit_derivatives(fetcher=fetcher),
+        ]
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp)
+                chosen = snap.snapshot_derivatives(out)
+                self.assertEqual(chosen.source, "okx")
+                self.assertEqual(chosen.status, derivs_feed.STATUS_PARTIAL_OK)
+                self.assertIsNone(chosen.data["long_short_ratio"])
+                self.assertAlmostEqual(chosen.data["mark_price"], 65000.0)
+        finally:
+            derivs_feed.default_provider_chain = original_chain
 
 
 class TestSentiment(unittest.TestCase):
@@ -337,6 +548,8 @@ class TestSnapshotWriter(unittest.TestCase):
                 derivs_feed.default_provider_chain = lambda: [
                     lambda: derivs_feed.fetch_binance_derivatives(fetcher=_failing_fetcher),
                     lambda: derivs_feed.fetch_okx_derivatives(fetcher=_failing_fetcher),
+                    lambda: derivs_feed.fetch_bybit_derivatives(fetcher=_failing_fetcher),
+                    lambda: derivs_feed.fetch_deribit_derivatives(fetcher=_failing_fetcher),
                 ]
                 sentiment_feed.default_provider_chain = lambda: [
                     lambda: sentiment_feed.fetch_fng_sentiment(fetcher=_failing_fetcher),

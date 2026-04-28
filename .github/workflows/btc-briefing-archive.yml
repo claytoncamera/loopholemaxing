@@ -73,13 +73,12 @@ jobs:
           python -c "import json; d=json.load(open('btc-brain/data/public/briefings/index.json')); print('briefings:', len(d['briefings'])); [print('  -', b['date'], b['url']) for b in d['briefings'][:10]]"
 
       - name: Commit briefing updates
+        # See .github/scripts/safe_push.sh — handles the non-fast-forward
+        # race we hit when the data-snapshot workflow pushes to main at
+        # the same minute the briefing archive does.
         run: |
           git config user.name  "btc-brain-bot"
           git config user.email "btc-brain-bot@users.noreply.github.com"
           git add btc-brain/data/public/briefings/*.json
-          if git diff --cached --quiet; then
-            echo "No briefing changes to commit."
-          else
-            git commit -m "chore(briefings): update daily briefing archive"
-            git push
-          fi
+          .github/scripts/safe_push.sh \
+            "chore(briefings): update daily briefing archive"

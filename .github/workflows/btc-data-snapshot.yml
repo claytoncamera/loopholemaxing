@@ -52,13 +52,14 @@ jobs:
           done
 
       - name: Commit snapshot updates
+        # See .github/scripts/safe_push.sh — handles non-fast-forward
+        # races against ledger and briefing workflows pushing to main.
+        # Uses --depth=1 fetch on checkout, but the helper does an
+        # explicit `git fetch origin main` before rebasing so the
+        # required history is available.
         run: |
           git config user.name  "btc-brain-bot"
           git config user.email "btc-brain-bot@users.noreply.github.com"
           git add btc-brain/data/public/*.json
-          if git diff --cached --quiet; then
-            echo "No snapshot changes to commit."
-          else
-            git commit -m "chore(data): refresh BTC Brain Phase 2 snapshots"
-            git push
-          fi
+          .github/scripts/safe_push.sh \
+            "chore(data): refresh BTC Brain Phase 2 snapshots"

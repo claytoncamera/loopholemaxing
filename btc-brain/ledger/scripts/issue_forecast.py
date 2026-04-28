@@ -28,6 +28,8 @@ from ledger import (  # noqa: E402
 HORIZON_DELTA = {
     "1h": timedelta(hours=1),
     "4h": timedelta(hours=4),
+    "12h": timedelta(hours=12),
+    "24h": timedelta(hours=24),
     "1d": timedelta(days=1),
     "7d": timedelta(days=7),
     "30d": timedelta(days=30),

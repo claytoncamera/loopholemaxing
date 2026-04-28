@@ -1,0 +1,85 @@
+name: BTC Brain Daily Briefing Archive
+
+# Builds a conservative, no-secret daily briefing from the public
+# Phase 2 artifacts and commits it under
+#   btc-brain/data/public/briefings/<YYYY-MM-DD>.json
+# along with a refreshed index.json the public Trust panel reads.
+#
+# This workflow does not call any external API — it only consumes the
+# artifacts that btc-data-snapshot.yml already publishes.
+
+on:
+  schedule:
+    # 10:17 UTC daily, after the daily engine (10:00) so source_health
+    # and key_levels reflect the morning fetch.
+    - cron: '17 10 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'generate today briefing or just reindex existing files'
+        required: false
+        default: 'generate'
+        type: choice
+        options: ['generate', 'reindex']
+      date:
+        description: 'Override date (YYYY-MM-DD UTC) — only with mode=generate'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: btc-brain-briefing-archive
+  cancel-in-progress: false
+
+jobs:
+  briefing:
+    name: Build daily briefing
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run briefing tests (offline, no network)
+        run: |
+          cd btc-brain/data
+          python tests/test_briefings.py
+
+      - name: Build briefing
+        run: |
+          MODE="${{ github.event.inputs.mode }}"
+          MODE="${MODE:-generate}"
+          DATE_OVERRIDE="${{ github.event.inputs.date }}"
+          if [ "$MODE" = "reindex" ]; then
+            python btc-brain/data/scripts/briefings.py --mode reindex
+          elif [ -n "$DATE_OVERRIDE" ]; then
+            python btc-brain/data/scripts/briefings.py \
+              --mode generate --date "$DATE_OVERRIDE"
+          else
+            python btc-brain/data/scripts/briefings.py --mode generate
+          fi
+
+      - name: Show index summary
+        run: |
+          python -c "import json; d=json.load(open('btc-brain/data/public/briefings/index.json')); print('briefings:', len(d['briefings'])); [print('  -', b['date'], b['url']) for b in d['briefings'][:10]]"
+
+      - name: Commit briefing updates
+        run: |
+          git config user.name  "btc-brain-bot"
+          git config user.email "btc-brain-bot@users.noreply.github.com"
+          git add btc-brain/data/public/briefings/*.json
+          if git diff --cached --quiet; then
+            echo "No briefing changes to commit."
+          else
+            git commit -m "chore(briefings): update daily briefing archive"
+            git push
+          fi

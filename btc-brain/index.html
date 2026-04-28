@@ -1694,7 +1694,7 @@
   <div class="chapter-header">
     <div class="chapter-number" style="color:#3fb950;">LIVE INTELLIGENCE</div>
     <h2>Live Market Command Center</h2>
-    <p class="chapter-desc">Real-time BTC conditions across all active timeframes. Auto-refreshes every 30 seconds. Powered by live market data.</p>
+    <p class="chapter-desc">Live BTC ticker + closed-candle indicators across active timeframes. Browser pulls Binance public endpoints every 30s while the tab is open; if a feed is unavailable, panels mark themselves <strong style="color:#d29922;">STALE / unavailable</strong> rather than fabricating data. Educational research only — not financial advice.</p>
   </div>
 
   <!-- LIVE HEADER BAR -->
@@ -1834,7 +1834,11 @@
   </div>
 
   <p style="font-size:11px;color:#8b949e;margin-top:12px;text-align:center;">
-    Data sourced from Binance public API. Refreshes every 30s. For research use only &#8212; not financial advice.
+    Live tape: Binance public API (browser fetch every 30s).
+    Derivatives panel: direct <code>fapi.binance.com</code> with fallback to <code>data/public/derivatives.json</code>
+    when direct calls are region-blocked.
+    Key levels &amp; pivot/SMA markers: <code>data/public/key_levels.json</code> (Phase 2 artifact).
+    For research use only &#8212; not financial advice.
   </p>
 </section>
 
@@ -1945,35 +1949,27 @@
     </div>
   </div>
 
-  <!-- CURRENT BRAIN ACTIVITY -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Current Brain Activity</h3>
+  <!-- COVERAGE SCOPE (was: "Current Brain Activity" with hardcoded narrative) -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Coverage Scope <span style="color:#d29922;font-size:11px;font-weight:600;">(Static · what this site documents)</span></h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px;">
     <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-      <div style="font-size:11px;font-weight:700;color:#3fb950;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">&#9679; Active Monitoring</div>
+      <div style="font-size:11px;font-weight:700;color:#3fb950;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">&#9679; What is monitored live</div>
       <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:8px;">
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;"></span>BTC/USDT live price across 8 timeframes</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;"></span>$67K&#8211;$70K range structure &#8212; breakout in progress</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;"></span>4H momentum shift &#8212; compression to expansion</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#d29922;flex-shrink:0;"></span>$70K psychological resistance &#8212; watching volume</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#d29922;flex-shrink:0;"></span>Daily close structure for trend confirmation</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>Goldman Sachs institutional accumulation signal</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>ETF daily flow tracking &#8212; April 2026 reversal</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#d2a8ff;flex-shrink:0;"></span>Cycle position: Day ~730 post-halving (markdown phase)</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f85149;flex-shrink:0;"></span>Derivatives: live funding rate + OI + long/short ratio</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>Lightning Network: capacity 5,637 BTC (Dec 2025 ATH)</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;margin-top:6px;"></span>BTC/USDT spot ticker (Binance · 30s polling) — see Live Market panel above</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;margin-top:6px;"></span>Closed-candle OHLC indicators on 15m / 1h / 4h / daily</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;margin-top:6px;"></span>Derivatives (funding, open interest) — direct API or <code>data/public/derivatives.json</code> fallback</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;margin-top:6px;"></span>Pivot / SMA reference levels — <code>data/public/key_levels.json</code></li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#3fb950;flex-shrink:0;margin-top:6px;"></span>Source freshness budgets — <code>data/public/source_health.json</code> (Trust panel)</li>
       </ul>
     </div>
     <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-      <div style="font-size:11px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">&#9678; Currently Processing</div>
+      <div style="font-size:11px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">&#9678; What is research-only (not live)</div>
       <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:8px;">
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>Comparing Apr 2026 breakout to Mar 2023 analog</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>Intraday volume vs 20-day average (breakout valid?)</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;"></span>Pi Cycle Top indicator &#8212; not triggered</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;"></span>200-day MA gap: ~$89K &#8212; 28% above current</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;"></span>MVRV Z-score trajectory from Feb low</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f85149;flex-shrink:0;"></span>Bear thesis validation: 200 MA still far above price</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f85149;flex-shrink:0;"></span>5 consecutive monthly red candles &#8212; structural?</li>
-        <li style="display:flex;align-items:center;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#d2a8ff;flex-shrink:0;"></span>Clarity Act regulatory catalyst &#8212; April timing</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;margin-top:6px;"></span>Halving-cycle framework &amp; analog comparisons — Chapters 1, 7</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;margin-top:6px;"></span>On-chain regime (MVRV, Puell, NUPL) — Chapter 3 (no live feed wired into this page)</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;margin-top:6px;"></span>Macro / DXY / M2 correlation — Chapter 6 (no live feed wired into this page)</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;margin-top:6px;"></span>Black-swan playbook — Chapter 11</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#d2a8ff;flex-shrink:0;margin-top:6px;"></span>News / catalysts (Clarity Act, ETF flows, etc.) — no live feed wired; not printed as live readings</li>
       </ul>
     </div>
   </div>
@@ -2222,40 +2218,39 @@
     </div>
   </div>
 
-  <!-- ACTIVE COGNITIVE PROCESSES -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Active Cognitive Processes</h3>
+  <!-- COGNITIVE FRAMEWORK (categories only — no fabricated weights / readings) -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Cognitive Framework <span style="color:#d29922;font-size:11px;font-weight:600;">(Categories only · No fabricated weights)</span></h3>
   <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:20px;">
+    <div style="font-size:11px;color:#8b949e;margin-bottom:12px;line-height:1.6;">
+      The previous "Active Cognitive Processes" panel printed specific
+      readings (price levels, funding %, ETF flow $, weighting decimals)
+      that were not derived from any live data source. Those rows have
+      been replaced with the bare framework categories.
+    </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;font-size:12px;">
       <div>
-        <div style="font-size:10px;color:#3fb950;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Reading Now</div>
-        <div style="display:flex;flex-direction:column;gap:6px;color:#8b949e;">
-          <div>📊 4H BTC structure (68.6K break)</div>
-          <div>📈 Binance OI recovery trajectory</div>
-          <div>🔗 Goldman accumulation signals</div>
-          <div>⚡ April 2026 ETF flow reversal</div>
-          <div>🌐 DXY correlation divergence</div>
-          <div>📉 200 MA distance: 28%</div>
+        <div style="font-size:10px;color:#3fb950;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Inputs the framework reads</div>
+        <ul style="margin:0;padding-left:18px;color:#8b949e;line-height:1.7;list-style:disc;">
+          <li>Closed-candle OHLC structure (15m / 1h / 4h)</li>
+          <li>Derivatives feed (funding, open interest)</li>
+          <li>Macro / on-chain regime (chapters 3 &amp; 6)</li>
+          <li>Pivot / SMA reference levels (key_levels.json)</li>
+        </ul>
+      </div>
+      <div>
+        <div style="font-size:10px;color:#58a6ff;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">How weights would be reported</div>
+        <div style="color:#8b949e;line-height:1.7;">
+          Once a ledger-backed influence model is published, this column will list category weights as <em>fitted coefficients</em>, not editorial guesses. Until then, no decimals are shown.
         </div>
       </div>
       <div>
-        <div style="font-size:10px;color:#58a6ff;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Weighting Heaviest</div>
-        <div style="display:flex;flex-direction:column;gap:6px;color:#8b949e;">
-          <div>1. Volume confirmation (0.31)</div>
-          <div>2. Funding rate signal (0.22)</div>
-          <div>3. 4H/Daily alignment (0.19)</div>
-          <div>4. ETF flow direction (0.15)</div>
-          <div>5. Cycle day position (0.13)</div>
-        </div>
-      </div>
-      <div>
-        <div style="font-size:10px;color:#d29922;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Uncertainty Queue</div>
-        <div style="display:flex;flex-direction:column;gap:6px;color:#8b949e;">
-          <div>❓ True cycle bottom — unresolved</div>
-          <div>❓ M2 / BTC decoupling cause</div>
-          <div>❓ ETF demand elasticity</div>
-          <div>❓ Regulatory catalyst timing</div>
-          <div>❓ Miner sell pressure Q2 2026</div>
-        </div>
+        <div style="font-size:10px;color:#d29922;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Open research questions</div>
+        <ul style="margin:0;padding-left:18px;color:#8b949e;line-height:1.7;list-style:disc;">
+          <li>Cycle-bottom detection (Chapter 1)</li>
+          <li>M2 / BTC correlation framework (Chapter 6)</li>
+          <li>ETF demand elasticity (no live feed wired)</li>
+          <li>Regulatory catalyst tracking (no live feed wired)</li>
+        </ul>
       </div>
     </div>
   </div>
@@ -2293,56 +2288,64 @@
     <div style="font-size:10px;color:#8b949e;margin-top:12px;text-align:center;">These metrics will populate once a tamper-evident, ledger-backed prediction record is published. Until then, no number is shown.</div>
   </div>
 
-  <!-- DEEP MARKET INFLUENCE TRACKER -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Market Influence Tracker — What Is Moving BTC Right Now</h3>
-  <div style="overflow-x:auto;margin-bottom:24px;">
-    <table style="width:100%;border-collapse:collapse;font-size:12px;">
-      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Influence Factor</th>
-        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Direction</th>
-        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Weight</th>
-        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Confidence</th>
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Current Reading</th>
-      </tr></thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">Volume Confirmation</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">31%</td><td style="padding:8px 12px;text-align:center;color:#3fb950;font-family:monospace;">HIGH</td><td style="padding:8px 12px;color:#8b949e;">4H breakout candle 2.3× avg vol</td></tr>
-        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;color:#e6edf3;">Funding Rate</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">NEUTRAL</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">22%</td><td style="padding:8px 12px;text-align:center;color:#3fb950;font-family:monospace;">HIGH</td><td style="padding:8px 12px;color:#8b949e;">+0.024% — elevated but not extreme</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">ETF Net Flows</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">15%</td><td style="padding:8px 12px;text-align:center;color:#d29922;font-family:monospace;">MED</td><td style="padding:8px 12px;color:#8b949e;">$69.6M inflows first week April</td></tr>
-        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;color:#e6edf3;">Institutional Activity</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">13%</td><td style="padding:8px 12px;text-align:center;color:#d29922;font-family:monospace;">MED</td><td style="padding:8px 12px;color:#8b949e;">Goldman accumulation signal active</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">Macro / DXY</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MIXED</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">10%</td><td style="padding:8px 12px;text-align:center;color:#d29922;font-family:monospace;">MED</td><td style="padding:8px 12px;color:#8b949e;">DXY flat — not driving correlation</td></tr>
-        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;color:#e6edf3;">Retail Sentiment</td><td style="padding:8px 12px;text-align:center;"><span style="color:#f85149;font-weight:700;">BEARISH</span></td><td style="padding:8px 12px;text-align:center;color:#f7931a;font-family:monospace;font-weight:700;">9%</td><td style="padding:8px 12px;text-align:center;color:#3fb950;font-family:monospace;">HIGH</td><td style="padding:8px 12px;color:#8b949e;">F&G 38 — Fear. Retail exited positions</td></tr>
-      </tbody>
-    </table>
+  <!-- INFLUENCE FRAMEWORK (replaces a previous table of fabricated weights/readings) -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Influence Framework <span style="color:#d29922;font-size:11px;font-weight:600;">(Categories only · Coming after ledger sample)</span></h3>
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:24px;">
+    <div style="font-size:12px;color:#8b949e;line-height:1.7;">
+      The legacy "Market Influence Tracker" table reported fixed
+      directional weights (e.g. <em>Volume 31%</em>, <em>Funding 22%</em>)
+      and current readings (e.g. specific funding %, ETF inflow $) that
+      were not connected to any live data source. Those fabricated rows
+      have been removed.
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:#e6edf3;">
+      The five categories the research framework tracks are:
+    </div>
+    <ul style="margin:8px 0 0 0;padding-left:20px;font-size:12px;color:#8b949e;line-height:1.7;">
+      <li>Volume confirmation on closed candles (live, see Live Market panel above)</li>
+      <li>Derivatives — funding rate, open interest (live or via <code>data/public/derivatives.json</code>)</li>
+      <li>ETF / institutional flows (no live feed wired into this page)</li>
+      <li>Macro context — DXY, M2, Fed policy (research chapters only)</li>
+      <li>Sentiment — Fear &amp; Greed, retail positioning (no live feed wired into this page)</li>
+    </ul>
+    <div style="margin-top:12px;font-size:11px;color:#d29922;">
+      Numeric weights and confidence ratings will appear here only after a
+      ledger-backed influence model is published. Until then, no number is
+      shown.
+    </div>
   </div>
 
 
 
-  <!-- LIVE BRAIN ACTIVITY FEED -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Live Brain Activity Feed</h3>
+  <!-- BRAIN ACTIVITY FEED (scripted demo loop until a real event source is wired) -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Brain Activity Feed <span style="color:#d29922;font-size:11px;font-weight:600;">(Scripted demo · not live event stream)</span></h3>
   <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:24px;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-      <span style="width:7px;height:7px;border-radius:50%;background:#3fb950;display:inline-block;animation:pulse-dot 1.5s infinite;"></span>
-      <span style="font-size:11px;color:#3fb950;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Processing Live</span>
-      <span style="font-size:10px;color:#8b949e;margin-left:auto;font-family:monospace;">Latest events first</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#d29922;display:inline-block;"></span>
+      <span style="font-size:11px;color:#d29922;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Demo Loop</span>
+      <span style="font-size:10px;color:#8b949e;margin-left:auto;font-family:monospace;">Static script · numbers below are illustrative</span>
     </div>
     <div id="brain-feed-stream" style="display:flex;flex-direction:column;gap:0;max-height:380px;overflow-y:auto;">
-      <div style="color:#8b949e;font-size:11px;font-style:italic;">Initializing intelligence feed...</div>
+      <div style="color:#8b949e;font-size:11px;font-style:italic;">Loading demo loop…</div>
+    </div>
+    <div style="margin-top:10px;font-size:10px;color:#8b949e;">
+      This panel cycles through a scripted sequence of example research moves. It is <strong style="color:#d29922;">not</strong> connected to a live event bus. For ledger-backed forecast events, see the Trust &amp; Transparency section.
     </div>
   </div>
 
-  <!-- LIVE AWARENESS SCORE -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Real-Time Market Awareness Score</h3>
+  <!-- VOLATILITY / VOLUME AWARENESS SCORE -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Volatility / Volume Awareness Score <span style="color:#d29922;font-size:11px;font-weight:600;">(Derived · not a measured signal)</span></h3>
   <div style="background:linear-gradient(135deg,rgba(59,130,246,0.05),rgba(63,185,80,0.04));border:1px solid #21262d;border-radius:10px;padding:22px;margin-bottom:24px;">
     <div style="display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;">
       <div style="text-align:center;">
         <div style="font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Awareness Score</div>
-        <div id="awareness-score-val" style="font-size:64px;font-weight:900;font-family:monospace;color:#d29922;line-height:1;transition:all .3s;">72</div>
+        <div id="awareness-score-val" style="font-size:64px;font-weight:900;font-family:monospace;color:#8b949e;line-height:1;transition:all .3s;">—</div>
         <div style="font-size:10px;color:#8b949e;margin-top:4px;">/ 100</div>
       </div>
       <div>
-        <div id="awareness-label" style="font-size:13px;font-weight:600;color:#e6edf3;margin-bottom:10px;">ACTIVE AWARENESS — Standard monitoring mode</div>
+        <div id="awareness-label" style="font-size:13px;font-weight:600;color:#e6edf3;margin-bottom:10px;">Awaiting live ticker…</div>
         <div style="height:6px;background:#21262d;border-radius:3px;margin-bottom:14px;">
-          <div id="awareness-bar-fill" style="height:6px;background:#d29922;border-radius:3px;width:72%;transition:width .8s ease,background .5s;"></div>
+          <div id="awareness-bar-fill" style="height:6px;background:#21262d;border-radius:3px;width:0%;transition:width .8s ease,background .5s;"></div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;font-size:12px;">
           <div>
@@ -2355,8 +2358,8 @@
           </div>
         </div>
         <div style="font-size:10px;color:#8b949e;margin-top:10px;">
-          <span id="awareness-ts">Connecting to market data...</span>
-          &nbsp;·&nbsp; Updates every 45 seconds via Binance API
+          <span id="awareness-ts">Connecting to market data…</span>
+          &nbsp;·&nbsp; Score = deterministic function of |24h % change| and 24h quote-volume from Binance ticker. Not a forecast or measured accuracy signal.
         </div>
       </div>
     </div>
@@ -2380,10 +2383,9 @@
 
 
 <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;font-size:12px;color:#8b949e;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;">
-    <span>Brain Last Updated: <strong style="color:#e6edf3;">April 5, 2026</strong></span>
-    <span>Version: <strong style="color:#e6edf3;">v4.0 &#8212; Full Derivatives Edition</strong></span>
-    <span>Next Upgrade: <strong style="color:#e6edf3;">AI news sentiment integration</strong></span>
+    <span>Page generated by static build · last commit timestamp lives in git history.</span>
     <span>Coverage Score Δ: <strong style="color:#8b949e;">editorial — not a performance metric</strong></span>
+    <span>For measured accuracy &amp; freshness see the Trust &amp; Transparency section.</span>
   </div>
 </section>
 
@@ -3123,6 +3125,25 @@
   // LIVE MARKET TAB — Binance API Integration
   // ============================================
 
+  // Phase 2 artifact loader. The live-market panels (key levels map,
+  // tactical setup, regime nearest support/resist) read from
+  // data/public/key_levels.json so that displayed levels match the
+  // research backend instead of hardcoded numbers in the page.
+  function loadKeyLevelsArtifact() {
+    return fetch('data/public/key_levels.json', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('no key_levels.json'); return r.json(); })
+      .then(function (j) { window.__btcKeyLevels = j || null; })
+      .catch(function () { window.__btcKeyLevels = null; });
+  }
+  // Phase 2 derivatives artifact loader — used as a public fallback when
+  // direct fapi.binance.com calls are blocked (HTTP 451 in many regions).
+  function loadDerivativesArtifact() {
+    return fetch('data/public/derivatives.json', { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('no derivatives.json'); return r.json(); })
+      .then(function (j) { window.__btcDerivatives = j || null; })
+      .catch(function () { window.__btcDerivatives = null; });
+  }
+
   // Primary: Binance | Fallback: CoinGecko
   async function fetchBinanceData() {
     try {
@@ -3357,20 +3378,34 @@
       alignLabel.textContent = txt;
     }
 
-    // Key levels map
+    // Key levels map — derived from data/public/key_levels.json (Phase 2 artifact).
+    // We do NOT hardcode "All-Time High" / "200-Day MA" / "March resistance"
+    // numbers in the page itself; if the artifact is missing or its data is
+    // null, we render an explicit unavailable state instead of fake levels.
     const levelsEl = document.getElementById('levels-map');
     if (levelsEl) {
-      const levels = [
-        { price: 126296, label: 'All-Time High', color: '#f85149', type: 'resist' },
-        { price: 89365, label: '200-Day MA', color: '#f85149', type: 'resist' },
-        { price: 76000, label: 'March Resistance', color: '#d29922', type: 'resist' },
-        { price: price, label: 'CURRENT $' + Math.round(price).toLocaleString(), color: '#f7931a', type: 'current' },
-        { price: 68600, label: '20/50 MA Zone', color: '#58a6ff', type: 'support' },
-        { price: 65000, label: 'Near Support', color: '#3fb950', type: 'support' },
-        { price: 60001, label: 'Cycle Low', color: '#3fb950', type: 'support' },
-      ].filter(l => l.price <= 130000);
-
-      const max = 130000; const min = 58000;
+      const kl = (window.__btcKeyLevels && window.__btcKeyLevels.data) ? window.__btcKeyLevels.data : null;
+      const rawLevels = [];
+      if (kl) {
+        if (typeof kl.recent_high === 'number') rawLevels.push({ price: kl.recent_high, label: 'Recent high', color: '#f85149', type: 'resist' });
+        if (typeof kl.r2 === 'number')          rawLevels.push({ price: kl.r2,          label: 'Pivot R2',     color: '#f85149', type: 'resist' });
+        if (typeof kl.r1 === 'number')          rawLevels.push({ price: kl.r1,          label: 'Pivot R1',     color: '#d29922', type: 'resist' });
+        if (typeof kl.sma_200 === 'number')     rawLevels.push({ price: kl.sma_200,     label: 'SMA 200',      color: '#d29922', type: 'resist' });
+        if (typeof kl.sma_50 === 'number')      rawLevels.push({ price: kl.sma_50,      label: 'SMA 50',       color: '#58a6ff', type: 'support' });
+        if (typeof kl.sma_20 === 'number')      rawLevels.push({ price: kl.sma_20,      label: 'SMA 20',       color: '#58a6ff', type: 'support' });
+        if (typeof kl.vwap_session === 'number')rawLevels.push({ price: kl.vwap_session,label: 'VWAP (session)',color: '#58a6ff', type: 'support' });
+        if (typeof kl.pivot_classic === 'number')rawLevels.push({ price: kl.pivot_classic,label:'Pivot',        color: '#d2a8ff', type: 'support' });
+        if (typeof kl.s1 === 'number')          rawLevels.push({ price: kl.s1,          label: 'Pivot S1',     color: '#3fb950', type: 'support' });
+        if (typeof kl.s2 === 'number')          rawLevels.push({ price: kl.s2,          label: 'Pivot S2',     color: '#3fb950', type: 'support' });
+        if (typeof kl.recent_low === 'number')  rawLevels.push({ price: kl.recent_low,  label: 'Recent low',   color: '#3fb950', type: 'support' });
+      }
+      if (isFinite(price)) {
+        rawLevels.push({ price: price, label: 'CURRENT $' + Math.round(price).toLocaleString(), color: '#f7931a', type: 'current' });
+      }
+      if (!rawLevels.length || (kl == null && !isFinite(price))) {
+        levelsEl.innerHTML = '<div style="font-size:12px;color:#8b949e;font-style:italic;">Key levels unavailable — data/public/key_levels.json not loaded.</div>';
+      } else {
+      const levels = rawLevels;
       levelsEl.innerHTML = levels.sort((a,b)=>b.price-a.price).map(l => {
         const isCurrent = l.type === 'current';
         return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">'
@@ -3379,22 +3414,43 @@
           + '<div style="font-size:10px;color:' + (isCurrent?l.color:'#8b949e') + ';font-weight:' + (isCurrent?'700':'400') + ';white-space:nowrap;">' + l.label + '</div>'
           + '</div>';
       }).join('');
+      }
     }
 
-    // Regime panel
+    // Regime panel — derived purely from the live ticker. Nearest support /
+    // resistance comes from the closest level above/below price in the
+    // key_levels.json artifact. We never hardcode "$70,000" or "$68,500".
     const regimeEl = document.getElementById('regime-panel');
     if (regimeEl) {
       const chg = parseFloat(t.priceChangePercent);
       const regime = Math.abs(chg) > 3 ? 'High Volatility' : Math.abs(chg) > 1 ? 'Normal' : 'Compressed';
       const bias = chg > 0 ? 'Bullish' : 'Bearish';
+      const klData = (window.__btcKeyLevels && window.__btcKeyLevels.data) ? window.__btcKeyLevels.data : null;
+      const klSrc  = klData ? Object.keys(klData)
+        .filter(function(k){ return typeof klData[k] === 'number'; })
+        .map(function(k){ return { k: k, v: klData[k] }; }) : [];
+      let nearestResist = null, nearestSupport = null;
+      if (isFinite(price) && klSrc.length) {
+        klSrc.forEach(function(p){
+          if (p.v > price && (nearestResist == null || p.v < nearestResist.v)) nearestResist = p;
+          if (p.v < price && (nearestSupport == null || p.v > nearestSupport.v)) nearestSupport = p;
+        });
+      }
+      const fmtUsd = function(v){ return '$' + Math.round(v).toLocaleString('en-US'); };
+      const resistTxt = nearestResist
+        ? fmtUsd(nearestResist.v) + ' <span style="color:#8b949e;">(' + nearestResist.k + ')</span>'
+        : '<span style="color:#8b949e;">unavailable</span>';
+      const supportTxt = nearestSupport
+        ? fmtUsd(nearestSupport.v) + ' <span style="color:#8b949e;">(' + nearestSupport.k + ')</span>'
+        : '<span style="color:#8b949e;">unavailable</span>';
       regimeEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;font-size:12px;">'
         + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Market Regime:</span><span style="color:#d29922;font-weight:700;">' + regime + '</span></div>'
         + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Directional Bias:</span><span style="color:' + (chg>0?'#3fb950':'#f85149') + ';font-weight:700;">' + bias + '</span></div>'
         + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">24h Change:</span><span style="color:' + (chg>0?'#3fb950':'#f85149') + ';font-family:monospace;">' + (chg>0?'+':'') + chg.toFixed(2) + '%</span></div>'
         + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Range (24h):</span><span style="color:#e6edf3;font-family:monospace;">' + ((parseFloat(t.highPrice)-parseFloat(t.lowPrice))/parseFloat(t.lowPrice)*100).toFixed(2) + '%</span></div>'
         + '<hr style="border:none;border-top:1px solid #21262d;margin:4px 0;">'
-        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Nearest Resist:</span><span style="color:#f85149;font-family:monospace;">$' + (price > 69000 ? '70,000' : '69,612') + '</span></div>'
-        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Nearest Support:</span><span style="color:#3fb950;font-family:monospace;">' + (price > 69000 ? '$68,500' : '$67,000') + '</span></div>'
+        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Nearest Resist:</span><span style="color:#f85149;font-family:monospace;">' + resistTxt + '</span></div>'
+        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Nearest Support:</span><span style="color:#3fb950;font-family:monospace;">' + supportTxt + '</span></div>'
         + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Momentum State:</span><span style="color:' + (chg>1?'#3fb950':chg<-1?'#f85149':'#d29922') + ';font-weight:700;">' + (chg>2?'Expanding ↑':chg>0?'Building':'Fading ↓') + '</span></div>'
         + '</div>';
     }
@@ -3422,35 +3478,47 @@
       }).join('');
     }
 
-    // Tactical panel
+    // Tactical panel — purely descriptive of the live tape, no hardcoded
+    // price targets, MA confluences, or "bull continuation prob 72%" claims.
     const tacticalEl = document.getElementById('tactical-panel');
     if (tacticalEl) {
       const chg = parseFloat(t.priceChangePercent);
       const setup = chg > 3 ? 'Breakout Continuation' : chg > 1 ? 'Momentum Build' : chg > -1 ? 'Range Consolidation' : 'Distribution / Breakdown';
-      const prob = chg > 2 ? 72 : chg > 0 ? 58 : 42;
-      tacticalEl.innerHTML = '<div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:10px;">' + setup + '</div>'
+      const klData2 = (window.__btcKeyLevels && window.__btcKeyLevels.data) ? window.__btcKeyLevels.data : null;
+      const fmtUsd2 = function(v){ return '$' + Math.round(v).toLocaleString('en-US'); };
+      const sma20 = klData2 && typeof klData2.sma_20 === 'number' ? klData2.sma_20 : null;
+      const sma50 = klData2 && typeof klData2.sma_50 === 'number' ? klData2.sma_50 : null;
+      const r1    = klData2 && typeof klData2.r1     === 'number' ? klData2.r1 : null;
+      const s1    = klData2 && typeof klData2.s1     === 'number' ? klData2.s1 : null;
+      const sma20Txt = sma20 != null ? (price > sma20 ? 'above' : 'below') + ' SMA-20 (' + fmtUsd2(sma20) + ')' : 'SMA-20 unavailable';
+      const sma50Txt = sma50 != null ? (price > sma50 ? 'above' : 'below') + ' SMA-50 (' + fmtUsd2(sma50) + ')' : 'SMA-50 unavailable';
+      const targetTxt = r1 != null ? 'next pivot resistance R1 ' + fmtUsd2(r1) : 'pivot R1 unavailable';
+      const invTxt    = s1 != null ? 'pivot support S1 ' + fmtUsd2(s1)        : 'pivot S1 unavailable';
+      tacticalEl.innerHTML = '<div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:10px;">' + setup + ' <span style="color:#8b949e;font-weight:500;font-size:11px;">· derived from live 24h change</span></div>'
         + '<div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#8b949e;">'
-        + '<div>📍 Price sitting <strong style="color:#e6edf3;">' + (price > 68600 ? 'above' : 'below') + '</strong> 20/50 MA confluence ($68,600)</div>'
-        + '<div>📊 Volume ' + (parseFloat(t.volume) > 200000 ? 'confirming' : 'not confirming') + ' the move</div>'
-        + '<div>🎯 Next target: <strong style="color:#58a6ff;">' + (price < 70000 ? '$70,000 psychological' : '$72,500 March resistance') + '</strong></div>'
-        + '<div>🛡️ Invalidation below: <strong style="color:#f85149;">$' + (price > 69000 ? '68,000' : '66,600') + '</strong></div>'
-        + '<div style="margin-top:8px;padding:8px;background:#161b22;border-radius:6px;"><span style="color:#8b949e;">Bull continuation prob:</span><span style="color:#3fb950;font-weight:700;font-family:monospace;margin-left:8px;">' + prob + '%</span></div>'
+        + '<div>📍 Price ' + sma20Txt + '</div>'
+        + '<div>📍 Price ' + sma50Txt + '</div>'
+        + '<div>🎯 Above-price marker: <strong style="color:#58a6ff;">' + targetTxt + '</strong></div>'
+        + '<div>🛡️ Below-price marker: <strong style="color:#f85149;">' + invTxt + '</strong></div>'
+        + '<div style="margin-top:8px;padding:8px;background:#161b22;border-radius:6px;color:#d29922;font-size:11px;">Markers are pivot/SMA reference levels from data/public/key_levels.json — not trade signals or targets.</div>'
         + '</div>';
     }
 
     // Pattern engine
     if (h1 && h1.length > 0) updatePatternEngine(h1);
 
-    // Context panel
+    // Context panel — replaced legacy editorial narrative with a plain-text
+    // pointer to the research chapters above. Specific catalysts, analogs,
+    // and "Goldman accumulation" claims are NOT printed here, since the
+    // page does not have a live news/catalyst feed to back them.
     const contextEl = document.getElementById('context-panel');
     if (contextEl) {
       contextEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:#8b949e;">'
-        + '<div>🔗 <strong style="color:#e6edf3;">Macro Context:</strong> Cycle Day ~730, post-peak markdown. Price 47% below ATH.</div>'
-        + '<div>🔗 <strong style="color:#e6edf3;">Historical Analog:</strong> Similar to Mar 2023 relief rally — post-SVB bounce.</div>'
-        + '<div>🔗 <strong style="color:#e6edf3;">Halving Cycle:</strong> 547 days since Apr 2024 halving. Historical tops ~548 days out.</div>'
-        + '<div>🔗 <strong style="color:#e6edf3;">Catalyst:</strong> US Clarity Act + Goldman accumulation signal + ETF inflow reversal.</div>'
-        + '<div>🔗 <strong style="color:#e6edf3;">Risk:</strong> 5 red monthly candles — counter-trend bounce, not confirmed reversal.</div>'
-        + '<div style="margin-top:8px;padding:8px;background:#161b22;border-radius:6px;color:#d29922;font-size:11px;">⚠️ Until price reclaims 200 MA ($89K), structural bear trend remains intact.</div>'
+        + '<div>🔗 <strong style="color:#e6edf3;">Macro / cycle context:</strong> See Chapters 1–6 for the halving framework, on-chain regime model, and macro correlation breakdown.</div>'
+        + '<div>🔗 <strong style="color:#e6edf3;">Historical analogs:</strong> Documented in Chapter 7 (Bull/Bear Markets) and Chapter 11 (Black Swans).</div>'
+        + '<div>🔗 <strong style="color:#e6edf3;">Indicator framework:</strong> Chapter 4 (TA &amp; Indicators). Live indicator values come from closed-candle Binance OHLC above.</div>'
+        + '<div>🔗 <strong style="color:#e6edf3;">Catalyst tracking:</strong> No live news/catalyst feed is wired into this page; specific catalysts are not printed here.</div>'
+        + '<div style="margin-top:8px;padding:8px;background:#161b22;border-radius:6px;color:#d29922;font-size:11px;">⚠️ Educational research only — not financial advice. See the Trust &amp; Transparency section for measured-accuracy gating.</div>'
         + '</div>';
     }
   }
@@ -3741,16 +3809,61 @@
         }
       }
     } catch(e) {
-      // Silent fail \u2014 derivatives data is bonus, not critical
-      const els = ['live-funding','live-oi','live-lsr'];
-      els.forEach(id => { const el = document.getElementById(id); if(el) el.textContent = 'N/A'; });
+      // Direct fapi.binance.com is blocked from many regions (HTTP 451).
+      // Fall back to the public Phase 2 artifact so panels show real
+      // backend-fetched values instead of "N/A" or fake "Loading...".
+      const fundingEl = document.getElementById('live-funding');
+      const fundingSignalEl = document.getElementById('live-funding-signal');
+      const oiEl = document.getElementById('live-oi');
+      const oiSignalEl = document.getElementById('live-oi-signal');
+      const lsrEl = document.getElementById('live-lsr');
+      const lsrSignalEl = document.getElementById('live-lsr-signal');
+      const d = window.__btcDerivatives && window.__btcDerivatives.data ? window.__btcDerivatives.data : null;
+      const src = window.__btcDerivatives && window.__btcDerivatives.source ? window.__btcDerivatives.source : null;
+      const fetched = window.__btcDerivatives && window.__btcDerivatives.fetched_at ? window.__btcDerivatives.fetched_at : null;
+      if (d && typeof d.funding_rate === 'number') {
+        const fr = d.funding_rate * 100;
+        if (fundingEl) {
+          fundingEl.textContent = (fr >= 0 ? '+' : '') + fr.toFixed(4) + '%';
+          fundingEl.style.color = fr > 0.05 ? '#f85149' : fr > 0.01 ? '#d29922' : fr < -0.05 ? '#3fb950' : fr < -0.01 ? '#58a6ff' : '#3fb950';
+        }
+        if (fundingSignalEl) fundingSignalEl.textContent = 'from data/public/derivatives.json (' + (src || 'unknown') + ')';
+      } else if (fundingEl) {
+        fundingEl.textContent = '\u2014 (unavailable)';
+        if (fundingSignalEl) fundingSignalEl.textContent = 'No funding rate in artifact';
+      }
+      if (d && typeof d.open_interest_btc === 'number') {
+        if (oiEl) {
+          oiEl.textContent = d.open_interest_btc.toFixed(0) + ' BTC';
+          oiEl.style.color = '#d2a8ff';
+        }
+        if (oiSignalEl) oiSignalEl.textContent = 'OI in BTC from artifact (' + (src || 'unknown') + ')';
+      } else if (oiEl) {
+        oiEl.textContent = '\u2014 (unavailable)';
+        if (oiSignalEl) oiSignalEl.textContent = 'No open interest in artifact';
+      }
+      if (d && typeof d.long_short_ratio === 'number') {
+        if (lsrEl) lsrEl.textContent = d.long_short_ratio.toFixed(2) + 'x';
+        if (lsrSignalEl) lsrSignalEl.textContent = 'L/S ratio from artifact (' + (src || 'unknown') + ')';
+      } else if (lsrEl) {
+        lsrEl.textContent = '\u2014 (unavailable)';
+        if (lsrSignalEl) lsrSignalEl.textContent = 'L/S ratio missing in artifact (often null on OKX fallback)';
+      }
     }
   }
 
   // INIT & AUTO-REFRESH
   if (document.getElementById('live-price')) {
-    fetchBinanceData();
+    // Load static artifacts first so the first paint of the live-market
+    // panels can use real key levels / derivatives data instead of the
+    // legacy hardcoded numbers.
+    Promise.all([loadKeyLevelsArtifact(), loadDerivativesArtifact()])
+      .then(function () { fetchBinanceData(); });
     setInterval(fetchBinanceData, 30000);
+    // Refresh the static artifacts on a slower cadence — they update at
+    // backend cycle frequency, not every 30s.
+    setInterval(loadKeyLevelsArtifact, 5 * 60 * 1000);
+    setInterval(loadDerivativesArtifact, 5 * 60 * 1000);
   }
   if (document.getElementById('live-funding')) {
     fetchDerivativesData();
@@ -4220,39 +4333,33 @@
 
 
 // ============================================================
-// BTC BRAIN v5.0 — LIVING INTELLIGENCE SYSTEMS
+// Browser-side UX modules (scripted demo feed, browser counters, etc.)
+// None of the modules below produce a measured accuracy figure or a
+// public benchmark; ledger-backed metrics live in the Trust panel.
 // ============================================================
 
-// ── Live Brain Activity Feed ─────────────────────────────────
+// ── Brain Activity Feed (scripted demo loop) ────────────────
 (function() {
+  // Scripted illustrative loop. NO specific live numbers (price levels,
+  // funding %, OI, F&G, MVRV, hash rate, ETF flows, etc.) — those would
+  // be stale the moment this file is committed. Each entry describes a
+  // category of research move. This panel is clearly labeled as a demo
+  // loop in the surrounding markup so it cannot be confused with a real
+  // event stream.
   var EVENTS = [
-    // Live market reads
-    { type:'live',    msg:'Monitoring BTC/USDT 4H structure — watching $68,600 MA zone',        delay:0 },
-    { type:'pattern', msg:'Scanning 15m candle sequence: 4/5 bullish — momentum building',      delay:3200 },
-    { type:'onchain', msg:'Exchange reserve: 2.43M BTC (all-time low) — supply constraint active', delay:7100 },
-    { type:'macro',   msg:'DXY correlation re-checking: divergence from inverse relationship',   delay:11500 },
-    { type:'signal',  msg:'Funding rate: +0.024% — elevated but not extreme. Weight: moderate', delay:15800 },
-    { type:'learn',   msg:'Comparing April 2026 structure to March 2023 analog — 78% match',    delay:20200 },
-    { type:'predict', msg:'Short-term pathway recalculating: $69K-$70K resistance zone active', delay:25600 },
-    { type:'cycle',   msg:'Cycle day 730 post-halving — historical context: markdown continues', delay:31000 },
-    { type:'risk',    msg:'OI at $28.4B — recovering from $23.6B low. Leverage rebuilding',     delay:36800 },
-    { type:'pattern', msg:'Inside bar detected on 1H — compression before next directional move', delay:43200 },
-    { type:'live',    msg:'Volume 24h: $178M — monitoring for breakout confirmation signal',     delay:50100 },
-    { type:'signal',  msg:'Cross-TF alignment score: 74/100 — moderate bullish stack',          delay:57800 },
-    { type:'onchain', msg:'MVRV Z-Score: 0.41 — historically deep value zone for cycle lows',   delay:65400 },
-    { type:'macro',   msg:'ETF inflow April week 1: $69.6M — institutional demand re-entering', delay:73900 },
-    { type:'predict', msg:'Monthly scenario weight: bear/bottom 45%, accumulation 30%, relief 25%', delay:82700 },
-    { type:'learn',   msg:'Signal strength ranking updated — volume confirmation weighted +3%',  delay:92000 },
-    { type:'cycle',   msg:'200-Day MA at $89,365 — 28% above current. Structural bear confirmed', delay:101500 },
-    { type:'risk',    msg:'Miner hash rate: 780 EH/s — record high. Network strength intact',   delay:111300 },
-    { type:'pattern', msg:'Bull engulfing on 4H confirmed with 2.1× average volume',            delay:121800 },
-    { type:'live',    msg:'Price action: clean higher low structure forming above $66,600',      delay:133000 },
-    { type:'signal',  msg:'Pi Cycle Top: NOT triggered. No cycle top signal from oscillator',   delay:145000 },
-    { type:'macro',   msg:'Global M2 expanding. BTC historically follows with 8-12 week lag',  delay:157200 },
-    { type:'learn',   msg:'Model update: ETF flow → price lag refined to 3-5 day window',       delay:170000 },
-    { type:'predict', msg:'Invalidation level refined: daily close below $65,000 = bear reset', delay:183500 },
-    { type:'onchain', msg:'LTH supply: 74.3% of circulating — HODLers at 18-month high',       delay:197300 },
-    { type:'signal',  msg:'Fear & Greed: 38 (Fear). Historical: F<40 → 90-day median return +42%', delay:212000 },
+    { type:'live',    msg:'Polling BTC/USDT spot for live ticker + closed-candle OHLC.',            delay:0 },
+    { type:'pattern', msg:'Re-running 15m / 1h / 4h candlestick pattern scan on closed candles.',  delay:4000 },
+    { type:'onchain', msg:'Re-reading on-chain regime indicators (see Chapter 3 for definitions).', delay:8000 },
+    { type:'macro',   msg:'Cross-checking macro/DXY/M2 correlation framework (Chapter 6).',         delay:12000 },
+    { type:'signal',  msg:'Refreshing source freshness budgets from data/public/source_health.json.', delay:16000 },
+    { type:'learn',   msg:'Reviewing historical analog catalogue (Chapters 7, 11) for reference setups.', delay:20000 },
+    { type:'predict', msg:'Forecasts (when issued) are written to ledger/data/forecasts.jsonl — see Trust panel.', delay:24000 },
+    { type:'cycle',   msg:'Re-aligning current price with halving-cycle phase model (Chapter 1).',  delay:28000 },
+    { type:'risk',    msg:'Risk framework (Kelly sizing, drawdown, vol regime) in Chapter 12.',     delay:32000 },
+    { type:'pattern', msg:'Inside-bar / compression check on closed 1h bars.',                       delay:36000 },
+    { type:'signal',  msg:'Cross-timeframe alignment score recomputed from live closed candles.',   delay:40000 },
+    { type:'cycle',   msg:'Pi-cycle / 200-week trigger evaluation against current closed daily.',   delay:44000 },
+    { type:'predict', msg:'No model is rated LIVE until Phase-4 promotion gates pass — see Trust.', delay:48000 },
   ];
 
   var COLORS = { live:'#3fb950', pattern:'#d2a8ff', onchain:'#58a6ff', macro:'#d29922', signal:'#f7931a', learn:'#00e5ff', predict:'#69f0ae', cycle:'#ffd54f', risk:'#f85149' };
@@ -4305,19 +4412,25 @@
 
 // ── Dynamic IQ Growth Engine ─────────────────────────────────
 (function() {
+  // Editorial coverage-score history. Coverage score is an author-curated
+  // index of research depth — NOT a measured accuracy or intelligence
+  // benchmark. See the Trust & Transparency section for ledger-backed
+  // accuracy. No promotion of unbuilt features here.
   var IQ_HISTORY = [
-    { date:'Apr 5, 2026 (birth)', iq:147, milestone:'Initial research: 5 modules, 12 chapters' },
-    { date:'Apr 5, 2026 (v2.0)',  iq:164, milestone:'+ Ch.13 Derivatives, Ch.14 Lightning, Pattern Engine' },
-    { date:'Apr 6, 2026 (v3.0)',  iq:182, milestone:'+ 3D Neural Brain, Predictive Framework, Live Feed' },
-    { date:'Current (v5.0)',      iq:189, milestone:'+ Prediction Engine, Awareness Score, Live Activity' },
+    { date:'Initial', iq:147, milestone:'Initial research: 5 modules, 12 chapters' },
+    { date:'+ Ch.13/14', iq:164, milestone:'Added Derivatives + Lightning chapters and the pattern engine' },
+    { date:'+ 3D / framework', iq:182, milestone:'Added 3D neural visual + predictive framework' },
+    { date:'Current', iq:189, milestone:'Added measured-accuracy panel + Phase 7 Trust layer' },
   ];
 
+  // Projected milestones describe research areas, not promised features.
+  // Specific model upgrades (autonomous research engine, options flow, AI
+  // news sentiment) are NOT promoted here; only the topic categories.
   var PROJECTED = [
-    { iq:195, milestone:'Next: Intraday sub-1m engine + derivatives intelligence depth' },
-    { iq:203, milestone:'Options flow analyzer + Deribit DVOL live feed' },
-    { iq:214, milestone:'AI news sentiment integration + realtime catalyst detection' },
-    { iq:228, milestone:'Self-correcting prediction model + outcome tracking engine' },
-    { iq:247, milestone:'Autonomous research expansion engine fully operational' },
+    { iq:195, milestone:'Research area: deeper derivatives intelligence' },
+    { iq:203, milestone:'Research area: options-market structure' },
+    { iq:214, milestone:'Research area: catalyst / news framework' },
+    { iq:228, milestone:'Research area: model promotion through the Phase 4 gates (ledger-backed)' },
   ];
 
   function buildIQTimeline() {
@@ -4374,83 +4487,75 @@
   }
 })();
 
-// ── Live Awareness Score ─────────────────────────────────────
+// ── Volatility / Volume Awareness Score ──────────────────────
+// Deterministic function of the live Binance ticker. No synthetic
+// time-based oscillation. When the ticker is unavailable, the panel
+// renders an explicit unavailable state instead of an invented number.
 (function() {
-  var lastAwareness = 0;
-
   function computeAwareness(ticker) {
-    if (!ticker) return 72;
-    var score = 72; // base
-    var change = Math.abs(parseFloat(ticker.priceChangePercent || 0));
-    var vol    = parseFloat(ticker.quoteVolume || 0);
-
-    // Higher volatility = higher awareness relevance
-    if (change > 5) score += 8;
-    else if (change > 3) score += 5;
-    else if (change > 1) score += 2;
-
-    // Volume context
-    if (vol > 5e9) score += 6;
-    else if (vol > 2e9) score += 3;
-
-    // Add time-based oscillation to make it feel alive
-    score += Math.round(Math.sin(Date.now() / 45000) * 3);
-
-    return Math.min(100, Math.max(55, score));
+    if (!ticker) return null;
+    var change = Math.abs(parseFloat(ticker.priceChangePercent));
+    var vol    = parseFloat(ticker.quoteVolume);
+    if (!isFinite(change) || !isFinite(vol)) return null;
+    var score = 60; // floor
+    if (change > 5)      score += 16;
+    else if (change > 3) score += 10;
+    else if (change > 1) score += 4;
+    if (vol > 5e9)      score += 14;
+    else if (vol > 2e9) score += 8;
+    else if (vol > 1e9) score += 4;
+    return Math.min(100, Math.max(50, score));
   }
 
   function updateAwarenessScore() {
-    fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
-      .then(function(r){ return r.json(); })
+    fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT', { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error('ticker unavailable'); return r.json(); })
       .then(function(ticker) {
-        var score = computeAwareness(ticker);
-        renderAwareness(score, ticker);
+        renderAwareness(computeAwareness(ticker), ticker);
       })
       .catch(function() {
-        var score = 72 + Math.round(Math.sin(Date.now() / 30000) * 4);
-        renderAwareness(score, null);
+        renderAwareness(null, null);
       });
   }
 
   function renderAwareness(score, ticker) {
     var el = document.getElementById('awareness-score-val');
     if (!el) return;
+    var bar   = document.getElementById('awareness-bar-fill');
+    var label = document.getElementById('awareness-label');
+    var priceEl = document.getElementById('awareness-price');
+    var chgEl   = document.getElementById('awareness-change');
+    var ts      = document.getElementById('awareness-ts');
 
-    // Animate if changed
-    if (score !== lastAwareness) {
-      el.style.transform = 'scale(1.06)';
-      setTimeout(function(){ el.style.transform = 'scale(1)'; }, 200);
+    if (score == null) {
+      el.textContent = '—';
+      el.style.color = '#8b949e';
+      if (bar)   { bar.style.width = '0%'; bar.style.background = '#21262d'; }
+      if (label) { label.textContent = 'Ticker unavailable — score not computed.'; }
+      if (priceEl) priceEl.textContent = '—';
+      if (chgEl)   { chgEl.textContent = '—'; chgEl.style.color = '#8b949e'; }
+      if (ts) ts.textContent = 'Last attempt ' + new Date().toLocaleTimeString();
+      return;
     }
-    lastAwareness = score;
 
     el.textContent = score;
     el.style.color = score >= 85 ? '#3fb950' : score >= 70 ? '#d29922' : '#58a6ff';
-
-    var bar = document.getElementById('awareness-bar-fill');
     if (bar) { bar.style.width = score + '%'; bar.style.background = score >= 85 ? '#3fb950' : score >= 70 ? '#d29922' : '#58a6ff'; }
-
-    var label = document.getElementById('awareness-label');
     if (label) {
-      label.textContent = score >= 90 ? 'PEAK AWARENESS — Full signal convergence' :
-                          score >= 80 ? 'HIGH AWARENESS — Multiple factors aligned' :
-                          score >= 70 ? 'ACTIVE AWARENESS — Standard monitoring mode' :
-                          score >= 60 ? 'BASELINE AWARENESS — Low volatility regime' :
-                          'BUILDING AWARENESS — Accumulating data';
+      label.textContent = score >= 90 ? 'PEAK — high volatility + high volume'
+                       : score >= 80 ? 'HIGH — elevated volatility / volume'
+                       : score >= 70 ? 'ACTIVE — moderate volatility / volume'
+                       : score >= 60 ? 'BASELINE — low volatility / volume'
+                                     : 'QUIET — low activity';
     }
-
     if (ticker) {
-      var priceEl = document.getElementById('awareness-price');
       if (priceEl) priceEl.textContent = '$' + parseFloat(ticker.lastPrice).toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
-      var chgEl = document.getElementById('awareness-change');
       var chg = parseFloat(ticker.priceChangePercent);
       if (chgEl) { chgEl.textContent = (chg >= 0 ? '+' : '') + chg.toFixed(2) + '%'; chgEl.style.color = chg >= 0 ? '#3fb950' : '#f85149'; }
     }
-
-    var ts = document.getElementById('awareness-ts');
     if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
   }
 
-  // Boot & schedule
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function(){
       updateAwarenessScore();
@@ -4465,9 +4570,11 @@
 
 
 // ================================================================
-// SELF-IMPROVING INTELLIGENCE ENGINE (SIIE) v1.0
-// Persistent memory · Dynamic IQ · Self-repair · Prediction tracking
-// The BTC Brain never stops learning. Growth is permanent.
+// Browser-local session counters + visual feedback module
+// (was previously labeled "Self-Improving Intelligence Engine").
+// All state is per-browser localStorage. No measured prediction-
+// accuracy benchmark or public claim is produced here. For ledger-
+// backed metrics see the Trust & Transparency section.
 // ================================================================
 (function() {
   'use strict';
@@ -4772,7 +4879,7 @@
       var entry_str = '$' + Math.round(p.entry).toLocaleString();
       var exit_str  = '$' + Math.round(price).toLocaleString();
       feedPush(correct ? 'learning' : 'signal',
-        'Prediction resolved: ' + p.dir.toUpperCase() + ' ' + entry_str + ' → ' + exit_str + ' | ' + (correct ? '✓ CORRECT' : '✗ INCORRECT') + ' | acc now ' + Math.round((MEM.accuracy_score||0.65)*100) + '%');
+        'Local self-check resolved: ' + p.dir.toUpperCase() + ' ' + entry_str + ' → ' + exit_str + ' | ' + (correct ? '✓ same direction' : '✗ opposite direction') + ' (browser-local, not the public accuracy ledger)');
     });
 
     // Recompute accuracy from full resolved set
@@ -4974,25 +5081,23 @@
       '<div style="background:linear-gradient(135deg,rgba(63,185,80,0.06),rgba(0,229,255,0.04));border:1px solid #1a3a2a;border-radius:14px;padding:24px;margin-bottom:28px;">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">'
     + '<div>'
-    + '<div style="font-size:10px;color:#3fb950;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">SELF-IMPROVING INTELLIGENCE ENGINE · ACTIVE</div>'
-    + '<div style="font-size:14px;font-weight:700;color:#e6edf3;">Persistent Memory · Self-Repair · Continuous Growth · Prediction Tracking</div>'
+    + '<div style="font-size:10px;color:#d29922;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">BROWSER SESSION COUNTERS <span style="color:#8b949e;letter-spacing:.06em;">(localStorage · not a measured benchmark)</span></div>'
+    + '<div style="font-size:14px;font-weight:700;color:#e6edf3;">Per-browser counters: data points fetched, session count, uptime, internal repair events</div>'
     + '</div>'
     + '<div style="display:flex;align-items:center;gap:8px;">'
-    + '<span style="width:8px;height:8px;border-radius:50%;background:#3fb950;display:inline-block;animation:pulse-dot 2s infinite;"></span>'
-    + '<span style="font-size:11px;color:#3fb950;font-weight:700;font-family:monospace;">LIVE</span>'
+    + '<span style="width:8px;height:8px;border-radius:50%;background:#d29922;display:inline-block;"></span>'
+    + '<span style="font-size:11px;color:#d29922;font-weight:700;font-family:monospace;">LOCAL</span>'
     + '</div>'
     + '</div>'
     + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:12px;">'
-    + siieCard('siie-data-points',      '0',    'Data Points Ingested', '#58a6ff')
-    + siieCard('siie-sessions',         '1',    'Sessions',             '#3fb950')
-    + siieCard('siie-accuracy',         '65%',  'Prediction Accuracy',  '#d2a8ff')
-    + siieCard('siie-repairs',          '0',    'Self-Repairs',         '#f85149')
-    + siieCard('siie-uptime',           '0h 0m','Total Uptime',         '#d29922')
-    + siieCard('siie-learning-events',  '0',    'Learning Events',      '#00e5ff')
+    + siieCard('siie-data-points',      '0',    'Live ticks fetched (this browser)', '#58a6ff')
+    + siieCard('siie-sessions',         '1',    'Browser sessions',              '#3fb950')
+    + siieCard('siie-repairs',          '0',    'Internal repair events',        '#f85149')
+    + siieCard('siie-uptime',           '0h 0m','Tab uptime',                    '#d29922')
+    + siieCard('siie-learning-events',  '0',    'Internal events',               '#00e5ff')
     + '</div>'
     + '<div style="margin-top:16px;padding-top:14px;border-top:1px solid #1a3a2a;font-size:10px;color:#8b949e;line-height:1.7;">'
-    + 'All metrics persist across sessions via local memory. IQ grows with data ingested, uptime, accuracy, and self-repairs. '
-    + 'Modules auto-repair when health falls below 63%. Predictions are logged and resolved every 4 hours. Growth has no ceiling.'
+    + 'All counters live in <code>localStorage</code> for this browser only. They are NOT a measured prediction-accuracy benchmark, not synced server-side, and not comparable across users. Measured forecast accuracy lives in the Trust &amp; Transparency section (ledger-backed) — see <code>ledger/public/accuracy.json</code>.'
     + '</div>'
     + '</div>';
 
@@ -5035,11 +5140,10 @@
     var now = Date.now();
     if (now - lastLearningMsg > 295000) {
       lastLearningMsg = now;
-      var hv  = Object.values(MEM.module_health);
-      var avgH = Math.round(hv.reduce(function(a,b){ return a+b; },0) / hv.length);
-      var iq  = Math.round(MEM.iq_score || 189);
-      var acc = Math.round((MEM.accuracy_score || 0.65) * 100);
-      feedPush('learning', 'Intelligence cycle #' + (MEM.data_ingested) + ' — avg health ' + avgH + '% | IQ ' + iq + ' | accuracy ' + acc + '% | ' + (MEM.repairs_completed||0) + ' repairs | ' + (MEM.session_count) + ' sessions');
+      // Local browser counters only — never broadcast a "prediction accuracy"
+      // figure here. Measured accuracy lives in the Trust panel and is
+      // ledger-backed; this counter is per-browser localStorage.
+      feedPush('learning', 'Local cycle #' + (MEM.data_ingested) + ' — browser-only counters · ' + (MEM.repairs_completed||0) + ' repair events · ' + (MEM.session_count) + ' sessions');
     }
 
     saveMem();
@@ -5081,10 +5185,10 @@
     // Startup message
     var sess = MEM.session_count;
     if (sess <= 1) {
-      feedPush('learning', '🌱 BTC Brain initialized — SIIE engine online — persistent intelligence begins now');
+      feedPush('learning', 'Browser session initialized — local counters reset (this browser only).');
     } else {
       var hrs2 = Math.round((MEM.total_uptime_min || 0) / 60 * 10) / 10;
-      feedPush('learning', '⚡ Session ' + sess + ' resumed — ' + hrs2 + 'h accumulated uptime | ' + (MEM.data_ingested||0) + ' lifetime data points | IQ ' + Math.round(computeIQ()));
+      feedPush('learning', 'Browser session ' + sess + ' resumed — ' + hrs2 + 'h tab uptime · ' + (MEM.data_ingested||0) + ' live ticks fetched on this browser');
     }
 
     // Expose debug interface
@@ -5112,9 +5216,9 @@
 
 
 // ================================================================
-// SELF-IMPROVING INTELLIGENCE ENGINE v2.0 — Neural Expansion Module
-// Dynamic module spawning · Multi-timeframe predictions ·
-// Advanced TA · Consensus signals · Infinite brain growth
+// Browser-local TA panel (RSI, structure, divergence, multi-TF
+// consensus, F&G). All state lives in localStorage; no measured
+// public benchmark is produced by this module.
 // ================================================================
 (function() {
   'use strict';
@@ -5523,17 +5627,18 @@
     el.innerHTML =
       '<div style="background:linear-gradient(135deg,rgba(210,168,255,0.06),rgba(255,215,0,0.04));border:1px solid #2a1f3d;border-radius:14px;padding:24px;margin-bottom:28px;">'
     + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px;">'
-    + '<div><div style="font-size:10px;color:#d2a8ff;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">NEURAL EXPANSION ENGINE · v2.0</div>'
-    + '<div style="font-size:14px;font-weight:700;color:#e6edf3;">'+totalMods+' Active Modules · '+V2MEM.dynamic_modules.length+'/12 Dynamic · Infinite Expansion</div></div>'
-    + '<span style="font-size:9px;background:#2a1f3d;color:#d2a8ff;padding:4px 10px;border-radius:20px;font-family:monospace;font-weight:700;">v2.0 LIVE</span>'
+    + '<div><div style="font-size:10px;color:#d29922;text-transform:uppercase;letter-spacing:.12em;margin-bottom:4px;">BROWSER-LOCAL TA STATE <span style="color:#8b949e;letter-spacing:.06em;">(localStorage · not the public ledger)</span></div>'
+    + '<div style="font-size:14px;font-weight:700;color:#e6edf3;">'+totalMods+' visualisation modules · '+V2MEM.dynamic_modules.length+'/12 demo modules instantiated</div></div>'
+    + '<span style="font-size:9px;background:#2a1f3d;color:#d2a8ff;padding:4px 10px;border-radius:20px;font-family:monospace;font-weight:700;">LOCAL</span>'
     + '</div>'
+    + '<div style="font-size:11px;color:#8b949e;margin-bottom:12px;line-height:1.6;">The "accuracy" cell below is computed from this browser\'s own bullish/bearish self-checks (entry vs. price 4h later) and is <strong>not</strong> the public ledger metric. See the Trust &amp; Transparency section for ledger-backed numbers.</div>'
     + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:10px;margin-bottom:16px;">'
-    + v2card('Multi-TF Accuracy', mtAcc, '#d2a8ff')
-    + v2card('TF Consensus', conText, conColor)
+    + v2card('Browser self-check accuracy', mtAcc, '#d2a8ff')
+    + v2card('TF Consensus (closed candles)', conText, conColor)
     + v2card('Market Structure', ms.s.toUpperCase(), msColor)
     + v2card('RSI Divergence', div==='none'?'NONE':div.toUpperCase()+' DIV', divColor)
-    + v2card('Fear & Greed', fg+' — '+fgLabel, fgColor)
-    + v2card('Dynamic Modules', V2MEM.dynamic_modules.length+' / 12', '#ffd700')
+    + v2card('Fear &amp; Greed (alternative.me)', fg+' — '+fgLabel, fgColor)
+    + v2card('Demo modules instantiated', V2MEM.dynamic_modules.length+' / 12', '#ffd700')
     + '</div>'
 
     + (V2MEM.dynamic_modules.length>0

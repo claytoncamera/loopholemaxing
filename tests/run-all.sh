@@ -101,9 +101,25 @@ bash tests/phase7-trust-scan.sh
 T8=$?
 
 echo
-if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ]; then
+echo "== Daily briefing archive tests =="
+if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
+  PY="$(command -v python3 || command -v python)"
+  ( cd "$ROOT/btc-brain/data" && "$PY" tests/test_briefings.py >/tmp/briefings.log 2>&1 )
+  T9=$?
+  if [ $T9 -ne 0 ]; then
+    echo "FAILED briefings:"; sed 's/^/  /' /tmp/briefings.log
+  else
+    echo "OK: daily briefing archive"
+  fi
+else
+  echo "SKIP: python not installed"
+  T9=0
+fi
+
+echo
+if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ] && [ $T9 -eq 0 ]; then
   echo "ALL CHECKS PASSED"
   exit 0
 fi
-echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8"
+echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8 briefings=$T9"
 exit 1

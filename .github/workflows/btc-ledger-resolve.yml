@@ -43,14 +43,12 @@ jobs:
             --out  btc-brain/ledger/public/accuracy.json
 
       - name: Commit ledger updates
+        # See .github/scripts/safe_push.sh — handles non-fast-forward
+        # races against the issuance and snapshot workflows.
         run: |
           git config user.name  "btc-brain-bot"
           git config user.email "btc-brain-bot@users.noreply.github.com"
           git add btc-brain/ledger/data/resolutions.jsonl \
                   btc-brain/ledger/public/accuracy.json
-          if git diff --cached --quiet; then
-            echo "No ledger changes to commit."
-          else
-            git commit -m "chore(ledger): resolve due forecasts + refresh accuracy.json"
-            git push
-          fi
+          .github/scripts/safe_push.sh \
+            "chore(ledger): resolve due forecasts + refresh accuracy.json"

@@ -24,6 +24,16 @@ else
 fi
 
 echo
+echo "== Live-market artifact fallback =="
+if command -v node >/dev/null 2>&1; then
+  node tests/live-market-fallback.spec.mjs
+  T3B=$?
+  if [ $T3B -ne 0 ]; then T3=1; fi
+else
+  echo "SKIP: node not installed"
+fi
+
+echo
 echo "== Phase 1 ledger tests =="
 if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
   PY="$(command -v python3 || command -v python)"

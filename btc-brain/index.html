@@ -1694,7 +1694,7 @@
   <div class="chapter-header">
     <div class="chapter-number" style="color:#3fb950;">LIVE INTELLIGENCE</div>
     <h2>Live Market Command Center</h2>
-    <p class="chapter-desc">Live BTC ticker + closed-candle indicators across active timeframes. Browser pulls Binance public endpoints every 30s while the tab is open; if a feed is unavailable, panels mark themselves <strong style="color:#d29922;">STALE / unavailable</strong> rather than fabricating data. Educational research only — not financial advice.</p>
+    <p class="chapter-desc">Live BTC ticker + closed-candle indicators across active timeframes. The browser pulls Binance public endpoints every 30s while the tab is open; if Binance is region-blocked, panels fall back to the public Phase 2 closed-candle artifacts in <code>data/public/candles_*.json</code> (sourced server-side from coinbase / kraken) and label themselves with the artifact source + freshness. If both feeds are unavailable, panels render <strong style="color:#d29922;">STALE / unavailable</strong> rather than fabricating data. Educational research only — not financial advice.</p>
   </div>
 
   <!-- LIVE HEADER BAR -->
@@ -3146,7 +3146,108 @@
       .catch(function () { window.__btcDerivatives = null; });
   }
 
-  // Primary: Binance | Fallback: CoinGecko
+  // Phase 2 candle-artifact loader. Backend-fetched closed candles from
+  // coinbase / kraken / coinbase (1h / 4h / 1d) are stored in
+  // data/public/candles_*.json. Used as a truthful fallback when the
+  // browser-side Binance fetch is region-blocked. The backend artifact
+  // is closed-only by construction (it stores only finalized bars).
+  // We convert {open, high, low, close, volume, open_time_ms, close_time_ms}
+  // objects to Binance kline arrays so downstream code paths are unchanged.
+  function _candlesToBinanceKlines(candleObjs) {
+    if (!Array.isArray(candleObjs)) return null;
+    return candleObjs.map(function (c) {
+      // Binance kline format: [openTime, open, high, low, close, volume,
+      //                        closeTime, qVol, trades, takerBuyBase, takerBuyQuote, ignore]
+      return [
+        c.open_time_ms,
+        String(c.open),
+        String(c.high),
+        String(c.low),
+        String(c.close),
+        String(c.volume),
+        c.close_time_ms,
+        '0', 0, '0', '0', '0',
+      ];
+    });
+  }
+  function _loadCandleFile(path) {
+    return fetch(path, { cache: 'no-store' })
+      .then(function (r) { if (!r.ok) throw new Error('no ' + path); return r.json(); })
+      .catch(function () { return null; });
+  }
+  function loadCandleArtifacts() {
+    return Promise.all([
+      _loadCandleFile('data/public/candles_1h.json'),
+      _loadCandleFile('data/public/candles_4h.json'),
+      _loadCandleFile('data/public/candles_1d.json'),
+      _loadCandleFile('data/public/source_health.json'),
+    ]).then(function (parts) {
+      window.__btcCandles = {
+        h1: parts[0] || null,
+        h4: parts[1] || null,
+        d1: parts[2] || null,
+      };
+      window.__btcSourceHealth = parts[3] || null;
+    });
+  }
+  // Expose the converter for tests.
+  if (typeof window !== 'undefined') {
+    window.__btcCandlesToBinanceKlines = _candlesToBinanceKlines;
+  }
+
+  // Pull a kline-array tuple from the cached candle artifacts. Returns
+  // {h1, h4, h15, daily, sources} where each kline series is in Binance
+  // array format (or null if the artifact is missing). 15m has no
+  // backend artifact today, so it stays null and that row remains STALE.
+  function _artifactKlineSet() {
+    var c = window.__btcCandles || null;
+    if (!c) return null;
+    var h1Obj = c.h1 && c.h1.data ? c.h1.data.candles : null;
+    var h4Obj = c.h4 && c.h4.data ? c.h4.data.candles : null;
+    var d1Obj = c.d1 && c.d1.data ? c.d1.data.candles : null;
+    return {
+      h1: _candlesToBinanceKlines(h1Obj),
+      h4: _candlesToBinanceKlines(h4Obj),
+      h15: null,
+      daily: _candlesToBinanceKlines(d1Obj),
+      sources: {
+        h1: c.h1 ? { source: c.h1.source, fetched_at: c.h1.fetched_at, status: c.h1.status } : null,
+        h4: c.h4 ? { source: c.h4.source, fetched_at: c.h4.fetched_at, status: c.h4.status } : null,
+        d1: c.d1 ? { source: c.d1.source, fetched_at: c.d1.fetched_at, status: c.d1.status } : null,
+      },
+    };
+  }
+  if (typeof window !== 'undefined') {
+    window.__btcArtifactKlineSet = _artifactKlineSet;
+  }
+
+  // Format a "fetched_at" ISO timestamp + freshness budget into a human
+  // status fragment. Budgets come from source_health.json. If the artifact
+  // is older than its budget, we tag it stale so the page communicates
+  // "real data, but not fresh" rather than implying real-time.
+  function _artifactFreshness(kind, fetchedAt) {
+    if (!fetchedAt) return { stale: true, ageMin: null, label: 'fetched_at unknown' };
+    var t = Date.parse(fetchedAt);
+    if (!isFinite(t)) return { stale: true, ageMin: null, label: 'invalid fetched_at' };
+    var ageSec = Math.max(0, (Date.now() - t) / 1000);
+    var budget = null;
+    var sh = window.__btcSourceHealth;
+    if (sh && sh.freshness_budget_seconds && typeof sh.freshness_budget_seconds[kind] === 'number') {
+      budget = sh.freshness_budget_seconds[kind];
+    }
+    var stale = budget != null ? ageSec > budget : ageSec > 60 * 60; // default 1h
+    var ageMin = Math.round(ageSec / 60);
+    var label = ageMin < 1 ? 'just now' : ageMin < 60 ? ageMin + 'm ago' :
+                ageMin < 24 * 60 ? Math.round(ageMin / 60) + 'h ago' :
+                Math.round(ageMin / (24 * 60)) + 'd ago';
+    return { stale: stale, ageMin: ageMin, label: label };
+  }
+
+  // Primary: Binance | Fallback 1: backend candle artifacts (truthful) |
+  // Fallback 2: CoinGecko ticker only. The artifacts are real
+  // closed-candle data fetched server-side from coinbase / kraken; we
+  // never synthesize OHLC. If the artifacts are also missing we degrade
+  // to ticker-only, and the matrix renders STALE rather than fake bars.
   async function fetchBinanceData() {
     try {
       const [ticker24, klines1h, klines4h, klines15m] = await Promise.all([
@@ -3155,26 +3256,25 @@
         fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=20').then(r => r.json()),
         fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=16').then(r => r.json()),
       ]);
-      updateLiveMarket(ticker24, klines1h, klines4h, klines15m);
+      updateLiveMarket(ticker24, klines1h, klines4h, klines15m, { source: 'binance-live', mode: 'live' });
       document.getElementById('live-status').textContent = 'Live (Binance) · ' + new Date().toLocaleTimeString();
       document.getElementById('live-dot').style.background = '#3fb950';
     } catch(e) {
-      // Fallback to CoinGecko — TICKER ONLY. We do NOT synthesize OHLC candles.
-      // Indicators that require true OHLC will be shown as stale/unavailable
-      // until a real candle feed (Binance) is back.
+      // CoinGecko is the ticker fallback (price + 24h change). For OHLC
+      // we now prefer the public Phase 2 candle artifacts (real backend
+      // candles from coinbase / kraken) over rendering everything STALE.
       try {
         const cg = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true&include_24hr_high=true&include_24hr_low=true').then(r => r.json());
         const btc = cg && cg.bitcoin;
-        // Validate the fields we actually need. CoinGecko's simple/price does
-        // NOT provide a 24h high/low or open price. Never invent them and
-        // never let a missing/zero open imply a bullish trend downstream.
         const price = (btc && typeof btc.usd === 'number') ? btc.usd : NaN;
         const change = (btc && typeof btc.usd_24h_change === 'number') ? btc.usd_24h_change : NaN;
         if (!isFinite(price)) throw new Error('CoinGecko price unavailable');
         const ticker24 = {
           lastPrice: price.toString(),
           priceChangePercent: isFinite(change) ? change.toFixed(2) : null,
-          // Mark high/low/volume as unavailable instead of fabricating them.
+          // Real 24h high/low are unavailable from CoinGecko simple/price.
+          // We stay null here, but the artifact path below will populate
+          // a closed-candle 24h high/low when available.
           highPrice: null,
           lowPrice: null,
           quoteVolume: (btc.usd_24h_vol != null) ? btc.usd_24h_vol.toString() : null,
@@ -3182,18 +3282,103 @@
           _source: 'coingecko-ticker',
           _ohlcAvailable: false,
         };
-        // Pass null for all kline timeframes — indicators must render
-        // "Stale / OHLC unavailable" rather than compute on synthetic data.
-        updateLiveMarket(ticker24, null, null, null);
-        const st = document.getElementById('live-status');
-        const dt = document.getElementById('live-dot');
-        if (st) st.textContent = 'Ticker-only (CoinGecko · OHLC unavailable) · ' + new Date().toLocaleTimeString();
-        if (dt) dt.style.background = '#d29922';
+
+        // Try the artifact path first. It must not synthesize anything —
+        // it just maps the JSON candle objects to Binance-style array
+        // tuples so downstream code paths are unchanged.
+        if (!window.__btcCandles) {
+          try { await loadCandleArtifacts(); } catch(_) { /* swallow */ }
+        }
+        const art = _artifactKlineSet();
+        const haveArtifactCandles = !!(art && art.h1 && art.h1.length && art.h4 && art.h4.length);
+
+        if (haveArtifactCandles) {
+          // Closed-candle 24h high/low + volume from the 1h artifact. This
+          // is real data, not a fabrication, so it's safe to surface as a
+          // 24h-range proxy when the live ticker high/low is missing.
+          const last24 = art.h1.slice(-24);
+          const hi = last24.reduce(function(m, k){ var v = parseFloat(k[2]); return isFinite(v) && v > m ? v : m; }, -Infinity);
+          const lo = last24.reduce(function(m, k){ var v = parseFloat(k[3]); return isFinite(v) && v < m ? v : m; }, Infinity);
+          const volSum = last24.reduce(function(s, k){ var v = parseFloat(k[5]); return isFinite(v) ? s + v : s; }, 0);
+          if (isFinite(hi)) ticker24.highPrice = String(hi);
+          if (isFinite(lo)) ticker24.lowPrice = String(lo);
+          // Volume in the artifact is in BTC (base) for coinbase/kraken;
+          // we don't pretend it's quote (USD) volume — leave quoteVolume
+          // null so the live-vol cell renders "(unavailable)" rather than
+          // a misleading USD figure.
+          ticker24._ohlcAvailable = true;
+          ticker24._source = 'coingecko-ticker+artifact-candles';
+
+          updateLiveMarket(ticker24, art.h1, art.h4, art.h15, {
+            source: 'artifact',
+            mode: 'fallback',
+            artifactSources: art.sources,
+          });
+          const st = document.getElementById('live-status');
+          const dt = document.getElementById('live-dot');
+          const h1Src = (art.sources.h1 && art.sources.h1.source) || 'artifact';
+          const h4Src = (art.sources.h4 && art.sources.h4.source) || 'artifact';
+          const fr1h = _artifactFreshness('candles_1h', art.sources.h1 && art.sources.h1.fetched_at);
+          const staleTag = fr1h.stale ? ' · STALE' : '';
+          if (st) st.textContent = 'Closed candles · ' + h1Src + ' (1h) · ' + h4Src + ' (4h) · ' + fr1h.label + staleTag + ' · CoinGecko ticker · ' + new Date().toLocaleTimeString();
+          if (dt) dt.style.background = fr1h.stale ? '#d29922' : '#3fb950';
+        } else {
+          // No artifact either — render the explicit unavailable state.
+          updateLiveMarket(ticker24, null, null, null, { source: 'coingecko-ticker', mode: 'ticker-only' });
+          const st = document.getElementById('live-status');
+          const dt = document.getElementById('live-dot');
+          if (st) st.textContent = 'Ticker-only (CoinGecko · OHLC unavailable) · ' + new Date().toLocaleTimeString();
+          if (dt) dt.style.background = '#d29922';
+        }
       } catch(e2) {
-        const st = document.getElementById('live-status');
-        const dt = document.getElementById('live-dot');
-        if(st) st.textContent = 'Feed unavailable — last good data is stale';
-        if(dt) dt.style.background = '#f85149';
+        // Last-resort: artifact-only mode (no CoinGecko at all). We still
+        // show real closed candles + a clear "ticker unavailable" tag.
+        if (!window.__btcCandles) {
+          try { await loadCandleArtifacts(); } catch(_) { /* swallow */ }
+        }
+        const art = _artifactKlineSet();
+        const haveArtifactCandles = !!(art && art.h1 && art.h1.length);
+        if (haveArtifactCandles) {
+          const lastClose = parseFloat(art.h1[art.h1.length - 1][4]);
+          const ticker24 = {
+            lastPrice: isFinite(lastClose) ? String(lastClose) : null,
+            priceChangePercent: null,
+            highPrice: null,
+            lowPrice: null,
+            quoteVolume: null,
+            volume: null,
+            _source: 'artifact-only',
+            _ohlcAvailable: true,
+          };
+          // Compute 24h high/low/change from the closed-candle 1h series.
+          const last24 = art.h1.slice(-24);
+          if (last24.length) {
+            const hi = last24.reduce(function(m, k){ var v = parseFloat(k[2]); return isFinite(v) && v > m ? v : m; }, -Infinity);
+            const lo = last24.reduce(function(m, k){ var v = parseFloat(k[3]); return isFinite(v) && v < m ? v : m; }, Infinity);
+            if (isFinite(hi)) ticker24.highPrice = String(hi);
+            if (isFinite(lo)) ticker24.lowPrice = String(lo);
+            const firstOpen = parseFloat(last24[0][1]);
+            if (isFinite(firstOpen) && isFinite(lastClose) && firstOpen > 0) {
+              ticker24.priceChangePercent = (((lastClose - firstOpen) / firstOpen) * 100).toFixed(2);
+            }
+          }
+          updateLiveMarket(ticker24, art.h1, art.h4, art.h15, {
+            source: 'artifact',
+            mode: 'artifact-only',
+            artifactSources: art.sources,
+          });
+          const st = document.getElementById('live-status');
+          const dt = document.getElementById('live-dot');
+          const h1Src = (art.sources.h1 && art.sources.h1.source) || 'artifact';
+          const fr1h = _artifactFreshness('candles_1h', art.sources.h1 && art.sources.h1.fetched_at);
+          if (st) st.textContent = 'Artifact-only · ' + h1Src + ' closed candles · ' + fr1h.label + (fr1h.stale ? ' · STALE' : '') + ' · live ticker unavailable';
+          if (dt) dt.style.background = '#d29922';
+        } else {
+          const st = document.getElementById('live-status');
+          const dt = document.getElementById('live-dot');
+          if(st) st.textContent = 'Feed unavailable — last good data is stale';
+          if(dt) dt.style.background = '#f85149';
+        }
       }
     }
   }
@@ -3216,13 +3401,23 @@
     return n.toLocaleString('en-US', opts);
   }
 
-  function updateLiveMarket(t, h1, h4, h15) {
-    // Indicators must use closed candles only. Strip the in-progress bar
-    // unless the caller passed null (feed unavailable).
-    const h1c  = h1  ? closedCandlesOnly(h1)  : null;
-    const h4c  = h4  ? closedCandlesOnly(h4)  : null;
-    const h15c = h15 ? closedCandlesOnly(h15) : null;
-    const ohlcAvailable = !!(h1c && h4c && h15c);
+  function updateLiveMarket(t, h1, h4, h15, meta) {
+    meta = meta || { source: 'binance-live', mode: 'live' };
+    // Indicators must use closed candles only.
+    //   - In live mode, the last Binance bar is in-progress and is stripped.
+    //   - In artifact-fallback mode, the backend has already restricted the
+    //     payload to closed bars by construction; we keep them all.
+    const isArtifact = meta.source === 'artifact';
+    const stripLive = function (k) { return k ? closedCandlesOnly(k, { includeLive: isArtifact }) : null; };
+    const h1c  = stripLive(h1);
+    const h4c  = stripLive(h4);
+    const h15c = stripLive(h15);
+    // Partial OHLC is fine: as long as we have either h1 or h4 closed
+    // candles, the matrix can render real rows for the available
+    // timeframes and STALE for the missing ones. Previously this was an
+    // all-or-nothing check, which made the whole matrix STALE whenever
+    // 15m was missing (it always is in the artifact path).
+    const ohlcAvailable = !!((h1c && h1c.length) || (h4c && h4c.length));
 
     // Price
     const price = parseFloat(t.lastPrice);
@@ -3271,8 +3466,9 @@
     const tfBody = document.getElementById('tf-matrix-body');
     if (!tfBody) return;
 
-    // If OHLC is unavailable, render a stale/unavailable matrix and stop —
-    // do NOT compute indicators on missing or fabricated candles.
+    // If OHLC is unavailable across the board, render a stale/unavailable
+    // matrix AND render the Last 24 Hours / Pattern Engine panels with
+    // explicit unavailable states (rather than leaving them blank).
     if (!ohlcAvailable) {
       const staleRows = ['1m','5m','15m','30m','1h','4h','Daily'].map(label => `
         <tr style="border-bottom:1px solid #161b22;">
@@ -3287,6 +3483,14 @@
       const alignLabel = document.getElementById('alignment-label');
       if (alignEl) { alignEl.textContent = '—'; alignEl.style.color = '#8b949e'; }
       if (alignLabel) alignLabel.textContent = 'Indicators unavailable — primary OHLC feed is offline';
+      const candlesEl0 = document.getElementById('hourly-candles');
+      if (candlesEl0) candlesEl0.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;color:#8b949e;font-size:12px;font-style:italic;">Hourly candles unavailable — 1h OHLC feed offline (Binance + data/public/candles_1h.json both missing).</div>';
+      const plEl0 = document.getElementById('pattern-list');
+      const psEl0 = document.getElementById('pattern-score');
+      const plbEl0 = document.getElementById('pattern-label');
+      if (plEl0) plEl0.innerHTML = '<div style="color:#8b949e;font-style:italic;">Pattern scan unavailable — 1h OHLC feed offline.</div>';
+      if (psEl0) { psEl0.textContent = '—'; psEl0.style.color = '#8b949e'; }
+      if (plbEl0) plbEl0.textContent = 'Pattern engine idle — no closed 1h candles to scan';
       return;
     }
 
@@ -3326,9 +3530,12 @@
       return { label, trend, trendColor, mom, momColor, signal, sigColor, note: volNote, score };
     }
 
-    const tf15 = analyzeTF(h15c, '15m');
-    const tfH1 = analyzeTF(h1c,  '1h');
-    const tfH4 = analyzeTF(h4c,  '4h');
+    const staleRow = function (label, note) {
+      return { label: label, trend:'STALE', trendColor:'#8b949e', mom:'—', momColor:'#8b949e', signal:'N/A', sigColor:'#8b949e', note: note || 'OHLC unavailable', score:50 };
+    };
+    const tf15 = (h15c && h15c.length >= 3) ? analyzeTF(h15c, '15m') : staleRow('15m', isArtifact ? 'No 15m artifact yet' : 'No 15m feed wired');
+    const tfH1 = (h1c  && h1c.length  >= 3) ? analyzeTF(h1c,  '1h')  : staleRow('1h', '1h OHLC unavailable');
+    const tfH4 = (h4c  && h4c.length  >= 3) ? analyzeTF(h4c,  '4h')  : staleRow('4h', '4h OHLC unavailable');
 
     // 30m row derives bias from the last *closed* 1h candle, not the live one.
     const ref30m = (h1c && h1c.length >= 3) ? parseFloat(h1c[h1c.length-3][4]) : NaN;
@@ -3338,9 +3545,21 @@
     const bias30Color = bias30 === 'BULLISH' ? '#3fb950' : bias30 === 'STALE' ? '#8b949e' : '#d29922';
     const has1m5m = false; // No 1m/5m feed wired up — mark as stale rather than asserting bullish.
     const dailyRow = (() => {
-      const d = isFinite(change) ? change : null;
-      if (d === null) return { label:'Daily', trend:'STALE', trendColor:'#8b949e', mom:'—', momColor:'#8b949e', signal:'N/A', sigColor:'#8b949e', note:'24h change unavailable', score:50 };
-      return { label:'Daily', trend: d > 0 ? 'BULLISH' : 'BEARISH', trendColor: d > 0 ? '#3fb950' : '#f85149', mom: Math.abs(d) > 2 ? 'Strong' : 'Weak', momColor:'#d29922', signal: d > 0 ? 'BULLISH' : 'BEARISH', sigColor: d > 0 ? '#3fb950' : '#f85149', note: d.toFixed(2) + '% chg', score: d > 0 ? 70 : 40 };
+      // Prefer the live-ticker 24h change; fall back to artifact-derived
+      // change-over-last-24-closed-1h-candles when ticker change is missing.
+      let d = isFinite(change) ? change : null;
+      let note;
+      if (d != null) {
+        note = d.toFixed(2) + '% chg';
+      } else if (h1c && h1c.length >= 24 && isFinite(price)) {
+        const ref = parseFloat(h1c[h1c.length - 24][1]);
+        if (isFinite(ref) && ref > 0) {
+          d = ((price - ref) / ref) * 100;
+          note = d.toFixed(2) + '% chg (closed-1h ref)';
+        }
+      }
+      if (d == null) return { label:'Daily', trend:'STALE', trendColor:'#8b949e', mom:'—', momColor:'#8b949e', signal:'N/A', sigColor:'#8b949e', note:'24h change unavailable', score:50 };
+      return { label:'Daily', trend: d > 0 ? 'BULLISH' : 'BEARISH', trendColor: d > 0 ? '#3fb950' : '#f85149', mom: Math.abs(d) > 2 ? 'Strong' : 'Weak', momColor:'#d29922', signal: d > 0 ? 'BULLISH' : 'BEARISH', sigColor: d > 0 ? '#3fb950' : '#f85149', note: note, score: d > 0 ? 70 : 40 };
     })();
     // Build rows. Sub-15m timeframes have no real feed so they are reported
     // as stale rather than hard-coded BULLISH (which the previous build did).
@@ -3445,11 +3664,16 @@
       const supportTxt = nearestSupport
         ? fmtUsd(nearestSupport.v) + ' <span style="color:#8b949e;">(' + nearestSupport.k + ')</span>'
         : '<span style="color:#8b949e;">unavailable</span>';
+      const tHi = parseFloat(t.highPrice), tLo = parseFloat(t.lowPrice);
+      const rangePctTxt = (isFinite(tHi) && isFinite(tLo) && tLo > 0)
+        ? ((tHi - tLo) / tLo * 100).toFixed(2) + '%'
+        : '— (unavailable)';
+      const chgTxt = isFinite(chg) ? ((chg>0?'+':'') + chg.toFixed(2) + '%') : '— (unavailable)';
       regimeEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;font-size:12px;">'
-        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Market Regime:</span><span style="color:#d29922;font-weight:700;">' + regime + '</span></div>'
-        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Directional Bias:</span><span style="color:' + (chg>0?'#3fb950':'#f85149') + ';font-weight:700;">' + bias + '</span></div>'
-        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">24h Change:</span><span style="color:' + (chg>0?'#3fb950':'#f85149') + ';font-family:monospace;">' + (chg>0?'+':'') + chg.toFixed(2) + '%</span></div>'
-        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Range (24h):</span><span style="color:#e6edf3;font-family:monospace;">' + ((parseFloat(t.highPrice)-parseFloat(t.lowPrice))/parseFloat(t.lowPrice)*100).toFixed(2) + '%</span></div>'
+        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Market Regime:</span><span style="color:#d29922;font-weight:700;">' + (isFinite(chg) ? regime : 'unavailable') + '</span></div>'
+        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Directional Bias:</span><span style="color:' + (chg>0?'#3fb950':'#f85149') + ';font-weight:700;">' + (isFinite(chg) ? bias : '—') + '</span></div>'
+        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">24h Change:</span><span style="color:' + (isFinite(chg) ? (chg>0?'#3fb950':'#f85149') : '#8b949e') + ';font-family:monospace;">' + chgTxt + '</span></div>'
+        + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Range (24h):</span><span style="color:#e6edf3;font-family:monospace;">' + rangePctTxt + '</span></div>'
         + '<hr style="border:none;border-top:1px solid #21262d;margin:4px 0;">'
         + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Nearest Resist:</span><span style="color:#f85149;font-family:monospace;">' + resistTxt + '</span></div>'
         + '<div style="display:flex;justify-content:space-between;"><span style="color:#8b949e;">Nearest Support:</span><span style="color:#3fb950;font-family:monospace;">' + supportTxt + '</span></div>'
@@ -3457,27 +3681,34 @@
         + '</div>';
     }
 
-    // Hourly candles visual
+    // Hourly candles visual — uses closed-candle 1h series (h1c). When h1
+    // is unavailable, we render an explicit unavailable state instead of
+    // leaving the panel blank.
     const candlesEl = document.getElementById('hourly-candles');
-    if (candlesEl && h1.length > 0) {
-      const last24 = h1.slice(-24);
-      const allHighs = last24.map(k=>parseFloat(k[2]));
-      const allLows = last24.map(k=>parseFloat(k[3]));
-      const maxP = Math.max(...allHighs);
-      const minP = Math.min(...allLows);
-      const range = maxP - minP || 1;
-      candlesEl.innerHTML = last24.map(k => {
-        const o = parseFloat(k[1]), h = parseFloat(k[2]), l = parseFloat(k[3]), c = parseFloat(k[4]);
-        const bullish = c >= o;
-        const bodyH = Math.max(Math.abs(c-o)/range*76, 2);
-        const wickTopH = (h-Math.max(c,o))/range*76;
-        const wickBotH = (Math.min(c,o)-l)/range*76;
-        return '<div style="flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:80px;">'
-          + '<div style="width:1px;background:' + (bullish?'#3fb950':'#f85149') + ';height:' + wickTopH + 'px;"></div>'
-          + '<div style="width:80%;background:' + (bullish?'#3fb950':'#f85149') + ';height:' + bodyH + 'px;opacity:0.85;border-radius:1px;"></div>'
-          + '<div style="width:1px;background:' + (bullish?'#3fb950':'#f85149') + ';height:' + wickBotH + 'px;"></div>'
-          + '</div>';
-      }).join('');
+    if (candlesEl) {
+      const series = (h1c && h1c.length > 0) ? h1c : null;
+      if (series) {
+        const last24 = series.slice(-24);
+        const allHighs = last24.map(k=>parseFloat(k[2]));
+        const allLows = last24.map(k=>parseFloat(k[3]));
+        const maxP = Math.max.apply(null, allHighs);
+        const minP = Math.min.apply(null, allLows);
+        const range = maxP - minP || 1;
+        candlesEl.innerHTML = last24.map(k => {
+          const o = parseFloat(k[1]), h = parseFloat(k[2]), l = parseFloat(k[3]), c = parseFloat(k[4]);
+          const bullish = c >= o;
+          const bodyH = Math.max(Math.abs(c-o)/range*76, 2);
+          const wickTopH = (h-Math.max(c,o))/range*76;
+          const wickBotH = (Math.min(c,o)-l)/range*76;
+          return '<div style="flex:1;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:80px;">'
+            + '<div style="width:1px;background:' + (bullish?'#3fb950':'#f85149') + ';height:' + wickTopH + 'px;"></div>'
+            + '<div style="width:80%;background:' + (bullish?'#3fb950':'#f85149') + ';height:' + bodyH + 'px;opacity:0.85;border-radius:1px;"></div>'
+            + '<div style="width:1px;background:' + (bullish?'#3fb950':'#f85149') + ';height:' + wickBotH + 'px;"></div>'
+            + '</div>';
+        }).join('');
+      } else {
+        candlesEl.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;color:#8b949e;font-size:12px;font-style:italic;">Hourly candles unavailable — 1h OHLC feed offline (Binance + data/public/candles_1h.json both missing).</div>';
+      }
     }
 
     // Tactical panel — purely descriptive of the live tape, no hardcoded
@@ -3485,7 +3716,11 @@
     const tacticalEl = document.getElementById('tactical-panel');
     if (tacticalEl) {
       const chg = parseFloat(t.priceChangePercent);
-      const setup = chg > 3 ? 'Breakout Continuation' : chg > 1 ? 'Momentum Build' : chg > -1 ? 'Range Consolidation' : 'Distribution / Breakdown';
+      const setup = !isFinite(chg) ? 'Setup unavailable'
+        : chg > 3 ? 'Breakout Continuation'
+        : chg > 1 ? 'Momentum Build'
+        : chg > -1 ? 'Range Consolidation'
+        : 'Distribution / Breakdown';
       const klData2 = (window.__btcKeyLevels && window.__btcKeyLevels.data) ? window.__btcKeyLevels.data : null;
       const fmtUsd2 = function(v){ return '$' + Math.round(v).toLocaleString('en-US'); };
       const sma20 = klData2 && typeof klData2.sma_20 === 'number' ? klData2.sma_20 : null;
@@ -3496,7 +3731,10 @@
       const sma50Txt = sma50 != null ? (price > sma50 ? 'above' : 'below') + ' SMA-50 (' + fmtUsd2(sma50) + ')' : 'SMA-50 unavailable';
       const targetTxt = r1 != null ? 'next pivot resistance R1 ' + fmtUsd2(r1) : 'pivot R1 unavailable';
       const invTxt    = s1 != null ? 'pivot support S1 ' + fmtUsd2(s1)        : 'pivot S1 unavailable';
-      tacticalEl.innerHTML = '<div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:10px;">' + setup + ' <span style="color:#8b949e;font-weight:500;font-size:11px;">· derived from live 24h change</span></div>'
+      const setupSrc = !isFinite(chg) ? '24h change unavailable'
+        : (meta && meta.source === 'artifact' ? 'derived from artifact 24h change'
+        : 'derived from live 24h change');
+      tacticalEl.innerHTML = '<div style="font-size:13px;font-weight:700;color:#e6edf3;margin-bottom:10px;">' + setup + ' <span style="color:#8b949e;font-weight:500;font-size:11px;">· ' + setupSrc + '</span></div>'
         + '<div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#8b949e;">'
         + '<div>📍 Price ' + sma20Txt + '</div>'
         + '<div>📍 Price ' + sma50Txt + '</div>'
@@ -3506,8 +3744,19 @@
         + '</div>';
     }
 
-    // Pattern engine
-    if (h1 && h1.length > 0) updatePatternEngine(h1);
+    // Pattern engine — operates on closed 1h candles only. When the 1h
+    // series is unavailable, render an explicit unavailable state instead
+    // of leaving the panel blank or computing on the in-progress bar.
+    if (h1c && h1c.length > 0) {
+      updatePatternEngine(h1c);
+    } else {
+      const plEl = document.getElementById('pattern-list');
+      const psEl = document.getElementById('pattern-score');
+      const plbEl = document.getElementById('pattern-label');
+      if (plEl) plEl.innerHTML = '<div style="color:#8b949e;font-style:italic;">Pattern scan unavailable — 1h OHLC feed offline.</div>';
+      if (psEl) { psEl.textContent = '—'; psEl.style.color = '#8b949e'; }
+      if (plbEl) plbEl.textContent = 'Pattern engine idle — no closed 1h candles to scan';
+    }
 
     // Context panel — replaced legacy editorial narrative with a plain-text
     // pointer to the research chapters above. Specific catalysts, analogs,
@@ -3823,33 +4072,35 @@
       const d = window.__btcDerivatives && window.__btcDerivatives.data ? window.__btcDerivatives.data : null;
       const src = window.__btcDerivatives && window.__btcDerivatives.source ? window.__btcDerivatives.source : null;
       const fetched = window.__btcDerivatives && window.__btcDerivatives.fetched_at ? window.__btcDerivatives.fetched_at : null;
+      const fr = _artifactFreshness('derivatives', fetched);
+      const tag = '(' + (src || 'unknown') + ' \u00b7 ' + fr.label + (fr.stale ? ' \u00b7 STALE' : '') + ')';
       if (d && typeof d.funding_rate === 'number') {
-        const fr = d.funding_rate * 100;
+        const frPct = d.funding_rate * 100;
         if (fundingEl) {
-          fundingEl.textContent = (fr >= 0 ? '+' : '') + fr.toFixed(4) + '%';
-          fundingEl.style.color = fr > 0.05 ? '#f85149' : fr > 0.01 ? '#d29922' : fr < -0.05 ? '#3fb950' : fr < -0.01 ? '#58a6ff' : '#3fb950';
+          fundingEl.textContent = (frPct >= 0 ? '+' : '') + frPct.toFixed(4) + '%';
+          fundingEl.style.color = frPct > 0.05 ? '#f85149' : frPct > 0.01 ? '#d29922' : frPct < -0.05 ? '#3fb950' : frPct < -0.01 ? '#58a6ff' : '#3fb950';
         }
-        if (fundingSignalEl) fundingSignalEl.textContent = 'from data/public/derivatives.json (' + (src || 'unknown') + ')';
+        if (fundingSignalEl) fundingSignalEl.textContent = 'data/public/derivatives.json ' + tag;
       } else if (fundingEl) {
         fundingEl.textContent = '\u2014 (unavailable)';
-        if (fundingSignalEl) fundingSignalEl.textContent = 'No funding rate in artifact';
+        if (fundingSignalEl) fundingSignalEl.textContent = 'No funding rate in artifact ' + tag;
       }
       if (d && typeof d.open_interest_btc === 'number') {
         if (oiEl) {
           oiEl.textContent = d.open_interest_btc.toFixed(0) + ' BTC';
           oiEl.style.color = '#d2a8ff';
         }
-        if (oiSignalEl) oiSignalEl.textContent = 'OI in BTC from artifact (' + (src || 'unknown') + ')';
+        if (oiSignalEl) oiSignalEl.textContent = 'OI in BTC ' + tag;
       } else if (oiEl) {
         oiEl.textContent = '\u2014 (unavailable)';
-        if (oiSignalEl) oiSignalEl.textContent = 'No open interest in artifact';
+        if (oiSignalEl) oiSignalEl.textContent = 'No open interest in artifact ' + tag;
       }
       if (d && typeof d.long_short_ratio === 'number') {
         if (lsrEl) lsrEl.textContent = d.long_short_ratio.toFixed(2) + 'x';
-        if (lsrSignalEl) lsrSignalEl.textContent = 'L/S ratio from artifact (' + (src || 'unknown') + ')';
+        if (lsrSignalEl) lsrSignalEl.textContent = 'L/S ratio ' + tag;
       } else if (lsrEl) {
         lsrEl.textContent = '\u2014 (unavailable)';
-        if (lsrSignalEl) lsrSignalEl.textContent = 'L/S ratio missing in artifact (often null on OKX fallback)';
+        if (lsrSignalEl) lsrSignalEl.textContent = 'L/S ratio missing in artifact ' + tag + ' (often null on OKX fallback)';
       }
     }
   }
@@ -3857,18 +4108,24 @@
   // INIT & AUTO-REFRESH
   if (document.getElementById('live-price')) {
     // Load static artifacts first so the first paint of the live-market
-    // panels can use real key levels / derivatives data instead of the
-    // legacy hardcoded numbers.
-    Promise.all([loadKeyLevelsArtifact(), loadDerivativesArtifact()])
+    // panels can use real key levels / derivatives / candle data instead
+    // of legacy hardcoded numbers — and so the artifact-fallback path in
+    // fetchBinanceData() always has candles ready when Binance is blocked.
+    Promise.all([loadKeyLevelsArtifact(), loadDerivativesArtifact(), loadCandleArtifacts()])
       .then(function () { fetchBinanceData(); });
     setInterval(fetchBinanceData, 30000);
     // Refresh the static artifacts on a slower cadence — they update at
     // backend cycle frequency, not every 30s.
     setInterval(loadKeyLevelsArtifact, 5 * 60 * 1000);
     setInterval(loadDerivativesArtifact, 5 * 60 * 1000);
+    setInterval(loadCandleArtifacts,    5 * 60 * 1000);
   }
   if (document.getElementById('live-funding')) {
-    fetchDerivativesData();
+    // Make sure the derivatives artifact is loaded BEFORE the first
+    // direct fapi.binance.com fetch — otherwise a 451 / 403 response
+    // races the artifact loader and the catch-block fallback sees a
+    // null window.__btcDerivatives, blanking the panel.
+    loadDerivativesArtifact().then(function () { fetchDerivativesData(); });
     setInterval(fetchDerivativesData, 60000);
   }
   if (document.getElementById('iq-matrices')) {

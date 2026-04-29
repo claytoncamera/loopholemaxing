@@ -262,6 +262,91 @@ else
   say "OK [16] live-market chapter desc is the cleaned-up version"
 fi
 
+# 17. Live-market panels must wire the public Phase 2 candle artifacts
+# (candles_1h.json / candles_4h.json / candles_1d.json) as a truthful
+# fallback when the browser-side Binance fetch is region-blocked. Without
+# this, the Multi-Timeframe Trend Matrix / Last 24 Hours / Pattern Engine
+# panels go all-STALE even when fresh backend candles exist on disk.
+if grep -F "data/public/candles_1h.json" "$F" >/dev/null \
+ && grep -F "data/public/candles_4h.json" "$F" >/dev/null \
+ && grep -F "data/public/candles_1d.json" "$F" >/dev/null; then
+  say "OK [17] live-market panels reference data/public/candles_*.json fallback"
+else
+  echo "FAIL [17] candle artifact fallback wiring missing — panels will go all-STALE on Binance 451"
+  FAIL=1
+fi
+
+# 17b. The artifact loader must run BEFORE fetchBinanceData so the catch
+# block can find candles ready in window.__btcCandles.
+if grep -F "loadCandleArtifacts" "$F" >/dev/null \
+ && grep -F "loadCandleArtifacts(), loadDerivativesArtifact" "$F" >/dev/null \
+ || grep -F "loadKeyLevelsArtifact(), loadDerivativesArtifact(), loadCandleArtifacts()" "$F" >/dev/null \
+ || grep -nE 'Promise\.all\(\[[^]]*loadCandleArtifacts' "$F" >/dev/null; then
+  say "OK [17b] candle artifacts loaded before fetchBinanceData"
+else
+  echo "FAIL [17b] loadCandleArtifacts() not preloaded before fetchBinanceData"
+  FAIL=1
+fi
+
+# 17c. The candle-artifact path must NOT manufacture data — only convert
+# the JSON candle objects {open,high,low,close,volume,*_time_ms} into
+# Binance kline arrays. Forbid any obvious synthetic-bar pattern (e.g.
+# fabricating an open from CoinGecko price).
+if grep -nE 'open_time_ms.*1\.0[01]|String\(c\.close\s*\*\s*[0-9]' "$F" >/dev/null; then
+  echo "FAIL [17c] artifact fallback appears to mutate / fabricate candle values"
+  FAIL=1
+else
+  say "OK [17c] artifact fallback only maps candle fields, no fabrication"
+fi
+
+# 17d. Derivatives panel must preload its artifact before firing
+# fetchDerivativesData, otherwise a 451 catch-block may race the
+# loader and leave the panel blank.
+if grep -nE 'loadDerivativesArtifact\(\)\.then\(\s*function\s*\(\)\s*\{\s*fetchDerivativesData' "$F" >/dev/null; then
+  say "OK [17d] derivatives artifact preloaded before fetchDerivativesData"
+else
+  echo "FAIL [17d] fetchDerivativesData fired without pre-loading the artifact"
+  FAIL=1
+fi
+
+# 18. Source labels and freshness warnings must be preserved on the
+# fallback path — i.e., the page must surface artifact source names
+# (coinbase / kraken / okx) and a "STALE" tag in the live-status when
+# the artifact's freshness budget is exceeded.
+if grep -F "_artifactFreshness" "$F" >/dev/null \
+ && grep -F "fr1h.stale" "$F" >/dev/null; then
+  say "OK [18] artifact freshness/stale labelling present"
+else
+  echo "FAIL [18] no freshness/stale labelling on artifact fallback path"
+  FAIL=1
+fi
+
+# 19. "Closed candles only" invariant must hold for the artifact path:
+# in artifact mode we already store closed bars, so closedCandlesOnly
+# must be invoked with includeLive:true (i.e. don't drop the last bar
+# we know is closed). The live-Binance path must keep the default
+# (drop the last in-progress bar).
+if grep -nE 'closedCandlesOnly\(\s*k\s*,\s*\{\s*includeLive\s*:\s*isArtifact\s*\}\s*\)' "$F" >/dev/null \
+ || grep -F "includeLive: isArtifact" "$F" >/dev/null; then
+  say "OK [19] closed-candle gate respects artifact vs live mode"
+else
+  echo "FAIL [19] closed-candle gate not differentiating artifact vs live mode"
+  FAIL=1
+fi
+
+# 20. The Last 24 Hours and Pattern Engine panels MUST render an
+# explicit unavailable state when 1h OHLC is missing — they are not
+# allowed to silently go blank (which is what was happening on the
+# live page when Binance returned 451 and CoinGecko ticker had no
+# klines).
+if grep -F "Hourly candles unavailable" "$F" >/dev/null \
+ && grep -F "Pattern scan unavailable" "$F" >/dev/null; then
+  say "OK [20] Last 24h + Pattern Engine render explicit unavailable state"
+else
+  echo "FAIL [20] Last 24h / Pattern Engine can still go silently blank"
+  FAIL=1
+fi
+
 if [ "$FAIL" -eq 0 ]; then
   echo "ALL TRUTH-SCAN INVARIANTS HELD"
 else

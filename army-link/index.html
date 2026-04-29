@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Army Link — Overseer Command Nexus</title>
+  <meta name="description" content="Passkey-gated entry surface for the Overseer Command Nexus. Static soft gate. Command, audit, and orchestration view only — no trading execution.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .bg-grid {
+      position: fixed; inset: 0; z-index: -1;
+      background-image: radial-gradient(circle, rgba(167,139,250,0.05) 1px, transparent 1px);
+      background-size: 36px 36px;
+    }
+    .bg-glow {
+      position: fixed; top: -180px; left: 50%; transform: translateX(-50%);
+      width: 760px; height: 660px;
+      background: radial-gradient(circle, rgba(167,139,250,0.07) 0%, transparent 65%);
+      z-index: -1;
+    }
+
+    .nexus-wrap {
+      max-width: 760px; margin: 0 auto;
+      padding: 96px var(--space-lg) var(--space-3xl);
+    }
+    .nexus-eyebrow {
+      display: inline-block; font-size: 11px; font-weight: 700;
+      letter-spacing: .14em; text-transform: uppercase;
+      color: #a78bfa;
+      background: rgba(167,139,250,.10);
+      padding: 4px 10px; border-radius: 4px; margin-bottom: var(--space-md);
+    }
+    .nexus-wrap h1 {
+      font-size: clamp(32px, 5vw, 48px); font-weight: 800;
+      letter-spacing: -.02em; line-height: 1.1; margin-bottom: var(--space-md);
+    }
+    .nexus-wrap h1 span {
+      background: linear-gradient(135deg, #a78bfa, #38d6ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .nexus-sub {
+      color: var(--text-secondary); font-size: 15px; line-height: 1.7;
+      margin-bottom: var(--space-xl);
+    }
+
+    .gate-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 12px; padding: var(--space-xl);
+      box-shadow: 0 1px 0 rgba(255,255,255,.02) inset;
+    }
+    .gate-card label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--text-secondary); text-transform: uppercase;
+      letter-spacing: .08em; margin-bottom: 8px;
+    }
+    .gate-card input[type="password"] {
+      width: 100%; padding: 12px 14px; font-size: 15px;
+      font-family: var(--font-mono);
+      color: var(--text-primary);
+      background: rgba(255,255,255,.04);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    .gate-card input[type="password"]:focus {
+      outline: none; border-color: #a78bfa;
+      box-shadow: 0 0 0 3px rgba(167,139,250,.15);
+    }
+    .gate-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-md); align-items: center; }
+    .gate-btn {
+      background: linear-gradient(135deg, #a78bfa, #6d59c4);
+      color: #fff; font-weight: 600; font-size: 14px;
+      padding: 11px 18px; border: 0; border-radius: 8px;
+      cursor: pointer; transition: filter var(--transition-fast), transform var(--transition-fast);
+    }
+    .gate-btn:hover { filter: brightness(1.08); }
+    .gate-btn:active { transform: translateY(1px); }
+    .gate-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .gate-msg {
+      font-size: 13px; color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .gate-msg.err  { color: var(--red); }
+    .gate-msg.ok   { color: var(--green); }
+    .gate-meta {
+      margin-top: var(--space-lg); font-size: 12px; color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .disclaimer {
+      margin-top: var(--space-lg);
+      border: 1px solid rgba(210,153,34,.4);
+      background: rgba(210,153,34,.07);
+      color: var(--yellow);
+      padding: 12px 14px; border-radius: 8px;
+      font-size: 12.5px; line-height: 1.6;
+    }
+    .disclaimer strong { color: #f5c878; }
+
+    .nexus-panel { display: none; }
+    .nexus-panel.is-unlocked { display: block; }
+
+    .panel-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: var(--space-md); margin-top: var(--space-lg);
+    }
+    .panel-tile {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 10px; padding: var(--space-md);
+    }
+    .panel-tile h4 { font-size: 14px; margin-bottom: 6px; color: var(--text-primary); }
+    .panel-tile p  { font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+
+    .nexus-actions { display: flex; gap: var(--space-sm); margin-top: var(--space-lg); flex-wrap: wrap; }
+    .nexus-link {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13px; font-weight: 600;
+      color: #a78bfa; padding: 9px 14px;
+      border: 1px solid rgba(167,139,250,.4); border-radius: 8px;
+      transition: background var(--transition-fast);
+    }
+    .nexus-link:hover { background: rgba(167,139,250,.08); }
+    .nexus-link.secondary { color: var(--text-secondary); border-color: var(--border-light); }
+    .nexus-link.secondary:hover { background: rgba(255,255,255,.03); color: var(--text-primary); }
+
+    .nexus-config {
+      margin-top: var(--space-xl);
+      border-top: 1px dashed var(--border-light);
+      padding-top: var(--space-lg);
+      font-size: 12.5px; color: var(--text-muted);
+      line-height: 1.65;
+    }
+    .nexus-config code {
+      font-family: var(--font-mono); color: #a78bfa;
+      background: rgba(167,139,250,.08); padding: 1px 6px; border-radius: 4px;
+    }
+
+    .top-back { font-size: 13px; color: var(--text-secondary); }
+    .top-back:hover { color: var(--text-primary); }
+
+    @media (max-width: 600px) {
+      .nexus-wrap { padding: 72px var(--space-md) var(--space-2xl); }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <header class="top-header">
+    <a href="/" class="logo">Loopholemaxing</a>
+    <nav><ul class="nav-links">
+      <li><a href="/#creations">Creations</a></li>
+      <li><a href="/" class="top-back">&larr; Home</a></li>
+    </ul></nav>
+  </header>
+
+  <section class="nexus-wrap" id="armyLinkRoot" data-army-link-root>
+    <span class="nexus-eyebrow">Restricted &mdash; Soft Gate</span>
+    <h1>Army Link &mdash; <span>Overseer Command Nexus</span></h1>
+    <p class="nexus-sub">
+      Passkey-gated creation entry. The Nexus is a command, audit, and orchestration
+      surface &mdash; <strong>not a trading or execution venue.</strong> All decisions
+      remain human-approved. This page is served as static HTML on GitHub Pages, so the
+      gate is a client-side soft check, not server-side authorization.
+    </p>
+
+    <!-- Gate -->
+    <div class="gate-card" id="gateCard" data-gate-card>
+      <label for="passkey-input">Enter Overseer Passkey</label>
+      <input
+        id="passkey-input"
+        type="password"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+        inputmode="text"
+        aria-describedby="gate-msg"
+        placeholder="&bull; &bull; &bull; &bull; &bull; &bull; &bull; &bull;"
+      />
+      <div class="gate-actions">
+        <button id="gate-submit" class="gate-btn" type="button">Unlock</button>
+        <span id="gate-msg" class="gate-msg" role="status" aria-live="polite">Awaiting passkey.</span>
+      </div>
+      <div class="gate-meta">
+        Passkey is hashed locally (Web Crypto SHA-256) and compared against a stored
+        digest. The plaintext passkey never leaves this device, is never logged, and is
+        never persisted. Unlock state is stored only in <code>sessionStorage</code> for
+        this tab.
+      </div>
+
+      <div class="disclaimer">
+        <strong>Soft-gate disclaimer.</strong> This is a static GitHub Pages site.
+        The passkey check runs entirely in your browser and can be bypassed by anyone
+        willing to read the source. Treat it as a friction layer, not as access control.
+        No secrets, credentials, or trading capabilities are exposed behind this gate.
+      </div>
+    </div>
+
+    <!-- Locked panel (hidden until unlock) -->
+    <div class="nexus-panel" id="nexusPanel" data-nexus-panel aria-hidden="true">
+      <h2 style="margin-top:var(--space-xl); font-size:22px; font-weight:700;">Command Nexus &mdash; Overview</h2>
+      <p class="nexus-sub" style="margin-top:8px;">
+        Read-only orchestration view. Aggregates the public BTC Brain, NBA Brain,
+        Universal Analyst Engine, and ULTRON audit log. No order routing, no broker
+        connection, no trade execution &mdash; this surface only observes and queues
+        proposals for explicit human approval inside ULTRON.
+      </p>
+
+      <div class="panel-grid">
+        <div class="panel-tile">
+          <h4>Audit</h4>
+          <p>Hash-chained ULTRON audit log review. All side effects visible, none executed from here.</p>
+        </div>
+        <div class="panel-tile">
+          <h4>Orchestration</h4>
+          <p>Queue research/analysis tasks across BTC Brain, NBA Brain, and UAE for batch review.</p>
+        </div>
+        <div class="panel-tile">
+          <h4>Command</h4>
+          <p>Human-gated dispatch only. Every action requires explicit APPROVE inside ULTRON.</p>
+        </div>
+        <div class="panel-tile">
+          <h4>Status</h4>
+          <p>Live posture from the public creations &mdash; uptime, last-refresh, feed health.</p>
+        </div>
+      </div>
+
+      <div class="nexus-actions">
+        <a class="nexus-link" id="nexus-open" href="#" target="_blank" rel="noopener noreferrer">
+          Open Overseer Command Nexus &rarr;
+        </a>
+        <a class="nexus-link secondary" href="/ultron/">ULTRON (human-gated agent)</a>
+        <a class="nexus-link secondary" href="/btc-brain/">BTC Brain</a>
+        <button class="nexus-link secondary" id="gate-relock" type="button" style="background:transparent;cursor:pointer;font-family:inherit;">Re-lock this tab</button>
+      </div>
+
+      <div class="nexus-config" data-nexus-config>
+        <strong>Nexus URL configuration.</strong> The actual Nexus endpoint is not
+        committed in this repo. To wire it up, set
+        <code>window.OVERSEER_NEXUS_URL</code> in a deploy-only override (or update
+        the <code>data-nexus-url</code> attribute on the link below) to the real
+        endpoint. Until then, the link above is an inert placeholder
+        (<code>about:blank</code>).
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div>Loopholemaxing.com &mdash; Clayton Camera &mdash; 2026 &nbsp;|&nbsp; <a href="/" class="top-back">Home</a></div>
+    <div class="footer-tagline">Command. Audit. Orchestrate. &mdash; No execution.</div>
+  </footer>
+
+  <script>
+    /**
+     * Army Link / Overseer Command Nexus — soft gate.
+     *
+     * SECURITY MODEL (read this before changing anything):
+     *  - This is a STATIC site on GitHub Pages. There is no server.
+     *  - The passkey is never stored, never logged, and never sent over the network.
+     *  - We compare SHA-256(input) against a hex digest baked into the page.
+     *    The digest is irreversible without brute-force; we still treat this only
+     *    as a friction layer, not as real access control.
+     *  - Unlock state is per-tab (sessionStorage), not persistent.
+     *  - No `console.log` of input, ever. No analytics on input.
+     *  - No `event.preventDefault` form submission that could leak via URL/referrer.
+     */
+    (function () {
+      'use strict';
+
+      // SHA-256 of the agreed passkey. Plaintext is intentionally absent from this repo.
+      var EXPECTED_DIGEST = 'c93bb622e9a68df1e5c5540a25231246f31dfa8e911d7983adda1ed6dab35d8d';
+      var SESSION_KEY = 'army_link_unlocked_v1';
+
+      var gateCard  = document.getElementById('gateCard');
+      var panel     = document.getElementById('nexusPanel');
+      var input     = document.getElementById('passkey-input');
+      var btn       = document.getElementById('gate-submit');
+      var msg       = document.getElementById('gate-msg');
+      var relockBtn = document.getElementById('gate-relock');
+      var nexusLink = document.getElementById('nexus-open');
+
+      function setMsg(text, kind) {
+        msg.textContent = text;
+        msg.classList.remove('err', 'ok');
+        if (kind) msg.classList.add(kind);
+      }
+
+      function unlock() {
+        gateCard.style.display = 'none';
+        panel.classList.add('is-unlocked');
+        panel.setAttribute('aria-hidden', 'false');
+
+        // Wire optional runtime-configured Nexus URL.
+        var configured = (typeof window !== 'undefined' && window.OVERSEER_NEXUS_URL) || nexusLink.getAttribute('data-nexus-url') || '';
+        if (configured && /^https?:\/\//i.test(configured)) {
+          nexusLink.setAttribute('href', configured);
+        } else {
+          nexusLink.setAttribute('href', 'about:blank');
+          nexusLink.setAttribute('aria-disabled', 'true');
+          nexusLink.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            alert('Nexus URL not configured yet. Set window.OVERSEER_NEXUS_URL or data-nexus-url on the link.');
+          });
+        }
+      }
+
+      function relock() {
+        try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
+        panel.classList.remove('is-unlocked');
+        panel.setAttribute('aria-hidden', 'true');
+        gateCard.style.display = '';
+        if (input) { input.value = ''; }
+        setMsg('Locked. Re-enter passkey to continue.', null);
+      }
+
+      // Convert ArrayBuffer -> hex without leaking via concatenation order.
+      function bufToHex(buf) {
+        var bytes = new Uint8Array(buf);
+        var out = '';
+        for (var i = 0; i < bytes.length; i++) {
+          var h = bytes[i].toString(16);
+          if (h.length < 2) h = '0' + h;
+          out += h;
+        }
+        return out;
+      }
+
+      function constantTimeEqual(a, b) {
+        if (typeof a !== 'string' || typeof b !== 'string') return false;
+        if (a.length !== b.length) return false;
+        var diff = 0;
+        for (var i = 0; i < a.length; i++) {
+          diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+        }
+        return diff === 0;
+      }
+
+      async function tryUnlock() {
+        if (!input) return;
+        var value = input.value;
+        // Best-effort: clear the visible field immediately so it isn't lingering on screen.
+        try { input.value = ''; } catch (e) { /* ignore */ }
+
+        if (!value) {
+          setMsg('Enter a passkey.', 'err');
+          return;
+        }
+        if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
+          setMsg('Web Crypto unavailable in this browser.', 'err');
+          return;
+        }
+
+        btn.disabled = true;
+        setMsg('Verifying…', null);
+
+        try {
+          var enc = new TextEncoder();
+          var data = enc.encode(value);
+          // Wipe the local reference ASAP.
+          value = null;
+          var digestBuf = await window.crypto.subtle.digest('SHA-256', data);
+          // Best-effort wipe of the encoded bytes.
+          try {
+            var view = new Uint8Array(data.buffer || data);
+            for (var i = 0; i < view.length; i++) view[i] = 0;
+          } catch (e) { /* ignore */ }
+          var hex = bufToHex(digestBuf);
+
+          if (constantTimeEqual(hex, EXPECTED_DIGEST)) {
+            try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) { /* ignore */ }
+            setMsg('Unlocked.', 'ok');
+            unlock();
+          } else {
+            setMsg('Incorrect passkey.', 'err');
+          }
+        } catch (err) {
+          setMsg('Crypto error. Reload and retry.', 'err');
+        } finally {
+          btn.disabled = false;
+        }
+      }
+
+      if (btn) btn.addEventListener('click', tryUnlock);
+      if (input) {
+        input.addEventListener('keydown', function (ev) {
+          if (ev.key === 'Enter') {
+            ev.preventDefault();
+            tryUnlock();
+          }
+        });
+      }
+      if (relockBtn) relockBtn.addEventListener('click', relock);
+
+      // Restore unlock if user already unlocked in this tab session.
+      try {
+        if (sessionStorage.getItem(SESSION_KEY) === '1') {
+          unlock();
+          setMsg('Session unlocked.', 'ok');
+        }
+      } catch (e) { /* ignore */ }
+    })();
+  </script>
+</body>
+</html>

@@ -17,6 +17,7 @@ bash tests/run-all.sh
 | `btc-brain-truth-scan.sh` | (a) no synthetic OHLC fabrication; (b) no fabricated CoinGecko high/low/open; (c) closed-candle helper present; (d) public disclaimer banner present; (e) no unrelabeled accuracy/IQ/analog-match claims; (f) feed-failure copy present |
 | `secret-scan.sh` | Token-shape patterns (AWS/Stripe/Slack/GitHub PAT/Google API/JWT/PEM) across the public bundle, plus `.env` not tracked. Prints only file paths and pattern names — never secret values. |
 | `closed-candles.spec.mjs` | Behavioural unit test of the `closedCandlesOnly` helper (Node only). |
+| `army-link-gate.sh` | (a) `army-link/index.html` exists and contains gate UI markers (`passkey-input`, `crypto.subtle.digest`, `SHA-256`, `sessionStorage`, soft-gate disclaimer, "no trading"); (b) homepage links to `/army-link/`; (c) plaintext-passkey absence — sliding-window SHA-256 over the public bundle fails if any window matches the expected digest. The plaintext passkey is never embedded in this test, only its hash. |
 
 ## Manual test plan
 

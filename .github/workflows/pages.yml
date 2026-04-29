@@ -1,15 +1,30 @@
 name: Deploy to GitHub Pages
 
+# Triggers:
+#  • push to main         — human commits / merges deploy automatically.
+#  • workflow_dispatch    — manual redeploy from the Actions UI.
+#  • workflow_call        — invoked from the artifact-committing workflows
+#                           (data snapshot, ledger issue/resolve, briefing
+#                           archive) immediately after they push generated
+#                           artifacts to main. This sidesteps the GitHub
+#                           limitation where commits made by GITHUB_TOKEN
+#                           do not trigger downstream workflows, which
+#                           would otherwise leave the public Pages site
+#                           stale until the next human push.
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
   pages: write
   id-token: write
 
+# Pages only allows one in-flight deploy at a time per environment, and
+# concurrent calls from different workflows must serialize rather than
+# cancel each other so we never lose the most recent artifact set.
 concurrency:
   group: "pages"
   cancel-in-progress: false

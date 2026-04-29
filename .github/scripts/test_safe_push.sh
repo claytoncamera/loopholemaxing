@@ -50,13 +50,19 @@ echo "── case 1: happy path ──"
 mkdir -p artifacts
 echo '{"v":1}' > artifacts/a.json
 git add artifacts/a.json
+export GITHUB_OUTPUT="$TMP/case1.outputs"
+: > "$GITHUB_OUTPUT"
 "$SAFE_PUSH" "case1: add a.json"
 git fetch origin main >/dev/null 2>&1
 git diff --quiet origin/main -- artifacts/a.json || { echo "case1 FAIL: a.json not on remote"; exit 1; }
+grep -q '^pushed=true$' "$GITHUB_OUTPUT" || { echo "case1 FAIL: expected pushed=true in GITHUB_OUTPUT"; cat "$GITHUB_OUTPUT"; exit 1; }
 echo "case1 PASS"
 
 echo "── case 2: nothing staged ──"
+export GITHUB_OUTPUT="$TMP/case2.outputs"
+: > "$GITHUB_OUTPUT"
 "$SAFE_PUSH" "case2: should be no-op"
+grep -q '^pushed=false$' "$GITHUB_OUTPUT" || { echo "case2 FAIL: expected pushed=false in GITHUB_OUTPUT"; cat "$GITHUB_OUTPUT"; exit 1; }
 echo "case2 PASS"
 
 echo "── case 3: non-fast-forward, no conflict ──"
@@ -69,10 +75,13 @@ git push origin main >/dev/null 2>&1
 cd "$LOCAL"
 echo '{"v":2}' > artifacts/b.json
 git add artifacts/b.json
+export GITHUB_OUTPUT="$TMP/case3.outputs"
+: > "$GITHUB_OUTPUT"
 "$SAFE_PUSH" "case3: add b.json with race"
 git fetch origin main >/dev/null 2>&1
 git diff --quiet origin/main -- artifacts/b.json || { echo "case3 FAIL: b.json not on remote"; exit 1; }
 git diff --quiet origin/main -- competing.txt   || { echo "case3 FAIL: competing.txt missing locally"; exit 1; }
+grep -q '^pushed=true$' "$GITHUB_OUTPUT" || { echo "case3 FAIL: expected pushed=true after rebase+retry"; cat "$GITHUB_OUTPUT"; exit 1; }
 echo "case3 PASS"
 
 echo "── case 4: conflict on same artifact path → loud failure, no force-push ──"
@@ -87,6 +96,8 @@ git push origin main >/dev/null 2>&1
 cd "$LOCAL"
 echo '{"v":"from-local"}' > artifacts/a.json
 git add artifacts/a.json
+export GITHUB_OUTPUT="$TMP/case4.outputs"
+: > "$GITHUB_OUTPUT"
 set +e
 "$SAFE_PUSH" "case4: should fail loudly" >"$TMP/case4.log" 2>&1
 rc=$?
@@ -107,6 +118,13 @@ remote_a="$(git show origin/main:artifacts/a.json)"
   echo "case4 FAIL: remote was modified despite conflict"
   exit 1
 }
+# On loud conflict failure we never wrote pushed=true; the deploy gate
+# in the calling workflow must therefore not fire.
+if grep -q '^pushed=true$' "$GITHUB_OUTPUT"; then
+  echo "case4 FAIL: pushed=true was emitted on loud-failure path"
+  cat "$GITHUB_OUTPUT"
+  exit 1
+fi
 echo "case4 PASS"
 
 echo

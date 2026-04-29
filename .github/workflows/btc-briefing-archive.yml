@@ -38,6 +38,10 @@ jobs:
     name: Build daily briefing
     runs-on: ubuntu-latest
     timeout-minutes: 6
+    outputs:
+      # `safe_push` emits pushed=true|false; the deploy job below uses it
+      # to fire Pages only when this run actually advanced origin/main.
+      pushed: ${{ steps.commit.outputs.pushed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,6 +77,7 @@ jobs:
           python -c "import json; d=json.load(open('btc-brain/data/public/briefings/index.json')); print('briefings:', len(d['briefings'])); [print('  -', b['date'], b['url']) for b in d['briefings'][:10]]"
 
       - name: Commit briefing updates
+        id: commit
         # See .github/scripts/safe_push.sh — handles the non-fast-forward
         # race we hit when the data-snapshot workflow pushes to main at
         # the same minute the briefing archive does.
@@ -82,3 +87,16 @@ jobs:
           git add btc-brain/data/public/briefings/*.json
           .github/scripts/safe_push.sh \
             "chore(briefings): update daily briefing archive"
+
+  # Bot commits made via GITHUB_TOKEN do NOT trigger the push-based
+  # `pages.yml` workflow, so we explicitly invoke the reusable Pages
+  # deploy whenever this run actually pushed new artifacts.
+  deploy-pages:
+    name: Deploy refreshed artifacts to GitHub Pages
+    needs: briefing
+    if: needs.briefing.outputs.pushed == 'true'
+    uses: ./.github/workflows/pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

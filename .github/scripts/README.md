@@ -71,6 +71,48 @@ authenticates the push (the default `actions/checkout@v4` token works).
 | `SAFE_PUSH_INITIAL_SLEEP` | `2`     | Base seconds for exponential backoff.        |
 | `SAFE_PUSH_BRANCH`        | `main`  | Target branch.                               |
 
+### `pushed` step output (for the Pages deploy gate)
+
+When `safe_push.sh` runs inside a GitHub Actions step it writes
+`pushed=true` (push succeeded) or `pushed=false` (nothing was staged) to
+`$GITHUB_OUTPUT`. On loud-failure paths (rebase conflict, retries
+exhausted, non-retryable push error) the helper exits non-zero **without**
+emitting `pushed=true`, so a downstream `if: needs.<job>.outputs.pushed
+== 'true'` gate will not fire.
+
+This is what the artifact-committing workflows
+(`btc-data-snapshot.yml`, `btc-ledger-issue.yml`, `btc-ledger-resolve.yml`,
+`btc-briefing-archive.yml`) use to invoke the reusable `pages.yml`
+deploy via `workflow_call` immediately after a successful push. Without
+this in-run deploy, GitHub's rule that **commits made by `GITHUB_TOKEN`
+do not trigger downstream workflows** would leave the public Pages
+artifacts stale until the next human commit.
+
+To consume the output, give the commit step an `id`, expose a job
+output, and gate a deploy job on it:
+
+```yaml
+jobs:
+  snapshot:
+    outputs:
+      pushed: ${{ steps.commit.outputs.pushed }}
+    steps:
+      - name: Commit snapshot updates
+        id: commit
+        run: |
+          git add path/to/artifact.json
+          .github/scripts/safe_push.sh "chore(data): refresh"
+
+  deploy-pages:
+    needs: snapshot
+    if: needs.snapshot.outputs.pushed == 'true'
+    uses: ./.github/workflows/pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+```
+
 ### Truth-gate guarantees
 
 The helper does not change any model output, forecast values, or
@@ -83,14 +125,16 @@ tip; on conflict it aborts rather than touching the artifact bytes.
 
 `test_safe_push.sh` is an offline test harness (no network, no GitHub
 required). It builds a local bare repo plus two clones and exercises
-four scenarios:
+four scenarios, asserting both the on-disk remote state *and* the
+`pushed=` value written to `$GITHUB_OUTPUT`:
 
-1. happy-path push.
-2. nothing-staged no-op.
+1. happy-path push → `pushed=true`.
+2. nothing-staged no-op → `pushed=false`.
 3. non-fast-forward race against an unrelated file → rebase + retry
-   succeeds.
+   succeeds → `pushed=true`.
 4. conflict on the same artifact path → loud failure, remote tip
-   unchanged.
+   unchanged, `pushed=true` is **not** emitted (so the deploy gate
+   won't fire).
 
 Run it:
 

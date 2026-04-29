@@ -23,6 +23,10 @@ jobs:
     name: Refresh data snapshots
     runs-on: ubuntu-latest
     timeout-minutes: 6
+    outputs:
+      # `safe_push` emits pushed=true|false; the deploy job below uses it
+      # to fire Pages only when this run actually advanced origin/main.
+      pushed: ${{ steps.commit.outputs.pushed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,6 +56,7 @@ jobs:
           done
 
       - name: Commit snapshot updates
+        id: commit
         # See .github/scripts/safe_push.sh — handles non-fast-forward
         # races against ledger and briefing workflows pushing to main.
         # Uses --depth=1 fetch on checkout, but the helper does an
@@ -63,3 +68,18 @@ jobs:
           git add btc-brain/data/public/*.json
           .github/scripts/safe_push.sh \
             "chore(data): refresh BTC Brain Phase 2 snapshots"
+
+  # Bot commits made via GITHUB_TOKEN do NOT trigger the push-based
+  # `pages.yml` workflow, so we explicitly invoke the reusable Pages
+  # deploy here whenever this run actually pushed new artifacts. Without
+  # this, the public site can stay 12–24h stale even though the data on
+  # main is fresh.
+  deploy-pages:
+    name: Deploy refreshed artifacts to GitHub Pages
+    needs: snapshot
+    if: needs.snapshot.outputs.pushed == 'true'
+    uses: ./.github/workflows/pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

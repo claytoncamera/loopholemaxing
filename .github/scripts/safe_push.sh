@@ -56,8 +56,20 @@ MAX_RETRIES="${SAFE_PUSH_MAX_RETRIES:-5}"
 INITIAL_SLEEP="${SAFE_PUSH_INITIAL_SLEEP:-2}"
 BRANCH="${SAFE_PUSH_BRANCH:-main}"
 
+# Emit a `pushed=<true|false>` line to $GITHUB_OUTPUT (when running inside
+# a GitHub Actions step) so a downstream job can gate a Pages deploy on
+# whether this run actually advanced origin/main. Safe no-op when the
+# variable is unset (local runs, tests).
+emit_pushed() {
+  local value="$1"
+  if [ -n "${GITHUB_OUTPUT:-}" ] && [ -w "$GITHUB_OUTPUT" ]; then
+    echo "pushed=${value}" >> "$GITHUB_OUTPUT"
+  fi
+}
+
 if git diff --cached --quiet; then
   echo "safe_push: nothing staged; skipping commit and push."
+  emit_pushed false
   exit 0
 fi
 
@@ -80,6 +92,7 @@ while : ; do
     cat "$push_out"
     rm -f "$push_out"
     echo "safe_push: push succeeded on attempt ${attempt}."
+    emit_pushed true
     exit 0
   fi
 

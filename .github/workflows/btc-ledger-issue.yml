@@ -37,6 +37,10 @@ jobs:
     name: Issue baseline/shadow forecasts and resolve due ones
     runs-on: ubuntu-latest
     timeout-minutes: 6
+    outputs:
+      # `safe_push` emits pushed=true|false; the deploy job below uses it
+      # to fire Pages only when this run actually advanced origin/main.
+      pushed: ${{ steps.commit.outputs.pushed }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,6 +83,7 @@ jobs:
             --out  btc-brain/ledger/public/accuracy.json
 
       - name: Commit ledger updates
+        id: commit
         # Uses .github/scripts/safe_push.sh, which fetches+rebases on
         # non-fast-forward rejections (concurrent workflows pushing to
         # main) and aborts loudly without force-pushing on real
@@ -91,3 +96,16 @@ jobs:
                   btc-brain/ledger/public/accuracy.json
           .github/scripts/safe_push.sh \
             "chore(ledger): issue scheduled forecasts + resolve due"
+
+  # Bot commits made via GITHUB_TOKEN do NOT trigger the push-based
+  # `pages.yml` workflow, so we explicitly invoke the reusable Pages
+  # deploy whenever this run actually pushed new artifacts.
+  deploy-pages:
+    name: Deploy refreshed artifacts to GitHub Pages
+    needs: issue
+    if: needs.issue.outputs.pushed == 'true'
+    uses: ./.github/workflows/pages.yml
+    permissions:
+      contents: read
+      pages: write
+      id-token: write

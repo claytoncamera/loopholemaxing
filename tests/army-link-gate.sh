@@ -43,6 +43,15 @@ if [ -f "$GATE_FILE" ]; then
     'Overseer Command Nexus'
     'Soft'  # part of "Soft Gate" / soft-gate disclaimer
     'no trading'
+    # Phase B: server-mode + soft-gate fallback markers
+    'data-api-origin'
+    'data-api-path'
+    'hubapi.loopholemaxing.com'
+    '/api/v1/army-link/unlock'
+    'data-auth-mode'
+    'server auth not active yet'
+    'no order routing'
+    'no broker'
   )
   for marker in "${REQUIRED_MARKERS[@]}"; do
     if ! grep -q -F -- "$marker" "$GATE_FILE"; then

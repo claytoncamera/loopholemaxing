@@ -116,6 +116,26 @@ bash tests/army-link-gate.sh
 T_ARMY=$?
 
 echo
+echo "== Army Link server-mode contract =="
+if command -v node >/dev/null 2>&1; then
+  node tests/army-link-server-mode.spec.mjs
+  T_ARMY_SRV=$?
+  if [ $T_ARMY_SRV -ne 0 ]; then T_ARMY=1; fi
+else
+  echo "SKIP: node not installed"
+fi
+
+echo
+echo "== Army Link unlock behavior (Hub PR #4 contract) =="
+if command -v node >/dev/null 2>&1; then
+  node tests/army-link-unlock-behavior.spec.mjs
+  T_ARMY_BEHAVIOR=$?
+  if [ $T_ARMY_BEHAVIOR -ne 0 ]; then T_ARMY=1; fi
+else
+  echo "SKIP: node not installed"
+fi
+
+echo
 echo "== Daily briefing archive tests =="
 if command -v python3 >/dev/null 2>&1 || command -v python >/dev/null 2>&1; then
   PY="$(command -v python3 || command -v python)"

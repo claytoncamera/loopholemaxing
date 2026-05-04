@@ -3,6 +3,9 @@ Phase 2 snapshot writer.
 
 Produces the public artifacts the BTC Brain frontend reads:
 
+  btc-brain/data/public/candles_1m.json
+  btc-brain/data/public/candles_5m.json
+  btc-brain/data/public/candles_15m.json
   btc-brain/data/public/candles_1h.json
   btc-brain/data/public/candles_4h.json
   btc-brain/data/public/candles_1d.json
@@ -79,7 +82,10 @@ def write_json(path: Path, obj: dict) -> None:
     path.write_text(text, encoding="utf-8")
 
 
-def snapshot_candles(out_dir: Path, intervals=("1h", "4h", "1d")) -> dict:
+DEFAULT_INTERVALS = ("1m", "5m", "15m", "1h", "4h", "1d")
+
+
+def snapshot_candles(out_dir: Path, intervals=DEFAULT_INTERVALS) -> dict:
     results: dict = {}
     for interval in intervals:
         chain = candles_feed.default_provider_chain(interval)
@@ -193,18 +199,25 @@ def snapshot_source_health(out_dir: Path, parts: dict) -> dict:
         "overall": overall,
         "sources": sources,
         "freshness_budget_seconds": {
-            "candles_1h": 90 * 60,    # 1h candle + grace
-            "candles_4h": 5 * 3600,
-            "candles_1d": 26 * 3600,
-            "derivatives": 30 * 60,
-            "sentiment": 24 * 3600,
+            # Sub-hour budgets give one full snapshot cadence (~30 min) of
+            # grace on top of the candle period — the snapshotter runs at
+            # :13/:43, so a 1m artifact written at :13 is at most ~30 min
+            # old when the next run begins.
+            "candles_1m":  45 * 60,    # 1m candle + ~half-hour cadence grace
+            "candles_5m":  45 * 60,    # 5m candle + cadence grace
+            "candles_15m": 60 * 60,    # 15m candle + cadence grace
+            "candles_1h":  90 * 60,    # 1h candle + grace
+            "candles_4h":   5 * 3600,
+            "candles_1d":  26 * 3600,
+            "derivatives":  30 * 60,
+            "sentiment":   24 * 3600,
         },
     }
     write_json(out_dir / "source_health.json", artifact)
     return artifact
 
 
-def run(out_dir: Path, intervals=("1h", "4h", "1d")) -> dict:
+def run(out_dir: Path, intervals=DEFAULT_INTERVALS) -> dict:
     candles = snapshot_candles(out_dir, intervals=intervals)
     derivs = snapshot_derivatives(out_dir)
     senti = snapshot_sentiment(out_dir)
@@ -226,7 +239,7 @@ def run(out_dir: Path, intervals=("1h", "4h", "1d")) -> dict:
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--out", required=True, help="public artifact dir")
-    ap.add_argument("--intervals", default="1h,4h,1d")
+    ap.add_argument("--intervals", default=",".join(DEFAULT_INTERVALS))
     args = ap.parse_args(argv)
     out = Path(args.out)
     intervals = tuple(s.strip() for s in args.intervals.split(",") if s.strip())

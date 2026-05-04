@@ -571,9 +571,30 @@ class TestSnapshotWriter(unittest.TestCase):
 
                 health = json.loads((out / "source_health.json").read_text())
                 self.assertEqual(health["overall"], "failed")
-                # Every kind has a freshness budget defined.
-                for k in ("candles_1h", "candles_4h", "candles_1d", "derivatives", "sentiment"):
+                # Every kind has a freshness budget defined — including the
+                # sub-hour candle kinds, even when no run is currently
+                # producing one (the budget table is the contract the UI
+                # reads to decide what STALE means).
+                for k in (
+                    "candles_1m", "candles_5m", "candles_15m",
+                    "candles_1h", "candles_4h", "candles_1d",
+                    "derivatives", "sentiment",
+                ):
                     self.assertIn(k, health["freshness_budget_seconds"])
+                # Sub-hour budgets must be tighter than the 1h budget — a
+                # 1m candle that is two hours old is unambiguously stale.
+                self.assertLess(
+                    health["freshness_budget_seconds"]["candles_1m"],
+                    health["freshness_budget_seconds"]["candles_1h"],
+                )
+                self.assertLess(
+                    health["freshness_budget_seconds"]["candles_5m"],
+                    health["freshness_budget_seconds"]["candles_1h"],
+                )
+                self.assertLessEqual(
+                    health["freshness_budget_seconds"]["candles_15m"],
+                    health["freshness_budget_seconds"]["candles_1h"],
+                )
                 # All sources reported failed.
                 for v in health["sources"].values():
                     self.assertIn(v["status"], ("failed", "degraded"))
@@ -660,6 +681,223 @@ class TestSnapshotWriter(unittest.TestCase):
             candles_feed.default_provider_chain = original_candles_chain
             derivs_feed.default_provider_chain = original_derivs_chain
             sentiment_feed.default_provider_chain = original_senti_chain
+
+
+class TestSubHourCandleArtifacts(unittest.TestCase):
+    """Phase A — wire 1m / 5m / 15m candle artifacts.
+
+    These tests verify the snapshot writer produces real closed-candle
+    artifacts for the sub-hour timeframes, that source_health surfaces
+    them with named providers + freshness budgets, and that the
+    no-synthetic-OHLC invariant holds when every provider fails.
+    """
+
+    def _binance_subhour_fixture(self, interval_ms: int, n: int = 30):
+        """Build n closed Binance kline tuples with monotonic time stamps."""
+        base_ms = 1745625600000
+        out = []
+        for i in range(n):
+            o = base_ms + i * interval_ms
+            out.append([
+                o, "60000", "60500", "59800", "60200", "10",
+                o + interval_ms - 1, "0", 0, "0", "0", "0",
+            ])
+        return out
+
+    def test_sub_hour_intervals_produce_real_artifacts(self):
+        """Snapshot writer creates candles_{1m,5m,15m}.json with real
+        closed candles when Binance is reachable."""
+        m1 = self._binance_subhour_fixture(60_000, n=30)
+        m5 = self._binance_subhour_fixture(5 * 60_000, n=30)
+        m15 = self._binance_subhour_fixture(15 * 60_000, n=30)
+
+        def http_for_url(url, *a, **kw):
+            if "interval=1m" in url:
+                return m1
+            if "interval=5m" in url:
+                return m5
+            if "interval=15m" in url:
+                return m15
+            if "interval=1h" in url:
+                return self._binance_subhour_fixture(60 * 60_000, n=24)
+            if "interval=4h" in url:
+                return self._binance_subhour_fixture(4 * 60 * 60_000, n=20)
+            if "interval=1d" in url:
+                return self._binance_subhour_fixture(24 * 60 * 60_000, n=30)
+            if "premiumIndex" in url:
+                return {"lastFundingRate": "0.0001", "nextFundingTime": 1745740800000, "markPrice": "65000"}
+            if "openInterest" in url:
+                return {"openInterest": "73000"}
+            if "globalLongShortAccountRatio" in url:
+                return [{"longShortRatio": "1.4", "longAccount": "0.58", "shortAccount": "0.42"}]
+            if "alternative.me" in url:
+                return {"data": [{"value": "55", "value_classification": "Greed", "timestamp": "1745740800"}]}
+            raise HttpError(f"unhandled {url}")
+
+        original_candles_chain = candles_feed.default_provider_chain
+        original_derivs_chain = derivs_feed.default_provider_chain
+        original_senti_chain = sentiment_feed.default_provider_chain
+        candles_feed.default_provider_chain = lambda interval: [
+            lambda: candles_feed.fetch_binance_candles(interval, fetcher=http_for_url),
+        ]
+        derivs_feed.default_provider_chain = lambda: [
+            lambda: derivs_feed.fetch_binance_derivatives(fetcher=http_for_url),
+        ]
+        sentiment_feed.default_provider_chain = lambda: [
+            lambda: sentiment_feed.fetch_fng_sentiment(fetcher=http_for_url),
+        ]
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp)
+                snap.run(out)  # default intervals include 1m/5m/15m
+                for kind, expected_count in (("1m", 30), ("5m", 30), ("15m", 30)):
+                    path = out / f"candles_{kind}.json"
+                    self.assertTrue(path.exists(), f"missing {path}")
+                    doc = json.loads(path.read_text())
+                    self.assertEqual(doc["status"], "ok", f"{kind} should be ok")
+                    self.assertEqual(doc["kind"], f"candles_{kind}")
+                    self.assertEqual(doc["source"], "binance")
+                    self.assertIsNotNone(doc["data"])
+                    self.assertEqual(len(doc["data"]["candles"]), expected_count)
+                    # Every candle must carry real OHLC keys.
+                    for c in doc["data"]["candles"]:
+                        for k in ("open", "high", "low", "close", "open_time_ms", "close_time_ms"):
+                            self.assertIn(k, c)
+                        self.assertGreaterEqual(c["high"], c["low"])
+                        # Closed-candle invariant: close_time strictly after open_time.
+                        self.assertGreater(c["close_time_ms"], c["open_time_ms"])
+
+                # Source health must surface every sub-hour kind with a
+                # named provider and a freshness budget.
+                health = json.loads((out / "source_health.json").read_text())
+                for kind in ("candles_1m", "candles_5m", "candles_15m"):
+                    self.assertIn(kind, health["sources"])
+                    self.assertEqual(health["sources"][kind]["source"], "binance")
+                    self.assertEqual(health["sources"][kind]["status"], "ok")
+                    self.assertIn(kind, health["freshness_budget_seconds"])
+                    self.assertGreater(health["freshness_budget_seconds"][kind], 0)
+        finally:
+            candles_feed.default_provider_chain = original_candles_chain
+            derivs_feed.default_provider_chain = original_derivs_chain
+            sentiment_feed.default_provider_chain = original_senti_chain
+
+    def test_sub_hour_falls_through_to_coinbase(self):
+        """Binance 451 must not break the 1m/5m/15m artifacts — Coinbase
+        provides each of these granularities natively."""
+        # Coinbase format: [time_s, low, high, open, close, volume]
+        cb_1m = [
+            [1745740800, 64000.0, 64500.0, 64100.0, 64400.0, 5.0],
+            [1745740860, 64400.0, 64900.0, 64400.0, 64800.0, 6.0],
+            [1745740920, 64800.0, 65000.0, 64700.0, 64950.0, 7.0],
+        ]
+
+        def http_for_url(url, *a, **kw):
+            if "binance.com" in url:
+                raise HttpError("HTTP Error 451: ")
+            if "exchange.coinbase.com" in url and "granularity=60" in url:
+                return cb_1m
+            if "exchange.coinbase.com" in url and "granularity=300" in url:
+                # Same shape, different cadence — three 5m bars.
+                return cb_1m
+            if "exchange.coinbase.com" in url and "granularity=900" in url:
+                return cb_1m
+            raise HttpError("unexpected")
+
+        for interval in ("1m", "5m", "15m"):
+            chain = [
+                lambda i=interval: candles_feed.fetch_binance_candles(i, fetcher=http_for_url),
+                lambda i=interval: candles_feed.fetch_coinbase_candles(i, fetcher=http_for_url),
+                lambda i=interval: candles_feed.fetch_kraken_candles(i, fetcher=_failing_fetcher),
+            ]
+            chosen, attempts = run_with_fallback(chain)
+            self.assertEqual(chosen.status, STATUS_OK, f"{interval} should succeed via coinbase")
+            self.assertEqual(chosen.source, "coinbase",
+                             f"{interval} must fall back to coinbase when binance is 451")
+            self.assertEqual(attempts[0].source, "binance")
+            self.assertEqual(attempts[0].status, STATUS_FAILED)
+
+    def test_sub_hour_no_synthetic_ohlc_when_all_fail(self):
+        """If every provider fails, the 1m/5m/15m artifacts must be
+        `failed` with `data is None` — never fabricated OHLC."""
+        original_candles_chain = candles_feed.default_provider_chain
+        original_derivs_chain = derivs_feed.default_provider_chain
+        original_senti_chain = sentiment_feed.default_provider_chain
+        candles_feed.default_provider_chain = lambda interval: [
+            lambda: candles_feed.fetch_binance_candles(interval, fetcher=_failing_fetcher),
+            lambda: candles_feed.fetch_coinbase_candles(interval, fetcher=_failing_fetcher),
+            lambda: candles_feed.fetch_kraken_candles(interval, fetcher=_failing_fetcher),
+        ]
+        derivs_feed.default_provider_chain = lambda: [
+            lambda: derivs_feed.fetch_binance_derivatives(fetcher=_failing_fetcher),
+        ]
+        sentiment_feed.default_provider_chain = lambda: [
+            lambda: sentiment_feed.fetch_fng_sentiment(fetcher=_failing_fetcher),
+        ]
+        try:
+            with tempfile.TemporaryDirectory() as tmp:
+                out = Path(tmp)
+                snap.run(out, intervals=("1m", "5m", "15m"))
+                for kind in ("1m", "5m", "15m"):
+                    path = out / f"candles_{kind}.json"
+                    self.assertTrue(path.exists())
+                    doc = json.loads(path.read_text())
+                    self.assertEqual(doc["status"], "failed",
+                                     f"{kind} must be failed when all providers fail")
+                    self.assertIsNone(doc["data"],
+                                      f"{kind} must NOT contain fabricated candle data")
+                    # Provenance: every provider attempt is recorded.
+                    sources = [a["source"] for a in doc["attempts"]]
+                    self.assertIn("binance", sources)
+                    self.assertIn("coinbase", sources)
+                    self.assertIn("kraken", sources)
+
+                # Source health declares the sub-hour kinds as failed but
+                # still publishes their freshness budgets so the UI can
+                # render a STALE row instead of a blank.
+                health = json.loads((out / "source_health.json").read_text())
+                for kind in ("candles_1m", "candles_5m", "candles_15m"):
+                    self.assertEqual(health["sources"][kind]["status"], "failed")
+                    self.assertIn(kind, health["freshness_budget_seconds"])
+        finally:
+            candles_feed.default_provider_chain = original_candles_chain
+            derivs_feed.default_provider_chain = original_derivs_chain
+            sentiment_feed.default_provider_chain = original_senti_chain
+
+    def test_sub_hour_closed_candle_invariant(self):
+        """The snapshotter must drop the in-progress (live) candle from
+        every sub-hour series before persisting, so the artifact only
+        contains real closed bars."""
+        # 30 closed bars + 1 live (in-progress) bar.
+        interval_ms = 60_000  # 1m
+        base_ms = 1745625600000
+        complete = []
+        for i in range(30):
+            o = base_ms + i * interval_ms
+            complete.append([
+                o, "60000", "60500", "59800", "60200", "10",
+                o + interval_ms - 1, "0", 0, "0", "0", "0",
+            ])
+        live_open = base_ms + 30 * interval_ms
+        live = [
+            live_open, "60200", "60900", "60100", "60800", "5",
+            live_open + interval_ms - 1, "0", 0, "0", "0", "0",
+        ]
+        payload = complete + [live]
+
+        result = candles_feed.fetch_binance_candles(
+            "1m", fetcher=_binance_candles_fetcher(payload),
+        )
+        self.assertEqual(result.status, STATUS_OK)
+        self.assertEqual(len(result.data["candles"]), 31)
+
+        # Pin "now" to mid-live-candle.
+        now = datetime.fromtimestamp((live_open + interval_ms / 2) / 1000, tz=timezone.utc)
+        closed = candles_feed.closed_candles(result, now=now)
+        self.assertEqual(len(closed), 30, "live 1m candle must be dropped")
+        # Last closed candle's close_time_ms is strictly <= now.
+        now_ms = int(now.timestamp() * 1000)
+        for c in closed:
+            self.assertLessEqual(c["close_time_ms"], now_ms)
 
 
 if __name__ == "__main__":

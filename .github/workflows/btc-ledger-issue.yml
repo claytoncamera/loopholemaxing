@@ -41,6 +41,10 @@ jobs:
       # `safe_push` emits pushed=true|false; the deploy job below uses it
       # to fire Pages only when this run actually advanced origin/main.
       pushed: ${{ steps.commit.outputs.pushed }}
+      # See btc-data-snapshot.yml for the rationale behind pushed_sha:
+      # the called pages.yml uses it to assert the live tip of main
+      # contains our commit before uploading.
+      pushed_sha: ${{ steps.commit.outputs.pushed_sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -105,6 +109,8 @@ jobs:
     needs: issue
     if: needs.issue.outputs.pushed == 'true'
     uses: ./.github/workflows/pages.yml
+    with:
+      expected_sha: ${{ needs.issue.outputs.pushed_sha }}
     permissions:
       contents: read
       pages: write

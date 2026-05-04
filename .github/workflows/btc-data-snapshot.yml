@@ -27,6 +27,11 @@ jobs:
       # `safe_push` emits pushed=true|false; the deploy job below uses it
       # to fire Pages only when this run actually advanced origin/main.
       pushed: ${{ steps.commit.outputs.pushed }}
+      # `safe_push` also emits pushed_sha — the SHA we just pushed. The
+      # called pages.yml uses it to assert the live tip of main contains
+      # our commit before uploading, so we never silently publish a tree
+      # older than the artifacts we just generated.
+      pushed_sha: ${{ steps.commit.outputs.pushed_sha }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -79,6 +84,8 @@ jobs:
     needs: snapshot
     if: needs.snapshot.outputs.pushed == 'true'
     uses: ./.github/workflows/pages.yml
+    with:
+      expected_sha: ${{ needs.snapshot.outputs.pushed_sha }}
     permissions:
       contents: read
       pages: write

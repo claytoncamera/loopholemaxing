@@ -56,6 +56,13 @@ export GITHUB_OUTPUT="$TMP/case1.outputs"
 git fetch origin main >/dev/null 2>&1
 git diff --quiet origin/main -- artifacts/a.json || { echo "case1 FAIL: a.json not on remote"; exit 1; }
 grep -q '^pushed=true$' "$GITHUB_OUTPUT" || { echo "case1 FAIL: expected pushed=true in GITHUB_OUTPUT"; cat "$GITHUB_OUTPUT"; exit 1; }
+# pushed_sha must be present on success and must equal the SHA we just pushed.
+case1_pushed_sha="$(grep '^pushed_sha=' "$GITHUB_OUTPUT" | cut -d= -f2 || true)"
+[ -n "$case1_pushed_sha" ] || { echo "case1 FAIL: pushed_sha missing in GITHUB_OUTPUT"; cat "$GITHUB_OUTPUT"; exit 1; }
+[ "$case1_pushed_sha" = "$(git rev-parse origin/main)" ] || {
+  echo "case1 FAIL: pushed_sha (${case1_pushed_sha}) != origin/main tip ($(git rev-parse origin/main))"
+  exit 1
+}
 echo "case1 PASS"
 
 echo "── case 2: nothing staged ──"
@@ -63,6 +70,13 @@ export GITHUB_OUTPUT="$TMP/case2.outputs"
 : > "$GITHUB_OUTPUT"
 "$SAFE_PUSH" "case2: should be no-op"
 grep -q '^pushed=false$' "$GITHUB_OUTPUT" || { echo "case2 FAIL: expected pushed=false in GITHUB_OUTPUT"; cat "$GITHUB_OUTPUT"; exit 1; }
+# Nothing was pushed, so pushed_sha must NOT be emitted — otherwise the
+# downstream deploy could be tricked into asserting a stale SHA.
+if grep -q '^pushed_sha=' "$GITHUB_OUTPUT"; then
+  echo "case2 FAIL: pushed_sha must not be emitted when nothing was pushed"
+  cat "$GITHUB_OUTPUT"
+  exit 1
+fi
 echo "case2 PASS"
 
 echo "── case 3: non-fast-forward, no conflict ──"
@@ -82,6 +96,13 @@ git fetch origin main >/dev/null 2>&1
 git diff --quiet origin/main -- artifacts/b.json || { echo "case3 FAIL: b.json not on remote"; exit 1; }
 git diff --quiet origin/main -- competing.txt   || { echo "case3 FAIL: competing.txt missing locally"; exit 1; }
 grep -q '^pushed=true$' "$GITHUB_OUTPUT" || { echo "case3 FAIL: expected pushed=true after rebase+retry"; cat "$GITHUB_OUTPUT"; exit 1; }
+# pushed_sha must reflect the post-rebase commit that landed on origin.
+case3_pushed_sha="$(grep '^pushed_sha=' "$GITHUB_OUTPUT" | cut -d= -f2 || true)"
+[ -n "$case3_pushed_sha" ] || { echo "case3 FAIL: pushed_sha missing after rebase+retry"; cat "$GITHUB_OUTPUT"; exit 1; }
+[ "$case3_pushed_sha" = "$(git rev-parse origin/main)" ] || {
+  echo "case3 FAIL: pushed_sha (${case3_pushed_sha}) != origin/main tip ($(git rev-parse origin/main))"
+  exit 1
+}
 echo "case3 PASS"
 
 echo "── case 4: conflict on same artifact path → loud failure, no force-push ──"
@@ -119,9 +140,15 @@ remote_a="$(git show origin/main:artifacts/a.json)"
   exit 1
 }
 # On loud conflict failure we never wrote pushed=true; the deploy gate
-# in the calling workflow must therefore not fire.
+# in the calling workflow must therefore not fire. pushed_sha must
+# likewise be absent so a misconfigured caller cannot deploy a stale tip.
 if grep -q '^pushed=true$' "$GITHUB_OUTPUT"; then
   echo "case4 FAIL: pushed=true was emitted on loud-failure path"
+  cat "$GITHUB_OUTPUT"
+  exit 1
+fi
+if grep -q '^pushed_sha=' "$GITHUB_OUTPUT"; then
+  echo "case4 FAIL: pushed_sha was emitted on loud-failure path"
   cat "$GITHUB_OUTPUT"
   exit 1
 fi

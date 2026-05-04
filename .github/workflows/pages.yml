@@ -11,11 +11,31 @@ name: Deploy to GitHub Pages
 #                           do not trigger downstream workflows, which
 #                           would otherwise leave the public Pages site
 #                           stale until the next human push.
+#
+# IMPORTANT: when invoked via workflow_call, `github.sha` is the SHA the
+# *caller* was running on — i.e. the pre-push tip of main. A bare
+# actions/checkout@v4 would therefore upload the pre-refresh tree and
+# Pages would publish stale artifacts even though the caller successfully
+# pushed new ones (observed: run 25327049812, commit cb19100, where the
+# deploy uploaded the parent SHA ba6be95 instead). To prevent this, this
+# workflow explicitly checks out the live tip of `refs/heads/main`. For
+# `push` and `workflow_dispatch` triggers this is equivalent to the
+# default behavior; for `workflow_call` it is the fix.
 on:
   push:
     branches: ["main"]
   workflow_dispatch:
   workflow_call:
+    inputs:
+      expected_sha:
+        description: >-
+          SHA the caller just pushed. If provided, the deploy job asserts
+          that the live tip of main contains this commit before uploading,
+          catching any regression where the deploy would publish a tree
+          older than the caller's pushed artifacts.
+        required: false
+        type: string
+        default: ''
 
 permissions:
   contents: read
@@ -36,8 +56,41 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout latest main
+        # Always pin to the live tip of main rather than github.sha so
+        # that workflow_call invocations from artifact-committing
+        # workflows publish the post-push commit, not the pre-push one
+        # the caller was running on. See the file header for context.
+        # fetch-depth: 0 so the verify step below can run
+        # `git merge-base --is-ancestor <expected_sha> HEAD` even when
+        # another concurrent push has advanced main past expected_sha.
         uses: actions/checkout@v4
+        with:
+          ref: refs/heads/main
+          fetch-depth: 0
+
+      - name: Verify deploy SHA contains caller's pushed commit
+        # Surfaces the commit Pages will actually publish and — when the
+        # caller passed expected_sha — fails fast if the live tip of main
+        # somehow does not contain it (would mean the artifacts about to
+        # be deployed are older than what the caller just pushed). For
+        # direct push / workflow_dispatch runs there is no expected_sha
+        # and the step only logs the deploy SHA.
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+        run: |
+          deploy_sha="$(git rev-parse HEAD)"
+          trigger_sha="${GITHUB_SHA:-unknown}"
+          echo "trigger_sha=${trigger_sha}"
+          echo "deploy_sha=${deploy_sha}"
+          echo "expected_sha=${EXPECTED_SHA:-<none>}"
+          if [ -n "${EXPECTED_SHA}" ]; then
+            if ! git merge-base --is-ancestor "${EXPECTED_SHA}" HEAD; then
+              echo "ERROR: live tip of main (${deploy_sha}) does not contain caller's pushed commit (${EXPECTED_SHA}). Refusing to deploy stale artifacts." >&2
+              exit 1
+            fi
+            echo "ok: deploy tree (${deploy_sha}) contains caller's pushed commit (${EXPECTED_SHA})."
+          fi
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

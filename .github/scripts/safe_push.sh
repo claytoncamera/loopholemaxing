@@ -67,6 +67,17 @@ emit_pushed() {
   fi
 }
 
+# Emit the SHA we just pushed to origin/$BRANCH so the downstream Pages
+# deploy can assert that what it is about to publish includes our commit
+# (i.e., that the post-push tip of main has not regressed). Safe no-op
+# when $GITHUB_OUTPUT is unset.
+emit_pushed_sha() {
+  local sha="$1"
+  if [ -n "${GITHUB_OUTPUT:-}" ] && [ -w "$GITHUB_OUTPUT" ]; then
+    echo "pushed_sha=${sha}" >> "$GITHUB_OUTPUT"
+  fi
+}
+
 if git diff --cached --quiet; then
   echo "safe_push: nothing staged; skipping commit and push."
   emit_pushed false
@@ -91,8 +102,10 @@ while : ; do
   if git push origin "HEAD:${BRANCH}" >"$push_out" 2>&1; then
     cat "$push_out"
     rm -f "$push_out"
-    echo "safe_push: push succeeded on attempt ${attempt}."
+    pushed_sha="$(git rev-parse HEAD)"
+    echo "safe_push: push succeeded on attempt ${attempt} (sha=${pushed_sha})."
     emit_pushed true
+    emit_pushed_sha "$pushed_sha"
     exit 0
   fi
 

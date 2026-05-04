@@ -106,6 +106,27 @@ check(
   "serverUnlock consumes nexus_url from response body",
   /body\.nexus_url/.test(html),
 );
+// Finalized Hub PR #4 returns { unlocked: true, nexus_url }. We must accept that
+// shape AND also tolerate { ok: true, nexus_url } (forward compatibility). Both
+// must be checked against strict `=== true` so truthy non-boolean values do not
+// pass. Either flag alone is insufficient — a valid http(s) nexus_url is still
+// required (covered by applyNexusUrl scheme assertion above).
+check(
+  "serverUnlock accepts strict body.unlocked === true",
+  /body\.unlocked\s*===\s*true/.test(html),
+  "Hub PR #4 success body uses { unlocked: true, nexus_url }",
+);
+check(
+  "serverUnlock accepts strict body.ok === true",
+  /body\.ok\s*===\s*true/.test(html),
+  "forward-compat with an { ok: true, nexus_url } shape",
+);
+check(
+  "serverUnlock requires at least one of unlocked/ok before reading nexus_url",
+  /body\.unlocked\s*===\s*true\s*\|\|\s*body\.ok\s*===\s*true/.test(html) ||
+    /body\.ok\s*===\s*true\s*\|\|\s*body\.unlocked\s*===\s*true/.test(html),
+  "missing flag must short-circuit to bad-body before consuming nexus_url",
+);
 check(
   "applyNexusUrl validates http(s) scheme",
   /\/\^https\?:\\\/\\\/\/i\.test\(/.test(html) ||

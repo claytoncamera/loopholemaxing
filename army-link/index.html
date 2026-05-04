@@ -301,8 +301,12 @@
      *  - This is a STATIC site on GitHub Pages. There is no server here.
      *  - When a server-side unlock endpoint (Hub API) is configured AND reachable, the
      *    gate posts the passkey over HTTPS to that endpoint. The server validates and,
-     *    on success, returns { ok: true, nexus_url: "..." }. Only then do we expose the
-     *    Nexus link, set to the server-returned URL.
+     *    on success, returns a JSON body with EITHER { ok: true, nexus_url: "..." } OR
+     *    { unlocked: true, nexus_url: "..." } — the finalized Hub PR #4 contract uses
+     *    `unlocked: true`; we accept either as a strict-boolean success flag. Only then
+     *    do we expose the Nexus link, set to the server-returned URL. Either flag alone
+     *    is insufficient: a valid http(s) nexus_url is also required, so a body that
+     *    flips the flag without supplying a URL still fails closed.
      *  - When the server endpoint is unavailable / not configured / probe fails, we
      *    fall back to a CLIENT-SIDE soft check: SHA-256(input) compared against a digest
      *    baked into the page. The UI clearly labels this state as soft-gate / "server
@@ -504,7 +508,13 @@
           }
           var body = null;
           try { body = await resp.json(); } catch (e) { body = null; }
-          if (!body || body.ok !== true) {
+          // Hub PR #4 (finalized) returns { unlocked: true, nexus_url }. We also accept
+          // { ok: true, nexus_url } for forward compatibility. Both must be strict
+          // boolean true — truthy values are intentionally rejected. Either flag alone
+          // is insufficient; a valid http(s) nexus_url is still required below, so a
+          // body that flips the flag without a URL still fails closed.
+          var success = !!body && (body.unlocked === true || body.ok === true);
+          if (!success) {
             return { ok: false, reason: 'bad-body' };
           }
           var nexus = body.nexus_url || body.OVERSEER_NEXUS_URL || '';

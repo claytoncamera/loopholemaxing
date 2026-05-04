@@ -1,54 +1,78 @@
 {
   "freshness_budget_seconds": {
+    "candles_15m": 3600,
     "candles_1d": 93600,
     "candles_1h": 5400,
+    "candles_1m": 2700,
     "candles_4h": 18000,
+    "candles_5m": 2700,
     "derivatives": 1800,
     "sentiment": 86400
   },
-  "generated_at": "2026-05-04T12:13:52Z",
+  "generated_at": "2026-05-04T14:58:21Z",
   "kind": "source_health",
   "overall": "partial_ok",
   "schema_version": "phase2-data-v1",
   "sources": {
+    "candles_15m": {
+      "error": null,
+      "fetched_at": "2026-05-04T14:58:19Z",
+      "latency_ms": 51,
+      "source": "coinbase",
+      "status": "ok"
+    },
     "candles_1d": {
       "error": null,
-      "fetched_at": "2026-05-04T12:13:51Z",
-      "latency_ms": 16,
+      "fetched_at": "2026-05-04T14:58:19Z",
+      "latency_ms": 55,
       "source": "coinbase",
       "status": "ok"
     },
     "candles_1h": {
       "error": null,
-      "fetched_at": "2026-05-04T12:13:50Z",
-      "latency_ms": 42,
+      "fetched_at": "2026-05-04T14:58:19Z",
+      "latency_ms": 50,
+      "source": "coinbase",
+      "status": "ok"
+    },
+    "candles_1m": {
+      "error": null,
+      "fetched_at": "2026-05-04T14:58:19Z",
+      "latency_ms": 58,
       "source": "coinbase",
       "status": "ok"
     },
     "candles_4h": {
       "error": null,
-      "fetched_at": "2026-05-04T12:13:51Z",
-      "latency_ms": 178,
+      "fetched_at": "2026-05-04T14:58:19Z",
+      "latency_ms": 182,
       "source": "kraken",
+      "status": "ok"
+    },
+    "candles_5m": {
+      "error": null,
+      "fetched_at": "2026-05-04T14:58:19Z",
+      "latency_ms": 40,
+      "source": "coinbase",
       "status": "ok"
     },
     "derivatives": {
       "error": null,
-      "fetched_at": "2026-05-04T12:13:52Z",
-      "latency_ms": 823,
+      "fetched_at": "2026-05-04T14:58:20Z",
+      "latency_ms": 836,
       "source": "okx",
       "status": "partial_ok"
     },
     "key_levels": {
       "error": null,
-      "fetched_at": "2026-05-04T12:13:52Z",
+      "fetched_at": "2026-05-04T14:58:21Z",
       "source": "computed",
       "status": "ok"
     },
     "sentiment": {
       "error": null,
-      "fetched_at": "2026-05-04T12:13:52Z",
-      "latency_ms": 237,
+      "fetched_at": "2026-05-04T14:58:21Z",
+      "latency_ms": 215,
       "source": "alternative.me",
       "status": "ok"
     }

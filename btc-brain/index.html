@@ -3181,11 +3181,17 @@
       _loadCandleFile('data/public/candles_4h.json'),
       _loadCandleFile('data/public/candles_1d.json'),
       _loadCandleFile('data/public/source_health.json'),
+      _loadCandleFile('data/public/candles_1m.json'),
+      _loadCandleFile('data/public/candles_5m.json'),
+      _loadCandleFile('data/public/candles_15m.json'),
     ]).then(function (parts) {
       window.__btcCandles = {
         h1: parts[0] || null,
         h4: parts[1] || null,
         d1: parts[2] || null,
+        m1: parts[4] || null,
+        m5: parts[5] || null,
+        m15: parts[6] || null,
       };
       window.__btcSourceHealth = parts[3] || null;
     });
@@ -3196,24 +3202,34 @@
   }
 
   // Pull a kline-array tuple from the cached candle artifacts. Returns
-  // {h1, h4, h15, daily, sources} where each kline series is in Binance
-  // array format (or null if the artifact is missing). 15m has no
-  // backend artifact today, so it stays null and that row remains STALE.
+  // {h1, h4, h15, h5, h1m, daily, sources} where each kline series is in
+  // Binance array format (or null if the artifact is missing or empty).
+  // Sub-hour intervals (1m/5m/15m) are wired to the corresponding Phase 2
+  // artifact files; if those are absent the rows stay STALE and never
+  // synthesize data.
   function _artifactKlineSet() {
     var c = window.__btcCandles || null;
     if (!c) return null;
-    var h1Obj = c.h1 && c.h1.data ? c.h1.data.candles : null;
-    var h4Obj = c.h4 && c.h4.data ? c.h4.data.candles : null;
-    var d1Obj = c.d1 && c.d1.data ? c.d1.data.candles : null;
+    var h1Obj  = c.h1  && c.h1.data  ? c.h1.data.candles  : null;
+    var h4Obj  = c.h4  && c.h4.data  ? c.h4.data.candles  : null;
+    var d1Obj  = c.d1  && c.d1.data  ? c.d1.data.candles  : null;
+    var m1Obj  = c.m1  && c.m1.data  ? c.m1.data.candles  : null;
+    var m5Obj  = c.m5  && c.m5.data  ? c.m5.data.candles  : null;
+    var m15Obj = c.m15 && c.m15.data ? c.m15.data.candles : null;
     return {
-      h1: _candlesToBinanceKlines(h1Obj),
-      h4: _candlesToBinanceKlines(h4Obj),
-      h15: null,
+      h1:    _candlesToBinanceKlines(h1Obj),
+      h4:    _candlesToBinanceKlines(h4Obj),
+      h15:   _candlesToBinanceKlines(m15Obj),
+      m5:    _candlesToBinanceKlines(m5Obj),
+      m1:    _candlesToBinanceKlines(m1Obj),
       daily: _candlesToBinanceKlines(d1Obj),
       sources: {
-        h1: c.h1 ? { source: c.h1.source, fetched_at: c.h1.fetched_at, status: c.h1.status } : null,
-        h4: c.h4 ? { source: c.h4.source, fetched_at: c.h4.fetched_at, status: c.h4.status } : null,
-        d1: c.d1 ? { source: c.d1.source, fetched_at: c.d1.fetched_at, status: c.d1.status } : null,
+        h1:  c.h1  ? { source: c.h1.source,  fetched_at: c.h1.fetched_at,  status: c.h1.status }  : null,
+        h4:  c.h4  ? { source: c.h4.source,  fetched_at: c.h4.fetched_at,  status: c.h4.status }  : null,
+        d1:  c.d1  ? { source: c.d1.source,  fetched_at: c.d1.fetched_at,  status: c.d1.status }  : null,
+        m1:  c.m1  ? { source: c.m1.source,  fetched_at: c.m1.fetched_at,  status: c.m1.status }  : null,
+        m5:  c.m5  ? { source: c.m5.source,  fetched_at: c.m5.fetched_at,  status: c.m5.status }  : null,
+        m15: c.m15 ? { source: c.m15.source, fetched_at: c.m15.fetched_at, status: c.m15.status } : null,
       },
     };
   }
@@ -3250,13 +3266,15 @@
   // to ticker-only, and the matrix renders STALE rather than fake bars.
   async function fetchBinanceData() {
     try {
-      const [ticker24, klines1h, klines4h, klines15m] = await Promise.all([
+      const [ticker24, klines1h, klines4h, klines15m, klines5m, klines1m] = await Promise.all([
         fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT').then(r => { if(!r.ok) throw new Error('Binance unavailable'); return r.json(); }),
         fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=48').then(r => r.json()),
         fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=20').then(r => r.json()),
         fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=16').then(r => r.json()),
+        fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=24').then(r => r.json()).catch(function(){return null;}),
+        fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=30').then(r => r.json()).catch(function(){return null;}),
       ]);
-      updateLiveMarket(ticker24, klines1h, klines4h, klines15m, { source: 'binance-live', mode: 'live' });
+      updateLiveMarket(ticker24, klines1h, klines4h, klines15m, { source: 'binance-live', mode: 'live' }, { m1: Array.isArray(klines1m) ? klines1m : null, m5: Array.isArray(klines5m) ? klines5m : null });
       document.getElementById('live-status').textContent = 'Live (Binance) · ' + new Date().toLocaleTimeString();
       document.getElementById('live-dot').style.background = '#3fb950';
     } catch(e) {
@@ -3313,7 +3331,7 @@
             source: 'artifact',
             mode: 'fallback',
             artifactSources: art.sources,
-          });
+          }, { m1: art.m1, m5: art.m5 });
           const st = document.getElementById('live-status');
           const dt = document.getElementById('live-dot');
           const h1Src = (art.sources.h1 && art.sources.h1.source) || 'artifact';
@@ -3366,7 +3384,7 @@
             source: 'artifact',
             mode: 'artifact-only',
             artifactSources: art.sources,
-          });
+          }, { m1: art.m1, m5: art.m5 });
           const st = document.getElementById('live-status');
           const dt = document.getElementById('live-dot');
           const h1Src = (art.sources.h1 && art.sources.h1.source) || 'artifact';
@@ -3401,17 +3419,24 @@
     return n.toLocaleString('en-US', opts);
   }
 
-  function updateLiveMarket(t, h1, h4, h15, meta) {
+  function updateLiveMarket(t, h1, h4, h15, meta, extras) {
     meta = meta || { source: 'binance-live', mode: 'live' };
+    extras = extras || {};
     // Indicators must use closed candles only.
     //   - In live mode, the last Binance bar is in-progress and is stripped.
     //   - In artifact-fallback mode, the backend has already restricted the
     //     payload to closed bars by construction; we keep them all.
+    //   - The 1m/5m series ALWAYS come from the Phase 2 artifact path
+    //     (Binance live fetches those out-of-band as artifacts), so they
+    //     are treated as already-closed bars regardless of mode.
     const isArtifact = meta.source === 'artifact';
     const stripLive = function (k) { return k ? closedCandlesOnly(k, { includeLive: isArtifact }) : null; };
+    const stripArtifact = function (k) { return k ? closedCandlesOnly(k, { includeLive: true }) : null; };
     const h1c  = stripLive(h1);
     const h4c  = stripLive(h4);
     const h15c = stripLive(h15);
+    const m1c  = stripArtifact(extras.m1 || null);
+    const m5c  = stripArtifact(extras.m5 || null);
     // Partial OHLC is fine: as long as we have either h1 or h4 closed
     // candles, the matrix can render real rows for the available
     // timeframes and STALE for the missing ones. Previously this was an
@@ -3533,9 +3558,11 @@
     const staleRow = function (label, note) {
       return { label: label, trend:'STALE', trendColor:'#8b949e', mom:'—', momColor:'#8b949e', signal:'N/A', sigColor:'#8b949e', note: note || 'OHLC unavailable', score:50 };
     };
-    const tf15 = (h15c && h15c.length >= 3) ? analyzeTF(h15c, '15m') : staleRow('15m', isArtifact ? 'No 15m artifact yet' : 'No 15m feed wired');
-    const tfH1 = (h1c  && h1c.length  >= 3) ? analyzeTF(h1c,  '1h')  : staleRow('1h', '1h OHLC unavailable');
-    const tfH4 = (h4c  && h4c.length  >= 3) ? analyzeTF(h4c,  '4h')  : staleRow('4h', '4h OHLC unavailable');
+    const tfM1  = (m1c  && m1c.length  >= 3) ? analyzeTF(m1c,  '1m')  : staleRow('1m',  '1m OHLC unavailable');
+    const tfM5  = (m5c  && m5c.length  >= 3) ? analyzeTF(m5c,  '5m')  : staleRow('5m',  '5m OHLC unavailable');
+    const tf15  = (h15c && h15c.length >= 3) ? analyzeTF(h15c, '15m') : staleRow('15m', isArtifact ? 'No 15m artifact yet' : 'No 15m feed wired');
+    const tfH1  = (h1c  && h1c.length  >= 3) ? analyzeTF(h1c,  '1h')  : staleRow('1h',  '1h OHLC unavailable');
+    const tfH4  = (h4c  && h4c.length  >= 3) ? analyzeTF(h4c,  '4h')  : staleRow('4h',  '4h OHLC unavailable');
 
     // 30m row derives bias from the last *closed* 1h candle, not the live one.
     const ref30m = (h1c && h1c.length >= 3) ? parseFloat(h1c[h1c.length-3][4]) : NaN;
@@ -3543,7 +3570,6 @@
       ? (price > ref30m ? 'BULLISH' : 'NEUTRAL')
       : 'STALE';
     const bias30Color = bias30 === 'BULLISH' ? '#3fb950' : bias30 === 'STALE' ? '#8b949e' : '#d29922';
-    const has1m5m = false; // No 1m/5m feed wired up — mark as stale rather than asserting bullish.
     const dailyRow = (() => {
       // Prefer the live-ticker 24h change; fall back to artifact-derived
       // change-over-last-24-closed-1h-candles when ticker change is missing.
@@ -3561,11 +3587,13 @@
       if (d == null) return { label:'Daily', trend:'STALE', trendColor:'#8b949e', mom:'—', momColor:'#8b949e', signal:'N/A', sigColor:'#8b949e', note:'24h change unavailable', score:50 };
       return { label:'Daily', trend: d > 0 ? 'BULLISH' : 'BEARISH', trendColor: d > 0 ? '#3fb950' : '#f85149', mom: Math.abs(d) > 2 ? 'Strong' : 'Weak', momColor:'#d29922', signal: d > 0 ? 'BULLISH' : 'BEARISH', sigColor: d > 0 ? '#3fb950' : '#f85149', note: note, score: d > 0 ? 70 : 40 };
     })();
-    // Build rows. Sub-15m timeframes have no real feed so they are reported
-    // as stale rather than hard-coded BULLISH (which the previous build did).
+    // Build rows. 1m/5m/15m timeframes are wired to the Phase 2 candle
+    // artifacts (data/public/candles_{1m,5m,15m}.json). When an artifact
+    // is missing or empty the row falls back to STALE rather than
+    // synthesising data — the closed-candle invariant is preserved.
     const rows = [
-      { label:'1m', trend:'STALE', trendColor:'#8b949e', mom:'—', momColor:'#8b949e', signal:'N/A', sigColor:'#8b949e', note:'No 1m feed wired', score:50 },
-      { label:'5m', trend:'STALE', trendColor:'#8b949e', mom:'—', momColor:'#8b949e', signal:'N/A', sigColor:'#8b949e', note:'No 5m feed wired', score:50 },
+      tfM1,
+      tfM5,
       tf15,
       { label:'30m', trend: bias30, trendColor: bias30Color, mom: bias30 === 'STALE' ? '—' : 'From closed 1h', momColor:'#d29922', signal: bias30 === 'BULLISH' ? 'BUY' : bias30 === 'STALE' ? 'N/A' : 'WAIT', sigColor: bias30Color, note: bias30 === 'STALE' ? 'OHLC unavailable' : 'Closed-candle reference', score: bias30 === 'BULLISH' ? 60 : 50 },
       tfH1,
@@ -5415,8 +5443,8 @@
   // Patches updateLiveMarket so every data fetch feeds the SIIE
   var _origUpdateLiveMarket = window.updateLiveMarket;
   if (typeof _origUpdateLiveMarket === 'function') {
-    window.updateLiveMarket = function(ticker, kl1h, kl4h, kl15m) {
-      _origUpdateLiveMarket(ticker, kl1h, kl4h, kl15m);
+    window.updateLiveMarket = function(ticker, kl1h, kl4h, kl15m, meta, extras) {
+      _origUpdateLiveMarket(ticker, kl1h, kl4h, kl15m, meta, extras);
       // Indicators fed to the learning tick must be on closed candles only.
       var trend = (kl1h && kl1h.length > 1) ? analyzeTrend(_closedOnly(kl1h)) : null;
       learningTick(trend, ticker);

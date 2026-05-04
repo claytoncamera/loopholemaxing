@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Army Link — Overseer Command Nexus</title>
-  <meta name="description" content="Passkey-gated entry surface for the Overseer Command Nexus. Static soft gate. Command, audit, and orchestration view only — no trading execution.">
+  <meta name="description" content="Passkey-gated entry surface for the Overseer Command Nexus. Static soft gate with optional server-side unlock. Command, audit, and orchestration view only — no trading execution.">
   <meta name="robots" content="noindex,nofollow">
   <link rel="stylesheet" href="../styles.css">
   <style>
@@ -83,10 +83,30 @@
     }
     .gate-msg.err  { color: var(--red); }
     .gate-msg.ok   { color: var(--green); }
+    .gate-msg.warn { color: var(--yellow); }
     .gate-meta {
       margin-top: var(--space-lg); font-size: 12px; color: var(--text-muted);
       line-height: 1.65;
     }
+
+    .auth-mode {
+      margin-top: var(--space-md);
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: 11.5px; font-family: var(--font-mono);
+      color: var(--text-muted);
+      padding: 4px 10px; border-radius: 999px;
+      border: 1px solid var(--border-light);
+      background: rgba(255,255,255,.02);
+    }
+    .auth-mode .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--text-muted); display: inline-block;
+    }
+    .auth-mode[data-mode="server"] { color: var(--green); border-color: rgba(63,196,114,.4); }
+    .auth-mode[data-mode="server"] .dot { background: var(--green); }
+    .auth-mode[data-mode="soft"] { color: var(--yellow); border-color: rgba(210,153,34,.4); }
+    .auth-mode[data-mode="soft"] .dot { background: var(--yellow); }
+    .auth-mode[data-mode="probing"] .dot { background: var(--text-muted); }
 
     .disclaimer {
       margin-top: var(--space-lg);
@@ -156,14 +176,22 @@
     </ul></nav>
   </header>
 
-  <section class="nexus-wrap" id="armyLinkRoot" data-army-link-root>
+  <section
+    class="nexus-wrap"
+    id="armyLinkRoot"
+    data-army-link-root
+    data-api-origin="https://hubapi.loopholemaxing.com"
+    data-api-path="/api/v1/army-link/unlock"
+  >
     <span class="nexus-eyebrow">Restricted &mdash; Soft Gate</span>
     <h1>Army Link &mdash; <span>Overseer Command Nexus</span></h1>
     <p class="nexus-sub">
       Passkey-gated creation entry. The Nexus is a command, audit, and orchestration
       surface &mdash; <strong>not a trading or execution venue.</strong> All decisions
-      remain human-approved. This page is served as static HTML on GitHub Pages, so the
-      gate is a client-side soft check, not server-side authorization.
+      remain human-approved. This page is served as static HTML on GitHub Pages. When a
+      server-side unlock endpoint is configured and reachable, the gate validates against
+      it; otherwise it falls back to a client-side soft check that anyone can bypass by
+      reading the source.
     </p>
 
     <!-- Gate -->
@@ -184,18 +212,29 @@
         <button id="gate-submit" class="gate-btn" type="button">Unlock</button>
         <span id="gate-msg" class="gate-msg" role="status" aria-live="polite">Awaiting passkey.</span>
       </div>
+
+      <div class="auth-mode" id="authMode" data-auth-mode data-mode="probing" role="status" aria-live="polite">
+        <span class="dot"></span>
+        <span data-auth-mode-label>Probing auth backend&hellip;</span>
+      </div>
+
       <div class="gate-meta">
-        Passkey is hashed locally (Web Crypto SHA-256) and compared against a stored
-        digest. The plaintext passkey never leaves this device, is never logged, and is
-        never persisted. Unlock state is stored only in <code>sessionStorage</code> for
-        this tab.
+        When the server endpoint is reachable, the passkey is sent over HTTPS to the Hub
+        unlock API and validated server-side; the server returns the Nexus URL only on
+        success. When the server is unavailable or not configured, the gate falls back to
+        a local SHA-256 comparison &mdash; the plaintext passkey never leaves this device,
+        is never logged, and is never persisted. Unlock state is stored only in
+        <code>sessionStorage</code> for this tab.
       </div>
 
       <div class="disclaimer">
-        <strong>Soft-gate disclaimer.</strong> This is a static GitHub Pages site.
-        The passkey check runs entirely in your browser and can be bypassed by anyone
-        willing to read the source. Treat it as a friction layer, not as access control.
-        No secrets, credentials, or trading capabilities are exposed behind this gate.
+        <strong>Soft-gate disclaimer.</strong> When server auth is not active, this is a
+        static GitHub Pages site and the passkey check runs entirely in your browser; it
+        can be bypassed by anyone willing to read the source. Treat it as a friction
+        layer, not as access control. No secrets, credentials, or trading capabilities
+        are exposed behind this gate. The Nexus is a command, audit, and orchestration
+        surface &mdash; <strong>no trading execution, no order routing, no broker
+        connection.</strong>
       </div>
     </div>
 
@@ -238,12 +277,13 @@
       </div>
 
       <div class="nexus-config" data-nexus-config>
-        <strong>Nexus URL configuration.</strong> The actual Nexus endpoint is not
-        committed in this repo. To wire it up, set
-        <code>window.OVERSEER_NEXUS_URL</code> in a deploy-only override (or update
-        the <code>data-nexus-url</code> attribute on the link below) to the real
-        endpoint. Until then, the link above is an inert placeholder
-        (<code>about:blank</code>).
+        <strong>Nexus URL configuration.</strong> When the server endpoint authenticates
+        the passkey, it returns the canonical <code>OVERSEER_NEXUS_URL</code> in the
+        unlock response and the link above is set to that value. In the soft-gate
+        fallback path, the link uses <code>window.OVERSEER_NEXUS_URL</code> or the
+        <code>data-nexus-url</code> attribute on the link if either is configured;
+        otherwise it remains an inert placeholder (<code>about:blank</code>) and a click
+        surfaces a truthful "not configured" message rather than pretending to be live.
       </div>
     </div>
   </section>
@@ -255,17 +295,26 @@
 
   <script>
     /**
-     * Army Link / Overseer Command Nexus — soft gate.
+     * Army Link / Overseer Command Nexus — gate with server-mode + soft-gate fallback.
      *
      * SECURITY MODEL (read this before changing anything):
-     *  - This is a STATIC site on GitHub Pages. There is no server.
-     *  - The passkey is never stored, never logged, and never sent over the network.
-     *  - We compare SHA-256(input) against a hex digest baked into the page.
-     *    The digest is irreversible without brute-force; we still treat this only
-     *    as a friction layer, not as real access control.
+     *  - This is a STATIC site on GitHub Pages. There is no server here.
+     *  - When a server-side unlock endpoint (Hub API) is configured AND reachable, the
+     *    gate posts the passkey over HTTPS to that endpoint. The server validates and,
+     *    on success, returns { ok: true, nexus_url: "..." }. Only then do we expose the
+     *    Nexus link, set to the server-returned URL.
+     *  - When the server endpoint is unavailable / not configured / probe fails, we
+     *    fall back to a CLIENT-SIDE soft check: SHA-256(input) compared against a digest
+     *    baked into the page. The UI clearly labels this state as soft-gate / "server
+     *    auth not active yet". We never pretend a placeholder Nexus URL is real.
+     *  - The plaintext passkey is never stored, never logged, and never persisted in the
+     *    repo. The bundle never contains the plaintext — only the SHA-256 digest.
+     *  - We compare the local digest in constant time and use no `console.log` of input.
      *  - Unlock state is per-tab (sessionStorage), not persistent.
-     *  - No `console.log` of input, ever. No analytics on input.
-     *  - No `event.preventDefault` form submission that could leak via URL/referrer.
+     *  - On any server response other than a 2xx with ok:true, the gate fails CLOSED:
+     *    we show "incorrect passkey" / "server rejected" and do NOT silently fall back
+     *    to soft mode. Soft mode only applies when the server endpoint is unreachable
+     *    BEFORE submission (probe failure / network error / no endpoint configured).
      */
     (function () {
       'use strict';
@@ -273,7 +322,9 @@
       // SHA-256 of the agreed passkey. Plaintext is intentionally absent from this repo.
       var EXPECTED_DIGEST = 'c93bb622e9a68df1e5c5540a25231246f31dfa8e911d7983adda1ed6dab35d8d';
       var SESSION_KEY = 'army_link_unlocked_v1';
+      var SESSION_NEXUS_KEY = 'army_link_nexus_url_v1';
 
+      var root      = document.getElementById('armyLinkRoot');
       var gateCard  = document.getElementById('gateCard');
       var panel     = document.getElementById('nexusPanel');
       var input     = document.getElementById('passkey-input');
@@ -281,34 +332,123 @@
       var msg       = document.getElementById('gate-msg');
       var relockBtn = document.getElementById('gate-relock');
       var nexusLink = document.getElementById('nexus-open');
+      var authMode  = document.getElementById('authMode');
+      var authModeLabel = authMode ? authMode.querySelector('[data-auth-mode-label]') : null;
+
+      // Resolve API endpoint. Order of precedence:
+      //   1. window.ARMY_LINK_API_ORIGIN / window.ARMY_LINK_API_PATH (deploy-time override)
+      //   2. data-api-origin / data-api-path attributes on the root element
+      //   3. defaults (https://hubapi.loopholemaxing.com + /api/v1/army-link/unlock)
+      function resolveApiUrl() {
+        var origin =
+          (typeof window !== 'undefined' && window.ARMY_LINK_API_ORIGIN) ||
+          (root && root.getAttribute('data-api-origin')) ||
+          'https://hubapi.loopholemaxing.com';
+        var path =
+          (typeof window !== 'undefined' && window.ARMY_LINK_API_PATH) ||
+          (root && root.getAttribute('data-api-path')) ||
+          '/api/v1/army-link/unlock';
+        if (!/^https?:\/\//i.test(origin)) return null;
+        if (path.charAt(0) !== '/') path = '/' + path;
+        return origin.replace(/\/+$/, '') + path;
+      }
+
+      // Server availability state machine. Modes:
+      //   'probing' — initial, before we know
+      //   'server'  — endpoint reachable, will validate server-side
+      //   'soft'    — endpoint unavailable; falls back to client-side hash compare
+      var serverMode = 'probing';
 
       function setMsg(text, kind) {
         msg.textContent = text;
-        msg.classList.remove('err', 'ok');
+        msg.classList.remove('err', 'ok', 'warn');
         if (kind) msg.classList.add(kind);
       }
 
-      function unlock() {
+      function setAuthMode(mode, label) {
+        serverMode = mode;
+        if (!authMode) return;
+        authMode.setAttribute('data-mode', mode);
+        if (authModeLabel) authModeLabel.textContent = label;
+      }
+
+      // Probe the server unlock endpoint without sending a passkey. We make a lightweight
+      // OPTIONS/GET-style request; any successful network response (even 401/405) means
+      // the endpoint exists and we should require server-mode. Network/CORS errors mean
+      // the endpoint is unreachable and we fall back to soft mode.
+      async function probeServer() {
+        var url = resolveApiUrl();
+        if (!url) {
+          setAuthMode('soft', 'Server auth not configured — soft gate only.');
+          return;
+        }
+        if (typeof fetch !== 'function') {
+          setAuthMode('soft', 'Server auth not active yet — soft gate only.');
+          return;
+        }
+        var controller = (typeof AbortController === 'function') ? new AbortController() : null;
+        var timer = controller ? setTimeout(function () { controller.abort(); }, 4000) : null;
+        try {
+          var resp = await fetch(url, {
+            method: 'OPTIONS',
+            mode: 'cors',
+            cache: 'no-store',
+            credentials: 'omit',
+            signal: controller ? controller.signal : undefined
+          });
+          if (resp && (resp.ok || (resp.status >= 200 && resp.status < 500))) {
+            setAuthMode('server', 'Server auth active — passkey validated by Hub API.');
+          } else {
+            setAuthMode('soft', 'Server auth not active yet — soft gate only.');
+          }
+        } catch (e) {
+          setAuthMode('soft', 'Server auth not active yet — soft gate only.');
+        } finally {
+          if (timer) clearTimeout(timer);
+        }
+      }
+
+      function applyNexusUrl(url) {
+        if (url && /^https?:\/\//i.test(url)) {
+          nexusLink.setAttribute('href', url);
+          nexusLink.removeAttribute('aria-disabled');
+          return true;
+        }
+        nexusLink.setAttribute('href', 'about:blank');
+        nexusLink.setAttribute('aria-disabled', 'true');
+        nexusLink.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          alert(
+            'Overseer Nexus URL is not configured yet. The server-side unlock endpoint ' +
+            'is not active, and no client-side override is set. This is a placeholder, ' +
+            'not a real Nexus link.'
+          );
+        });
+        return false;
+      }
+
+      function unlock(serverNexusUrl) {
         gateCard.style.display = 'none';
         panel.classList.add('is-unlocked');
         panel.setAttribute('aria-hidden', 'false');
 
-        // Wire optional runtime-configured Nexus URL.
-        var configured = (typeof window !== 'undefined' && window.OVERSEER_NEXUS_URL) || nexusLink.getAttribute('data-nexus-url') || '';
-        if (configured && /^https?:\/\//i.test(configured)) {
-          nexusLink.setAttribute('href', configured);
-        } else {
-          nexusLink.setAttribute('href', 'about:blank');
-          nexusLink.setAttribute('aria-disabled', 'true');
-          nexusLink.addEventListener('click', function (ev) {
-            ev.preventDefault();
-            alert('Nexus URL not configured yet. Set window.OVERSEER_NEXUS_URL or data-nexus-url on the link.');
-          });
-        }
+        // 1) Server-returned URL wins.
+        // 2) Otherwise: cached server URL from session.
+        // 3) Otherwise: window.OVERSEER_NEXUS_URL or data-nexus-url (soft-gate fallback).
+        var cached = '';
+        try { cached = sessionStorage.getItem(SESSION_NEXUS_KEY) || ''; } catch (e) { /* ignore */ }
+        var configured =
+          serverNexusUrl ||
+          cached ||
+          (typeof window !== 'undefined' && window.OVERSEER_NEXUS_URL) ||
+          (nexusLink && nexusLink.getAttribute('data-nexus-url')) ||
+          '';
+        applyNexusUrl(configured);
       }
 
       function relock() {
         try { sessionStorage.removeItem(SESSION_KEY); } catch (e) { /* ignore */ }
+        try { sessionStorage.removeItem(SESSION_NEXUS_KEY); } catch (e) { /* ignore */ }
         panel.classList.remove('is-unlocked');
         panel.setAttribute('aria-hidden', 'true');
         gateCard.style.display = '';
@@ -338,6 +478,65 @@
         return diff === 0;
       }
 
+      async function serverUnlock(passkey) {
+        var url = resolveApiUrl();
+        if (!url || typeof fetch !== 'function') {
+          return { ok: false, reason: 'no-endpoint' };
+        }
+        var controller = (typeof AbortController === 'function') ? new AbortController() : null;
+        var timer = controller ? setTimeout(function () { controller.abort(); }, 8000) : null;
+        try {
+          var resp = await fetch(url, {
+            method: 'POST',
+            mode: 'cors',
+            cache: 'no-store',
+            credentials: 'omit',
+            headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+            body: JSON.stringify({ passkey: passkey }),
+            signal: controller ? controller.signal : undefined
+          });
+          if (!resp) return { ok: false, reason: 'no-response' };
+          if (resp.status === 401 || resp.status === 403) {
+            return { ok: false, reason: 'rejected' };
+          }
+          if (!resp.ok) {
+            return { ok: false, reason: 'http-' + resp.status };
+          }
+          var body = null;
+          try { body = await resp.json(); } catch (e) { body = null; }
+          if (!body || body.ok !== true) {
+            return { ok: false, reason: 'bad-body' };
+          }
+          var nexus = body.nexus_url || body.OVERSEER_NEXUS_URL || '';
+          if (typeof nexus !== 'string' || !/^https?:\/\//i.test(nexus)) {
+            return { ok: false, reason: 'bad-nexus-url' };
+          }
+          return { ok: true, nexus_url: nexus };
+        } catch (e) {
+          return { ok: false, reason: 'network' };
+        } finally {
+          if (timer) clearTimeout(timer);
+        }
+      }
+
+      async function softUnlock(passkey) {
+        if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
+          return { ok: false, reason: 'no-crypto' };
+        }
+        var enc = new TextEncoder();
+        var data = enc.encode(passkey);
+        var digestBuf = await window.crypto.subtle.digest('SHA-256', data);
+        try {
+          var view = new Uint8Array(data.buffer || data);
+          for (var i = 0; i < view.length; i++) view[i] = 0;
+        } catch (e) { /* ignore */ }
+        var hex = bufToHex(digestBuf);
+        if (constantTimeEqual(hex, EXPECTED_DIGEST)) {
+          return { ok: true };
+        }
+        return { ok: false, reason: 'mismatch' };
+      }
+
       async function tryUnlock() {
         if (!input) return;
         var value = input.value;
@@ -348,36 +547,52 @@
           setMsg('Enter a passkey.', 'err');
           return;
         }
-        if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
-          setMsg('Web Crypto unavailable in this browser.', 'err');
-          return;
-        }
 
         btn.disabled = true;
         setMsg('Verifying…', null);
 
         try {
-          var enc = new TextEncoder();
-          var data = enc.encode(value);
-          // Wipe the local reference ASAP.
-          value = null;
-          var digestBuf = await window.crypto.subtle.digest('SHA-256', data);
-          // Best-effort wipe of the encoded bytes.
-          try {
-            var view = new Uint8Array(data.buffer || data);
-            for (var i = 0; i < view.length; i++) view[i] = 0;
-          } catch (e) { /* ignore */ }
-          var hex = bufToHex(digestBuf);
+          if (serverMode === 'server') {
+            var sres = await serverUnlock(value);
+            // Wipe local reference ASAP.
+            value = null;
+            if (sres.ok) {
+              try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) { /* ignore */ }
+              try { sessionStorage.setItem(SESSION_NEXUS_KEY, sres.nexus_url); } catch (e) { /* ignore */ }
+              setMsg('Unlocked (server).', 'ok');
+              unlock(sres.nexus_url);
+              return;
+            }
+            // Server reachable but response was not a clean ok. Fail CLOSED — do not
+            // silently fall back to soft mode after sending the passkey.
+            if (sres.reason === 'rejected' || sres.reason === 'bad-body' || sres.reason === 'bad-nexus-url' || /^http-/.test(sres.reason || '')) {
+              setMsg('Incorrect passkey or server rejected request.', 'err');
+              return;
+            }
+            // Network died mid-request: tell the user truthfully; don't pretend success.
+            setMsg('Server auth unreachable mid-request. Try again.', 'err');
+            return;
+          }
 
-          if (constantTimeEqual(hex, EXPECTED_DIGEST)) {
+          // Soft-gate fallback (server endpoint unavailable / not configured).
+          if (!window.crypto || !window.crypto.subtle || typeof TextEncoder === 'undefined') {
+            value = null;
+            setMsg('Web Crypto unavailable in this browser.', 'err');
+            return;
+          }
+          var lres = await softUnlock(value);
+          value = null;
+          if (lres.ok) {
             try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) { /* ignore */ }
-            setMsg('Unlocked.', 'ok');
-            unlock();
+            setMsg('Unlocked (soft gate — server auth not active yet).', 'ok');
+            unlock(null);
+          } else if (lres.reason === 'no-crypto') {
+            setMsg('Web Crypto unavailable in this browser.', 'err');
           } else {
             setMsg('Incorrect passkey.', 'err');
           }
         } catch (err) {
-          setMsg('Crypto error. Reload and retry.', 'err');
+          setMsg('Unexpected error. Reload and retry.', 'err');
         } finally {
           btn.disabled = false;
         }
@@ -397,10 +612,13 @@
       // Restore unlock if user already unlocked in this tab session.
       try {
         if (sessionStorage.getItem(SESSION_KEY) === '1') {
-          unlock();
+          unlock(null);
           setMsg('Session unlocked.', 'ok');
         }
       } catch (e) { /* ignore */ }
+
+      // Probe server availability so the badge reflects truth before any submit.
+      probeServer();
     })();
   </script>
 </body>

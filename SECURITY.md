@@ -9,10 +9,15 @@ The repository is published as a static site (GitHub Pages). Anything committed
 here is reachable by anyone on the open internet, including:
 
 - `btc-brain/index.html`
-- `index.html`, `nba-brain/`, `vault/`, `ultron/`, `formix/`, `uae/`
+- `index.html`, `mms-hub/`, `nba-brain/`, `vault/`, `ultron/`, `formix/`, `uae/`
 - compiled JS bundles inside `nba-brain/assets/`
 
 Never commit a value you would not paste into a public chatroom.
+
+`mms-hub/` is only a public gateway page. The real MMS HUB must stay on an
+authenticated server-side service such as `https://hub.loopholemaxing.com`;
+do not copy control-center HTML, runtime data, API responses, or credentials
+into this static repository.
 
 ## Secret handling
 

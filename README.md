@@ -8,6 +8,11 @@ Live at **[loopholemaxing.com](https://loopholemaxing.com)**
 
 ## Current Creations
 
+### [MMS HUB](https://loopholemaxing.com/mms-hub/)
+Restricted Money Making Solutions control center doorway. The public site only
+lists the creation; the live HUB runs behind server-side authentication at the
+private service URL.
+
 ### [BTC Intelligence Brain](https://loopholemaxing.com/btc-brain/)
 A comprehensive, living Bitcoin research and trading intelligence system.
 
@@ -52,6 +57,7 @@ loopholemaxing/
 ├── styles.css                          # Shared stylesheet (both pages)
 ├── 404.html                            # Custom 404 with routing fallback
 ├── CNAME                               # Custom domain: loopholemaxing.com
+├── mms-hub/                            # Restricted MMS HUB gateway page
 ├── .nojekyll                           # Disable Jekyll processing
 ├── README.md
 ├── .gitignore

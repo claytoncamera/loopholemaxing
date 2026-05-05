@@ -23,7 +23,7 @@ PATTERNS=(
 )
 
 FAIL=0
-SCAN_GLOB=( "btc-brain/index.html" "index.html" "ultron/index.html" "vault/index.html" "nba-brain" "formix" "uae" )
+SCAN_GLOB=( "btc-brain/index.html" "index.html" "mms-hub" "ultron/index.html" "vault/index.html" "nba-brain" "formix" "uae" )
 
 for entry in "${PATTERNS[@]}"; do
   name="${entry%%|*}"

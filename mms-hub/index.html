@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>MMS HUB — Private Control Center</title>
+  <meta name="description" content="Restricted MMS HUB entry point. Server-side login required.">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      background:
+        radial-gradient(circle at top, rgba(88,166,255,.1), transparent 34rem),
+        var(--bg-primary);
+    }
+
+    .gateway {
+      width: min(100%, 760px);
+      margin: 0 auto;
+      padding: 128px var(--space-lg) var(--space-4xl);
+      display: grid;
+      align-content: center;
+    }
+
+    .gateway-card {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: clamp(24px, 6vw, 48px);
+      background: rgba(22, 27, 34, .92);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .32);
+    }
+
+    .gateway-mark {
+      display: inline-grid;
+      place-items: center;
+      width: 48px;
+      height: 48px;
+      margin-bottom: var(--space-lg);
+      border: 1px solid rgba(88,166,255,.26);
+      border-radius: 8px;
+      background: rgba(88,166,255,.12);
+      color: var(--accent-cyan);
+      font: 800 12px/1 var(--font-mono);
+    }
+
+    .gateway-card h1 {
+      font-size: clamp(34px, 7vw, 58px);
+      line-height: 1.04;
+      margin-bottom: var(--space-md);
+    }
+
+    .gateway-card p {
+      color: var(--text-secondary);
+      font-size: 16px;
+      max-width: 620px;
+      margin-bottom: var(--space-lg);
+    }
+
+    .gate-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-xl);
+    }
+
+    .gate-pill {
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 5px 9px;
+      background: rgba(255,255,255,.04);
+      color: var(--text-muted);
+      font: 700 11px/1 var(--font-mono);
+    }
+
+    .gateway-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm);
+    }
+
+    @media (max-width: 640px) {
+      .gateway {
+        padding-top: 96px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <a href="/" class="logo">Loopholemaxing</a>
+    <nav><ul class="nav-links">
+      <li><a href="/#creations">Creations</a></li>
+      <li><a href="/" rel="nofollow">Home</a></li>
+    </ul></nav>
+  </header>
+
+  <main class="gateway">
+    <section class="gateway-card">
+      <div class="gateway-mark">MMS</div>
+      <p class="section-label">Restricted Creation</p>
+      <h1>MMS HUB</h1>
+      <p>Private Money Making Solutions control center. The public site only links to the entry point; the actual HUB requires server-side login before any dashboard or API route opens.</p>
+      <div class="gate-list">
+        <span class="gate-pill">server-side auth</span>
+        <span class="gate-pill">no indexing</span>
+        <span class="gate-pill">no public API</span>
+        <span class="gate-pill">live trading locked</span>
+      </div>
+      <div class="gateway-actions">
+        <a class="btn-primary" href="https://hub.loopholemaxing.com/" rel="nofollow noopener">Open Secure HUB &rarr;</a>
+        <a class="btn-secondary" href="/">Back to Creations</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>Loopholemaxing.com &mdash; Clayton Camera &mdash; 2026</div>
+    <div class="footer-tagline">Private systems stay private.</div>
+  </footer>
+</body>
+</html>

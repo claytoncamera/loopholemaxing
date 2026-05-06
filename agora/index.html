@@ -184,10 +184,135 @@
       font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: var(--space-2xl); }
     .a-disclaimer strong { color: var(--agora-amber); }
 
+    /* ───────── Creation Engine / Atlas ───────── */
+    .ce-section { max-width: var(--max-width); margin: 0 auto; padding: var(--space-2xl) var(--space-lg); }
+    .ce-eyebrow {
+      display:inline-block; font-family: var(--font-mono); font-size: 11px;
+      letter-spacing: .18em; text-transform: uppercase; color: var(--agora-amber);
+      border: 1px solid var(--agora-edge); padding: 5px 12px; border-radius: 999px;
+      background: rgba(247,185,85,.05); margin-bottom: 14px;
+    }
+    .ce-title { font-size: clamp(24px, 3.5vw, 34px); font-weight: 800; letter-spacing:-.02em;
+      color: var(--text-primary); margin-bottom: 10px; max-width: 22ch; }
+    .ce-title span {
+      background: linear-gradient(135deg, var(--agora-amber), #ffd986 60%, #d2a8ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .ce-lede { color: var(--text-secondary); max-width: 720px; line-height: 1.65;
+      font-size: 15px; margin-bottom: var(--space-2xl); }
+
+    .ce-constellation { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: var(--space-md); }
+    .ce-node {
+      background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      border-radius: 12px; padding: var(--space-md) var(--space-lg);
+      display: flex; flex-direction: column; gap: 8px; position: relative;
+      transition: all .2s ease;
+    }
+    .ce-node:hover { border-color: var(--agora-edge); transform: translateY(-2px);
+      box-shadow: 0 8px 24px -10px rgba(247,185,85,.18); }
+    .ce-node.is-public { border-left: 3px solid var(--agora-amber); }
+    .ce-node.is-restricted { border-left: 3px solid #a78bfa; }
+    .ce-node.is-api { border-left: 3px solid #58a6ff; }
+    .ce-node-head { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
+    .ce-node-name { font-size: 16px; font-weight: 700; color: var(--text-primary); }
+    .ce-node-kind {
+      font-family: var(--font-mono); font-size: 10px; letter-spacing:.1em;
+      text-transform: uppercase; color: var(--text-muted);
+      padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,.04);
+      flex-shrink: 0;
+    }
+    .ce-node.is-public  .ce-node-kind { color: var(--agora-amber); background: rgba(247,185,85,.1); }
+    .ce-node.is-restricted .ce-node-kind { color: #a78bfa; background: rgba(167,139,250,.1); }
+    .ce-node.is-api     .ce-node-kind { color: #58a6ff; background: rgba(88,166,255,.1); }
+    .ce-node-role { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing:.04em; }
+    .ce-node-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.55; flex: 1; }
+    .ce-node-metrics { display:flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+    .ce-node-metric {
+      font-family: var(--font-mono); font-size: 10px;
+      padding: 2px 7px; border-radius: 4px;
+      background: rgba(255,255,255,.04); color: var(--text-muted);
+    }
+    .ce-node-link { font-size: 12px; color: var(--agora-amber); margin-top: 4px; }
+
+    /* Monetization */
+    .ce-offers { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: var(--space-md); }
+    .ce-offer {
+      background: linear-gradient(180deg, rgba(247,185,85,.04), rgba(255,255,255,.01));
+      border: 1px solid var(--agora-edge); border-radius: 12px;
+      padding: var(--space-lg); display: flex; flex-direction: column; gap: 10px;
+    }
+    .ce-offer-title { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+    .ce-offer-tag { font-family: var(--font-mono); font-size: 10px;
+      letter-spacing: .12em; text-transform: uppercase; color: var(--agora-amber); }
+    .ce-offer-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.6; flex: 1; }
+    .ce-offer-status {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--text-muted);
+    }
+    .ce-offer-status::before {
+      content: ""; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--agora-amber); box-shadow: 0 0 6px var(--agora-amber);
+    }
+    .ce-offer-cta {
+      display: inline-flex; align-items: center; justify-content: center;
+      padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600;
+      background: rgba(247,185,85,.1); color: var(--agora-amber);
+      border: 1px solid var(--agora-edge); transition: all .15s ease;
+      text-decoration: none; margin-top: 4px;
+    }
+    .ce-offer-cta:hover { background: rgba(247,185,85,.18); transform: translateY(-1px); }
+
+    .ce-payment-note {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em;
+      color: var(--text-muted); text-align: center; margin-top: var(--space-lg);
+    }
+
+    /* Roadmap */
+    .ce-roadmap { display: grid; gap: var(--space-sm); }
+    .ce-road-row {
+      display: grid; grid-template-columns: 110px 1fr; gap: var(--space-md);
+      padding: var(--space-md) var(--space-lg);
+      background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      border-radius: 10px; align-items: start;
+    }
+    .ce-road-phase {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em;
+      text-transform: uppercase; color: var(--agora-amber);
+      padding: 3px 10px; border-radius: 4px; width: fit-content;
+      background: rgba(247,185,85,.08); border: 1px solid var(--agora-edge);
+    }
+    .ce-road-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .ce-road-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+
+    /* Trust */
+    .ce-trust {
+      background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      border-radius: 12px; padding: var(--space-xl);
+    }
+    .ce-trust-principle {
+      font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--agora-amber);
+      margin-bottom: var(--space-md);
+    }
+    .ce-trust-list { list-style: none; padding: 0; margin: 0;
+      display: grid; gap: 10px; }
+    .ce-trust-list li {
+      font-size: 14px; color: var(--text-secondary); line-height: 1.6;
+      padding-left: 22px; position: relative;
+    }
+    .ce-trust-list li::before {
+      content: "✓"; position: absolute; left: 0; top: 0;
+      color: var(--agora-amber); font-weight: 700;
+    }
+
     @media (max-width: 768px) {
       .a-hero { padding: 90px var(--space-md) var(--space-2xl); }
       .a-grid { grid-template-columns: 1fr; }
       .a-reader { padding: var(--space-lg); font-size: 15px; }
+      .ce-road-row { grid-template-columns: 1fr; gap: 8px; }
     }
   </style>
 </head>
@@ -200,6 +325,8 @@
     <nav><ul class="nav-links">
       <li><a href="/#creations">Creations</a></li>
       <li><a href="/agora/">Agora</a></li>
+      <li><a href="#creation-engine">Engine</a></li>
+      <li><a href="#creation-monetization">Founding</a></li>
       <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
     </ul></nav>
   </header>
@@ -219,6 +346,40 @@
   <main id="agora-main">
     <!-- Routed views inject here -->
   </main>
+
+  <!-- ───────── Creation Engine / Atlas (index-only) ───────── -->
+  <div id="creation-engine-wrap">
+    <section class="ce-section" id="creation-engine">
+      <div class="ce-eyebrow">&#9679; Creation Engine &middot; Atlas</div>
+      <h2 class="ce-title">Agora is the first public wing of a <span>larger Creation Engine.</span></h2>
+      <p class="ce-lede" id="ce-tagline">Loading constellation…</p>
+      <div class="ce-constellation" id="ce-constellation"></div>
+    </section>
+
+    <section class="ce-section" id="creation-monetization">
+      <div class="ce-eyebrow">&#9679; Founding Access &middot; Non-payment</div>
+      <h2 class="ce-title">Monetization-ready, not <span>payment-ready.</span></h2>
+      <p class="ce-lede" id="ce-monetization-principle">Loading…</p>
+      <div class="ce-offers" id="ce-offers"></div>
+      <p class="ce-payment-note">No checkout. No Stripe. No card on file. Every CTA is request-access only — a mailto, a waitlist, an inquiry.</p>
+    </section>
+
+    <section class="ce-section" id="creation-roadmap">
+      <div class="ce-eyebrow">&#9679; Powerhouse Roadmap</div>
+      <h2 class="ce-title">Reader. Citation Ledger. <span>Influence Graph. Dossiers. API.</span></h2>
+      <p class="ce-lede">A small number of phases, each one source-backed and shippable on its own. We will not promise a feature we cannot trace to a source.</p>
+      <div class="ce-roadmap" id="ce-roadmap"></div>
+    </section>
+
+    <section class="ce-section" id="creation-trust">
+      <div class="ce-eyebrow">&#9679; Trust Bar</div>
+      <h2 class="ce-title" id="ce-trust-title">Public-domain first. <span>Citation-ledger verified.</span></h2>
+      <div class="ce-trust">
+        <div class="ce-trust-principle" id="ce-trust-principle">Loading…</div>
+        <ul class="ce-trust-list" id="ce-trust-list"></ul>
+      </div>
+    </section>
+  </div>
 
   <footer class="site-footer">
     <div>Agora Alpha &mdash; a Loopholemaxing Library of Minds creation &middot; <a href="/">Home</a> &middot; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
@@ -448,10 +609,90 @@
     function route() {
       const h = location.hash || '#/';
       const m = h.match(/^#\/(author|work)\/([\w-]+)$/);
-      if (!m) { renderIndex(); return; }
+      const ceWrap = document.getElementById('creation-engine-wrap');
+      if (!m) {
+        if (ceWrap) ceWrap.style.display = '';
+        renderIndex();
+        return;
+      }
+      // Detail routes: hide the Creation Engine sections so the focus is the work.
+      if (ceWrap) ceWrap.style.display = 'none';
       if (m[1] === 'author') renderAuthor(m[2]);
       else if (m[1] === 'work') renderWork(m[2]);
       else renderIndex();
+    }
+
+    function renderCreationEngine(ce) {
+      if (!ce) return;
+      const tagline = document.getElementById('ce-tagline');
+      if (tagline) tagline.textContent = ce.description || ce.tagline || '';
+
+      // Constellation
+      const wrap = document.getElementById('ce-constellation');
+      if (wrap && Array.isArray(ce.wings)) {
+        wrap.innerHTML = ce.wings.map(w => {
+          const cls = 'is-' + (w.kind || 'public');
+          const metrics = (w.metrics || []).map(m => `<span class="ce-node-metric">${esc(m)}</span>`).join('');
+          const link = w.url ? `<a class="ce-node-link" href="${esc(w.url)}">Open ${esc(w.name.split(/\s+[—-]\s+/)[0])} &rarr;</a>` : '';
+          return `
+            <div class="ce-node ${cls}">
+              <div class="ce-node-head">
+                <div class="ce-node-name">${esc(w.name)}</div>
+                <span class="ce-node-kind">${esc(w.kind || '')}</span>
+              </div>
+              <div class="ce-node-role">${esc(w.role || '')}</div>
+              <div class="ce-node-summary">${esc(w.summary || '')}</div>
+              <div class="ce-node-metrics">${metrics}</div>
+              ${link}
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Monetization
+      const mon = ce.monetization || {};
+      const principle = document.getElementById('ce-monetization-principle');
+      if (principle) principle.textContent = mon.principle || '';
+      const offers = document.getElementById('ce-offers');
+      if (offers && Array.isArray(mon.offers)) {
+        offers.innerHTML = mon.offers.map(o => {
+          const subj = encodeURIComponent(o.mailto_subject || o.title);
+          const body = encodeURIComponent('Hi — I would like to ' + (o.cta_label || 'request access') + '.\n\nUse case / context:\n');
+          const href = `mailto:agora@loopholemaxing.com?subject=${subj}&body=${body}`;
+          return `
+            <div class="ce-offer" data-offer-id="${esc(o.id)}">
+              <div class="ce-offer-tag">${esc(o.tagline || '')}</div>
+              <div class="ce-offer-title">${esc(o.title)}</div>
+              <div class="ce-offer-summary">${esc(o.summary || '')}</div>
+              <div class="ce-offer-status">${esc(o.status || 'request-access')}</div>
+              <a class="ce-offer-cta" href="${href}" rel="nofollow">${esc(o.cta_label || 'Request Access')} &rarr;</a>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Roadmap
+      const road = document.getElementById('ce-roadmap');
+      if (road && Array.isArray(ce.roadmap)) {
+        road.innerHTML = ce.roadmap.map(r => `
+          <div class="ce-road-row">
+            <span class="ce-road-phase">${esc(r.phase)}</span>
+            <div>
+              <div class="ce-road-title">${esc(r.title)}</div>
+              <div class="ce-road-summary">${esc(r.summary || '')}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Trust
+      const trust = ce.trust || {};
+      const tp = document.getElementById('ce-trust-principle');
+      if (tp) tp.textContent = trust.principle || '';
+      const tl = document.getElementById('ce-trust-list');
+      if (tl && Array.isArray(trust.promises)) {
+        tl.innerHTML = trust.promises.map(p => `<li>${esc(p)}</li>`).join('');
+      }
     }
 
     function loadCatalog() {
@@ -466,10 +707,17 @@
         return r.json();
       }).catch(() => null);
     }
+    function loadCreations() {
+      return fetch('data/creations.json').then(r => {
+        if (!r.ok) throw new Error('creations HTTP ' + r.status);
+        return r.json();
+      }).catch(() => null);
+    }
 
-    Promise.all([loadCatalog(), loadLedger()]).then(([cat, led]) => {
+    Promise.all([loadCatalog(), loadLedger(), loadCreations()]).then(([cat, led, ce]) => {
       CATALOG = cat;
       LEDGER = led;
+      renderCreationEngine(ce);
       window.addEventListener('hashchange', route);
       route();
     }).catch(err => {

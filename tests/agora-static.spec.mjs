@@ -116,5 +116,66 @@ if (agora.includes('Agora Alpha') && agora.includes('Library of Minds')) {
   fail('agora page branding', 'product name missing');
 }
 
+// 5. Creation Engine / Atlas section
+const engineMarkers = [
+  'creation-engine',
+  'creation-monetization',
+  'creation-roadmap',
+  'creation-trust',
+  'data/creations.json'
+];
+let engineMissing = engineMarkers.filter(m => !agora.includes(m));
+if (engineMissing.length === 0) {
+  ok('agora page has Creation Engine sections (engine, monetization, roadmap, trust) wired to creations.json');
+} else {
+  fail('agora Creation Engine section', `missing markers: ${engineMissing.join(', ')}`);
+}
+
+// 6. Creation registry data file
+let creations;
+try {
+  creations = JSON.parse(read('agora/data/creations.json'));
+  ok('creations.json parses');
+} catch (e) {
+  fail('creations.json parses', e.message);
+}
+if (creations) {
+  // Constellation must include Agora plus the other preserved creations
+  if (!Array.isArray(creations.wings) || creations.wings.length < 6) {
+    fail('creations.wings length', `expected >= 6, got ${creations.wings && creations.wings.length}`);
+  } else {
+    ok(`constellation has ${creations.wings.length} creations`);
+  }
+  const slugs = new Set((creations.wings || []).map(w => w.slug));
+  for (const required of ['agora', 'btc-brain', 'uae']) {
+    if (slugs.has(required)) ok(`constellation includes ${required}`);
+    else fail('constellation includes ' + required, 'missing — existing creation must be preserved');
+  }
+
+  // Monetization offers — non-payment primitives required by the brief
+  const offers = (creations.monetization && creations.monetization.offers) || [];
+  const offerIds = new Set(offers.map(o => o.id));
+  for (const expected of ['founding_circle_interest', 'api_access_interest', 'dossier_interest', 'private_archive_interest']) {
+    if (offerIds.has(expected)) ok(`monetization offer ${expected} present`);
+    else fail('monetization offer ' + expected, 'missing');
+  }
+
+  // No real-payment processing language allowed in the data
+  const blob = JSON.stringify(creations).toLowerCase();
+  const forbidden = ['stripe', 'checkout.session', 'paypal', 'card_number', 'cvv'];
+  const hits = forbidden.filter(f => blob.includes(f));
+  if (hits.length === 0) ok('no real-payment processors referenced in creations.json');
+  else fail('creations.json payment language', `forbidden tokens: ${hits.join(', ')}`);
+
+  // Roadmap + trust
+  if (Array.isArray(creations.roadmap) && creations.roadmap.length >= 3) ok(`roadmap has ${creations.roadmap.length} phases`);
+  else fail('roadmap', 'expected >= 3 phases');
+  if (creations.trust && Array.isArray(creations.trust.promises) && creations.trust.promises.length >= 3) {
+    ok(`trust bar has ${creations.trust.promises.length} promises`);
+  } else {
+    fail('trust bar', 'expected >= 3 promises');
+  }
+}
+
 console.log(failed === 0 ? '\nAGORA STATIC: PASS' : `\nAGORA STATIC: FAIL (${failed} issue${failed===1?'':'s'})`);
 process.exit(failed === 0 ? 0 : 1);

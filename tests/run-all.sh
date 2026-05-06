@@ -152,9 +152,19 @@ else
 fi
 
 echo
-if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ] && [ $T9 -eq 0 ] && [ $T_ARMY -eq 0 ]; then
+echo "== Agora static validation =="
+if command -v node >/dev/null 2>&1; then
+  node tests/agora-static.spec.mjs
+  T_AGORA=$?
+else
+  echo "SKIP: node not installed"
+  T_AGORA=0
+fi
+
+echo
+if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ] && [ $T9 -eq 0 ] && [ $T_ARMY -eq 0 ] && [ $T_AGORA -eq 0 ]; then
   echo "ALL CHECKS PASSED"
   exit 0
 fi
-echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8 briefings=$T9 army=$T_ARMY"
+echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8 briefings=$T9 army=$T_ARMY agora=$T_AGORA"
 exit 1

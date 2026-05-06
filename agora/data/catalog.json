@@ -1,0 +1,591 @@
+{
+  "name": "Agora Alpha — Library of Minds",
+  "version": "0.1.0",
+  "generated": "2026-05-06",
+  "description": "Compact catalog of seed philosophers and works. Source-pointer-first: every entry links back to its public-domain provenance (Project Gutenberg, Open Library, Wikidata, Perseus). Full-text payloads are not committed; selected excerpts ship for the reader demo.",
+  "license": "Catalog metadata: CC0 1.0. Underlying texts are public domain via the cited sources.",
+  "archive": {
+    "name": "Greek Philosophers Archive v2",
+    "philosopher_count": 16,
+    "manifest_pointer": "agora_seed_manifest.json (not committed; held by author)",
+    "note": "Catalog is a curated subset. Full archive is referenced by provenance, not bundled."
+  },
+  "sources": {
+    "gutenberg": { "label": "Project Gutenberg", "color": "#3fb950" },
+    "openlibrary": { "label": "Open Library", "color": "#a78bfa" },
+    "wikidata": { "label": "Wikidata", "color": "#58a6ff" },
+    "perseus": { "label": "Perseus Digital Library", "color": "#f7931a" },
+    "sep": { "label": "Stanford Encyclopedia of Philosophy", "color": "#fbbf24" }
+  },
+  "philosophers": [
+    {
+      "slug": "thales",
+      "name": "Thales of Miletus",
+      "era": "c. 624 – c. 546 BCE",
+      "school": "Milesian",
+      "tagline": "First named philosopher; argued water is the underlying substance.",
+      "wikidata": "https://www.wikidata.org/wiki/Q43499",
+      "sep": "https://plato.stanford.edu/entries/thales/",
+      "perseus": "https://www.perseus.tufts.edu/hopper/searchresults?q=Thales",
+      "works": [
+        {
+          "id": "thales-fragments",
+          "title": "Fragments (DK 11)",
+          "kind": "fragments",
+          "translator": "Arthur Fairbanks",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Fairbanks, First Philosophers", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "anaximander",
+      "name": "Anaximander",
+      "era": "c. 610 – c. 546 BCE",
+      "school": "Milesian",
+      "tagline": "Apeiron — the boundless — as the origin of all things.",
+      "wikidata": "https://www.wikidata.org/wiki/Q43353",
+      "sep": "https://plato.stanford.edu/entries/anaximander/",
+      "perseus": "https://www.perseus.tufts.edu/hopper/searchresults?q=Anaximander",
+      "works": [
+        {
+          "id": "anaximander-fragments",
+          "title": "Fragments (DK 12)",
+          "kind": "fragments",
+          "translator": "Arthur Fairbanks",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Fairbanks, First Philosophers", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "anaximenes",
+      "name": "Anaximenes",
+      "era": "c. 586 – c. 526 BCE",
+      "school": "Milesian",
+      "tagline": "Air as the primary substance; condensation and rarefaction.",
+      "wikidata": "https://www.wikidata.org/wiki/Q170147",
+      "sep": "https://plato.stanford.edu/entries/anaximenes/",
+      "works": [
+        {
+          "id": "anaximenes-fragments",
+          "title": "Fragments (DK 13)",
+          "kind": "fragments",
+          "translator": "Arthur Fairbanks",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Fairbanks, First Philosophers", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "pythagoras",
+      "name": "Pythagoras",
+      "era": "c. 570 – c. 495 BCE",
+      "school": "Pythagorean",
+      "tagline": "Number as the principle of all things; transmigration of souls.",
+      "wikidata": "https://www.wikidata.org/wiki/Q10261",
+      "sep": "https://plato.stanford.edu/entries/pythagoras/",
+      "works": [
+        {
+          "id": "pythagoras-fragments",
+          "title": "Pythagorean Fragments and Testimonia",
+          "kind": "fragments",
+          "translator": "Various (Fairbanks; Archytas summary)",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Fairbanks, First Philosophers", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "heraclitus",
+      "name": "Heraclitus of Ephesus",
+      "era": "c. 535 – c. 475 BCE",
+      "school": "Ionian (independent)",
+      "tagline": "All things flow. The Logos as the common measure.",
+      "wikidata": "https://www.wikidata.org/wiki/Q41155",
+      "sep": "https://plato.stanford.edu/entries/heraclitus/",
+      "perseus": "https://www.perseus.tufts.edu/hopper/searchresults?q=Heraclitus",
+      "featured": true,
+      "works": [
+        {
+          "id": "heraclitus-fragments",
+          "title": "Fragments (DK 22 B)",
+          "kind": "fragments",
+          "translator": "John Burnet",
+          "year": 1908,
+          "license": "Public domain",
+          "excerpt_file": "agora/excerpts/heraclitus-fragments.txt",
+          "sources": [
+            { "type": "gutenberg", "label": "Burnet, Early Greek Philosophy", "url": "https://www.gutenberg.org/ebooks/67097" },
+            { "type": "openlibrary", "label": "Early Greek Philosophy (OL)", "url": "https://openlibrary.org/works/OL15123413W" },
+            { "type": "perseus", "label": "Heraclitus on Perseus", "url": "https://www.perseus.tufts.edu/hopper/searchresults?q=Heraclitus" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "parmenides",
+      "name": "Parmenides of Elea",
+      "era": "c. 515 – c. 450 BCE",
+      "school": "Eleatic",
+      "tagline": "What is, is. Being is one, eternal, and undivided.",
+      "wikidata": "https://www.wikidata.org/wiki/Q44331",
+      "sep": "https://plato.stanford.edu/entries/parmenides/",
+      "perseus": "https://www.perseus.tufts.edu/hopper/searchresults?q=Parmenides",
+      "featured": true,
+      "works": [
+        {
+          "id": "parmenides-fragments",
+          "title": "On Nature — Fragments (DK 28 B)",
+          "kind": "fragments",
+          "translator": "John Burnet",
+          "year": 1908,
+          "license": "Public domain",
+          "excerpt_file": "agora/excerpts/parmenides-fragments.txt",
+          "sources": [
+            { "type": "gutenberg", "label": "Burnet, Early Greek Philosophy", "url": "https://www.gutenberg.org/ebooks/67097" },
+            { "type": "openlibrary", "label": "Early Greek Philosophy (OL)", "url": "https://openlibrary.org/works/OL15123413W" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "zeno-of-elea",
+      "name": "Zeno of Elea",
+      "era": "c. 490 – c. 430 BCE",
+      "school": "Eleatic",
+      "tagline": "The paradoxes of motion and plurality.",
+      "wikidata": "https://www.wikidata.org/wiki/Q189441",
+      "sep": "https://plato.stanford.edu/entries/zeno-elea/",
+      "works": [
+        {
+          "id": "zeno-elea-fragments",
+          "title": "Paradoxes — Fragments and Testimonia",
+          "kind": "fragments",
+          "translator": "John Burnet / Arthur Fairbanks",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Fairbanks, First Philosophers", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "empedocles",
+      "name": "Empedocles",
+      "era": "c. 494 – c. 434 BCE",
+      "school": "Pluralist",
+      "tagline": "Four roots — earth, water, air, fire — moved by Love and Strife.",
+      "wikidata": "https://www.wikidata.org/wiki/Q189257",
+      "sep": "https://plato.stanford.edu/entries/empedocles/",
+      "works": [
+        {
+          "id": "empedocles-fragments",
+          "title": "On Nature; Purifications — Fragments",
+          "kind": "fragments",
+          "translator": "Arthur Fairbanks",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Fairbanks, First Philosophers", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "anaxagoras",
+      "name": "Anaxagoras",
+      "era": "c. 500 – c. 428 BCE",
+      "school": "Pluralist",
+      "tagline": "Mind (nous) orders an infinity of seeds.",
+      "wikidata": "https://www.wikidata.org/wiki/Q83041",
+      "sep": "https://plato.stanford.edu/entries/anaxagoras/",
+      "works": [
+        {
+          "id": "anaxagoras-fragments",
+          "title": "Fragments (DK 59 B)",
+          "kind": "fragments",
+          "translator": "Arthur Fairbanks",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Fairbanks, First Philosophers", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "democritus",
+      "name": "Democritus",
+      "era": "c. 460 – c. 370 BCE",
+      "school": "Atomist",
+      "tagline": "Atoms and void; the laughing philosopher.",
+      "wikidata": "https://www.wikidata.org/wiki/Q41980",
+      "sep": "https://plato.stanford.edu/entries/democritus/",
+      "works": [
+        {
+          "id": "democritus-fragments",
+          "title": "Ethical and Physical Fragments",
+          "kind": "fragments",
+          "translator": "Various (Burnet, Fairbanks)",
+          "year": 1908,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Burnet, Early Greek Philosophy", "url": "https://www.gutenberg.org/ebooks/67097" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "socrates",
+      "name": "Socrates",
+      "era": "c. 470 – 399 BCE",
+      "school": "Classical Athenian",
+      "tagline": "The unexamined life is not worth living.",
+      "wikidata": "https://www.wikidata.org/wiki/Q913",
+      "sep": "https://plato.stanford.edu/entries/socrates/",
+      "perseus": "https://www.perseus.tufts.edu/hopper/searchresults?q=Socrates",
+      "featured": true,
+      "works": [
+        {
+          "id": "socrates-apology",
+          "title": "Apology",
+          "kind": "primary",
+          "attributed_author": "Plato (Socratic dialogue)",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "excerpt_file": "agora/excerpts/socrates-apology.txt",
+          "sources": [
+            { "type": "gutenberg", "label": "Apology — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1656" },
+            { "type": "perseus", "label": "Apology on Perseus (Greek)", "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A1999.01.0170" }
+          ]
+        },
+        {
+          "id": "socrates-crito",
+          "title": "Crito",
+          "kind": "primary",
+          "attributed_author": "Plato (Socratic dialogue)",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Crito — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1657" },
+            { "type": "perseus", "label": "Crito on Perseus (Greek)", "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A1999.01.0168" }
+          ]
+        },
+        {
+          "id": "socrates-euthyphro",
+          "title": "Euthyphro",
+          "kind": "primary",
+          "attributed_author": "Plato (Socratic dialogue)",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Euthyphro — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1642" },
+            { "type": "perseus", "label": "Euthyphro on Perseus (Greek)", "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A1999.01.0174" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "plato",
+      "name": "Plato",
+      "era": "c. 428 – c. 348 BCE",
+      "school": "Classical Athenian",
+      "tagline": "Forms, the Good, and the philosopher-king.",
+      "wikidata": "https://www.wikidata.org/wiki/Q859",
+      "sep": "https://plato.stanford.edu/entries/plato/",
+      "perseus": "https://www.perseus.tufts.edu/hopper/searchresults?q=Plato",
+      "featured": true,
+      "works": [
+        {
+          "id": "plato-republic",
+          "title": "Republic",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "excerpt_file": "agora/excerpts/plato-republic.txt",
+          "sources": [
+            { "type": "gutenberg", "label": "Republic — Project Gutenberg #1497", "url": "https://www.gutenberg.org/ebooks/1497" },
+            { "type": "openlibrary", "label": "The Republic (OL)", "url": "https://openlibrary.org/works/OL15004026W" },
+            { "type": "perseus", "label": "Republic on Perseus (Greek)", "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A1999.01.0167" }
+          ]
+        },
+        {
+          "id": "plato-symposium",
+          "title": "Symposium",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Symposium — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1600" }
+          ]
+        },
+        {
+          "id": "plato-phaedo",
+          "title": "Phaedo",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Phaedo — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1658" }
+          ]
+        },
+        {
+          "id": "plato-meno",
+          "title": "Meno",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Meno — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1643" }
+          ]
+        },
+        {
+          "id": "plato-gorgias",
+          "title": "Gorgias",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Gorgias — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1672" }
+          ]
+        },
+        {
+          "id": "plato-timaeus",
+          "title": "Timaeus",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Timaeus — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1572" }
+          ]
+        },
+        {
+          "id": "plato-phaedrus",
+          "title": "Phaedrus",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Phaedrus — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1636" }
+          ]
+        },
+        {
+          "id": "plato-theaetetus",
+          "title": "Theaetetus",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1871,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Theaetetus — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1726" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "aristotle",
+      "name": "Aristotle",
+      "era": "384 – 322 BCE",
+      "school": "Peripatetic",
+      "tagline": "Master of those who know. Logic, ethics, physics, metaphysics.",
+      "wikidata": "https://www.wikidata.org/wiki/Q868",
+      "sep": "https://plato.stanford.edu/entries/aristotle/",
+      "perseus": "https://www.perseus.tufts.edu/hopper/searchresults?q=Aristotle",
+      "featured": true,
+      "works": [
+        {
+          "id": "aristotle-nicomachean-ethics",
+          "title": "Nicomachean Ethics",
+          "kind": "primary",
+          "translator": "W. D. Ross",
+          "year": 1908,
+          "license": "Public domain",
+          "excerpt_file": "agora/excerpts/aristotle-nicomachean-ethics.txt",
+          "sources": [
+            { "type": "gutenberg", "label": "Nicomachean Ethics — PG #8438", "url": "https://www.gutenberg.org/ebooks/8438" },
+            { "type": "openlibrary", "label": "Nicomachean Ethics (OL)", "url": "https://openlibrary.org/works/OL262458W" },
+            { "type": "perseus", "label": "Nic. Ethics on Perseus (Greek)", "url": "https://www.perseus.tufts.edu/hopper/text?doc=Perseus%3Atext%3A1999.01.0053" }
+          ]
+        },
+        {
+          "id": "aristotle-politics",
+          "title": "Politics",
+          "kind": "primary",
+          "translator": "Benjamin Jowett",
+          "year": 1885,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Politics — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/6762" }
+          ]
+        },
+        {
+          "id": "aristotle-metaphysics",
+          "title": "Metaphysics",
+          "kind": "primary",
+          "translator": "W. D. Ross",
+          "year": 1908,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Metaphysics — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/8438" }
+          ]
+        },
+        {
+          "id": "aristotle-poetics",
+          "title": "Poetics",
+          "kind": "primary",
+          "translator": "S. H. Butcher",
+          "year": 1898,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Poetics — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/1974" }
+          ]
+        },
+        {
+          "id": "aristotle-rhetoric",
+          "title": "Rhetoric",
+          "kind": "primary",
+          "translator": "W. Rhys Roberts",
+          "year": 1924,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Rhetoric — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/26095" }
+          ]
+        },
+        {
+          "id": "aristotle-physics",
+          "title": "Physics",
+          "kind": "primary",
+          "translator": "R. P. Hardie & R. K. Gaye",
+          "year": 1930,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Physics — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/30540" }
+          ]
+        },
+        {
+          "id": "aristotle-on-the-soul",
+          "title": "On the Soul (De Anima)",
+          "kind": "primary",
+          "translator": "J. A. Smith",
+          "year": 1931,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "De Anima — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/8438" }
+          ]
+        },
+        {
+          "id": "aristotle-categories",
+          "title": "Categories",
+          "kind": "primary",
+          "translator": "E. M. Edghill",
+          "year": 1928,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Categories — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/2412" }
+          ]
+        },
+        {
+          "id": "aristotle-athenian-constitution",
+          "title": "The Athenian Constitution",
+          "kind": "primary",
+          "translator": "Frederic G. Kenyon",
+          "year": 1891,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Athenian Constitution — PG", "url": "https://www.gutenberg.org/ebooks/26095" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "epicurus",
+      "name": "Epicurus",
+      "era": "341 – 270 BCE",
+      "school": "Epicurean",
+      "tagline": "Pleasure as the absence of pain; the swerve of atoms.",
+      "wikidata": "https://www.wikidata.org/wiki/Q43216",
+      "sep": "https://plato.stanford.edu/entries/epicurus/",
+      "works": [
+        {
+          "id": "epicurus-letters",
+          "title": "Letter to Herodotus, Letter to Menoeceus, Principal Doctrines",
+          "kind": "primary",
+          "translator": "Cyril Bailey",
+          "year": 1926,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Diogenes Laertius — Lives", "url": "https://www.gutenberg.org/ebooks/57342" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "zeno-of-citium",
+      "name": "Zeno of Citium",
+      "era": "c. 334 – c. 262 BCE",
+      "school": "Stoic",
+      "tagline": "Founder of Stoicism. Live according to nature.",
+      "wikidata": "https://www.wikidata.org/wiki/Q43499",
+      "sep": "https://plato.stanford.edu/entries/stoicism/",
+      "works": [
+        {
+          "id": "zeno-citium-fragments",
+          "title": "Early Stoic Fragments and Testimonia",
+          "kind": "fragments",
+          "translator": "Various",
+          "year": 1925,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Diogenes Laertius — Lives", "url": "https://www.gutenberg.org/ebooks/57342" }
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "plotinus",
+      "name": "Plotinus",
+      "era": "c. 204 – 270 CE",
+      "school": "Neoplatonist",
+      "tagline": "The One, the Intellect, the Soul. The Enneads.",
+      "wikidata": "https://www.wikidata.org/wiki/Q41523",
+      "sep": "https://plato.stanford.edu/entries/plotinus/",
+      "works": [
+        {
+          "id": "plotinus-enneads",
+          "title": "The Enneads",
+          "kind": "primary",
+          "translator": "Stephen MacKenna",
+          "year": 1917,
+          "license": "Public domain",
+          "sources": [
+            { "type": "gutenberg", "label": "Enneads — Project Gutenberg", "url": "https://www.gutenberg.org/ebooks/52220" }
+          ]
+        }
+      ]
+    }
+  ]
+}

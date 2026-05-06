@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agora Alpha — Library of Minds | Loopholemaxing</title>
+  <meta name="description" content="A public-domain reading room for the foundational philosophers. Plato, Aristotle, Socrates, Heraclitus, Parmenides and more — sourced from Project Gutenberg, Perseus, Open Library, and Wikidata. Every text traceable to its edition.">
+  <meta property="og:title" content="Agora Alpha — Library of Minds">
+  <meta property="og:description" content="Public-domain reading room for foundational philosophers. Source-traceable, license-clean, no filler.">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    :root {
+      --agora-amber: #f7b955;
+      --agora-amber-dim: rgba(247, 185, 85, .18);
+      --agora-edge:  rgba(247, 185, 85, .32);
+      --agora-bg:    #0b0a07;
+      --agora-paper: #f4ecd8;
+      --agora-ink:   #1a1814;
+    }
+
+    .bg-grid  { position:fixed; inset:0; z-index:-1;
+      background-image: radial-gradient(circle, rgba(247,185,85,0.04) 1px, transparent 1px);
+      background-size: 40px 40px; }
+    .bg-glow  { position:fixed; top:-240px; left:50%; transform:translateX(-50%);
+      width:1000px; height:800px;
+      background: radial-gradient(circle, rgba(247,185,85,0.06) 0%, transparent 65%); z-index:-1; }
+
+    /* Hero */
+    .a-hero { min-height: 60vh; display:flex; flex-direction:column; align-items:center;
+      justify-content:center; text-align:center; padding: 110px var(--space-lg) var(--space-2xl); }
+    .a-eyebrow {
+      font-family: var(--font-mono); font-size: 11px; letter-spacing:.18em;
+      text-transform: uppercase; color: var(--agora-amber);
+      border:1px solid var(--agora-edge); padding: 6px 14px; border-radius: 999px;
+      background: rgba(247,185,85,.05); margin-bottom: var(--space-xl);
+    }
+    .a-hero h1 {
+      font-size: clamp(36px, 6.5vw, 68px); font-weight: 800;
+      line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary);
+      margin-bottom: var(--space-md); max-width: 18ch;
+    }
+    .a-hero h1 span {
+      background: linear-gradient(135deg, var(--agora-amber), #ffd986 60%, #d2a8ff);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .a-hero p { font-size: clamp(15px, 2vw, 18px); color: var(--text-secondary);
+      max-width: 640px; line-height: 1.65; margin-bottom: var(--space-xl); }
+
+    .a-stats { display:flex; gap: 36px; justify-content:center; flex-wrap:wrap; margin-top: var(--space-lg); }
+    .a-stat { text-align:center; }
+    .a-stat-val { font-family: var(--font-mono); font-size: 24px; font-weight: 800; color: var(--agora-amber); }
+    .a-stat-lbl { font-size: 11px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-top:4px; }
+
+    /* Sections */
+    .a-section { max-width: var(--max-width); margin: 0 auto; padding: var(--space-3xl) var(--space-lg); }
+    .a-section h2 { font-size: clamp(24px, 3.5vw, 32px); font-weight: 700; letter-spacing:-.02em;
+      margin-bottom: var(--space-sm); display:flex; align-items:center; gap: 14px; }
+    .a-section h2 .marker { width: 8px; height: 28px; background: var(--agora-amber); border-radius: 2px; }
+    .a-section .lede { color: var(--text-secondary); max-width: 700px; margin-bottom: var(--space-2xl); line-height:1.65; font-size: 15px; }
+
+    /* Toolbar */
+    .a-toolbar {
+      display:flex; gap: 12px; align-items:center; flex-wrap:wrap;
+      padding: 14px 16px; background: rgba(255,255,255,.025);
+      border: 1px solid var(--border); border-radius: 12px;
+      margin-bottom: var(--space-xl);
+    }
+    .a-search {
+      flex: 1; min-width: 200px;
+      background: var(--bg-primary); color: var(--text-primary);
+      border: 1px solid var(--border-light); border-radius: 8px;
+      padding: 10px 14px; font-size: 14px; font-family: var(--font-body);
+    }
+    .a-search:focus { outline: none; border-color: var(--agora-amber); }
+    .a-filter-chip {
+      font-family: var(--font-mono); font-size: 11px;
+      padding: 6px 12px; border-radius: 999px;
+      background: rgba(255,255,255,.03); color: var(--text-muted);
+      border: 1px solid var(--border-light); cursor: pointer;
+      transition: all .15s ease;
+    }
+    .a-filter-chip:hover, .a-filter-chip.active {
+      background: var(--agora-amber-dim); color: var(--agora-amber);
+      border-color: var(--agora-edge);
+    }
+
+    /* Author grid */
+    .a-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md); }
+    .a-card {
+      background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      border-radius: 12px; padding: var(--space-lg);
+      cursor: pointer; transition: all .2s ease; position: relative;
+      display:flex; flex-direction:column; gap: 10px;
+    }
+    .a-card:hover { border-color: var(--agora-edge); transform: translateY(-2px);
+      box-shadow: 0 8px 24px -10px rgba(247,185,85,.18); }
+    .a-card.featured::before {
+      content:""; position:absolute; top:10px; right:10px;
+      width:8px; height:8px; border-radius:50%; background: var(--agora-amber);
+      box-shadow: 0 0 8px var(--agora-amber);
+    }
+    .a-card-name { font-size: 17px; font-weight: 700; color: var(--text-primary); }
+    .a-card-era { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing:.06em; }
+    .a-card-school {
+      display:inline-block; font-size: 10px; font-weight: 700; letter-spacing:.1em; text-transform:uppercase;
+      padding: 3px 9px; border-radius: 4px; width: fit-content;
+      background: rgba(247,185,85,.1); color: var(--agora-amber);
+    }
+    .a-card-tagline { font-size: 13px; color: var(--text-secondary); line-height: 1.55; flex:1; }
+    .a-card-meta { display:flex; gap: 10px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+    /* Detail */
+    .a-detail-back { display:inline-flex; gap: 6px; align-items:center; font-size: 13px;
+      color: var(--text-muted); margin-bottom: var(--space-md); }
+    .a-detail-back:hover { color: var(--agora-amber); }
+    .a-detail-head { padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border); margin-bottom: var(--space-xl); }
+    .a-detail-head h2 { margin-bottom: 8px; }
+    .a-detail-meta { display:flex; gap: 12px; flex-wrap:wrap; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+    .a-detail-link { display:inline-flex; gap: 6px; color: var(--agora-amber); font-size: 13px; }
+
+    .a-works { display:grid; gap: var(--space-md); }
+    .a-work {
+      background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      border-radius: 10px; padding: var(--space-md) var(--space-lg);
+      display:flex; align-items:center; justify-content:space-between; gap: var(--space-md); flex-wrap:wrap;
+    }
+    .a-work-title { font-size: 16px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .a-work-sub { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+    .a-work-actions { display:flex; gap: 8px; flex-wrap:wrap; }
+
+    /* Source badges */
+    .a-badge {
+      display:inline-flex; align-items:center; gap: 6px;
+      font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+      background: rgba(255,255,255,.04); border: 1px solid var(--border-light);
+      color: var(--text-secondary); transition: all .15s ease;
+    }
+    .a-badge:hover { color: var(--text-primary); border-color: var(--agora-edge); }
+    .a-badge::before { content:""; width: 6px; height: 6px; border-radius: 50%; }
+    .a-badge.gutenberg::before { background: #3fb950; }
+    .a-badge.openlibrary::before { background: #a78bfa; }
+    .a-badge.wikidata::before { background: #58a6ff; }
+    .a-badge.perseus::before { background: #f7931a; }
+    .a-badge.sep::before { background: #fbbf24; }
+
+    /* Reader */
+    .a-reader {
+      background: var(--agora-paper); color: var(--agora-ink);
+      border-radius: 12px; padding: var(--space-2xl);
+      font-family: 'Georgia', 'Iowan Old Style', serif;
+      font-size: 16px; line-height: 1.7;
+      max-width: 720px; margin: 0 auto;
+      white-space: pre-wrap; word-wrap: break-word;
+      box-shadow: 0 20px 60px -20px rgba(0,0,0,.5);
+      max-height: 70vh; overflow-y: auto;
+    }
+    .a-reader::-webkit-scrollbar { width: 10px; }
+    .a-reader::-webkit-scrollbar-track { background: transparent; }
+    .a-reader::-webkit-scrollbar-thumb { background: rgba(0,0,0,.18); border-radius:5px; }
+    .a-reader-head { margin-bottom: var(--space-md); padding-bottom: var(--space-md); border-bottom:1px solid var(--border); }
+    .a-reader-head h3 { color: var(--text-primary); font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .a-reader-head .a-detail-meta { color: var(--text-muted); }
+    .a-reader-msg { color: var(--text-muted); font-style: italic; padding: var(--space-md); text-align: center; }
+
+    /* Source ledger panel */
+    .a-ledger {
+      background: rgba(255,255,255,.02); border: 1px solid var(--border);
+      border-radius: 12px; padding: var(--space-lg);
+      font-family: var(--font-mono); font-size: 12px;
+    }
+    .a-ledger h3 { font-family: var(--font-body); font-size: 14px; font-weight: 700;
+      color: var(--text-primary); margin-bottom: 4px; letter-spacing: .02em; }
+    .a-ledger .sub { color: var(--text-muted); font-family: var(--font-body); font-size: 12px; margin-bottom: var(--space-md); }
+    .a-ledger-row { display:grid; grid-template-columns: 1fr auto auto; gap: 12px;
+      padding: 8px 0; border-bottom: 1px dashed var(--border); align-items:center; }
+    .a-ledger-row:last-child { border-bottom: none; }
+    .a-ledger-work { color: var(--text-primary); }
+    .a-ledger-status { color: var(--green); font-weight: 700; }
+    .a-ledger-date { color: var(--text-muted); }
+
+    /* Disclaimer */
+    .a-disclaimer { background: rgba(247,185,85,.05); border: 1px solid var(--agora-edge);
+      border-radius: 10px; padding: var(--space-md) var(--space-lg);
+      font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-top: var(--space-2xl); }
+    .a-disclaimer strong { color: var(--agora-amber); }
+
+    @media (max-width: 768px) {
+      .a-hero { padding: 90px var(--space-md) var(--space-2xl); }
+      .a-grid { grid-template-columns: 1fr; }
+      .a-reader { padding: var(--space-lg); font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="bg-grid"></div>
+  <div class="bg-glow"></div>
+
+  <header class="top-header">
+    <a href="/" class="logo">Loopholemaxing</a>
+    <nav><ul class="nav-links">
+      <li><a href="/#creations">Creations</a></li>
+      <li><a href="/agora/">Agora</a></li>
+      <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
+    </ul></nav>
+  </header>
+
+  <section class="a-hero">
+    <div class="a-eyebrow">&#9679; Agora Alpha &nbsp;&middot;&nbsp; Library of Minds</div>
+    <h1>The foundations, <span>at the source.</span></h1>
+    <p>A public-domain reading room for the philosophers who built the operating system of the West. Plato, Aristotle, Socrates, Heraclitus, Parmenides &mdash; in editions you can trace, all the way back to Project Gutenberg, Perseus, Open Library, and Wikidata.</p>
+    <div class="a-stats">
+      <div class="a-stat"><div class="a-stat-val" id="stat-philosophers">16</div><div class="a-stat-lbl">Philosophers</div></div>
+      <div class="a-stat"><div class="a-stat-val" id="stat-works">0</div><div class="a-stat-lbl">Catalogued Works</div></div>
+      <div class="a-stat"><div class="a-stat-val" id="stat-excerpts">0</div><div class="a-stat-lbl">Reader Excerpts</div></div>
+      <div class="a-stat"><div class="a-stat-val">PD</div><div class="a-stat-lbl">License</div></div>
+    </div>
+  </section>
+
+  <main id="agora-main">
+    <!-- Routed views inject here -->
+  </main>
+
+  <footer class="site-footer">
+    <div>Agora Alpha &mdash; a Loopholemaxing Library of Minds creation &middot; <a href="/">Home</a> &middot; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="footer-tagline">Read. Source. Verify.</div>
+  </footer>
+
+  <script>
+  // ───────────────────────── Agora SPA ─────────────────────────
+  (function() {
+    const main = document.getElementById('agora-main');
+    let CATALOG = null;
+    let LEDGER = null;
+    let activeFilter = 'all';
+    let searchTerm = '';
+
+    const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    })[c]);
+
+    function badgeHtml(src) {
+      const cls = (src.type || '').replace(/[^a-z]/gi,'').toLowerCase();
+      return `<a class="a-badge ${esc(cls)}" href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.label)}</a>`;
+    }
+
+    function philById(slug) {
+      return CATALOG.philosophers.find(p => p.slug === slug);
+    }
+    function workById(workId) {
+      for (const p of CATALOG.philosophers) {
+        const w = (p.works || []).find(w => w.id === workId);
+        if (w) return { phil: p, work: w };
+      }
+      return null;
+    }
+
+    function renderIndex() {
+      const schools = Array.from(new Set(CATALOG.philosophers.map(p => p.school))).sort();
+      const filtered = CATALOG.philosophers.filter(p => {
+        if (activeFilter !== 'all' && p.school !== activeFilter) return false;
+        if (searchTerm) {
+          const hay = (p.name + ' ' + p.tagline + ' ' + p.school + ' ' +
+            (p.works || []).map(w => w.title).join(' ')).toLowerCase();
+          if (!hay.includes(searchTerm.toLowerCase())) return false;
+        }
+        return true;
+      });
+
+      const totalWorks = CATALOG.philosophers.reduce((n, p) => n + (p.works || []).length, 0);
+      document.getElementById('stat-philosophers').textContent = CATALOG.philosophers.length;
+      document.getElementById('stat-works').textContent = totalWorks;
+      const excerpts = CATALOG.philosophers.reduce((n, p) =>
+        n + (p.works || []).filter(w => w.excerpt_file).length, 0);
+      document.getElementById('stat-excerpts').textContent = excerpts;
+
+      main.innerHTML = `
+        <section class="a-section">
+          <h2><span class="marker"></span>Index of Authors</h2>
+          <p class="lede">Sixteen seed philosophers from the Greek archive — Pre-Socratics, Classical Athenians, Hellenistic schools, Late Antiquity. A featured author has a reader excerpt available; everything else links to its public-domain source edition.</p>
+
+          <div class="a-toolbar">
+            <input type="search" class="a-search" id="a-search" placeholder="Search philosopher, school, work…" value="${esc(searchTerm)}">
+            <button class="a-filter-chip ${activeFilter==='all'?'active':''}" data-filter="all">All</button>
+            ${schools.map(s => `<button class="a-filter-chip ${activeFilter===s?'active':''}" data-filter="${esc(s)}">${esc(s)}</button>`).join('')}
+          </div>
+
+          <div class="a-grid" id="a-grid">
+            ${filtered.map(p => `
+              <a class="a-card ${p.featured ? 'featured' : ''}" href="#/author/${esc(p.slug)}">
+                <span class="a-card-school">${esc(p.school)}</span>
+                <div class="a-card-name">${esc(p.name)}</div>
+                <div class="a-card-era">${esc(p.era)}</div>
+                <div class="a-card-tagline">${esc(p.tagline)}</div>
+                <div class="a-card-meta">
+                  <span>${(p.works||[]).length} work${(p.works||[]).length===1?'':'s'}</span>
+                  ${p.featured ? '<span style="color:var(--agora-amber)">&#9679; reader demo</span>' : ''}
+                </div>
+              </a>
+            `).join('')}
+          </div>
+
+          ${filtered.length === 0 ? '<p style="text-align:center; color:var(--text-muted); padding: var(--space-2xl);">No matches. Try a different filter.</p>' : ''}
+        </section>
+
+        <section class="a-section">
+          <h2><span class="marker"></span>Source Ledger</h2>
+          <p class="lede">Every text in the reading room is a public-domain edition. We ship pointers and short excerpts; the canonical source URL is always one click away. Modern copyrighted translations are not redistributed.</p>
+          <div id="a-ledger" class="a-ledger">Loading source ledger…</div>
+          <div class="a-disclaimer">
+            <strong>License &amp; provenance.</strong> Catalog metadata is CC0. Excerpts are slices of public-domain editions (Burnet 1908, Jowett 1871, Ross 1925, Fairbanks 1898). For the canonical Greek text see Perseus. For complete English text see Project Gutenberg. For bibliographic IDs see Wikidata and Open Library. The full archive (16 philosophers, ~13MB) is not committed to this repo by design.
+          </div>
+        </section>
+      `;
+
+      // wire up search/filter
+      const searchEl = document.getElementById('a-search');
+      if (searchEl) {
+        searchEl.addEventListener('input', e => {
+          searchTerm = e.target.value;
+          renderIndex();
+          // restore caret
+          const el = document.getElementById('a-search');
+          if (el) { el.focus(); el.setSelectionRange(searchTerm.length, searchTerm.length); }
+        });
+      }
+      document.querySelectorAll('.a-filter-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          activeFilter = chip.getAttribute('data-filter');
+          renderIndex();
+        });
+      });
+
+      renderLedger();
+    }
+
+    function renderLedger() {
+      const el = document.getElementById('a-ledger');
+      if (!el || !LEDGER) return;
+      el.innerHTML = `
+        <h3>${esc(LEDGER.name)} <span style="color:var(--text-muted); font-weight:400;">v${esc(LEDGER.version)}</span></h3>
+        <div class="sub">Last refreshed ${esc(LEDGER.last_refreshed)} &middot; ${esc(LEDGER.entries.length)} verified entries</div>
+        ${LEDGER.entries.map(e => `
+          <div class="a-ledger-row">
+            <div>
+              <span class="a-ledger-work">${esc(e.work_id)}</span>
+              <div style="color:var(--text-muted); font-family: var(--font-body); font-size: 12px; margin-top:2px;">${esc(e.edition)} &middot; tr. ${esc(e.translator)}</div>
+            </div>
+            <a href="${esc(e.primary_url)}" target="_blank" rel="noopener" class="a-detail-link" style="font-size:11px;">source &rarr;</a>
+            <span class="a-ledger-status">VERIFIED <span class="a-ledger-date">${esc(e.verified)}</span></span>
+          </div>
+        `).join('')}
+      `;
+    }
+
+    function renderAuthor(slug) {
+      const p = philById(slug);
+      if (!p) { renderNotFound(); return; }
+
+      main.innerHTML = `
+        <section class="a-section">
+          <a class="a-detail-back" href="#/">&larr; Back to Index</a>
+          <div class="a-detail-head">
+            <span class="a-card-school">${esc(p.school)}</span>
+            <h2 style="margin-top:8px;"><span class="marker"></span>${esc(p.name)}</h2>
+            <p class="lede" style="margin-bottom:0;">${esc(p.tagline)}</p>
+            <div class="a-detail-meta">
+              <span>${esc(p.era)}</span>
+              ${p.wikidata ? `<a class="a-detail-link" href="${esc(p.wikidata)}" target="_blank" rel="noopener">Wikidata &rarr;</a>` : ''}
+              ${p.sep ? `<a class="a-detail-link" href="${esc(p.sep)}" target="_blank" rel="noopener">SEP &rarr;</a>` : ''}
+              ${p.perseus ? `<a class="a-detail-link" href="${esc(p.perseus)}" target="_blank" rel="noopener">Perseus &rarr;</a>` : ''}
+            </div>
+          </div>
+
+          <h3 style="font-size:18px; margin-bottom: var(--space-md); color:var(--text-primary);">Works</h3>
+          <div class="a-works">
+            ${(p.works || []).map(w => `
+              <div class="a-work">
+                <div style="flex:1; min-width: 200px;">
+                  <div class="a-work-title">${esc(w.title)}</div>
+                  <div class="a-work-sub">${esc(w.kind)} &middot; tr. ${esc(w.translator || 'unknown')} ${w.year ? '· ' + esc(w.year) : ''} &middot; ${esc(w.license || 'unknown license')}</div>
+                  <div style="margin-top:8px; display:flex; gap:6px; flex-wrap:wrap;">
+                    ${(w.sources || []).map(badgeHtml).join('')}
+                  </div>
+                </div>
+                <div class="a-work-actions">
+                  ${w.excerpt_file ? `<a class="btn-primary" style="padding: 8px 16px; font-size:13px;" href="#/work/${esc(w.id)}">Open Reader &rarr;</a>` : ''}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderWork(workId) {
+      const found = workById(workId);
+      if (!found) { renderNotFound(); return; }
+      const { phil, work } = found;
+
+      main.innerHTML = `
+        <section class="a-section">
+          <a class="a-detail-back" href="#/author/${esc(phil.slug)}">&larr; Back to ${esc(phil.name)}</a>
+          <div class="a-detail-head">
+            <h2><span class="marker"></span>${esc(work.title)}</h2>
+            <p class="lede" style="margin-bottom:0;">${esc(phil.name)} &middot; ${esc(work.kind)} &middot; tr. ${esc(work.translator || 'unknown')} ${work.year ? '(' + esc(work.year) + ')' : ''}</p>
+            <div class="a-detail-meta" style="margin-top: 12px;">
+              ${(work.sources || []).map(badgeHtml).join('')}
+            </div>
+          </div>
+
+          <div class="a-reader" id="a-reader">
+            <p class="a-reader-msg">Loading excerpt…</p>
+          </div>
+
+          <div class="a-disclaimer">
+            <strong>Reading-room excerpt.</strong> This is a curated public-domain slice of the cited edition. For the full text, follow the source badge above. Greek originals: see Perseus.
+          </div>
+        </section>
+      `;
+
+      const reader = document.getElementById('a-reader');
+      if (work.excerpt_file) {
+        // resolve excerpt path (catalog uses repo-relative path)
+        const url = '../' + work.excerpt_file;
+        fetch(url).then(r => {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        }).then(txt => {
+          reader.textContent = txt;
+        }).catch(err => {
+          reader.innerHTML = `<p class="a-reader-msg">Excerpt unavailable: ${esc(String(err.message || err))}. Use the source link above for the full text.</p>`;
+        });
+      } else {
+        reader.innerHTML = '<p class="a-reader-msg">No excerpt is bundled for this work. Use a source link above.</p>';
+      }
+    }
+
+    function renderNotFound() {
+      main.innerHTML = `
+        <section class="a-section">
+          <a class="a-detail-back" href="#/">&larr; Back to Index</a>
+          <h2><span class="marker"></span>Not found</h2>
+          <p class="lede">That entry isn't in the catalog.</p>
+        </section>
+      `;
+    }
+
+    function route() {
+      const h = location.hash || '#/';
+      const m = h.match(/^#\/(author|work)\/([\w-]+)$/);
+      if (!m) { renderIndex(); return; }
+      if (m[1] === 'author') renderAuthor(m[2]);
+      else if (m[1] === 'work') renderWork(m[2]);
+      else renderIndex();
+    }
+
+    function loadCatalog() {
+      return fetch('data/catalog.json').then(r => {
+        if (!r.ok) throw new Error('catalog HTTP ' + r.status);
+        return r.json();
+      });
+    }
+    function loadLedger() {
+      return fetch('ledger/sources.json').then(r => {
+        if (!r.ok) throw new Error('ledger HTTP ' + r.status);
+        return r.json();
+      }).catch(() => null);
+    }
+
+    Promise.all([loadCatalog(), loadLedger()]).then(([cat, led]) => {
+      CATALOG = cat;
+      LEDGER = led;
+      window.addEventListener('hashchange', route);
+      route();
+    }).catch(err => {
+      main.innerHTML = `
+        <section class="a-section">
+          <h2><span class="marker"></span>Catalog failed to load</h2>
+          <p class="lede">${esc(String(err.message || err))}. The Agora catalog is a static JSON fetch — make sure you're viewing this page over HTTP, not the file:// protocol.</p>
+        </section>
+      `;
+    });
+  })();
+  </script>
+</body>
+</html>

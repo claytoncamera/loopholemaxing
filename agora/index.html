@@ -187,10 +187,11 @@
     /* ───────── Creation Engine / Atlas ───────── */
     .ce-section { max-width: var(--max-width); margin: 0 auto; padding: var(--space-2xl) var(--space-lg); }
     .ce-eyebrow {
-      display:inline-block; font-family: var(--font-mono); font-size: 11px;
-      letter-spacing: .18em; text-transform: uppercase; color: var(--agora-amber);
-      border: 1px solid var(--agora-edge); padding: 5px 12px; border-radius: 999px;
-      background: rgba(247,185,85,.05); margin-bottom: 14px;
+      display:inline-block; font-family: var(--font-mono); font-size: 12px;
+      font-weight: 600;
+      letter-spacing: .16em; text-transform: uppercase; color: #ffd180;
+      border: 1px solid rgba(247,185,85,.45); padding: 6px 14px; border-radius: 999px;
+      background: rgba(247,185,85,.08); margin-bottom: 14px;
     }
     .ce-title { font-size: clamp(24px, 3.5vw, 34px); font-weight: 800; letter-spacing:-.02em;
       color: var(--text-primary); margin-bottom: 10px; max-width: 22ch; }
@@ -198,7 +199,7 @@
       background: linear-gradient(135deg, var(--agora-amber), #ffd986 60%, #d2a8ff);
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
     }
-    .ce-lede { color: var(--text-secondary); max-width: 720px; line-height: 1.65;
+    .ce-lede { color: #c4c4d4; max-width: 720px; line-height: 1.65;
       font-size: 15px; margin-bottom: var(--space-2xl); }
 
     .ce-constellation { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
@@ -217,16 +218,17 @@
     .ce-node-head { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
     .ce-node-name { font-size: 16px; font-weight: 700; color: var(--text-primary); }
     .ce-node-kind {
-      font-family: var(--font-mono); font-size: 10px; letter-spacing:.1em;
-      text-transform: uppercase; color: var(--text-muted);
-      padding: 3px 8px; border-radius: 4px; background: rgba(255,255,255,.04);
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      letter-spacing:.1em;
+      text-transform: uppercase; color: #b8b8c8;
+      padding: 4px 9px; border-radius: 4px; background: rgba(255,255,255,.06);
       flex-shrink: 0;
     }
     .ce-node.is-public  .ce-node-kind { color: var(--agora-amber); background: rgba(247,185,85,.1); }
     .ce-node.is-restricted .ce-node-kind { color: #a78bfa; background: rgba(167,139,250,.1); }
     .ce-node.is-api     .ce-node-kind { color: #58a6ff; background: rgba(88,166,255,.1); }
-    .ce-node-role { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing:.04em; }
-    .ce-node-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.55; flex: 1; }
+    .ce-node-role { font-family: var(--font-mono); font-size: 11px; color: #a0a0b0; letter-spacing:.04em; }
+    .ce-node-summary { font-size: 13.5px; color: #c4c4d4; line-height: 1.6; flex: 1; }
     .ce-node-metrics { display:flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
     .ce-node-metric {
       font-family: var(--font-mono); font-size: 10px;
@@ -244,13 +246,14 @@
       padding: var(--space-lg); display: flex; flex-direction: column; gap: 10px;
     }
     .ce-offer-title { font-size: 17px; font-weight: 700; color: var(--text-primary); }
-    .ce-offer-tag { font-family: var(--font-mono); font-size: 10px;
-      letter-spacing: .12em; text-transform: uppercase; color: var(--agora-amber); }
-    .ce-offer-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.6; flex: 1; }
+    .ce-offer-tag { font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+      letter-spacing: .12em; text-transform: uppercase; color: #ffd180; }
+    .ce-offer-summary { font-size: 14px; color: #cfcfdb; line-height: 1.6; flex: 1; }
     .ce-offer-status {
       display: inline-flex; align-items: center; gap: 6px;
-      font-family: var(--font-mono); font-size: 10px; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--text-muted);
+      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase; color: #b8b8c8;
     }
     .ce-offer-status::before {
       content: ""; width: 6px; height: 6px; border-radius: 50%;
@@ -266,8 +269,9 @@
     .ce-offer-cta:hover { background: rgba(247,185,85,.18); transform: translateY(-1px); }
 
     .ce-payment-note {
-      font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em;
-      color: var(--text-muted); text-align: center; margin-top: var(--space-lg);
+      font-family: var(--font-mono); font-size: 12px; letter-spacing: .04em;
+      color: #b0b0c0; text-align: center; margin-top: var(--space-lg);
+      line-height: 1.55;
     }
 
     /* Roadmap */
@@ -285,7 +289,7 @@
       background: rgba(247,185,85,.08); border: 1px solid var(--agora-edge);
     }
     .ce-road-title { font-size: 15px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
-    .ce-road-summary { font-size: 13px; color: var(--text-secondary); line-height: 1.55; }
+    .ce-road-summary { font-size: 13.5px; color: #c4c4d4; line-height: 1.6; }
 
     /* Trust */
     .ce-trust {
@@ -300,7 +304,7 @@
     .ce-trust-list { list-style: none; padding: 0; margin: 0;
       display: grid; gap: 10px; }
     .ce-trust-list li {
-      font-size: 14px; color: var(--text-secondary); line-height: 1.6;
+      font-size: 14.5px; color: #cfcfdb; line-height: 1.65;
       padding-left: 22px; position: relative;
     }
     .ce-trust-list li::before {

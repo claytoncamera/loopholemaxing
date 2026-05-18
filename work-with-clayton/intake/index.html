@@ -256,9 +256,56 @@
       font-size: 28px; font-weight: 700;
     }
     .success-banner h3 { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; margin-bottom: 12px; }
-    .success-banner p { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 480px; margin: 0 auto 12px; }
-    .success-banner p:last-child { font-size: 13px; }
+    .success-banner > p { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 520px; margin: 0 auto 12px; }
     .success-banner a { color: var(--green); font-weight: 500; }
+
+    /* Payment methods card inside success banner */
+    .pay-methods {
+      margin: 24px auto 16px; max-width: 520px;
+      background: var(--bg-alt); border: 1px solid var(--green-tint);
+      border-radius: var(--radius-lg); padding: 20px 22px; text-align: left;
+    }
+    .pay-methods-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--green-hover); margin-bottom: 12px;
+    }
+    .pay-methods-row {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; padding: 10px 0;
+      border-bottom: 1px solid var(--border); font-size: 14px;
+    }
+    .pay-methods-row:last-child { border-bottom: none; }
+    .pay-methods-row .pm-label { color: var(--text); font-weight: 600; min-width: 64px; }
+    .pay-methods-row .pm-value {
+      color: var(--text); font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+      font-size: 14px; user-select: all;
+    }
+    .pay-methods-row .pm-meta { color: var(--text-muted); font-size: 12px; }
+    .pay-amount {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 12px 16px;
+      margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;
+    }
+    .pay-amount .pa-lbl { font-size: 13px; color: var(--text-muted); }
+    .pay-amount .pa-val {
+      font-size: 20px; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--text); font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+    }
+    .pay-amount .pa-val .green { color: var(--green); }
+
+    /* Contact strip below form */
+    .contact-strip {
+      margin-top: 24px; padding: 18px 24px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      display: flex; gap: 18px; flex-wrap: wrap;
+      align-items: center; justify-content: center;
+      font-size: 13px; color: var(--text-muted);
+    }
+    .contact-strip strong { color: var(--text); font-weight: 600; }
+    .contact-strip a { color: var(--text); font-weight: 500; }
+    .contact-strip a:hover { color: var(--green); }
+    .contact-strip .sep { color: var(--border-strong); }
 
     /* FOOTER */
     .footer {
@@ -564,8 +611,42 @@
     <div class="success-banner" id="success">
       <div class="checkmark">✓</div>
       <h3>Intake received.</h3>
-      <p>Your email client should have opened with the intake summary. Send that email — I review every intake personally and reply within 24 hours with payment instructions. The 48-hour audit clock starts when payment is confirmed.</p>
+      <p>Your email client should have opened with the intake summary. Send that email so I can review it. I'll confirm receipt and scope within 24 hours.</p>
+
+      <div class="pay-methods">
+        <div class="pay-amount">
+          <span class="pa-lbl">Amount due</span>
+          <span class="pa-val"><span class="green">$497</span></span>
+        </div>
+
+        <div class="pay-methods-label">Want to start the 48-hour clock now? Pay before I confirm.</div>
+
+        <div class="pay-methods-row">
+          <span class="pm-label">Zelle</span>
+          <span class="pm-value">407-766-8757</span>
+          <span class="pm-meta">Memo: Loophole Audit</span>
+        </div>
+        <div class="pay-methods-row">
+          <span class="pm-label">Venmo</span>
+          <span class="pm-value">@clayton-camera</span>
+          <span class="pm-meta">Note: Loophole Audit</span>
+        </div>
+        <div class="pay-methods-row">
+          <span class="pm-label">Wire</span>
+          <span class="pm-value">Email for instructions</span>
+          <span class="pm-meta">U.S. or international</span>
+        </div>
+      </div>
+
       <p>If your email client didn't open, email <a href="mailto:clayton.camera@icloud.com">clayton.camera@icloud.com</a> directly with the subject "Loophole Audit Intake."</p>
+      <p>Questions before paying? Text or call <a href="tel:+14077668757">(407) 766-8757</a>.</p>
+    </div>
+
+    <div class="contact-strip">
+      <span><strong>Direct contact:</strong></span>
+      <a href="tel:+14077668757">(407) 766-8757</a>
+      <span class="sep">·</span>
+      <a href="mailto:clayton.camera@icloud.com">clayton.camera@icloud.com</a>
     </div>
 
   </div>
@@ -576,6 +657,7 @@
       <div class="footer-links">
         <a href="../../">All creations</a>
         <a href="../">Work with Clayton</a>
+        <a href="tel:+14077668757">(407) 766-8757</a>
         <a href="mailto:clayton.camera@icloud.com">Email</a>
       </div>
     </div>

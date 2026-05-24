@@ -1,0 +1,126 @@
+{
+  "date": "2026-05-24",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-05-24T11:43:29Z",
+  "id": "briefing-2026-05-24",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "display_ready": false,
+      "generated_at": "2026-05-24T11:40:07Z",
+      "metrics_version": "metrics-v0.1.0",
+      "min_n_display": 20,
+      "n": 0,
+      "note": "Insufficient resolved forecasts for display (n=0, min_n_display=20). No hit-rate or calibration metric is reported.",
+      "total_forecasts": 519,
+      "total_resolved": 0
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-05-24T10:50:29Z",
+      "funding_rate": 9.2150004687e-05,
+      "long_short_ratio": 1.35,
+      "mark_price": 77121.5,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 32899.22940000016,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-05-24T10:50:30Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 76050.70333333332,
+        "r1": 77904.29666666665,
+        "r2": 79158.59333333332,
+        "recent_high": 77305.0,
+        "recent_low": 74567.49,
+        "s1": 74796.40666666665,
+        "s2": 72942.81333333332,
+        "sma_20": 79161.41500000001,
+        "sma_200": null,
+        "sma_50": 76580.0086,
+        "vwap_session": 76750.11609330602
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Extreme Fear",
+      "fear_greed_value": 25,
+      "fetched_at": "2026-05-24T10:50:30Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-05-24T10:50:30Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-05-24T10:50:27Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-05-24T10:50:28Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-05-24T10:50:28Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-05-24T10:50:27Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-05-24T10:50:28Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-05-24T10:50:27Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-05-24T10:50:29Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-05-24T10:50:30Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-05-24T10:50:30Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-05-24"
+}

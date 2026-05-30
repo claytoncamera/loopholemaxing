@@ -1,47 +1,17 @@
 {
   "name": "Loopholemaxing Creation Engine",
-  "version": "0.1",
-  "tagline": "Agora is the first public wing of a larger knowledge powerhouse.",
-  "description": "A constellation of independent engines. Each one is its own creation; together they form a research, intelligence, and reading network. Agora is the public reading wing — the others remain distinct creations and continue to operate on their own.",
+  "version": "0.2",
+  "tagline": "A constellation of independent engines under one roof.",
+  "description": "A constellation of independent engines. Each one is its own creation; together they form a research, intelligence, commerce, and reading network. Agora is the public reading wing — the others remain distinct creations and continue to operate on their own.",
   "wings": [
-    {
-      "slug": "agora",
-      "name": "Agora — Library of Minds",
-      "role": "Public reading wing",
-      "kind": "public",
-      "status": "live-alpha",
-      "summary": "Public-domain reading room for the foundational philosophers. Source-traceable to Project Gutenberg, Perseus, Open Library, Wikidata.",
-      "metrics": ["16 philosophers", "30+ works", "PD-only"],
-      "url": "/agora/"
-    },
-    {
-      "slug": "btc-brain",
-      "name": "BTC Intelligence Brain",
-      "role": "Market-research pattern + ledger inspiration",
-      "kind": "public",
-      "status": "live",
-      "summary": "15-chapter Bitcoin research workspace. Live market data, hash-chained forecast ledger, regime + drift models. Educational research only.",
-      "metrics": ["15 chapters", "20 modules", "live ledger"],
-      "url": "/btc-brain/"
-    },
-    {
-      "slug": "uae",
-      "name": "Universal Analyst Engine",
-      "role": "Canonical entity + scoring spine",
-      "kind": "api",
-      "status": "live",
-      "summary": "Multi-domain entity scoring across sports, markets, brands, politics, entertainment. The pattern Agora's source-ledger is modelled on.",
-      "metrics": ["90 entities", "5 domains", "24/7"],
-      "url": "/uae/"
-    },
     {
       "slug": "army-link",
       "name": "Army Link — Overseer Command Nexus",
       "role": "Audit + orchestration surface",
       "kind": "restricted",
-      "status": "live",
-      "summary": "Passkey-gated entry to the command nexus across the public creations. Audit and orchestration only — not a trading or execution venue.",
-      "metrics": ["passkey-gated", "SHA-256 soft gate", "no execution"],
+      "status": "restricted",
+      "summary": "Passkey-gated entry surface for the Overseer Command Nexus. A command, audit, and orchestration view across the public creations — not a trading or execution venue. Static soft gate (client-side SHA-256), unlock state per browser tab.",
+      "metrics": ["passkey-gated", "SHA-256 soft gate", "audit + orchestration", "no execution"],
       "url": "/army-link/"
     },
     {
@@ -49,10 +19,21 @@
       "name": "MMS HUB",
       "role": "Private control center",
       "kind": "restricted",
-      "status": "live",
-      "summary": "Server-authenticated finance / signal / bot control center. Brokerage trading locked by default. The discipline pattern for ingest + readiness.",
-      "metrics": ["server-side auth", "brokerage gates", "no public access"],
+      "status": "restricted",
+      "summary": "Private Money Making Solutions control center for finance intake, provider readiness, bot orchestration, brokerage upgrade gates, and system health. The public page is only a doorway; the live HUB requires server-side authentication and keeps brokerage trading locked by default.",
+      "metrics": ["private control center", "server-side auth", "brokerage gates", "no public access"],
       "url": "/mms-hub/"
+    },
+    {
+      "slug": "btc-brain",
+      "name": "BTC Intelligence Brain",
+      "role": "Market-research pattern + ledger inspiration",
+      "kind": "public",
+      "status": "live",
+      "version": "v5.0",
+      "summary": "A 15-chapter Bitcoin research and analysis workspace. Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, and risk management — with live market data, a 3D diagram of the system, and a research activity feed. Educational research only — not financial advice.",
+      "metrics": ["15 chapters", "20 modules", "10 charts", "live ledger", "educational"],
+      "url": "/btc-brain/"
     },
     {
       "slug": "nba-brain",
@@ -60,19 +41,10 @@
       "role": "Signal-edge dashboard",
       "kind": "public",
       "status": "live",
-      "summary": "12-module odds modelling + arb + CLV system. Detects line mistakes before the market corrects.",
-      "metrics": ["12 modules", "arb scanner", "CLV tracker"],
+      "version": "v3.0",
+      "summary": "A 12-module NBA betting intelligence system built to detect line mistakes before the market corrects. Real-time odds modeling, schedule stress analysis, pace projections, injury impact scoring, prop market edges, arbitrage window scanner, and CLV tracking — all in one dashboard.",
+      "metrics": ["12 modules", "totals + props", "arb scanner", "CLV tracker", "schedule stress"],
       "url": "/nba-brain/"
-    },
-    {
-      "slug": "ultron",
-      "name": "ULTRON",
-      "role": "Local-first agent — human-gated side effects",
-      "kind": "public",
-      "status": "live",
-      "summary": "Local-first autonomous AI agent. Every side effect waits for an explicit human APPROVE. 30/30 adversarial tests green.",
-      "metrics": ["21 tools", "30/30 attack tests", "MIT"],
-      "url": "/ultron/"
     },
     {
       "slug": "vault",
@@ -80,8 +52,9 @@
       "role": "Zero-knowledge document vault",
       "kind": "public",
       "status": "live",
-      "summary": "AES-256-GCM encryption entirely in-browser. The server never sees your data.",
-      "metrics": ["AES-256-GCM", "zero-knowledge", "PBKDF2"],
+      "version": "v1.0",
+      "summary": "A zero-knowledge encrypted personal vault for your most sensitive documents. AES-256-GCM encryption runs entirely in your browser — the server never sees your data. Store IDs, insurance policies, financial accounts, medical records, passwords, and estate documents with military-grade security.",
+      "metrics": ["6 categories", "AES-256-GCM", "zero-knowledge", "PBKDF2 key derivation"],
       "url": "/vault/"
     },
     {
@@ -90,9 +63,95 @@
       "role": "Performance nutrition brand",
       "kind": "public",
       "status": "live",
-      "summary": "Most protein-dense organism on earth. 28g complete protein per serving, all 9 essential amino acids.",
-      "metrics": ["28g protein", "9/9 aminos", "$49.99 / 30srv"],
+      "version": "v1.0",
+      "summary": "A performance nutrition brand powered by the most protein-dense organism on earth. FORMIX delivers 28g complete protein per serving, all 9 essential amino acids, and a 95% lower carbon footprint than beef.",
+      "metrics": ["28g protein", "9/9 aminos", "$49.99 / 30srv", "sustainable"],
       "url": "/formix/"
+    },
+    {
+      "slug": "orbitroute",
+      "name": "OrbitRoute",
+      "role": "Software routing layer for orbital GPU networks",
+      "kind": "public",
+      "status": "in-development",
+      "summary": "The software routing layer for orbital GPU networks — \"Cloudflare for satellites.\" Routes enterprise AI workloads to orbital compute capacity with 35% cost savings versus AWS, GCP, and Azure. 10,657 satellites tracked, 17 ground stations, 12 autonomous AI engines, 5 patents filed.",
+      "metrics": ["10,657 satellites", "17 ground stations", "5 patents", "$39B market"],
+      "url": "https://orbitroute.ai"
+    },
+    {
+      "slug": "ultron",
+      "name": "ULTRON",
+      "role": "Local-first agent — human-gated side effects",
+      "kind": "public",
+      "status": "live",
+      "version": "v0.1",
+      "summary": "A local-first autonomous AI agent with a non-negotiable human-in-the-loop gate on every side effect. Reads, plans, proposes — but every trade, file write, deploy, and API call waits for an explicit human APPROVE. Zero OpenAI dependency: runs on Ollama locally, Anthropic or Perplexity in the cloud. 30 adversarial tests green, hash-chained audit log, kill switch.",
+      "metrics": ["21 tools", "5 integrations", "30/30 attack tests", "local-first", "MIT"],
+      "url": "/ultron/"
+    },
+    {
+      "slug": "tally-cams",
+      "name": "Tallahassee Camera Intelligence",
+      "role": "Public-camera aggregation dashboard",
+      "kind": "public",
+      "status": "in-development",
+      "summary": "A real-source public-camera aggregation dashboard for Tallahassee and Leon County. 407 verified cameras dedup'd from 593 raw feeds across City ATMS, FDOT, FL511, WeatherSTEM, FAA, and regional webcams — live snapshots proxied through a per-source Referer-aware backend. Map-first, dark-themed, with live traffic incidents and congestion overlays.",
+      "metrics": ["407 cameras", "7 sources", "318 congestion segments", "15-min ingest", "MapLibre + Express"],
+      "url": null
+    },
+    {
+      "slug": "practically-natty",
+      "name": "Practically Natty Peptides",
+      "role": "Research-grade peptide storefront (affiliate partner)",
+      "kind": "public",
+      "status": "live",
+      "summary": "Research-grade peptides and performance compounds for the natty-adjacent athlete. Curated stack of GLP-1s, growth peptides, and recovery agents — third-party tested, lab-verified purity, discreet shipping. Partnered storefront with direct-to-consumer pricing.",
+      "metrics": ["lab-tested", "research-grade", "affiliate partner"],
+      "url": "https://practicallynatty.com/?aff=2"
+    },
+    {
+      "slug": "peptidex",
+      "name": "PeptiDex",
+      "role": "Peptide research intelligence + education hub",
+      "kind": "public",
+      "status": "live",
+      "summary": "Peptide research intelligence and education hub. A research-first peptide knowledge base built to turn compound research into structured education, guides, and affiliate-qualified traffic. Educational research only — not medical advice, and PeptiDex does not sell peptides.",
+      "metrics": ["research hub", "education", "guides", "separate domain"],
+      "url": "https://www.thepeptidex.net"
+    },
+    {
+      "slug": "uae",
+      "name": "Universal Analyst Engine",
+      "role": "Canonical entity + scoring spine",
+      "kind": "public",
+      "status": "live",
+      "version": "v1.0",
+      "summary": "A multi-domain AI intelligence engine that scores, ranks, and tracks entities across sports, markets, brands, politics, and entertainment. Live narrative ingestion, Polygon.io market data, AI sentiment scoring, and real-time alerts — 90 entities monitored across 5 domains, running 24/7.",
+      "metrics": ["90 entities", "5 domains", "AI scoring", "live alerts", "24/7"],
+      "url": "/uae/"
+    },
+    {
+      "slug": "agora",
+      "name": "Agora — Library of Minds",
+      "role": "Public reading wing",
+      "kind": "public",
+      "status": "live",
+      "version": "v0.1 Alpha",
+      "summary": "A public-domain reading room for the philosophers who built the operating system of the West. 16 seed authors — Plato, Aristotle, Socrates, Heraclitus, Parmenides and more — with a compact catalog, source-traceable provenance (Project Gutenberg, Open Library, Wikidata, Perseus), and an in-browser reader for featured works. Modern copyrighted translations are never bundled.",
+      "metrics": ["16 philosophers", "30+ works", "PD-only", "source ledger", "CC0 metadata"],
+      "url": "/agora/"
+    }
+  ],
+  "engagement": [
+    {
+      "slug": "work-with-clayton",
+      "name": "Work With Clayton",
+      "role": "Hire the operator behind these creations",
+      "kind": "service",
+      "status": "open",
+      "summary": "Hire the operator behind these creations. $497 Loophole Audit (48 hours) → $1.5–3.5K Build Sprint (5 days) → $3–7.5K/mo Operator Retainer. AI systems that find hidden revenue, automate operations, and turn scattered workflows and data into software that increases sales and cash flow.",
+      "metrics": ["$497 audit", "48-hour delivery", "5-day sprints", "retainer available"],
+      "url": "/work-with-clayton/"
     }
   ],
   "roadmap": [

@@ -353,5 +353,257 @@ class TestEndToEnd(unittest.TestCase):
         self.assertFalse(m["global"]["display_ready"])
 
 
+# ── F: batched fetch — few requests, paging, close==target lookup ────────────
+def _hour_ms(iso: str) -> int:
+    return int(parse_iso_utc(iso).timestamp() * 1000)
+
+
+class TestBatchedFetch(unittest.TestCase):
+    def _binance_rows(self, open_mss, prices):
+        """Build Binance-shaped kline rows: closeTime = open + 1h - 1ms."""
+        rows = []
+        for o, px in zip(open_mss, prices):
+            rows.append([o, "0", "0", "0", str(px), "0", o + 3600_000 - 1,
+                         "0", 0, "0", "0", "0"])
+        return rows
+
+    def test_single_range_request_covers_many_targets(self):
+        # 5 contiguous hourly targets resolve from ONE range request.
+        base = parse_iso_utc("2026-04-01T01:00:00Z")
+        targets = [(base + timedelta(hours=i)).strftime("%Y-%m-%dT%H:%M:%SZ")
+                   for i in range(5)]
+        # Candles open at target-1h, close at target.
+        open_mss = [int((base + timedelta(hours=i) - timedelta(hours=1)).timestamp() * 1000)
+                    for i in range(5)]
+        rows = self._binance_rows(open_mss, [100.0 + i for i in range(5)])
+
+        calls = {"n": 0}
+
+        def fetcher(symbol, interval, start_ms, end_ms):
+            calls["n"] += 1
+            return [r for r in rows if r[6] >= start_ms and r[0] <= end_ms]
+
+        now = base + timedelta(hours=10)
+        sources = [("binance", lambda s, e: ps._binance_range_map(s, e, fetcher))]
+        out = ps.fetch_closes_for_targets(targets, now=now, sources=sources)
+        self.assertEqual(len(out), 5)
+        self.assertEqual(calls["n"], 1, "all targets must come from one request")
+        # Each target maps to the candle whose close == target.
+        for i, t in enumerate(targets):
+            self.assertAlmostEqual(out[t].close_price, 100.0 + i)
+            # close_time is the bar's true closeTime (…:59.999), within 1s of target.
+            self.assertLessEqual(
+                abs((out[t].close_time - parse_iso_utc(t)).total_seconds()), 1.0)
+
+    def test_paging_past_1000_candles(self):
+        # 1500 contiguous hourly candles → must page (Binance cap 1000/req).
+        base = parse_iso_utc("2026-01-01T01:00:00Z")
+        n = 1500
+        open_mss = [int((base + timedelta(hours=i) - timedelta(hours=1)).timestamp() * 1000)
+                    for i in range(n)]
+        all_rows = self._binance_rows(open_mss, [float(i) for i in range(n)])
+
+        calls = {"n": 0}
+
+        def fetcher(symbol, interval, start_ms, end_ms):
+            calls["n"] += 1
+            page = [r for r in all_rows if r[6] >= start_ms and r[0] <= end_ms]
+            return page[:1000]  # enforce the real 1000-candle cap
+
+        s = open_mss[0]
+        e = open_mss[-1] + 3600_000
+        cmap = ps._binance_range_map(s, e, fetcher)
+        self.assertEqual(len(cmap), n, "paging must collect every candle")
+        self.assertGreaterEqual(calls["n"], 2, "1500 candles cannot fit one page")
+        # First and last targets resolve correctly.
+        first_close = parse_iso_utc("2026-01-01T01:00:00Z")
+        last_close = base + timedelta(hours=n - 1)
+        self.assertIn(round(first_close.timestamp()), cmap)
+        self.assertIn(round(last_close.timestamp()), cmap)
+
+    def test_lookup_returns_candle_whose_close_equals_target(self):
+        # Off-by-one guard at the batched layer: target 06:00 must select the
+        # 05:00→06:00 bar (close 06:00), NOT the 06:00→07:00 bar.
+        t = "2026-04-01T06:00:00Z"
+        right_open = _hour_ms("2026-04-01T05:00:00Z")
+        wrong_open = _hour_ms("2026-04-01T06:00:00Z")
+        rows = self._binance_rows([right_open, wrong_open], [500.0, 999.0])
+
+        def fetcher(symbol, interval, start_ms, end_ms):
+            return [r for r in rows if r[6] >= start_ms and r[0] <= end_ms]
+
+        now = parse_iso_utc("2026-04-01T12:00:00Z")
+        sources = [("binance", lambda s, e: ps._binance_range_map(s, e, fetcher))]
+        out = ps.fetch_closes_for_targets([t], now=now, sources=sources)
+        self.assertAlmostEqual(out[t].close_price, 500.0,
+                               msg="must pick the bar that CLOSES at target")
+
+    def test_future_target_omitted_no_error(self):
+        future = (datetime.now(timezone.utc) + timedelta(hours=3)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        out = ps.fetch_closes_for_targets([future], sources=[
+            ("binance", lambda s, e: {})])
+        self.assertEqual(out, {})
+
+
+# ── G: fallback chain — binance->coingecko->kraken, provenance recorded ───────
+class TestFallbackChain(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.target = "2026-04-01T06:00:00Z"
+        self.target_dt = parse_iso_utc(self.target)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _candle(self, source, px):
+        ct = self.target_dt
+        ot = ct - timedelta(hours=1)
+        return ps.Candle(open_time=ot, close_time=ct, close_price=px, source=source)
+
+    def _source(self, tag, px, fail=False):
+        def fn(s, e):
+            if fail:
+                raise ps.PriceFetchError(f"{tag} down")
+            return {round(self.target_dt.timestamp()): self._candle(tag, px)}
+        return (tag, fn)
+
+    def _now(self):
+        return self.target_dt + timedelta(hours=1)
+
+    def test_binance_used_when_up(self):
+        sources = [self._source("binance", 100.0),
+                   self._source("coingecko", 200.0),
+                   self._source("kraken", 300.0)]
+        out = ps.fetch_closes_for_targets([self.target], now=self._now(), sources=sources)
+        self.assertEqual(out[self.target].source, "binance")
+        self.assertAlmostEqual(out[self.target].close_price, 100.0)
+
+    def test_falls_back_to_coingecko_when_binance_fails(self):
+        sources = [self._source("binance", 100.0, fail=True),
+                   self._source("coingecko", 200.0),
+                   self._source("kraken", 300.0)]
+        stats = {}
+        out = ps.fetch_closes_for_targets([self.target], now=self._now(),
+                                          sources=sources, stats=stats)
+        self.assertEqual(out[self.target].source, "coingecko")
+        self.assertIn("binance", stats["source_errors"])
+
+    def test_falls_back_to_kraken_when_binance_and_coingecko_fail(self):
+        sources = [self._source("binance", 100.0, fail=True),
+                   self._source("coingecko", 200.0, fail=True),
+                   self._source("kraken", 300.0)]
+        out = ps.fetch_closes_for_targets([self.target], now=self._now(), sources=sources)
+        self.assertEqual(out[self.target].source, "kraken")
+        self.assertAlmostEqual(out[self.target].close_price, 300.0)
+
+    def test_all_sources_fail_leaves_target_open(self):
+        sources = [self._source("binance", 100.0, fail=True),
+                   self._source("coingecko", 200.0, fail=True),
+                   self._source("kraken", 300.0, fail=True)]
+        out = ps.fetch_closes_for_targets([self.target], now=self._now(), sources=sources)
+        self.assertEqual(out, {}, "no source → target stays unresolved, never guessed")
+
+    def test_recorded_price_source_in_resolution(self):
+        # End-to-end: a forecast resolved via the kraken fallback records
+        # price_source == "kraken" in the resolution row.
+        L = Ledger.at(self.root)
+        f = _good_forecast(forecast_id="ffff0000-0000-0000-0000-00000000000a",
+                           target_time=self.target, issued_at="2026-04-01T05:00:00Z")
+        L.append_forecast(f)
+        sources = [self._source("binance", 100.0, fail=True),
+                   self._source("coingecko", 200.0, fail=True),
+                   self._source("kraken", 67500.0)]
+        summary = resolve_mod.run(self.root, now=self._now(), sources=sources)
+        self.assertEqual(len(summary["resolved"]), 1)
+        self.assertEqual(summary["resolved"][0]["price_source"], "kraken")
+        # And it persisted to the ledger and validates.
+        rows = list(L.iter_resolutions())
+        self.assertEqual(rows[0]["price_source"], "kraken")
+
+
+# ── H: per-source alignment (timestamp semantics) ────────────────────────────
+class TestSourceAlignment(unittest.TestCase):
+    def test_coingecko_30m_bar_aligns_to_hour_close(self):
+        # CoinGecko OHLC ts = bar OPEN. The :30 bar (opens target-30m) closes
+        # at the hour boundary; the :00 bar opens at the hour and must NOT be
+        # picked for that target.
+        target = parse_iso_utc("2026-04-01T18:00:00Z")
+        open_30 = int((target - timedelta(minutes=30)).timestamp() * 1000)
+        open_00 = int(target.timestamp() * 1000)
+        rows = [[open_30, 0, 0, 0, 62233.0], [open_00, 0, 0, 0, 62139.0]]
+        cmap = ps._coingecko_range_map(
+            int(target.timestamp() * 1000) - 3600_000,
+            int(target.timestamp() * 1000),
+            fetcher=lambda: rows,
+        )
+        c = cmap.get(round(target.timestamp()))
+        self.assertIsNotNone(c)
+        self.assertAlmostEqual(c.close_price, 62233.0)
+
+    def test_kraken_open_seconds_aligns_to_hour_close(self):
+        # Kraken `time` = bar OPEN in seconds. The bar with time==target-3600
+        # closes at target.
+        target = parse_iso_utc("2026-04-01T06:00:00Z")
+        open_s = int(target.timestamp()) - 3600
+        payload = {"error": [], "result": {
+            "XXBTZUSD": [[open_s, "0", "0", "0", "61305.5", "0", "0", 0]],
+            "last": open_s,
+        }}
+        cmap = ps._kraken_range_map(
+            int(target.timestamp() * 1000) - 3600_000,
+            int(target.timestamp() * 1000),
+            fetcher=lambda since_s: payload,
+        )
+        c = cmap.get(round(target.timestamp()))
+        self.assertIsNotNone(c)
+        self.assertAlmostEqual(c.close_price, 61305.5)
+
+
+# ── I: off-by-one regression lock (single-target path) ───────────────────────
+class TestOffByOneRegressionLock(unittest.TestCase):
+    """Locks the candle-close-at-target rule so it can't silently regress.
+
+    A forecast targeting 06:00 must resolve to the close of the 05:00→06:00
+    candle (closeTime ~05:59:59.999), NOT the 06:00→07:00 candle. The old bug
+    selected the latter and returned its 07:00 close — one candle late.
+    """
+
+    def test_single_target_picks_candle_closing_at_target(self):
+        target = "2026-04-01T06:00:00Z"
+        right_open = parse_iso_utc("2026-04-01T05:00:00Z")
+        right_close = parse_iso_utc("2026-04-01T06:00:00Z")
+        wrong_open = parse_iso_utc("2026-04-01T06:00:00Z")
+        wrong_close = parse_iso_utc("2026-04-01T07:00:00Z")
+        fetcher = ps.make_fixture_fetcher([
+            (int(right_open.timestamp() * 1000), int(right_close.timestamp() * 1000) - 1, 500.0),
+            (int(wrong_open.timestamp() * 1000), int(wrong_close.timestamp() * 1000) - 1, 999.0),
+        ])
+        now = parse_iso_utc("2026-04-01T12:00:00Z")
+        c = ps.fetch_close_for_target(target, now=now, fetcher=fetcher)
+        self.assertAlmostEqual(c.close_price, 500.0)
+        self.assertLessEqual(
+            abs((c.close_time - right_close).total_seconds()), 1.0)
+        self.assertEqual(c.open_time, right_open)
+
+    def test_batched_and_single_agree_on_target_candle(self):
+        target = "2026-04-01T06:00:00Z"
+        right_open = parse_iso_utc("2026-04-01T05:00:00Z")
+        right_close = parse_iso_utc("2026-04-01T06:00:00Z")
+        wrong_open = parse_iso_utc("2026-04-01T06:00:00Z")
+        wrong_close = parse_iso_utc("2026-04-01T07:00:00Z")
+        candles = [
+            (int(right_open.timestamp() * 1000), int(right_close.timestamp() * 1000) - 1, 500.0),
+            (int(wrong_open.timestamp() * 1000), int(wrong_close.timestamp() * 1000) - 1, 999.0),
+        ]
+        fetcher = ps.make_fixture_fetcher(candles)
+        now = parse_iso_utc("2026-04-01T12:00:00Z")
+        single = ps.fetch_close_for_target(target, now=now, fetcher=fetcher)
+        sources = [("binance", lambda s, e: ps._binance_range_map(s, e, fetcher))]
+        batched = ps.fetch_closes_for_targets([target], now=now, sources=sources)
+        self.assertAlmostEqual(single.close_price, batched[target].close_price)
+        self.assertEqual(single.close_time, batched[target].close_time)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

@@ -43,7 +43,25 @@ in `resolutions.jsonl`.
 | `resolver_version`   | string  | yes      | Version of `resolve.py` that wrote this row. |
 | `candle_open_time`   | string  | yes      | ISO-8601 UTC of the close candle's open. |
 | `candle_close_time`  | string  | yes      | ISO-8601 UTC of the close candle's close. |
-| `price_source`       | string  | yes      | e.g. `binance:BTCUSDT:1h`. |
+| `price_source`       | string  | yes      | Provenance of the resolving close. Either the legacy version tag `binance:BTCUSDT:1h`, or one of the short provider tags `binance` / `coingecko` / `kraken` written by the fallback-aware resolver. |
+
+### `price_source` provenance
+
+The resolver tries keyless public sources in order **Binance → CoinGecko →
+Kraken** and records which one supplied the close. All three return the *same*
+quantity — the close of the 1h candle that ends at `target_time` — so accuracy
+math is source-independent. Readers must treat `price_source` as a free-form
+string and tolerate both the old version-tag form (`binance:BTCUSDT:1h`, on
+rows written before the fallback change) and the short provider tags. Old rows
+without any newer value are unaffected; the field has always been present.
+
+Alignment per source (all resolve the hour-boundary close at `target_time`):
+
+- **binance**: 1h klines; the bar whose `closeTime` ≈ `target` (…:59.999).
+- **coingecko**: `/coins/bitcoin/ohlc?days=1` 30-min bars (timestamp = open);
+  the bar opening at `target − 30m` closes at `target`. Only covers ~last 24h.
+- **kraken**: `/0/public/OHLC?interval=60` 1h bars (`time` = open, seconds);
+  the bar with `time == target − 3600` closes at `target`. Covers deep history.
 
 ## Identity & joining
 

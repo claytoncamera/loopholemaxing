@@ -198,13 +198,14 @@ class TestResolver(unittest.TestCase):
         # Build a fetcher that has the candle covering 00:00→01:00 with close 67500.
         ot = parse_iso_utc("2026-04-01T00:00:00Z")
         ct = parse_iso_utc("2026-04-01T01:00:00Z")
-        # Resolver picks the candle where open_time <= target < close_time.
-        # For target = 01:00, that is the 01:00→02:00 candle. Make it close 67500.
+        # Resolver picks the candle that CLOSES at target. For target = 01:00,
+        # that is the 00:00→01:00 candle (closeTime ~= 00:59:59.999). Its close
+        # is the horizon price → 67500. The 01:00→02:00 candle is one too late.
         ot2 = ct
         ct2 = ot2 + timedelta(hours=1)
         fetcher = ps.make_fixture_fetcher([
-            (int(ot.timestamp()*1000),  int(ct.timestamp()*1000) - 1, 67460.0),
-            (int(ot2.timestamp()*1000), int(ct2.timestamp()*1000) - 1, 67500.0),
+            (int(ot.timestamp()*1000),  int(ct.timestamp()*1000) - 1, 67500.0),
+            (int(ot2.timestamp()*1000), int(ct2.timestamp()*1000) - 1, 67460.0),
         ])
         summary = resolve_mod.run(self.root, fetcher=fetcher)
         self.assertEqual(len(summary["resolved"]), 1)
@@ -215,22 +216,31 @@ class TestResolver(unittest.TestCase):
         self.assertAlmostEqual(r["brier_component"], (0.62-1)**2, places=6)
 
     def test_no_resolution_with_incomplete_candle(self):
-        # target is past, but the covering candle's close_time is in the future.
-        now = datetime.now(timezone.utc)
-        # target was 30 minutes ago, candle still open until 30 min from now.
-        target = now - timedelta(minutes=30)
-        ot = target - timedelta(minutes=30)
-        ct = now + timedelta(minutes=30)  # close_time > now → NotYet
+        # Under the corrected rule the resolving bar CLOSES at target, so a
+        # forecast must not resolve until its closing candle has finalized.
+        # Here target is one second beyond the resolver's `now`: the candle
+        # that closes at target has not finished, so the resolver refuses
+        # (NotYet) rather than resolving on a partial bar.
+        wall = parse_iso_utc("2026-04-01T01:00:00Z")
+        target = wall  # candle 00:00→01:00 closes here
+        ot = target - timedelta(hours=1)
+        ct = target
         target_iso = target.strftime("%Y-%m-%dT%H:%M:%SZ")
         self._seed_forecast(forecast_id="aaaa3333-0000-0000-0000-000000000003",
-                            issued_at=(target - timedelta(hours=1)).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                            issued_at=ot.strftime("%Y-%m-%dT%H:%M:%SZ"),
                             target_time=target_iso)
         fetcher = ps.make_fixture_fetcher([
             (int(ot.timestamp()*1000), int(ct.timestamp()*1000) - 1, 67500.0),
         ])
-        summary = resolve_mod.run(self.root, fetcher=fetcher)
+        # `now` sits one second before target → horizon boundary not yet passed,
+        # so the forecast is not even eligible and nothing resolves on a
+        # partial bar.
+        now = target - timedelta(seconds=1)
+        summary = resolve_mod.run(self.root, fetcher=fetcher, now=now)
         self.assertEqual(summary["resolved"], [])
-        self.assertEqual(len(summary["skipped_not_yet"]), 1)
+        self.assertEqual(summary["open_count"], 0,
+                         "a forecast whose closing candle has not finalized "
+                         "must not be eligible for resolution")
 
 
 # ── D: metrics generator ─────────────────────────────────────────────────────
@@ -327,7 +337,9 @@ class TestEndToEnd(unittest.TestCase):
         L = Ledger.at(self.root)
         f = _good_forecast()
         L.append_forecast(f)
-        ot = parse_iso_utc("2026-04-01T01:00:00Z")
+        # Target is 01:00 → the resolving candle is the 00:00→01:00 bar,
+        # whose close is the horizon price.
+        ot = parse_iso_utc("2026-04-01T00:00:00Z")
         ct = ot + timedelta(hours=1)
         fetcher = ps.make_fixture_fetcher([
             (int(ot.timestamp()*1000), int(ct.timestamp()*1000) - 1, 67800.0),

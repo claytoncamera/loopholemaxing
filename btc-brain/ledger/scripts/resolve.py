@@ -78,9 +78,9 @@ def resolve_one(forecast: dict, candle: Candle) -> dict:
     }
 
 
-def run(root: Path, dry_run: bool = False, fetcher=None) -> dict:
+def run(root: Path, dry_run: bool = False, fetcher=None, now=None) -> dict:
     ledger = Ledger.at(root)
-    open_forecasts = ledger.open_forecasts()
+    open_forecasts = ledger.open_forecasts(now=now)
     summary = {
         "now": utc_now_iso(),
         "open_count": len(open_forecasts),
@@ -91,6 +91,8 @@ def run(root: Path, dry_run: bool = False, fetcher=None) -> dict:
     for fc in open_forecasts:
         try:
             kwargs = {} if fetcher is None else {"fetcher": fetcher}
+            if now is not None:
+                kwargs["now"] = now
             candle = fetch_close_for_target(fc["target_time"], **kwargs)
         except NotYet as e:
             summary["skipped_not_yet"].append(

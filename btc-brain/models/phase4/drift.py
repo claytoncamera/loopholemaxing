@@ -48,11 +48,16 @@ class PageHinkleyState:
 class PageHinkley:
     """Page-Hinkley change detector for a scalar loss / error stream.
 
-    Tracks the running mean and a cumulative deviation. Fires when the gap
-    between the running cumulative and its min (drift up) — or its max
-    (drift down) — exceeds ``threshold``. ``alpha`` is a small forgetting
-    factor: it nudges the cumulative back toward zero so a slow regime
-    shift can re-arm the detector once the new mean is learned.
+    This is the scikit-multiflow variant of the Page-Hinkley test. Each step
+    accumulates ``(x - running_mean - alpha)`` into a cumulative sum; ``alpha``
+    is the *magnitude tolerance* (the classic PH ``delta``): the minimum
+    per-step deviation that is treated as real drift rather than noise. It is
+    NOT a multiplicative forgetting factor — it does not pull the cumulative
+    back toward zero. The detector fires when the running cumulative pulls away
+    from its own min (drift up) or max (drift down) by more than ``threshold``;
+    because min/max track the cumulative, the gap naturally re-bases after a
+    sustained shift, which lets the detector re-arm once the new mean is
+    learned.
 
     Use the same instance per (model, horizon) — never share across
     horizons or models. Reset with ``.reset()`` after handling an alarm.
@@ -75,9 +80,12 @@ class PageHinkley:
         """Feed one observation. Returns True if an alarm fires *this* step."""
         s = self.state
         s.n += 1
-        # Streaming mean.
+        # Streaming mean (updated before the deviation, per the
+        # scikit-multiflow PH convention).
         s.mean += (x - s.mean) / s.n
-        # Page-Hinkley cumulative deviation with a small forgetting term.
+        # PH cumulative: accumulate the per-step deviation minus the magnitude
+        # tolerance ``alpha``. Drift is detected from how far this pulls away
+        # from its running min/max, not from its absolute level.
         delta = x - s.mean - self.alpha
         s.cumulative += delta
         if s.cumulative < s.min_cumulative:

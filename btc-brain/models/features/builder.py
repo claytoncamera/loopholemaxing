@@ -69,7 +69,12 @@ def _safe_log(x: float) -> float:
 
 
 def _ema(values: list[float], n: int) -> list[float]:
-    """Standard EMA. Output length == input. First n-1 values use SMA seed."""
+    """Standard EMA, k = 2/(n+1). Output length == input.
+
+    Seeded with the first value (EMA[0] = values[0]); each subsequent point
+    is values[i]*k + EMA[i-1]*(1-k). This single-point seed is the common
+    convention and matches the dashboard's client-side EMA.
+    """
     if n <= 1:
         return list(values)
     out: list[float] = []

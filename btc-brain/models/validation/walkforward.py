@@ -5,7 +5,12 @@ Splits a labeled (X, y, t_index) dataset into a sequence of (train, test)
 folds such that:
   * train indices are strictly earlier than test indices,
   * a purge of `purge_bars` rows is removed from the END of each train fold
-    to prevent label leakage from overlapping H-bar targets,
+    to prevent label leakage from overlapping H-bar targets. CONTRACT:
+    `purge_bars` MUST be >= the label horizon in bars (H). A label at train
+    row i looks H bars ahead, so the last H train rows would otherwise peek
+    into the test window. The default of 1 is correct ONLY for a 1-bar
+    horizon; multi-bar horizons (4h/12h/24h) must pass purge_bars=H. The
+    production runner (run_phase3.py) already passes purge_bars=h_bars.
   * an embargo of `embargo_bars` rows is removed from the START of the next
     test fold (boundary cushion for autocorrelation).
 

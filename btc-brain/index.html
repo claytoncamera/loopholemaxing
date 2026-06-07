@@ -3479,11 +3479,15 @@
     const mcapEl = document.getElementById('live-mcap');
     if (mcapEl) {
       if (isFinite(price)) {
-        const supply = 19850000;
-        const mcap = price * supply / 1e12;
-        mcapEl.textContent = '$' + mcap.toFixed(3) + 'T';
+        // Circulating supply is NOT live here — it is a fixed estimate, so the
+        // result is an approximate cap, not an exact figure. BTC issuance is
+        // ~450 BTC/day post-2024-halving; ~19.87M circulating as of 2026-06.
+        // We label it "~ ... (est.)" so it is never mistaken for a live mcap.
+        const EST_SUPPLY = 19870000; // approx circulating BTC, 2026-06
+        const mcap = price * EST_SUPPLY / 1e12;
+        mcapEl.textContent = '~$' + mcap.toFixed(3) + 'T (est.)';
       } else {
-        mcapEl.textContent = '—';
+        mcapEl.textContent = '— (unavailable)';
       }
     }
 
@@ -3529,13 +3533,24 @@
       const last = closes[closes.length - 1];
       const prev = closes[closes.length - 2];
       const prev2 = closes[closes.length - 3];
-      const avgVol = vols.slice(-10).reduce((a,b)=>a+b,0)/10;
+      const recentVols = vols.slice(-10);
+      const avgVol = recentVols.reduce((a,b)=>a+b,0) / recentVols.length;
       const curVol = vols[vols.length - 1];
-      const volRatio = curVol / avgVol;
+      const volRatio = (isFinite(avgVol) && avgVol > 0) ? curVol / avgVol : 1;
 
-      // EMA approx
-      const ema9 = closes.slice(-9).reduce((a,b)=>a+b)/9;
-      const ema21 = closes.slice(-21).reduce((a,b)=>a+b)/21;
+      // True EMA: EMA_t = price_t*k + EMA_{t-1}*(1-k), k = 2/(n+1), seeded with
+      // the first available close. (The prior code averaged the last n closes,
+      // which is an SMA — it was mislabeled "ema". A real EMA weights recent
+      // candles more, which is what a 9/21 momentum crossover expects.)
+      function ema(series, n) {
+        if (!series.length) return NaN;
+        const k = 2 / (n + 1);
+        let e = series[0];
+        for (let i = 1; i < series.length; i++) e = series[i] * k + e * (1 - k);
+        return e;
+      }
+      const ema9 = ema(closes.slice(-Math.min(closes.length, 50)), 9);
+      const ema21 = ema(closes.slice(-Math.min(closes.length, 50)), 21);
 
       const up = last > prev && prev > prev2;
       const down = last < prev && prev < prev2;

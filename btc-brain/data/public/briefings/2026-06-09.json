@@ -1,0 +1,131 @@
+{
+  "date": "2026-06-09",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-06-09T13:18:04Z",
+  "id": "briefing-2026-06-09",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.5233766233766234,
+      "baseline_brier": 0.2494535334795075,
+      "baseline_hit_rate": 0.5233766233766234,
+      "brier": 0.2500606389926244,
+      "display_ready": true,
+      "generated_at": "2026-06-09T12:17:26Z",
+      "hit_rate": 0.5233766233766234,
+      "logloss": 0.6932685270267894,
+      "metrics_version": "metrics-v0.1.0",
+      "min_n_display": 20,
+      "n": 770,
+      "total_forecasts": 774,
+      "total_resolved": 770
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-06-09T11:45:42Z",
+      "funding_rate": 8.2798318269e-06,
+      "long_short_ratio": 1.74,
+      "mark_price": 62597.2,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 28692.34630000007,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-06-09T11:45:42Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 63209.47666666666,
+        "r1": 64053.52333333332,
+        "r2": 65044.06666666666,
+        "recent_high": 64200.02,
+        "recent_low": 62391.6,
+        "s1": 62218.93333333333,
+        "s2": 61374.886666666665,
+        "sma_20": 70988.84150000001,
+        "sma_200": null,
+        "sma_50": 75591.8712,
+        "vwap_session": 62870.97701170906
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Extreme Fear",
+      "fear_greed_value": 10,
+      "fetched_at": "2026-06-09T11:45:42Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-06-09T11:45:42Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-06-09T11:45:40Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-06-09T11:45:40Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-06-09T11:45:40Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-06-09T11:45:40Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-06-09T11:45:40Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-06-09T11:45:40Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-06-09T11:45:42Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-06-09T11:45:42Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-06-09T11:45:42Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-06-09"
+}

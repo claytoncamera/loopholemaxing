@@ -180,6 +180,28 @@
     .prog { height:8px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:99px; overflow:hidden; margin-top:10px; }
     .prog-bar { height:100%; width:0; background:linear-gradient(90deg,#3b82f6,#a78bfa); transition:width .2s; }
 
+    /* ── Ingest Engine ────────────────────────────────── */
+    .engine-panel { background:linear-gradient(180deg, rgba(167,139,250,.07), var(--bg-card)); border:1px solid rgba(167,139,250,.22); }
+    .eng-head { display:flex; align-items:center; gap:10px; margin-bottom:6px; flex-wrap:wrap; }
+    .eng-badge { font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:#a78bfa; background:rgba(167,139,250,.14); border:1px solid rgba(167,139,250,.3); padding:4px 10px; border-radius:6px; }
+    .eng-sub { font-size:13px; color:var(--text-secondary); margin-bottom:16px; }
+    .eng-cols { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+    .eng-col-title { font-size:12px; font-weight:700; color:var(--text-secondary); margin-bottom:9px; display:flex; align-items:center; gap:7px; }
+    .eng-list { display:flex; flex-direction:column; gap:8px; }
+    .eng-item { display:flex; align-items:center; gap:10px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:9px; padding:8px 11px; cursor:pointer; transition:all .15s; }
+    .eng-item:hover { border-color:var(--border-light); background:var(--bg-card-hover); }
+    .eng-item img { width:54px; height:30px; object-fit:cover; border-radius:4px; background:#000; flex-shrink:0; }
+    .eng-item-t { flex:1; min-width:0; }
+    .eng-item-name { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .eng-item-note { font-size:11px; color:var(--text-muted); }
+    .eng-empty { font-size:13px; color:var(--text-muted); padding:8px 2px; }
+    .kf-strip { display:flex; gap:6px; overflow-x:auto; margin:14px 0; padding-bottom:4px; }
+    .kf { width:84px; height:48px; object-fit:cover; border-radius:5px; border:1px solid var(--border); background:#000; cursor:pointer; flex-shrink:0; transition:border-color .15s; }
+    .kf:hover { border-color:#a78bfa; }
+    .eng-read { display:flex; flex-wrap:wrap; gap:8px 14px; align-items:center; background:rgba(167,139,250,.08); border:1px solid rgba(167,139,250,.2); border-radius:8px; padding:10px 12px; margin:4px 0 14px; font-size:12px; color:var(--text-secondary); }
+    .eng-read b { color:var(--text-primary); }
+    .ori-badge { font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:.04em; padding:2px 7px; border-radius:5px; background:rgba(88,166,255,.12); color:var(--accent-cyan); }
+
     /* ── Projects ─────────────────────────────────────── */
     .proj-clip { display:flex; align-items:center; gap:12px; background:var(--bg-secondary); border:1px solid var(--border);
       border-radius:10px; padding:10px 12px; margin-bottom:8px; }
@@ -275,6 +297,24 @@
       </div>
 
       <div class="stat-grid" id="stat-grid"></div>
+
+      <div class="panel engine-panel" id="engine-panel">
+        <div class="eng-head">
+          <span class="eng-badge">&#9883; Ingest Engine</span>
+          <span id="eng-backfill-wrap"></span>
+        </div>
+        <div class="eng-sub">Auto-reads every clip on import — orientation, platform fit, and what to do next.</div>
+        <div class="eng-cols">
+          <div>
+            <div class="eng-col-title">&#9986; Ready to clip <span style="color:var(--text-muted);font-weight:400" id="eng-clip-count"></span></div>
+            <div class="eng-list" id="eng-clip-list"></div>
+          </div>
+          <div>
+            <div class="eng-col-title">&#128640; Ready to post <span style="color:var(--text-muted);font-weight:400" id="eng-post-count"></span></div>
+            <div class="eng-list" id="eng-post-list"></div>
+          </div>
+        </div>
+      </div>
 
       <div class="panel">
         <div class="panel-title">By Source — where it came from</div>
@@ -650,6 +690,41 @@ function renderDashboard(){
   $('bd-source').innerHTML   = breakdown(SOURCES,  c=>c.source,  s=>s.color, s=>s.name);
   $('bd-status').innerHTML   = breakdown(STATUSES, c=>c.status,  s=>s.color, s=>s.name);
   $('bd-platform').innerHTML = breakdownMulti(PLATFORMS, c=>c.platforms||[], p=>p.color, p=>p.name);
+  renderEngine();
+}
+
+function renderEngine(){
+  const clipCand = CLIPS.filter(isClipCandidate);
+  const postCand = CLIPS.filter(isPostReady);
+  const row = c => `<div class="eng-item" onclick="${isClipCandidate(c)?`loadInEditor('${c.id}')`:`openDetail('${c.id}')`}">
+      <img src="${c.thumb||''}" alt="">
+      <div class="eng-item-t"><div class="eng-item-name">${esc(c.title)}</div>
+        <div class="eng-item-note">${fmtTime(c.duration).split('.')[0]} · ${esc(orientationOf(c))} · ${esc(srcById(c.source).name.split(' ')[0])}</div></div>
+      <span class="pill">${isClipCandidate(c)?'Trim &rarr;':'Open &rarr;'}</span></div>`;
+  $('eng-clip-list').innerHTML = clipCand.length ? clipCand.slice(0,6).map(row).join('') : '<div class="eng-empty">Nothing long enough to trim yet — import some raw footage and it shows up here.</div>';
+  $('eng-post-list').innerHTML = postCand.length ? postCand.slice(0,6).map(row).join('') : '<div class="eng-empty">No short verticals queued — vertical clips under 90s land here, ready to post.</div>';
+  $('eng-clip-count').textContent = clipCand.length ? '('+clipCand.length+')' : '';
+  $('eng-post-count').textContent = postCand.length ? '('+postCand.length+')' : '';
+  // Offer a backfill if any older clips predate the engine (no orientation read)
+  const stale = CLIPS.filter(c=>!c.orientation && (c.width||c.duration));
+  $('eng-backfill-wrap').innerHTML = stale.length ? `<button class="btn btn-ghost btn-sm" onclick="backfillEngine()">Analyze ${stale.length} older clip${stale.length!==1?'s':''}</button>` : '';
+}
+
+async function backfillEngine(){
+  const stale = CLIPS.filter(c=>!c.orientation && (c.width||c.duration));
+  if(!stale.length) return;
+  toast('Analyzing '+stale.length+' clip'+(stale.length!==1?'s':'')+'…');
+  for(const c of stale){
+    try{
+      const rec=await idbGet('blobs', c.id); if(!rec||!rec.blob) continue;
+      const a=await analyzeVideo(rec.blob);
+      c.orientation=a.orientation; c.keyframes=a.keyframes; if(!c.thumb) c.thumb=a.thumb;
+      if(!c.width){ c.width=a.width; c.height=a.height; }
+      await idbPut('clips', c);
+    }catch(_){}
+  }
+  await refreshAll();
+  toast('Engine analysis complete','success');
 }
 function stat(v,l){ return `<div class="stat"><div class="stat-val">${esc(v)}</div><div class="stat-lbl">${esc(l)}</div></div>`; }
 function breakdown(defs, pick, colorOf, nameOf){
@@ -671,10 +746,10 @@ async function onFilesPicked(files){
   for(const file of files){
     const id=uid();
     const card=document.createElement('div'); card.className='panel'; card.style.marginTop='14px'; card.id='stage-'+id;
-    card.innerHTML=`<div class="hint" style="margin:0 0 10px;">Reading <strong>${esc(file.name)}</strong> (${fmtBytes(file.size)})…</div>`;
+    card.innerHTML=`<div class="hint" style="margin:0 0 10px;">&#9883; Engine reading <strong>${esc(file.name)}</strong> (${fmtBytes(file.size)})…</div>`;
     staging.appendChild(card);
     try{
-      const meta = await probeVideo(file);
+      const meta = await analyzeVideo(file);
       const guessSrc = detectSource(file.name);
       card.innerHTML = stageForm(id, file, meta, guessSrc);
       // stash file + meta on the element for save
@@ -708,19 +783,73 @@ function probeVideo(file){
   });
 }
 
+/* ── Ingest Engine: deep read (keyframe contact sheet + orientation) ── */
+function analyzeVideo(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file);
+    const v=document.createElement('video'); v.preload='auto'; v.muted=true; v.playsInline=true;
+    let dur=0,w=0,h=0;
+    const grab=(maxW)=>{ const tw=maxW, th=Math.round(tw*(h/w||0.5625)); const cv=document.createElement('canvas'); cv.width=tw; cv.height=th; cv.getContext('2d').drawImage(v,0,0,tw,th); return cv.toDataURL('image/jpeg',0.55); };
+    const seek=(t)=>new Promise(r=>{ let done=false; const fin=()=>{ if(done)return; done=true; v.removeEventListener('seeked',fin); r(); }; v.addEventListener('seeked',fin); setTimeout(fin,3500); try{ v.currentTime=Math.max(0,Math.min((dur||0)-0.05,t)); }catch(_){ fin(); } });
+    v.onloadedmetadata=async()=>{
+      dur=v.duration||0; w=v.videoWidth; h=v.videoHeight;
+      const orientation = w>h*1.15 ? 'horizontal' : (h>w*1.12 ? 'vertical' : 'square');
+      let thumb=''; const keyframes=[];
+      try{
+        await seek(Math.min(1,dur*0.1)); thumb=grab(320);
+        const N=5;
+        for(let i=0;i<N && dur>0;i++){ await seek(dur*((i+0.5)/N)); try{ keyframes.push(grab(200)); }catch(_){} }
+        if(!thumb && keyframes.length) thumb=keyframes[0];
+      }catch(_){}
+      URL.revokeObjectURL(url);
+      res({ duration:dur, width:w, height:h, thumb, keyframes, orientation });
+    };
+    v.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('unsupported or corrupt file')); };
+    v.src=url;
+  });
+}
+
+/* ── Ingest Engine: derived recommendations (no stored derived state) ── */
+function orientationOf(c){ if(c.orientation) return c.orientation; if(c.width&&c.height){ return c.width>c.height*1.15?'horizontal':(c.height>c.width*1.12?'vertical':'square'); } return 'unknown'; }
+function suggestedPlatforms(c){
+  const d=c.duration||0, o=orientationOf(c), vert=(o==='vertical'||o==='square'), out=[];
+  if(vert){ out.push('instagram','tiktok'); if(d>0&&d<=60) out.push('youtube'); }
+  else { out.push('youtube'); if(d>0&&d<=60) out.push('instagram','tiktok'); }
+  return [...new Set(out)];
+}
+function lengthNote(c){
+  const d=c.duration||0;
+  if(d<=0) return 'Length unknown.';
+  if(d<=3) return 'Very short — perfect as a loop, hook, or B-roll insert.';
+  if(d<=60) return 'Short-form sweet spot — ready for Reels / TikTok / Shorts.';
+  if(d<=180) return 'Mid-length — trim to a sub-60s cut for max reach.';
+  return 'Long take — cut into multiple clips; pull the best 15–60s moments.';
+}
+function isClipCandidate(c){ return !c.isClip && (c.status==='raw'||c.status==='editing') && (c.duration||0)>60; }
+function isPostReady(c){ const o=orientationOf(c); return (o==='vertical'||o==='square') && (c.duration||0)>0 && (c.duration||0)<=90 && c.status!=='posted'; }
+
 function stageForm(id, file, meta, guessSrc){
+  const fake={ duration:meta.duration, width:meta.width, height:meta.height, orientation:meta.orientation, status:'raw', isClip:false };
+  const sugg=suggestedPlatforms(fake);
   const srcOpts = SOURCES.map(s=>`<option value="${s.id}" ${s.id===guessSrc?'selected':''}>${esc(s.name)}</option>`).join('');
   const statOpts= STATUSES.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
-  const platChips= PLATFORMS.map(p=>`<span class="chip" data-plat="${p.id}" onclick="this.classList.toggle('on')">${esc(p.name)}</span>`).join('');
+  const platChips= PLATFORMS.map(p=>`<span class="chip ${sugg.includes(p.id)?'on':''}" data-plat="${p.id}" onclick="this.classList.toggle('on')">${esc(p.name)}</span>`).join('');
   const defTitle = file.name.replace(/\.[^.]+$/,'');
   return `
-    <div style="display:flex; gap:12px; align-items:center; margin-bottom:14px;">
+    <div style="display:flex; gap:12px; align-items:center; margin-bottom:12px;">
       <img src="${meta.thumb||''}" alt="" style="width:96px; height:54px; object-fit:cover; border-radius:6px; background:#000; flex-shrink:0;">
       <div class="hint" style="margin:0;">
         <strong>${esc(file.name)}</strong><br>
         ${fmtTime(meta.duration)} &middot; ${meta.width}&times;${meta.height} &middot; ${fmtBytes(file.size)}
       </div>
     </div>
+    <div class="eng-read">
+      <span><b>&#9883; Engine read:</b></span>
+      <span class="ori-badge">${esc(meta.orientation||'?')}</span>
+      <span>${esc(lengthNote(fake))}</span>
+      <span>Best for: <b>${sugg.map(p=>esc(platById(p).name)).join(', ')||'—'}</b> (pre-selected below)</span>
+    </div>
+    ${meta.keyframes&&meta.keyframes.length?`<div class="kf-strip">${meta.keyframes.map(k=>`<img class="kf" src="${k}" alt="">`).join('')}</div>`:''}
     <div class="form-row"><label class="field-label">Title</label>
       <input class="input" id="stf-title-${id}" value="${esc(defTitle)}"></div>
     <div class="form-grid2">
@@ -753,7 +882,8 @@ async function saveStaged(id){
     platforms: plats, tags, notes: $('stf-notes-'+id).value.trim(),
     filename: card._file.name, size: card._file.size, type: card._file.type,
     duration: card._meta.duration, width: card._meta.width, height: card._meta.height,
-    thumb: card._meta.thumb, createdAt: Date.now(),
+    thumb: card._meta.thumb, keyframes: card._meta.keyframes||[], orientation: card._meta.orientation||'',
+    createdAt: Date.now(),
   };
   try{
     await idbPut('blobs', { id, blob: card._file });
@@ -819,8 +949,17 @@ async function openDetail(id){
   const statOpts=STATUSES.map(s=>`<option value="${s.id}" ${s.id===c.status?'selected':''}>${esc(s.name)}</option>`).join('');
   const platChips=PLATFORMS.map(p=>`<span class="chip ${(c.platforms||[]).includes(p.id)?'on':''}" data-plat="${p.id}" onclick="this.classList.toggle('on')">${esc(p.name)}</span>`).join('');
   $('detail-title').textContent=c.title;
+  const kfTimes = (c.keyframes||[]).map((k,i)=>({k, t:(c.duration||0)*((i+0.5)/(c.keyframes.length||1))}));
+  const sugg = suggestedPlatforms(c);
   $('detail-body').innerHTML=`
-    ${_detailUrl?`<video class="editor-video" controls playsinline src="${_detailUrl}" style="max-height:38vh;"></video>`:'<div class="hint">Video data not found.</div>'}
+    ${_detailUrl?`<video id="detail-video" class="editor-video" controls playsinline src="${_detailUrl}" style="max-height:38vh;"></video>`:'<div class="hint">Video data not found.</div>'}
+    ${kfTimes.length?`<div class="kf-strip">${kfTimes.map(o=>`<img class="kf" src="${o.k}" title="Jump to ${fmtTime(o.t)}" onclick="(document.getElementById('detail-video')||{}).currentTime=${o.t.toFixed(2)}">`).join('')}</div>`:''}
+    <div class="eng-read">
+      <span><b>&#9883; Engine:</b></span>
+      <span class="ori-badge">${esc(orientationOf(c))}</span>
+      <span>${esc(lengthNote(c))}</span>
+      <span>Best for: <b>${sugg.map(p=>esc(platById(p).name)).join(', ')||'—'}</b></span>
+    </div>
     <div class="breakdown" style="margin:16px 0;">
       <div class="bd-row"><span class="bd-name"><span class="dot" style="background:${sr.color}"></span>Source</span><span class="bd-val" style="font-size:12px;">${esc(sr.name)}</span></div>
       <div class="bd-row"><span class="bd-name">Duration</span><span class="bd-val">${fmtTime(c.duration).split('.')[0]}</span></div>
@@ -971,7 +1110,8 @@ async function saveDerivedClip(blob, dur){
     origin: parent.origin||'', platforms: parent.platforms||[], tags: parent.tags||[],
     notes: 'Cut from "'+parent.title+'" ('+fmtTime(ED.inT)+'–'+fmtTime(ED.outT)+')',
     filename: (parent.filename||'clip')+'.clip.mp4', size: blob.size, type:'video/mp4',
-    duration: dur, width: parent.width, height: parent.height, thumb, createdAt: Date.now(),
+    duration: dur, width: parent.width, height: parent.height, thumb,
+    orientation: parent.orientation||orientationOf(parent), keyframes:[], createdAt: Date.now(),
   };
   await idbPut('blobs', { id, blob });
   await idbPut('clips', clip);

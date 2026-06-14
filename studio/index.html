@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio — Content HUB | Loopholemaxing</title>
+  <meta name="description" content="Your content command center. Import footage from GoPro, Nikon, and phone; track where every clip came from; trim and export clips right in the browser; assemble projects. Local-first, opens on any device.">
+  <meta property="og:title" content="LoopholeMaxing Studio — Content HUB">
+  <meta property="og:description" content="One place for all your content. Import, track, trim, clip, and assemble — fully in the browser.">
+
+  <!-- Shared site styles (loads from repo root when at /studio/). Fallback tokens inline below. -->
+  <link rel="stylesheet" href="../styles.css" id="shared-styles">
+
+  <style>
+    /* ============================================================
+       Fallback design tokens — mirror ../styles.css so Studio works
+       even if the shared sheet is missing (e.g. moved to a subdomain).
+       ============================================================ */
+    :root {
+      --bg-primary:#0a0a0f; --bg-secondary:#0d1117; --bg-card:#161b22; --bg-card-hover:#1c2129;
+      --border:#21262d; --border-light:#30363d;
+      --text-primary:#f0f0f5; --text-secondary:#8b8b9e; --text-muted:#6e7681;
+      --accent-blue:#3b82f6; --accent-blue-hover:#2563eb; --accent-cyan:#58a6ff;
+      --accent-orange:#f7931a; --green:#3fb950; --red:#f85149; --purple:#d2a8ff; --yellow:#d29922;
+      --font-body: system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
+      --font-mono:'Fira Code','SF Mono','JetBrains Mono','Consolas',monospace;
+      --transition-fast:150ms ease; --transition-base:250ms ease;
+    }
+    html { -webkit-font-smoothing:antialiased; }
+    body { font-family:var(--font-body); background:var(--bg-primary); color:var(--text-primary); line-height:1.6; overflow-x:hidden; margin:0; }
+    * , *::before, *::after { box-sizing:border-box; }
+
+    .bg-grid { position:fixed; inset:0; z-index:-1;
+      background-image:radial-gradient(circle, rgba(59,130,246,0.03) 1px, transparent 1px); background-size:40px 40px; }
+    .bg-glow { position:fixed; top:-220px; left:50%; transform:translateX(-50%); width:820px; height:620px;
+      background:radial-gradient(circle, rgba(167,139,250,0.05) 0%, transparent 65%); z-index:-1; pointer-events:none; }
+
+    /* ── Gate ─────────────────────────────────────────── */
+    .gate-wrap { min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px; }
+    .gate-card { width:100%; max-width:400px; background:var(--bg-card); border:1px solid var(--border);
+      border-radius:16px; padding:36px 32px; }
+    .gate-logo { display:flex; align-items:center; gap:12px; margin-bottom:26px; }
+    .gate-logo-icon { width:42px; height:42px; border-radius:11px; background:rgba(167,139,250,.12);
+      border:1px solid rgba(167,139,250,.22); display:flex; align-items:center; justify-content:center;
+      color:#a78bfa; font-size:20px; }
+    .gate-logo-text { font-size:18px; font-weight:800; letter-spacing:-.02em; }
+    .gate-logo-sub { font-size:11px; color:var(--text-muted); letter-spacing:.06em; text-transform:uppercase; }
+    .gate-title { font-size:22px; font-weight:700; margin-bottom:6px; }
+    .gate-sub { font-size:14px; color:var(--text-secondary); margin-bottom:24px; }
+    .gate-err { background:rgba(248,81,73,.1); border:1px solid rgba(248,81,73,.25); border-radius:8px;
+      padding:10px 14px; font-size:13px; color:var(--red); margin-bottom:16px; display:none; }
+    .gate-err.show { display:block; }
+
+    .field-label { display:block; font-size:12px; font-weight:600; letter-spacing:.04em; text-transform:uppercase;
+      color:var(--text-secondary); margin-bottom:6px; }
+    .input { width:100%; padding:11px 14px; background:var(--bg-secondary); border:1px solid var(--border);
+      border-radius:8px; font-size:14px; color:var(--text-primary); font-family:var(--font-body); outline:none;
+      transition:border-color var(--transition-fast); }
+    .input:focus { border-color:var(--accent-blue); }
+    .input::placeholder { color:var(--text-muted); }
+    textarea.input { resize:vertical; min-height:72px; font-family:var(--font-body); }
+    select.input { cursor:pointer; }
+
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; padding:11px 20px;
+      background:var(--accent-blue); color:#fff; font-size:14px; font-weight:600; border:none; border-radius:8px;
+      cursor:pointer; transition:all var(--transition-base); text-decoration:none; }
+    .btn:hover { background:var(--accent-blue-hover); transform:translateY(-1px); box-shadow:0 8px 24px rgba(59,130,246,.25); }
+    .btn:disabled { opacity:.5; cursor:not-allowed; transform:none; box-shadow:none; }
+    .btn-ghost { background:transparent; color:var(--text-secondary); border:1px solid var(--border); }
+    .btn-ghost:hover { background:transparent; border-color:var(--border-light); color:var(--text-primary); box-shadow:none; }
+    .btn-danger { background:transparent; color:var(--red); border:1px solid rgba(248,81,73,.3); }
+    .btn-danger:hover { background:rgba(248,81,73,.08); border-color:var(--red); box-shadow:none; transform:none; }
+    .btn-full { width:100%; }
+    .btn-sm { padding:7px 13px; font-size:13px; }
+
+    /* ── App shell ────────────────────────────────────── */
+    .app { display:none; min-height:100vh; flex-direction:column; }
+    .app.active { display:flex; }
+    .topbar { position:fixed; top:0; left:0; right:0; z-index:1000; height:56px;
+      background:rgba(10,10,15,.85); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+      border-bottom:1px solid var(--border); display:flex; align-items:center; justify-content:space-between; padding:0 20px; }
+    .topbar-left { display:flex; align-items:center; gap:14px; min-width:0; }
+    .brand { font-size:13px; font-weight:800; letter-spacing:.16em; text-transform:uppercase; color:var(--text-primary); text-decoration:none; }
+    .brand span { color:#a78bfa; }
+    .crumb { font-size:12px; color:var(--text-muted); }
+    .topbar-right { display:flex; align-items:center; gap:8px; }
+    .pill { font-size:11px; font-family:var(--font-mono); color:var(--text-muted); background:rgba(255,255,255,.04);
+      border:1px solid var(--border); border-radius:6px; padding:5px 10px; white-space:nowrap; }
+
+    .nav { position:fixed; top:56px; left:0; right:0; z-index:900; background:rgba(13,17,23,.9);
+      backdrop-filter:blur(10px); border-bottom:1px solid var(--border); display:flex; gap:4px; padding:8px 16px; overflow-x:auto; }
+    .nav-btn { flex-shrink:0; display:inline-flex; align-items:center; gap:7px; padding:8px 14px; border-radius:8px;
+      font-size:13px; font-weight:600; color:var(--text-secondary); background:transparent; border:1px solid transparent;
+      cursor:pointer; transition:all var(--transition-fast); }
+    .nav-btn:hover { color:var(--text-primary); background:var(--bg-card); }
+    .nav-btn.active { color:#a78bfa; background:rgba(167,139,250,.1); border-color:rgba(167,139,250,.2); }
+
+    .main { flex:1; padding:128px 20px 64px; max-width:1180px; margin:0 auto; width:100%; }
+    .view { display:none; }
+    .view.active { display:block; animation:fade .25s ease; }
+    @keyframes fade { from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+    .view-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:26px; flex-wrap:wrap; }
+    .view-title { font-size:24px; font-weight:800; letter-spacing:-.02em; }
+    .view-desc { font-size:14px; color:var(--text-secondary); margin-top:3px; }
+
+    /* ── Stats ────────────────────────────────────────── */
+    .stat-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(150px,1fr)); gap:12px; margin-bottom:30px; }
+    .stat { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; padding:16px; }
+    .stat-val { font-size:26px; font-weight:800; font-family:var(--font-mono); }
+    .stat-lbl { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.06em; margin-top:3px; }
+
+    .panel { background:var(--bg-card); border:1px solid var(--border); border-radius:14px; padding:22px; margin-bottom:18px; }
+    .panel-title { font-size:13px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:#a78bfa; margin-bottom:16px; }
+    .breakdown { display:grid; grid-template-columns:repeat(auto-fill, minmax(160px,1fr)); gap:10px; }
+    .bd-row { display:flex; align-items:center; justify-content:space-between; background:var(--bg-secondary);
+      border:1px solid var(--border); border-radius:8px; padding:11px 14px; }
+    .bd-name { font-size:13px; color:var(--text-secondary); display:flex; align-items:center; gap:8px; }
+    .bd-val { font-size:14px; font-weight:700; font-family:var(--font-mono); }
+    .dot { width:9px; height:9px; border-radius:50%; flex-shrink:0; }
+
+    /* ── Library ──────────────────────────────────────── */
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
+    .toolbar .input { width:auto; min-width:0; flex:0 0 auto; padding:9px 12px; }
+    .toolbar .search { flex:1 1 220px; }
+    .lib-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(230px,1fr)); gap:16px; }
+    .clip-card { background:var(--bg-card); border:1px solid var(--border); border-radius:12px; overflow:hidden;
+      cursor:pointer; transition:all var(--transition-base); display:flex; flex-direction:column; }
+    .clip-card:hover { border-color:var(--border-light); transform:translateY(-2px); box-shadow:0 10px 28px rgba(0,0,0,.35); }
+    .clip-thumb { width:100%; aspect-ratio:16/9; background:#000 center/cover no-repeat; position:relative;
+      display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:30px; }
+    .clip-dur { position:absolute; bottom:6px; right:6px; background:rgba(0,0,0,.75); color:#fff; font-size:11px;
+      font-family:var(--font-mono); padding:2px 6px; border-radius:4px; }
+    .clip-derived { position:absolute; top:6px; left:6px; background:rgba(167,139,250,.85); color:#fff; font-size:10px;
+      font-weight:700; padding:2px 7px; border-radius:4px; letter-spacing:.04em; }
+    .clip-body { padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px; flex:1; }
+    .clip-title { font-size:14px; font-weight:600; line-height:1.35; word-break:break-word; }
+    .clip-tags { display:flex; gap:6px; flex-wrap:wrap; }
+    .tag { font-size:10px; font-weight:700; letter-spacing:.04em; text-transform:uppercase; padding:2px 8px; border-radius:5px; }
+    .tag-src { background:rgba(88,166,255,.12); color:var(--accent-cyan); }
+    .st-raw { background:rgba(139,148,158,.14); color:var(--text-muted); }
+    .st-editing { background:rgba(210,153,34,.14); color:var(--yellow); }
+    .st-clipped { background:rgba(167,139,250,.14); color:#a78bfa; }
+    .st-posted { background:rgba(63,185,80,.14); color:var(--green); }
+    .clip-meta { font-size:11px; color:var(--text-muted); font-family:var(--font-mono); margin-top:auto; }
+
+    .empty { text-align:center; padding:64px 24px; background:var(--bg-card); border:1px dashed var(--border); border-radius:14px; }
+    .empty-icon { font-size:42px; margin-bottom:14px; }
+    .empty-text { font-size:16px; font-weight:600; margin-bottom:6px; }
+    .empty-sub { font-size:14px; color:var(--text-muted); margin-bottom:22px; }
+
+    /* ── Modal / drawer ───────────────────────────────── */
+    .overlay { display:none; position:fixed; inset:0; z-index:5000; background:rgba(0,0,0,.65); backdrop-filter:blur(5px);
+      align-items:center; justify-content:center; padding:16px; }
+    .overlay.show { display:flex; }
+    .sheet { background:var(--bg-card); border:1px solid var(--border-light); border-radius:16px; width:100%;
+      max-width:560px; max-height:90vh; overflow-y:auto; padding:26px; }
+    .sheet.wide { max-width:860px; }
+    .sheet-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:20px; }
+    .sheet-title { font-size:19px; font-weight:700; }
+    .x { background:transparent; border:none; color:var(--text-muted); font-size:22px; cursor:pointer; line-height:1; padding:0; }
+    .x:hover { color:var(--text-primary); }
+    .form-row { margin-bottom:14px; }
+    .form-grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .chips { display:flex; gap:8px; flex-wrap:wrap; }
+    .chip { font-size:12px; font-weight:600; padding:7px 13px; border-radius:8px; cursor:pointer;
+      background:var(--bg-secondary); border:1px solid var(--border); color:var(--text-secondary); transition:all var(--transition-fast); }
+    .chip.on { background:rgba(167,139,250,.14); border-color:rgba(167,139,250,.35); color:#a78bfa; }
+
+    /* ── Editor ───────────────────────────────────────── */
+    .editor-video { width:100%; max-height:48vh; background:#000; border-radius:10px; border:1px solid var(--border); }
+    .timeline { margin:18px 0 6px; }
+    .tl-track { position:relative; height:42px; background:var(--bg-secondary); border:1px solid var(--border);
+      border-radius:8px; margin-top:10px; }
+    .tl-range { position:absolute; top:0; bottom:0; background:rgba(167,139,250,.18); border-left:2px solid #a78bfa;
+      border-right:2px solid #a78bfa; }
+    .tl-playhead { position:absolute; top:-4px; bottom:-4px; width:2px; background:var(--accent-cyan); }
+    .range-inputs { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px; }
+    .time-badge { font-family:var(--font-mono); font-size:13px; color:var(--text-primary); }
+    .prog { height:8px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:99px; overflow:hidden; margin-top:10px; }
+    .prog-bar { height:100%; width:0; background:linear-gradient(90deg,#3b82f6,#a78bfa); transition:width .2s; }
+
+    /* ── Projects ─────────────────────────────────────── */
+    .proj-clip { display:flex; align-items:center; gap:12px; background:var(--bg-secondary); border:1px solid var(--border);
+      border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+    .proj-clip img { width:64px; height:36px; object-fit:cover; border-radius:5px; background:#000; flex-shrink:0; }
+    .proj-clip-info { flex:1; min-width:0; }
+    .proj-clip-title { font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .proj-clip-meta { font-size:11px; color:var(--text-muted); font-family:var(--font-mono); }
+    .icon-btn { background:transparent; border:1px solid var(--border); color:var(--text-secondary); width:30px; height:30px;
+      border-radius:7px; cursor:pointer; font-size:14px; display:inline-flex; align-items:center; justify-content:center; }
+    .icon-btn:hover { color:var(--text-primary); border-color:var(--border-light); }
+
+    /* ── Toast ────────────────────────────────────────── */
+    .toasts { position:fixed; bottom:22px; right:22px; z-index:9999; display:flex; flex-direction:column; gap:8px; }
+    .toast { background:var(--bg-card); border:1px solid var(--border); border-radius:10px; padding:12px 16px; font-size:13px;
+      box-shadow:0 8px 24px rgba(0,0,0,.45); max-width:320px; animation:slideIn .25s ease; }
+    .toast.success { border-color:rgba(63,185,80,.35); color:var(--green); }
+    .toast.error { border-color:rgba(248,81,73,.35); color:var(--red); }
+    @keyframes slideIn { from{opacity:0; transform:translateX(20px);} to{opacity:1; transform:translateX(0);} }
+
+    .hint { font-size:12px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
+    .divider { height:1px; background:var(--border); margin:18px 0; }
+
+    @media (max-width:680px) {
+      .main { padding:128px 14px 48px; }
+      .form-grid2, .range-inputs { grid-template-columns:1fr; }
+      .view-title { font-size:20px; }
+    }
+  </style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-glow"></div>
+
+<!-- ============================================================
+     GATE
+     ============================================================ -->
+<div id="gate" class="gate-wrap">
+  <div class="gate-card">
+    <div class="gate-logo">
+      <div class="gate-logo-icon">&#127909;</div>
+      <div>
+        <div class="gate-logo-text">Studio</div>
+        <div class="gate-logo-sub">by loopholemaxing</div>
+      </div>
+    </div>
+    <div class="gate-title">Enter your Studio</div>
+    <div class="gate-sub">Your content HUB — import, track, trim, and assemble. Passcode-protected on this device.</div>
+    <div id="gate-err" class="gate-err"></div>
+    <form id="gate-form" onsubmit="return doUnlock(event)">
+      <div class="form-row">
+        <label class="field-label">Passcode</label>
+        <input id="gate-pass" class="input" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password" autofocus>
+      </div>
+      <button class="btn btn-full" type="submit">Unlock Studio</button>
+    </form>
+    <div class="hint" style="margin-top:18px;">Default passcode is <code>12345</code> — change it under Settings once you're in.</div>
+  </div>
+</div>
+
+<!-- ============================================================
+     APP
+     ============================================================ -->
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="topbar-left">
+      <a href="/" class="brand">LOOP<span>HOLE</span></a>
+      <span class="crumb">/ Studio</span>
+    </div>
+    <div class="topbar-right">
+      <span class="pill" id="storage-pill">—</span>
+      <button class="btn btn-ghost btn-sm" onclick="lock()">Lock</button>
+    </div>
+  </header>
+
+  <nav class="nav" id="nav">
+    <button class="nav-btn active" data-view="dashboard" onclick="go('dashboard')">&#128202; Dashboard</button>
+    <button class="nav-btn" data-view="library" onclick="go('library')">&#127902; Library</button>
+    <button class="nav-btn" data-view="editor" onclick="go('editor')">&#9986; Trim &amp; Clip</button>
+    <button class="nav-btn" data-view="projects" onclick="go('projects')">&#127916; Projects</button>
+    <button class="nav-btn" data-view="settings" onclick="go('settings')">&#9881; Settings</button>
+  </nav>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view active">
+      <div class="view-head">
+        <div>
+          <div class="view-title">Dashboard</div>
+          <div class="view-desc">Everything you've captured, at a glance. Local-first — stored on this device.</div>
+        </div>
+        <button class="btn" onclick="openImport()">&#43;&nbsp; Import footage</button>
+      </div>
+
+      <div class="stat-grid" id="stat-grid"></div>
+
+      <div class="panel">
+        <div class="panel-title">By Source — where it came from</div>
+        <div class="breakdown" id="bd-source"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">By Status — the pipeline</div>
+        <div class="breakdown" id="bd-status"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-title">By Platform — where it's going</div>
+        <div class="breakdown" id="bd-platform"></div>
+      </div>
+    </section>
+
+    <!-- LIBRARY -->
+    <section id="view-library" class="view">
+      <div class="view-head">
+        <div>
+          <div class="view-title">Library</div>
+          <div class="view-desc">Every clip you've added, tagged by source, status, and platform.</div>
+        </div>
+        <button class="btn" onclick="openImport()">&#43;&nbsp; Import footage</button>
+      </div>
+
+      <div class="toolbar">
+        <input id="lib-search" class="input search" placeholder="Search title, filename, notes…" oninput="renderLibrary()">
+        <select id="lib-source" class="input" onchange="renderLibrary()"><option value="">All sources</option></select>
+        <select id="lib-status" class="input" onchange="renderLibrary()"><option value="">All statuses</option></select>
+        <select id="lib-platform" class="input" onchange="renderLibrary()"><option value="">All platforms</option></select>
+      </div>
+
+      <div id="lib-grid" class="lib-grid"></div>
+    </section>
+
+    <!-- EDITOR -->
+    <section id="view-editor" class="view">
+      <div class="view-head">
+        <div>
+          <div class="view-title">Trim &amp; Clip</div>
+          <div class="view-desc">Pick a clip, set in/out points, and export a real cut — all in your browser.</div>
+        </div>
+      </div>
+
+      <div id="editor-empty" class="empty">
+        <div class="empty-icon">&#9986;</div>
+        <div class="empty-text">No clip loaded</div>
+        <div class="empty-sub">Open a clip from your Library to start trimming.</div>
+        <button class="btn" onclick="go('library')">Go to Library</button>
+      </div>
+
+      <div id="editor-stage" style="display:none;">
+        <div class="panel">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;">
+            <div class="sheet-title" id="ed-title" style="font-size:16px;"></div>
+            <button class="btn btn-ghost btn-sm" onclick="closeEditor()">Change clip</button>
+          </div>
+          <video id="ed-video" class="editor-video" controls playsinline></video>
+
+          <div class="timeline">
+            <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted);">
+              <span>In: <span class="time-badge" id="ed-in">0:00.0</span></span>
+              <span>Selection: <span class="time-badge" id="ed-sel">0:00.0</span></span>
+              <span>Out: <span class="time-badge" id="ed-out">0:00.0</span></span>
+            </div>
+            <div class="tl-track" id="ed-track">
+              <div class="tl-range" id="ed-rangebox"></div>
+              <div class="tl-playhead" id="ed-playhead" style="left:0;"></div>
+            </div>
+            <div class="range-inputs">
+              <div>
+                <label class="field-label">In point</label>
+                <input id="ed-in-range" class="input" type="range" min="0" max="1000" value="0" oninput="setInPoint(this.value)">
+              </div>
+              <div>
+                <label class="field-label">Out point</label>
+                <input id="ed-out-range" class="input" type="range" min="0" max="1000" value="1000" oninput="setOutPoint(this.value)">
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+          <div class="form-grid2">
+            <div>
+              <label class="field-label">Cut quality</label>
+              <select id="ed-quality" class="input">
+                <option value="fast">Fast cut — stream copy (quickest)</option>
+                <option value="precise">Precise — re-encode H.264 (slower, frame-accurate)</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">After export</label>
+              <select id="ed-after" class="input">
+                <option value="both">Download + save to Library</option>
+                <option value="save">Save to Library only</option>
+                <option value="download">Download only</option>
+              </select>
+            </div>
+          </div>
+          <div class="prog" id="ed-prog" style="display:none;"><div class="prog-bar" id="ed-prog-bar"></div></div>
+          <div id="ed-status" class="hint"></div>
+
+          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+            <button class="btn" id="ed-export-btn" onclick="exportClip()">&#9986;&nbsp; Export clip</button>
+            <button class="btn btn-ghost" onclick="previewSelection()">&#9654;&nbsp; Preview selection</button>
+          </div>
+          <div class="hint">First export loads the in-browser video engine (~25&nbsp;MB, one time per session). Large 4K files may be slow — trim short selections for best speed.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="view-projects" class="view">
+      <div class="view-head">
+        <div>
+          <div class="view-title">Projects</div>
+          <div class="view-desc">Assemble clips into a sequence, reorder, and stitch them into one video.</div>
+        </div>
+        <button class="btn" onclick="openNewProject()">&#43;&nbsp; New project</button>
+      </div>
+      <div id="proj-list"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="view-settings" class="view">
+      <div class="view-head">
+        <div>
+          <div class="view-title">Settings</div>
+          <div class="view-desc">Manage your passcode, sources, and local data.</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Passcode</div>
+        <form onsubmit="return changePass(event)">
+          <div class="form-grid2">
+            <div class="form-row">
+              <label class="field-label">New passcode</label>
+              <input id="set-pass1" class="input" type="password" placeholder="New passcode">
+            </div>
+            <div class="form-row">
+              <label class="field-label">Confirm</label>
+              <input id="set-pass2" class="input" type="password" placeholder="Repeat passcode">
+            </div>
+          </div>
+          <button class="btn btn-sm" type="submit">Update passcode</button>
+          <div class="hint">Stored only on this device as a SHA-256 hash. There's no recovery — write it down.</div>
+        </form>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Cameras &amp; sources</div>
+        <div class="hint" style="margin-top:0; margin-bottom:12px;">Studio auto-detects these from filenames on import; you can always override per clip.</div>
+        <div class="breakdown" id="src-legend"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Local data</div>
+        <div class="hint" style="margin-top:0;">Your footage and clips live in this browser (IndexedDB). Cross-device cloud sync is the planned v2.</div>
+        <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+          <button class="btn btn-ghost btn-sm" onclick="exportManifest()">Export library manifest (JSON)</button>
+          <button class="btn btn-danger btn-sm" onclick="wipeConfirm()">Erase all Studio data</button>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- IMPORT SHEET -->
+<div id="import-overlay" class="overlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title">Import footage</div>
+      <button class="x" onclick="closeOverlay('import-overlay')">&times;</button>
+    </div>
+    <div class="form-row">
+      <label class="field-label">Choose video file(s)</label>
+      <input id="import-file" class="input" type="file" accept="video/*" multiple onchange="onFilesPicked(this.files)">
+      <div class="hint">Pick footage from your GoPro Hero 9, Nikon Coolpix P500, or phone. Files stay on your device.</div>
+    </div>
+    <div id="import-staging"></div>
+  </div>
+</div>
+
+<!-- CLIP DETAIL SHEET -->
+<div id="detail-overlay" class="overlay">
+  <div class="sheet">
+    <div class="sheet-head">
+      <div class="sheet-title" id="detail-title">Clip</div>
+      <button class="x" onclick="closeOverlay('detail-overlay')">&times;</button>
+    </div>
+    <div id="detail-body"></div>
+  </div>
+</div>
+
+<!-- PROJECT SHEET -->
+<div id="project-overlay" class="overlay">
+  <div class="sheet wide">
+    <div class="sheet-head">
+      <div class="sheet-title" id="project-sheet-title">Project</div>
+      <button class="x" onclick="closeOverlay('project-overlay')">&times;</button>
+    </div>
+    <div id="project-body"></div>
+  </div>
+</div>
+
+<!-- CONFIRM SHEET -->
+<div id="confirm-overlay" class="overlay">
+  <div class="sheet" style="max-width:420px;">
+    <div class="sheet-head"><div class="sheet-title" id="confirm-title">Confirm</div></div>
+    <div id="confirm-body" class="hint" style="font-size:14px; color:var(--text-secondary); margin-bottom:22px;"></div>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button class="btn btn-ghost btn-sm" onclick="closeOverlay('confirm-overlay')">Cancel</button>
+      <button class="btn btn-danger btn-sm" id="confirm-ok">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<!-- ffmpeg.wasm 0.11 (single-thread core — works on static GitHub Pages, no COOP/COEP needed) -->
+<script>
+'use strict';
+
+/* ============================================================
+   CONFIG
+   ============================================================ */
+// SHA-256 of the default passcode "12345". A user-set passcode (Settings)
+// is stored hashed in localStorage and takes precedence.
+const DEFAULT_PASS_HASH = '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5';
+
+const SOURCES = [
+  { id:'gopro', name:'GoPro Hero 9 Black', color:'#3b82f6', match:[/^GX\d/i,/^GH\d/i,/^GOPR/i,/^GP\d/i] },
+  { id:'nikon', name:'Nikon Coolpix P500', color:'#f7931a', match:[/^DSCN/i] },
+  { id:'phone', name:'Phone',              color:'#3fb950', match:[/^IMG[_-]/i,/^VID[_-]/i,/^MOV[_-]?/i,/^PXL[_-]/i,/\.mov$/i] },
+  { id:'other', name:'Other / Import',     color:'#8b8b9e', match:[] },
+];
+const STATUSES  = [
+  { id:'raw',     name:'Raw',     cls:'st-raw',     color:'#6e7681' },
+  { id:'editing', name:'Editing', cls:'st-editing', color:'#d29922' },
+  { id:'clipped', name:'Clipped', cls:'st-clipped', color:'#a78bfa' },
+  { id:'posted',  name:'Posted',  cls:'st-posted',  color:'#3fb950' },
+];
+const PLATFORMS = [
+  { id:'instagram', name:'Instagram', color:'#ec4899' },
+  { id:'tiktok',    name:'TikTok',    color:'#58a6ff' },
+  { id:'youtube',   name:'YouTube',   color:'#f85149' },
+  { id:'other',     name:'Other',     color:'#8b8b9e' },
+];
+
+/* ============================================================
+   IndexedDB
+   ============================================================ */
+const DB_NAME = 'loop_studio_v1';
+let _db = null;
+function db() {
+  return new Promise((res, rej) => {
+    if (_db) return res(_db);
+    const r = indexedDB.open(DB_NAME, 1);
+    r.onupgradeneeded = e => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('clips'))    d.createObjectStore('clips', { keyPath:'id' });
+      if (!d.objectStoreNames.contains('blobs'))    d.createObjectStore('blobs', { keyPath:'id' });
+      if (!d.objectStoreNames.contains('projects')) d.createObjectStore('projects', { keyPath:'id' });
+    };
+    r.onsuccess = e => { _db = e.target.result; res(_db); };
+    r.onerror = e => rej(e.target.error);
+  });
+}
+function tx(store, mode='readonly') { return db().then(d => d.transaction(store, mode).objectStore(store)); }
+function idbAll(store) { return tx(store).then(s => new Promise((res,rej)=>{ const r=s.getAll(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>rej(r.error); })); }
+function idbGet(store, id) { return tx(store).then(s => new Promise((res,rej)=>{ const r=s.get(id); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); }
+function idbPut(store, val) { return tx(store,'readwrite').then(s => new Promise((res,rej)=>{ const r=s.put(val); r.onsuccess=()=>res(val); r.onerror=()=>rej(r.error); })); }
+function idbDel(store, id) { return tx(store,'readwrite').then(s => new Promise((res,rej)=>{ const r=s.delete(id); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); })); }
+function idbClear(store) { return tx(store,'readwrite').then(s => new Promise((res,rej)=>{ const r=s.clear(); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); })); }
+
+/* ============================================================
+   Utils
+   ============================================================ */
+const $ = id => document.getElementById(id);
+const uid = () => 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7);
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function fmtTime(sec){ sec=Math.max(0,sec||0); const m=Math.floor(sec/60), s=(sec%60); return m+':'+s.toFixed(1).padStart(4,'0'); }
+function fmtBytes(b){ if(!b) return '0 B'; const u=['B','KB','MB','GB']; const i=Math.floor(Math.log(b)/Math.log(1024)); return (b/Math.pow(1024,i)).toFixed(i?1:0)+' '+u[i]; }
+async function sha256(str){ const buf=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)); return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join(''); }
+function srcById(id){ return SOURCES.find(s=>s.id===id)||SOURCES[3]; }
+function statById(id){ return STATUSES.find(s=>s.id===id)||STATUSES[0]; }
+function platById(id){ return PLATFORMS.find(p=>p.id===id)||PLATFORMS[3]; }
+function detectSource(name){ for(const s of SOURCES){ for(const re of s.match){ if(re.test(name)) return s.id; } } return 'other'; }
+
+function toast(msg, type=''){ const el=document.createElement('div'); el.className='toast '+type; el.textContent=msg; $('toasts').prepend(el); setTimeout(()=>el.remove(),4200); }
+function openOverlay(id){ $(id).classList.add('show'); }
+function closeOverlay(id){ $(id).classList.remove('show'); }
+let _confirmCb=null;
+function confirmAction(title, body, cb){ $('confirm-title').textContent=title; $('confirm-body').textContent=body; _confirmCb=cb; openOverlay('confirm-overlay'); }
+$('confirm-ok').onclick = ()=>{ closeOverlay('confirm-overlay'); if(_confirmCb) _confirmCb(); };
+
+/* ============================================================
+   GATE
+   ============================================================ */
+async function doUnlock(e){
+  e.preventDefault();
+  const pass = $('gate-pass').value;
+  const want = localStorage.getItem('studio_pass_hash') || DEFAULT_PASS_HASH;
+  const got  = await sha256(pass);
+  if (got === want){
+    sessionStorage.setItem('studio_unlocked','1');
+    enterApp();
+  } else {
+    $('gate-err').textContent = 'Incorrect passcode.';
+    $('gate-err').classList.add('show');
+    $('gate-pass').value='';
+  }
+  return false;
+}
+function lock(){ sessionStorage.removeItem('studio_unlocked'); location.reload(); }
+
+async function enterApp(){
+  $('gate').style.display='none';
+  $('app').classList.add('active');
+  buildSelectors();
+  await refreshAll();
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
+function go(view){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  $('view-'+view).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===view));
+  if(view==='dashboard') renderDashboard();
+  if(view==='library')   renderLibrary();
+  if(view==='projects')  renderProjects();
+  if(view==='settings')  renderSettings();
+  window.scrollTo({top:0});
+}
+
+function buildSelectors(){
+  const sSrc=$('lib-source'), sStat=$('lib-status'), sPlat=$('lib-platform');
+  SOURCES.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; sSrc.appendChild(o); });
+  STATUSES.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; sStat.appendChild(o); });
+  PLATFORMS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; sPlat.appendChild(o); });
+}
+
+/* ============================================================
+   Data cache
+   ============================================================ */
+let CLIPS=[];   // metadata only
+let PROJECTS=[];
+async function refreshAll(){ CLIPS=await idbAll('clips'); PROJECTS=await idbAll('projects'); CLIPS.sort((a,b)=>b.createdAt-a.createdAt); await updateStoragePill(); renderDashboard(); }
+
+async function updateStoragePill(){
+  try{ if(navigator.storage&&navigator.storage.estimate){ const est=await navigator.storage.estimate(); $('storage-pill').textContent=fmtBytes(est.usage||0)+' used'; } }
+  catch(_){ $('storage-pill').textContent=CLIPS.length+' clips'; }
+}
+
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+function renderDashboard(){
+  const total=CLIPS.length;
+  const clips=CLIPS.filter(c=>c.isClip).length;
+  const totalDur=CLIPS.reduce((a,c)=>a+(c.duration||0),0);
+  const posted=CLIPS.filter(c=>c.status==='posted').length;
+  $('stat-grid').innerHTML = `
+    ${stat(total,'Total items')}
+    ${stat(clips,'Clips made')}
+    ${stat(fmtTime(totalDur).split('.')[0],'Total footage')}
+    ${stat(posted,'Posted')}
+    ${stat(PROJECTS.length,'Projects')}`;
+  $('bd-source').innerHTML   = breakdown(SOURCES,  c=>c.source,  s=>s.color, s=>s.name);
+  $('bd-status').innerHTML   = breakdown(STATUSES, c=>c.status,  s=>s.color, s=>s.name);
+  $('bd-platform').innerHTML = breakdownMulti(PLATFORMS, c=>c.platforms||[], p=>p.color, p=>p.name);
+}
+function stat(v,l){ return `<div class="stat"><div class="stat-val">${esc(v)}</div><div class="stat-lbl">${esc(l)}</div></div>`; }
+function breakdown(defs, pick, colorOf, nameOf){
+  return defs.map(d=>{ const n=CLIPS.filter(c=>pick(c)===d.id).length;
+    return `<div class="bd-row"><span class="bd-name"><span class="dot" style="background:${colorOf(d)}"></span>${esc(nameOf(d))}</span><span class="bd-val">${n}</span></div>`; }).join('');
+}
+function breakdownMulti(defs, pickArr, colorOf, nameOf){
+  return defs.map(d=>{ const n=CLIPS.filter(c=>(pickArr(c)||[]).includes(d.id)).length;
+    return `<div class="bd-row"><span class="bd-name"><span class="dot" style="background:${colorOf(d)}"></span>${esc(nameOf(d))}</span><span class="bd-val">${n}</span></div>`; }).join('');
+}
+
+/* ============================================================
+   IMPORT
+   ============================================================ */
+function openImport(){ $('import-file').value=''; $('import-staging').innerHTML=''; openOverlay('import-overlay'); }
+
+async function onFilesPicked(files){
+  const staging=$('import-staging'); staging.innerHTML='';
+  for(const file of files){
+    const id=uid();
+    const card=document.createElement('div'); card.className='panel'; card.style.marginTop='14px'; card.id='stage-'+id;
+    card.innerHTML=`<div class="hint" style="margin:0 0 10px;">Reading <strong>${esc(file.name)}</strong> (${fmtBytes(file.size)})…</div>`;
+    staging.appendChild(card);
+    try{
+      const meta = await probeVideo(file);
+      const guessSrc = detectSource(file.name);
+      card.innerHTML = stageForm(id, file, meta, guessSrc);
+      // stash file + meta on the element for save
+      card._file=file; card._meta=meta;
+    }catch(err){
+      card.innerHTML=`<div class="hint" style="color:var(--red); margin:0;">Couldn't read ${esc(file.name)}: ${esc(err.message||err)}</div>`;
+    }
+  }
+}
+
+function probeVideo(file){
+  return new Promise((res,rej)=>{
+    const url=URL.createObjectURL(file);
+    const v=document.createElement('video'); v.preload='metadata'; v.muted=true; v.playsInline=true;
+    v.onloadedmetadata=()=>{
+      const dur=v.duration||0, w=v.videoWidth, h=v.videoHeight;
+      const seekTo=Math.min(1, dur*0.1);
+      v.onseeked=()=>{
+        try{
+          const cv=document.createElement('canvas'); const tw=320; const th=Math.round(tw*(h/w||0.5625));
+          cv.width=tw; cv.height=th; cv.getContext('2d').drawImage(v,0,0,tw,th);
+          const thumb=cv.toDataURL('image/jpeg',0.6);
+          URL.revokeObjectURL(url);
+          res({ duration:dur, width:w, height:h, thumb });
+        }catch(e){ URL.revokeObjectURL(url); res({ duration:dur, width:w, height:h, thumb:'' }); }
+      };
+      try{ v.currentTime=seekTo; }catch(_){ res({ duration:dur, width:w, height:h, thumb:'' }); }
+    };
+    v.onerror=()=>{ URL.revokeObjectURL(url); rej(new Error('unsupported or corrupt file')); };
+    v.src=url;
+  });
+}
+
+function stageForm(id, file, meta, guessSrc){
+  const srcOpts = SOURCES.map(s=>`<option value="${s.id}" ${s.id===guessSrc?'selected':''}>${esc(s.name)}</option>`).join('');
+  const statOpts= STATUSES.map(s=>`<option value="${s.id}">${esc(s.name)}</option>`).join('');
+  const platChips= PLATFORMS.map(p=>`<span class="chip" data-plat="${p.id}" onclick="this.classList.toggle('on')">${esc(p.name)}</span>`).join('');
+  const defTitle = file.name.replace(/\.[^.]+$/,'');
+  return `
+    <div style="display:flex; gap:12px; align-items:center; margin-bottom:14px;">
+      <img src="${meta.thumb||''}" alt="" style="width:96px; height:54px; object-fit:cover; border-radius:6px; background:#000; flex-shrink:0;">
+      <div class="hint" style="margin:0;">
+        <strong>${esc(file.name)}</strong><br>
+        ${fmtTime(meta.duration)} &middot; ${meta.width}&times;${meta.height} &middot; ${fmtBytes(file.size)}
+      </div>
+    </div>
+    <div class="form-row"><label class="field-label">Title</label>
+      <input class="input" id="stf-title-${id}" value="${esc(defTitle)}"></div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="field-label">Source — where it came from</label>
+        <select class="input" id="stf-src-${id}">${srcOpts}</select></div>
+      <div class="form-row"><label class="field-label">Status</label>
+        <select class="input" id="stf-stat-${id}">${statOpts}</select></div>
+    </div>
+    <div class="form-row"><label class="field-label">Origin / shoot note (optional)</label>
+      <input class="input" id="stf-origin-${id}" placeholder="e.g. Beach day, downtown b-roll, client X…"></div>
+    <div class="form-row"><label class="field-label">Target platforms</label>
+      <div class="chips" id="stf-plat-${id}">${platChips}</div></div>
+    <div class="form-row"><label class="field-label">Tags (comma separated)</label>
+      <input class="input" id="stf-tags-${id}" placeholder="hook, b-roll, viral…"></div>
+    <div class="form-row"><label class="field-label">Notes</label>
+      <textarea class="input" id="stf-notes-${id}" placeholder="Anything you want to remember about this footage…"></textarea></div>
+    <button class="btn btn-full" onclick="saveStaged('${id}')">Add to Library</button>`;
+}
+
+async function saveStaged(id){
+  const card=$('stage-'+id); if(!card||!card._file) return;
+  const plats=Array.from(card.querySelectorAll('#stf-plat-'+id+' .chip.on')).map(c=>c.dataset.plat);
+  const tags=($('stf-tags-'+id).value||'').split(',').map(t=>t.trim()).filter(Boolean);
+  const clip={
+    id, isClip:false, parentId:null,
+    title: $('stf-title-'+id).value.trim()||'Untitled',
+    source: $('stf-src-'+id).value,
+    status: $('stf-stat-'+id).value,
+    origin: $('stf-origin-'+id).value.trim(),
+    platforms: plats, tags, notes: $('stf-notes-'+id).value.trim(),
+    filename: card._file.name, size: card._file.size, type: card._file.type,
+    duration: card._meta.duration, width: card._meta.width, height: card._meta.height,
+    thumb: card._meta.thumb, createdAt: Date.now(),
+  };
+  try{
+    await idbPut('blobs', { id, blob: card._file });
+    await idbPut('clips', clip);
+    card.innerHTML=`<div class="hint" style="color:var(--green); margin:0;">&#10003; ${esc(clip.title)} added to Library.</div>`;
+    await refreshAll();
+    toast('Added: '+clip.title,'success');
+  }catch(err){ toast('Save failed: '+(err.message||err),'error'); }
+}
+
+/* ============================================================
+   LIBRARY
+   ============================================================ */
+function renderLibrary(){
+  const q=($('lib-search').value||'').toLowerCase();
+  const fSrc=$('lib-source').value, fStat=$('lib-status').value, fPlat=$('lib-platform').value;
+  let list=CLIPS.filter(c=>{
+    if(fSrc && c.source!==fSrc) return false;
+    if(fStat && c.status!==fStat) return false;
+    if(fPlat && !(c.platforms||[]).includes(fPlat)) return false;
+    if(q){ const hay=(c.title+' '+c.filename+' '+(c.notes||'')+' '+(c.tags||[]).join(' ')+' '+(c.origin||'')).toLowerCase(); if(!hay.includes(q)) return false; }
+    return true;
+  });
+  const grid=$('lib-grid');
+  if(!list.length){
+    grid.innerHTML=`<div class="empty" style="grid-column:1/-1;">
+      <div class="empty-icon">&#127902;</div>
+      <div class="empty-text">${CLIPS.length? 'No clips match your filters':'Your Library is empty'}</div>
+      <div class="empty-sub">${CLIPS.length? 'Try clearing the filters above.':'Import your first piece of footage to get started.'}</div>
+      <button class="btn" onclick="openImport()">&#43; Import footage</button></div>`;
+    return;
+  }
+  grid.innerHTML=list.map(c=>{
+    const st=statById(c.status), sr=srcById(c.source);
+    return `<div class="clip-card" onclick="openDetail('${c.id}')">
+      <div class="clip-thumb" style="${c.thumb?`background-image:url(${c.thumb})`:''}">
+        ${c.thumb?'':'&#127909;'}
+        ${c.isClip?'<span class="clip-derived">CLIP</span>':''}
+        <span class="clip-dur">${fmtTime(c.duration).split('.')[0]}</span>
+      </div>
+      <div class="clip-body">
+        <div class="clip-title">${esc(c.title)}</div>
+        <div class="clip-tags">
+          <span class="tag tag-src">${esc(sr.name.split(' ')[0])}</span>
+          <span class="tag ${st.cls}">${esc(st.name)}</span>
+          ${(c.platforms||[]).map(p=>`<span class="tag" style="background:rgba(255,255,255,.05); color:var(--text-secondary)">${esc(platById(p).name)}</span>`).join('')}
+        </div>
+        <div class="clip-meta">${fmtBytes(c.size)} &middot; ${new Date(c.createdAt).toLocaleDateString()}</div>
+      </div></div>`;
+  }).join('');
+}
+
+/* ============================================================
+   CLIP DETAIL
+   ============================================================ */
+let _detailUrl=null;
+async function openDetail(id){
+  const c=CLIPS.find(x=>x.id===id); if(!c) return;
+  const rec=await idbGet('blobs', id);
+  if(_detailUrl) URL.revokeObjectURL(_detailUrl);
+  _detailUrl = rec&&rec.blob ? URL.createObjectURL(rec.blob) : null;
+  const st=statById(c.status), sr=srcById(c.source);
+  const statOpts=STATUSES.map(s=>`<option value="${s.id}" ${s.id===c.status?'selected':''}>${esc(s.name)}</option>`).join('');
+  const platChips=PLATFORMS.map(p=>`<span class="chip ${(c.platforms||[]).includes(p.id)?'on':''}" data-plat="${p.id}" onclick="this.classList.toggle('on')">${esc(p.name)}</span>`).join('');
+  $('detail-title').textContent=c.title;
+  $('detail-body').innerHTML=`
+    ${_detailUrl?`<video class="editor-video" controls playsinline src="${_detailUrl}" style="max-height:38vh;"></video>`:'<div class="hint">Video data not found.</div>'}
+    <div class="breakdown" style="margin:16px 0;">
+      <div class="bd-row"><span class="bd-name"><span class="dot" style="background:${sr.color}"></span>Source</span><span class="bd-val" style="font-size:12px;">${esc(sr.name)}</span></div>
+      <div class="bd-row"><span class="bd-name">Duration</span><span class="bd-val">${fmtTime(c.duration).split('.')[0]}</span></div>
+      <div class="bd-row"><span class="bd-name">Size</span><span class="bd-val" style="font-size:12px;">${fmtBytes(c.size)}</span></div>
+      <div class="bd-row"><span class="bd-name">Resolution</span><span class="bd-val" style="font-size:12px;">${c.width}&times;${c.height}</span></div>
+    </div>
+    <div class="form-row"><label class="field-label">Title</label><input class="input" id="dt-title" value="${esc(c.title)}"></div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="field-label">Status</label><select class="input" id="dt-status">${statOpts}</select></div>
+      <div class="form-row"><label class="field-label">Origin / shoot note</label><input class="input" id="dt-origin" value="${esc(c.origin||'')}"></div>
+    </div>
+    <div class="form-row"><label class="field-label">Platforms</label><div class="chips" id="dt-plat">${platChips}</div></div>
+    <div class="form-row"><label class="field-label">Tags</label><input class="input" id="dt-tags" value="${esc((c.tags||[]).join(', '))}"></div>
+    <div class="form-row"><label class="field-label">Notes</label><textarea class="input" id="dt-notes">${esc(c.notes||'')}</textarea></div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+      <button class="btn" onclick="saveDetail('${id}')">Save changes</button>
+      <button class="btn btn-ghost" onclick="loadInEditor('${id}')">&#9986; Trim &amp; Clip</button>
+      <button class="btn btn-ghost" onclick="downloadClip('${id}')">&#11015; Download</button>
+      <button class="btn btn-danger" onclick="deleteClip('${id}')">Delete</button>
+    </div>`;
+  openOverlay('detail-overlay');
+}
+async function saveDetail(id){
+  const c=CLIPS.find(x=>x.id===id); if(!c) return;
+  c.title=$('dt-title').value.trim()||c.title;
+  c.status=$('dt-status').value;
+  c.origin=$('dt-origin').value.trim();
+  c.platforms=Array.from(document.querySelectorAll('#dt-plat .chip.on')).map(x=>x.dataset.plat);
+  c.tags=($('dt-tags').value||'').split(',').map(t=>t.trim()).filter(Boolean);
+  c.notes=$('dt-notes').value.trim();
+  await idbPut('clips', c);
+  await refreshAll(); renderLibrary();
+  closeOverlay('detail-overlay'); toast('Saved','success');
+}
+function deleteClip(id){
+  const c=CLIPS.find(x=>x.id===id);
+  confirmAction('Delete clip', `Permanently delete "${c?c.title:'this clip'}" and its video data? This cannot be undone.`, async()=>{
+    await idbDel('clips', id); await idbDel('blobs', id);
+    // remove from any projects
+    for(const p of PROJECTS){ if((p.clipIds||[]).includes(id)){ p.clipIds=p.clipIds.filter(x=>x!==id); await idbPut('projects',p); } }
+    await refreshAll(); renderLibrary(); closeOverlay('detail-overlay'); toast('Deleted','success');
+  });
+}
+async function downloadClip(id){
+  const rec=await idbGet('blobs', id); const c=CLIPS.find(x=>x.id===id);
+  if(!rec||!rec.blob) return toast('No video data','error');
+  triggerDownload(rec.blob, (c?c.title:'clip').replace(/[^a-z0-9_-]+/gi,'_')+ (c&&c.type&&c.type.includes('mp4')?'.mp4':'.mp4'));
+}
+function triggerDownload(blob, name){ const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); }
+
+/* ============================================================
+   EDITOR (Trim & Clip)
+   ============================================================ */
+let ED={ id:null, url:null, file:null, clip:null, inT:0, outT:0, dur:0 };
+
+function loadInEditor(id){ closeOverlay('detail-overlay'); go('editor'); openInEditor(id); }
+async function openInEditor(id){
+  const c=CLIPS.find(x=>x.id===id); if(!c) return;
+  const rec=await idbGet('blobs', id); if(!rec||!rec.blob) return toast('No video data','error');
+  if(ED.url) URL.revokeObjectURL(ED.url);
+  ED={ id, url:URL.createObjectURL(rec.blob), file:rec.blob, clip:c, inT:0, outT:c.duration||0, dur:c.duration||0 };
+  $('editor-empty').style.display='none'; $('editor-stage').style.display='';
+  $('ed-title').textContent=c.title;
+  const v=$('ed-video'); v.src=ED.url;
+  v.onloadedmetadata=()=>{ ED.dur=v.duration||c.duration||0; ED.outT=ED.dur; $('ed-in-range').value=0; $('ed-out-range').value=1000; updateRangeUI(); };
+  v.ontimeupdate=()=>{ if(ED.dur){ $('ed-playhead').style.left=(v.currentTime/ED.dur*100)+'%'; if(v.currentTime>=ED.outT){ v.pause(); } } };
+  $('ed-status').textContent=''; $('ed-prog').style.display='none';
+}
+function closeEditor(){ $('editor-stage').style.display='none'; $('editor-empty').style.display=''; if(ED.url){URL.revokeObjectURL(ED.url);} ED={id:null,url:null,file:null,clip:null,inT:0,outT:0,dur:0}; }
+function setInPoint(v){ const t=(v/1000)*ED.dur; if(t>=ED.outT){ $('ed-in-range').value=(ED.outT/ED.dur*1000)-1; return; } ED.inT=t; $('ed-video').currentTime=t; updateRangeUI(); }
+function setOutPoint(v){ const t=(v/1000)*ED.dur; if(t<=ED.inT){ $('ed-out-range').value=(ED.inT/ED.dur*1000)+1; return; } ED.outT=t; updateRangeUI(); }
+function updateRangeUI(){
+  $('ed-in').textContent=fmtTime(ED.inT); $('ed-out').textContent=fmtTime(ED.outT); $('ed-sel').textContent=fmtTime(ED.outT-ED.inT);
+  const box=$('ed-rangebox'); box.style.left=(ED.inT/ED.dur*100||0)+'%'; box.style.width=((ED.outT-ED.inT)/ED.dur*100||0)+'%';
+}
+function previewSelection(){ const v=$('ed-video'); v.currentTime=ED.inT; v.play(); }
+
+let _ffmpeg=null, _ffmpegLoading=null;
+function loadFFmpegScript(){
+  return new Promise((res,rej)=>{
+    if(window.FFmpeg) return res();
+    const s=document.createElement('script');
+    s.src='https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
+    s.onload=()=>res(); s.onerror=()=>rej(new Error('Could not load video engine (offline?)'));
+    document.head.appendChild(s);
+  });
+}
+async function getFFmpeg(onProgress){
+  if(_ffmpeg) return _ffmpeg;
+  if(_ffmpegLoading) return _ffmpegLoading;
+  _ffmpegLoading=(async()=>{
+    await loadFFmpegScript();
+    const { createFFmpeg } = FFmpeg;
+    const ff=createFFmpeg({ log:false, corePath:'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js' });
+    if(onProgress) ff.setProgress(({ratio})=>onProgress(ratio));
+    await ff.load();
+    _ffmpeg=ff; return ff;
+  })();
+  return _ffmpegLoading;
+}
+
+async function exportClip(){
+  if(!ED.file) return;
+  const dur=ED.outT-ED.inT;
+  if(dur<=0.05) return toast('Selection is too short','error');
+  const btn=$('ed-export-btn'); btn.disabled=true;
+  const prog=$('ed-prog'), bar=$('ed-prog-bar'); prog.style.display='block'; bar.style.width='4%';
+  const setStatus=t=>$('ed-status').textContent=t;
+  try{
+    setStatus('Loading video engine (first time only)…');
+    const ff=await getFFmpeg(r=>{ bar.style.width=Math.min(99,Math.round(r*100))+'%'; });
+    const { fetchFile }=FFmpeg;
+    const inName='in.mp4', outName='out.mp4';
+    setStatus('Reading file…'); bar.style.width='10%';
+    ff.FS('writeFile', inName, await fetchFile(ED.file));
+    const quality=$('ed-quality').value;
+    setStatus('Cutting clip…');
+    const args = quality==='precise'
+      ? ['-ss',ED.inT.toFixed(2),'-i',inName,'-t',dur.toFixed(2),'-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-movflags','+faststart',outName]
+      : ['-ss',ED.inT.toFixed(2),'-i',inName,'-t',dur.toFixed(2),'-c','copy','-movflags','+faststart',outName];
+    await ff.run(...args);
+    const data=ff.FS('readFile', outName);
+    const blob=new Blob([data.buffer], { type:'video/mp4' });
+    try{ ff.FS('unlink',inName); ff.FS('unlink',outName); }catch(_){}
+    bar.style.width='100%';
+
+    const after=$('ed-after').value;
+    const baseName=(ED.clip.title||'clip').replace(/[^a-z0-9_-]+/gi,'_');
+    if(after==='download'||after==='both') triggerDownload(blob, baseName+'_clip.mp4');
+    if(after==='save'||after==='both') await saveDerivedClip(blob, dur);
+    setStatus('Done.'); toast('Clip exported','success');
+  }catch(err){
+    setStatus('');
+    toast('Export failed: '+(err.message||err),'error');
+  }finally{
+    btn.disabled=false; setTimeout(()=>{ prog.style.display='none'; bar.style.width='0'; },1200);
+  }
+}
+
+async function saveDerivedClip(blob, dur){
+  const parent=ED.clip; const id=uid();
+  let thumb=parent.thumb;
+  try{ const m=await probeVideo(new File([blob],'c.mp4',{type:'video/mp4'})); thumb=m.thumb||thumb; }catch(_){}
+  const clip={
+    id, isClip:true, parentId:parent.id,
+    title: parent.title+' — clip',
+    source: parent.source, status:'clipped',
+    origin: parent.origin||'', platforms: parent.platforms||[], tags: parent.tags||[],
+    notes: 'Cut from "'+parent.title+'" ('+fmtTime(ED.inT)+'–'+fmtTime(ED.outT)+')',
+    filename: (parent.filename||'clip')+'.clip.mp4', size: blob.size, type:'video/mp4',
+    duration: dur, width: parent.width, height: parent.height, thumb, createdAt: Date.now(),
+  };
+  await idbPut('blobs', { id, blob });
+  await idbPut('clips', clip);
+  await refreshAll();
+}
+
+/* ============================================================
+   PROJECTS
+   ============================================================ */
+function renderProjects(){
+  const wrap=$('proj-list');
+  if(!PROJECTS.length){
+    wrap.innerHTML=`<div class="empty"><div class="empty-icon">&#127916;</div><div class="empty-text">No projects yet</div>
+      <div class="empty-sub">Create a project to sequence clips and stitch them into one video.</div>
+      <button class="btn" onclick="openNewProject()">&#43; New project</button></div>`; return;
+  }
+  wrap.innerHTML=PROJECTS.map(p=>{
+    const items=(p.clipIds||[]).map(id=>CLIPS.find(c=>c.id===id)).filter(Boolean);
+    const dur=items.reduce((a,c)=>a+(c.duration||0),0);
+    return `<div class="panel" style="cursor:pointer;" onclick="openProject('${p.id}')">
+      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+        <div><div style="font-size:16px; font-weight:700;">${esc(p.name)}</div>
+        <div class="hint" style="margin:4px 0 0;">${items.length} clip${items.length!==1?'s':''} &middot; ${fmtTime(dur).split('.')[0]} &middot; ${new Date(p.createdAt).toLocaleDateString()}</div></div>
+        <span class="pill">Open &rarr;</span>
+      </div></div>`;
+  }).join('');
+}
+async function openNewProject(){
+  const id='p_'+Date.now().toString(36);
+  const p={ id, name:'Untitled project', clipIds:[], notes:'', createdAt:Date.now() };
+  await idbPut('projects', p); PROJECTS.push(p); openProject(id);
+}
+function openProject(id){
+  const p=PROJECTS.find(x=>x.id===id); if(!p) return;
+  $('project-sheet-title').textContent='Project';
+  const inLib=CLIPS.filter(c=>!(p.clipIds||[]).includes(c.id));
+  const seq=(p.clipIds||[]).map(cid=>CLIPS.find(c=>c.id===cid)).filter(Boolean);
+  $('project-body').innerHTML=`
+    <div class="form-row"><label class="field-label">Project name</label>
+      <input class="input" id="pj-name" value="${esc(p.name)}" onchange="renameProject('${id}', this.value)"></div>
+    <div class="panel-title" style="margin-top:8px;">Sequence (${seq.length})</div>
+    <div id="pj-seq">${seq.length? seq.map((c,i)=>projClipRow(id,c,i,seq.length)).join('') : '<div class="hint">No clips yet — add some below.</div>'}</div>
+    <div class="divider"></div>
+    <div class="panel-title">Add a clip</div>
+    <select class="input" id="pj-add" onchange="addToProject('${id}', this.value)">
+      <option value="">Choose a clip from your Library…</option>
+      ${inLib.map(c=>`<option value="${c.id}">${esc(c.title)} (${fmtTime(c.duration).split('.')[0]})</option>`).join('')}
+    </select>
+    <div class="prog" id="pj-prog" style="display:none;"><div class="prog-bar" id="pj-prog-bar"></div></div>
+    <div id="pj-status" class="hint"></div>
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:18px;">
+      <button class="btn" onclick="stitchProject('${id}')" ${seq.length<1?'disabled':''}>&#127916;&nbsp; Stitch &amp; export</button>
+      <button class="btn btn-danger" onclick="deleteProject('${id}')">Delete project</button>
+    </div>
+    <div class="hint">Stitching re-encodes clips to a shared 720p H.264 timeline so different cameras line up. Best for a handful of short clips — large sequences are slow in-browser.</div>`;
+  openOverlay('project-overlay');
+}
+function projClipRow(pid,c,i,n){
+  return `<div class="proj-clip">
+    <img src="${c.thumb||''}" alt="">
+    <div class="proj-clip-info"><div class="proj-clip-title">${esc(c.title)}</div>
+      <div class="proj-clip-meta">${fmtTime(c.duration).split('.')[0]} &middot; ${esc(srcById(c.source).name.split(' ')[0])}</div></div>
+    <button class="icon-btn" onclick="moveClip('${pid}',${i},-1)" ${i===0?'disabled':''}>&uarr;</button>
+    <button class="icon-btn" onclick="moveClip('${pid}',${i},1)" ${i===n-1?'disabled':''}>&darr;</button>
+    <button class="icon-btn" onclick="removeFromProject('${pid}','${c.id}')">&times;</button></div>`;
+}
+async function renameProject(id,name){ const p=PROJECTS.find(x=>x.id===id); if(!p)return; p.name=name.trim()||'Untitled project'; await idbPut('projects',p); renderProjects(); }
+async function addToProject(id,cid){ if(!cid)return; const p=PROJECTS.find(x=>x.id===id); if(!p)return; p.clipIds=p.clipIds||[]; p.clipIds.push(cid); await idbPut('projects',p); openProject(id); }
+async function removeFromProject(id,cid){ const p=PROJECTS.find(x=>x.id===id); if(!p)return; p.clipIds=p.clipIds.filter(x=>x!==cid); await idbPut('projects',p); openProject(id); }
+async function moveClip(id,i,dir){ const p=PROJECTS.find(x=>x.id===id); if(!p)return; const a=p.clipIds; const j=i+dir; if(j<0||j>=a.length)return; [a[i],a[j]]=[a[j],a[i]]; await idbPut('projects',p); openProject(id); }
+function deleteProject(id){ const p=PROJECTS.find(x=>x.id===id); confirmAction('Delete project',`Delete "${p?p.name:'project'}"? Your clips stay in the Library.`, async()=>{ await idbDel('projects',id); PROJECTS=PROJECTS.filter(x=>x.id!==id); closeOverlay('project-overlay'); renderProjects(); toast('Project deleted','success'); }); }
+
+async function stitchProject(id){
+  const p=PROJECTS.find(x=>x.id===id); if(!p||!p.clipIds.length) return;
+  const prog=$('pj-prog'), bar=$('pj-prog-bar'); prog.style.display='block'; bar.style.width='4%';
+  const setStatus=t=>$('pj-status').textContent=t;
+  try{
+    setStatus('Loading video engine…');
+    const ff=await getFFmpeg(r=>{ bar.style.width=Math.min(99,Math.round(r*100))+'%'; });
+    const { fetchFile }=FFmpeg;
+    const inputs=[];
+    for(let i=0;i<p.clipIds.length;i++){
+      const rec=await idbGet('blobs', p.clipIds[i]); if(!rec||!rec.blob) continue;
+      const nm='p'+i+'.mp4'; ff.FS('writeFile', nm, await fetchFile(rec.blob)); inputs.push(nm);
+      setStatus('Loading clip '+(i+1)+'/'+p.clipIds.length+'…');
+    }
+    if(inputs.length<1){ throw new Error('No usable clips'); }
+    setStatus('Stitching '+inputs.length+' clips (re-encoding)…');
+    const args=[];
+    inputs.forEach(nm=>args.push('-i',nm));
+    const parts=inputs.map((_,i)=>`[${i}:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v${i}];[${i}:a]aresample=44100,aformat=sample_fmts=fltp:channel_layouts=stereo[a${i}]`).join(';');
+    const concat=inputs.map((_,i)=>`[v${i}][a${i}]`).join('')+`concat=n=${inputs.length}:v=1:a=1[v][a]`;
+    args.push('-filter_complex', parts+';'+concat, '-map','[v]','-map','[a]','-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-movflags','+faststart','out.mp4');
+    await ff.run(...args);
+    const data=ff.FS('readFile','out.mp4'); const blob=new Blob([data.buffer],{type:'video/mp4'});
+    inputs.forEach(nm=>{ try{ff.FS('unlink',nm);}catch(_){}}); try{ff.FS('unlink','out.mp4');}catch(_){}
+    bar.style.width='100%';
+    triggerDownload(blob, (p.name||'project').replace(/[^a-z0-9_-]+/gi,'_')+'.mp4');
+    setStatus('Done — downloaded.'); toast('Project stitched','success');
+  }catch(err){
+    setStatus(''); toast('Stitch failed: '+(err.message||err)+'. Try clips from the same camera.','error');
+  }finally{ setTimeout(()=>{ prog.style.display='none'; bar.style.width='0'; },1500); }
+}
+
+/* ============================================================
+   SETTINGS
+   ============================================================ */
+function renderSettings(){
+  $('src-legend').innerHTML=SOURCES.map(s=>`<div class="bd-row"><span class="bd-name"><span class="dot" style="background:${s.color}"></span>${esc(s.name)}</span><span class="bd-val" style="font-size:11px; color:var(--text-muted)">${s.match.length?'auto':'manual'}</span></div>`).join('');
+}
+async function changePass(e){
+  e.preventDefault();
+  const a=$('set-pass1').value, b=$('set-pass2').value;
+  if(a.length<4) return toast('Passcode must be at least 4 characters','error');
+  if(a!==b) return toast('Passcodes do not match','error');
+  localStorage.setItem('studio_pass_hash', await sha256(a));
+  $('set-pass1').value=''; $('set-pass2').value='';
+  toast('Passcode updated','success');
+  return false;
+}
+async function exportManifest(){
+  const manifest=CLIPS.map(({thumb,...rest})=>rest);
+  const blob=new Blob([JSON.stringify({ exported:new Date().toISOString(), clips:manifest, projects:PROJECTS },null,2)],{type:'application/json'});
+  triggerDownload(blob,'studio_manifest.json');
+}
+function wipeConfirm(){
+  confirmAction('Erase all Studio data','This deletes every clip, project, and the video data stored in this browser. This cannot be undone.', async()=>{
+    await idbClear('clips'); await idbClear('blobs'); await idbClear('projects');
+    await refreshAll(); renderLibrary(); renderProjects(); go('dashboard'); toast('All data erased','success');
+  });
+}
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+(function boot(){
+  // timeline scrub click
+  document.addEventListener('click', e=>{
+    const track=e.target.closest && e.target.closest('#ed-track');
+    if(track && ED.dur){ const r=track.getBoundingClientRect(); const pct=(e.clientX-r.left)/r.width; $('ed-video').currentTime=Math.max(0,Math.min(ED.dur,pct*ED.dur)); }
+  });
+  if(sessionStorage.getItem('studio_unlocked')==='1'){ enterApp(); }
+})();
+</script>
+</body>
+</html>

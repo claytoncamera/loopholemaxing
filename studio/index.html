@@ -536,7 +536,7 @@
 
 <div class="toasts" id="toasts"></div>
 
-<!-- ffmpeg.wasm 0.11 (single-thread core — works on static GitHub Pages, no COOP/COEP needed) -->
+<!-- ffmpeg.wasm 0.12 single-thread (self-hosted loader/worker/core under vendor/) — runs on static GitHub Pages, no SharedArrayBuffer / COOP/COEP needed -->
 <script>
 'use strict';
 
@@ -636,6 +636,8 @@ function lock(){ sessionStorage.removeItem('studio_unlocked'); location.reload()
 async function enterApp(){
   $('gate').style.display='none';
   $('app').classList.add('active');
+  // Ask the browser to keep Studio's data (so imported footage isn't evicted under storage pressure).
+  try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist(); }catch(_){}
   buildSelectors();
   await refreshAll();
 }
@@ -1037,25 +1039,32 @@ function updateRangeUI(){
 }
 function previewSelection(){ const v=$('ed-video'); v.currentTime=ED.inT; v.play(); }
 
-let _ffmpeg=null, _ffmpegLoading=null;
+// ffmpeg.wasm 0.12 single-thread. Loader + worker + core JS are self-hosted
+// same-origin under vendor/ (so the Worker isn't cross-origin-blocked); the
+// single-thread core needs NO SharedArrayBuffer, so it runs on static GitHub
+// Pages with no COOP/COEP headers. Only the ~32MB wasm streams from the CDN.
+const FF_CORE_WASM='https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd/ffmpeg-core.wasm';
+let _ffmpeg=null, _ffmpegLoading=null, _ffProgress=null;
+const ffFetchFile = async d => new Uint8Array(await d.arrayBuffer());
 function loadFFmpegScript(){
   return new Promise((res,rej)=>{
-    if(window.FFmpeg) return res();
+    if(window.FFmpegWASM && window.FFmpegWASM.FFmpeg) return res();
     const s=document.createElement('script');
-    s.src='https://unpkg.com/@ffmpeg/ffmpeg@0.11.6/dist/ffmpeg.min.js';
-    s.onload=()=>res(); s.onerror=()=>rej(new Error('Could not load video engine (offline?)'));
+    s.src='vendor/ffmpeg.js';
+    s.onload=()=>res(); s.onerror=()=>rej(new Error('Could not load the video engine.'));
     document.head.appendChild(s);
   });
 }
 async function getFFmpeg(onProgress){
+  _ffProgress = onProgress || null;
   if(_ffmpeg) return _ffmpeg;
   if(_ffmpegLoading) return _ffmpegLoading;
   _ffmpegLoading=(async()=>{
     await loadFFmpegScript();
-    const { createFFmpeg } = FFmpeg;
-    const ff=createFFmpeg({ log:false, corePath:'https://unpkg.com/@ffmpeg/core@0.11.0/dist/ffmpeg-core.js' });
-    if(onProgress) ff.setProgress(({ratio})=>onProgress(ratio));
-    await ff.load();
+    const { FFmpeg } = window.FFmpegWASM;
+    const ff=new FFmpeg();
+    ff.on('progress', ({progress})=>{ if(_ffProgress && progress>=0 && progress<=1) _ffProgress(progress); });
+    await ff.load({ coreURL: new URL('vendor/ffmpeg-core.js', location.href).href, wasmURL: FF_CORE_WASM });
     _ffmpeg=ff; return ff;
   })();
   return _ffmpegLoading;
@@ -1071,19 +1080,35 @@ async function exportClip(){
   try{
     setStatus('Loading video engine (first time only)…');
     const ff=await getFFmpeg(r=>{ bar.style.width=Math.min(99,Math.round(r*100))+'%'; });
-    const { fetchFile }=FFmpeg;
-    const inName='in.mp4', outName='out.mp4';
+    // fetchFile is inlined as ffFetchFile (0.12 has no FFmpeg.fetchFile).
+    // Keep the real container extension so ffmpeg demuxes .mov/.mp4/.webm correctly.
+    const extMatch=(ED.clip.filename||'').toLowerCase().match(/\.(mov|mp4|m4v|webm|avi|mkv|hevc)$/);
+    const inName='in'+(extMatch?extMatch[0]:'.mp4'), outName='out.mp4';
     setStatus('Reading file…'); bar.style.width='10%';
-    ff.FS('writeFile', inName, await fetchFile(ED.file));
+    await ff.writeFile(inName, await ffFetchFile(ED.file));
     const quality=$('ed-quality').value;
+    const ss=ED.inT.toFixed(2), tt=dur.toFixed(2);
+    const copyArgs=['-ss',ss,'-i',inName,'-t',tt,'-c','copy','-movflags','+faststart',outName];
+    const encArgs =['-ss',ss,'-i',inName,'-t',tt,'-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-movflags','+faststart',outName];
+    const runRead=async(args)=>{ try{await ff.deleteFile(outName);}catch(_){} await ff.exec(args); return await ff.readFile(outName); };
     setStatus('Cutting clip…');
-    const args = quality==='precise'
-      ? ['-ss',ED.inT.toFixed(2),'-i',inName,'-t',dur.toFixed(2),'-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-movflags','+faststart',outName]
-      : ['-ss',ED.inT.toFixed(2),'-i',inName,'-t',dur.toFixed(2),'-c','copy','-movflags','+faststart',outName];
-    await ff.run(...args);
-    const data=ff.FS('readFile', outName);
+    let data;
+    if(quality==='precise'){
+      data=await runRead(encArgs);
+    } else {
+      // Fast stream-copy first; auto-fall back to re-encode if the source
+      // codec/container can't be copied into MP4 (common with .mov).
+      try{
+        data=await runRead(copyArgs);
+        if(!data || data.length<1024) throw new Error('empty copy output');
+      }catch(_){
+        setStatus('Fast cut not supported for this clip — re-encoding…');
+        data=await runRead(encArgs);
+      }
+    }
+    if(!data || data.length<1024) throw new Error('export produced no video');
     const blob=new Blob([data.buffer], { type:'video/mp4' });
-    try{ ff.FS('unlink',inName); ff.FS('unlink',outName); }catch(_){}
+    try{ await ff.deleteFile(inName); await ff.deleteFile(outName); }catch(_){}
     bar.style.width='100%';
 
     const after=$('ed-after').value;
@@ -1191,23 +1216,43 @@ async function stitchProject(id){
   try{
     setStatus('Loading video engine…');
     const ff=await getFFmpeg(r=>{ bar.style.width=Math.min(99,Math.round(r*100))+'%'; });
-    const { fetchFile }=FFmpeg;
+    // fetchFile is inlined as ffFetchFile (0.12 has no FFmpeg.fetchFile).
     const inputs=[];
     for(let i=0;i<p.clipIds.length;i++){
       const rec=await idbGet('blobs', p.clipIds[i]); if(!rec||!rec.blob) continue;
-      const nm='p'+i+'.mp4'; ff.FS('writeFile', nm, await fetchFile(rec.blob)); inputs.push(nm);
+      const nm='p'+i+'.mp4'; await ff.writeFile(nm, await ffFetchFile(rec.blob)); inputs.push(nm);
       setStatus('Loading clip '+(i+1)+'/'+p.clipIds.length+'…');
     }
     if(inputs.length<1){ throw new Error('No usable clips'); }
     setStatus('Stitching '+inputs.length+' clips (re-encoding)…');
-    const args=[];
-    inputs.forEach(nm=>args.push('-i',nm));
-    const parts=inputs.map((_,i)=>`[${i}:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v${i}];[${i}:a]aresample=44100,aformat=sample_fmts=fltp:channel_layouts=stereo[a${i}]`).join(';');
-    const concat=inputs.map((_,i)=>`[v${i}][a${i}]`).join('')+`concat=n=${inputs.length}:v=1:a=1[v][a]`;
-    args.push('-filter_complex', parts+';'+concat, '-map','[v]','-map','[a]','-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-movflags','+faststart','out.mp4');
-    await ff.run(...args);
-    const data=ff.FS('readFile','out.mp4'); const blob=new Blob([data.buffer],{type:'video/mp4'});
-    inputs.forEach(nm=>{ try{ff.FS('unlink',nm);}catch(_){}}); try{ff.FS('unlink','out.mp4');}catch(_){}
+    const vScale=i=>`[${i}:v]scale=1280:720:force_original_aspect_ratio=decrease,pad=1280:720:(ow-iw)/2:(oh-ih)/2,setsar=1,fps=30[v${i}]`;
+    const N=inputs.length;
+    const runStitch=async(withAudio)=>{
+      try{ await ff.deleteFile('out.mp4'); }catch(_){}
+      const args=[]; inputs.forEach(nm=>args.push('-i',nm));
+      if(withAudio){
+        const parts=inputs.map((_,i)=>`${vScale(i)};[${i}:a]aresample=44100,aformat=sample_fmts=fltp:channel_layouts=stereo[a${i}]`).join(';');
+        const concat=inputs.map((_,i)=>`[v${i}][a${i}]`).join('')+`concat=n=${N}:v=1:a=1[v][a]`;
+        args.push('-filter_complex', parts+';'+concat, '-map','[v]','-map','[a]','-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-movflags','+faststart','out.mp4');
+      } else {
+        const parts=inputs.map((_,i)=>vScale(i)).join(';');
+        const concat=inputs.map((_,i)=>`[v${i}]`).join('')+`concat=n=${N}:v=1:a=0[v]`;
+        args.push('-filter_complex', parts+';'+concat, '-map','[v]','-c:v','libx264','-preset','veryfast','-crf','23','-movflags','+faststart','out.mp4');
+      }
+      await ff.exec(args);
+      return await ff.readFile('out.mp4'); // throws if exec produced no output
+    };
+    let data;
+    try{
+      data=await runStitch(true);
+      if(!data || data.length<1024) throw new Error('empty');
+    }catch(_){
+      setStatus('A clip has no/odd audio — stitching video only…');
+      data=await runStitch(false);
+    }
+    if(!data || data.length<1024) throw new Error('stitch produced no video');
+    const blob=new Blob([data.buffer],{type:'video/mp4'});
+    for(const nm of inputs){ try{await ff.deleteFile(nm);}catch(_){} } try{await ff.deleteFile('out.mp4');}catch(_){}
     bar.style.width='100%';
     triggerDownload(blob, (p.name||'project').replace(/[^a-z0-9_-]+/gi,'_')+'.mp4');
     setStatus('Done — downloaded.'); toast('Project stitched','success');

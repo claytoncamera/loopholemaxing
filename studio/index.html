@@ -745,6 +745,14 @@ function openImport(){ $('import-file').value=''; $('import-staging').innerHTML=
 
 async function onFilesPicked(files){
   const staging=$('import-staging'); staging.innerHTML='';
+  if(files.length>1){
+    const bar=document.createElement('div');
+    bar.style.cssText='position:sticky;top:0;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg-card);border:1px solid rgba(167,139,250,.3);border-radius:10px;padding:12px 14px;margin:4px 0 6px;flex-wrap:wrap;';
+    bar.innerHTML=`<div class="hint" style="margin:0;"><strong>${files.length} files</strong> — sources auto-detected. Add them all, or tweak each below.</div>`;
+    const btn=document.createElement('button'); btn.className='btn'; btn.id='add-all-btn';
+    btn.innerHTML='&#43;&nbsp; Add all '+files.length+' to Library'; btn.onclick=saveAllStaged;
+    bar.appendChild(btn); staging.appendChild(bar);
+  }
   for(const file of files){
     const id=uid();
     const card=document.createElement('div'); card.className='panel'; card.style.marginTop='14px'; card.id='stage-'+id;
@@ -871,7 +879,7 @@ function stageForm(id, file, meta, guessSrc){
     <button class="btn btn-full" onclick="saveStaged('${id}')">Add to Library</button>`;
 }
 
-async function saveStaged(id){
+async function saveStaged(id, quiet){
   const card=$('stage-'+id); if(!card||!card._file) return;
   const plats=Array.from(card.querySelectorAll('#stf-plat-'+id+' .chip.on')).map(c=>c.dataset.plat);
   const tags=($('stf-tags-'+id).value||'').split(',').map(t=>t.trim()).filter(Boolean);
@@ -890,10 +898,21 @@ async function saveStaged(id){
   try{
     await idbPut('blobs', { id, blob: card._file });
     await idbPut('clips', clip);
+    card._file=null; // prevent double-save (e.g. via "Add all")
     card.innerHTML=`<div class="hint" style="color:var(--green); margin:0;">&#10003; ${esc(clip.title)} added to Library.</div>`;
-    await refreshAll();
-    toast('Added: '+clip.title,'success');
+    if(!quiet){ await refreshAll(); toast('Added: '+clip.title,'success'); }
   }catch(err){ toast('Save failed: '+(err.message||err),'error'); }
+}
+
+async function saveAllStaged(){
+  const cards=[...document.querySelectorAll('#import-staging [id^="stage-"]')].filter(c=>c._file);
+  if(!cards.length){ toast('Nothing new to add'); return; }
+  const btn=$('add-all-btn'); if(btn){ btn.disabled=true; btn.textContent='Adding '+cards.length+'…'; }
+  let n=0;
+  for(const card of cards){ try{ await saveStaged(card.id.replace('stage-',''), true); n++; }catch(_){} }
+  await refreshAll();
+  toast('Added '+n+' clip'+(n!==1?'s':'')+' to Library','success');
+  closeOverlay('import-overlay'); go('library');
 }
 
 /* ============================================================

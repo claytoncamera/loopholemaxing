@@ -8,6 +8,14 @@
   <meta property="og:title" content="LoopholeMaxing Studio — Content HUB">
   <meta property="og:description" content="One place for all your content. Import, track, trim, clip, and assemble — fully in the browser.">
 
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0a0a0f">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Studio">
+  <link rel="apple-touch-icon" href="icon.svg">
+
   <!-- Shared site styles (loads from repo root when at /studio/). Fallback tokens inline below. -->
   <link rel="stylesheet" href="../styles.css" id="shared-styles">
 
@@ -224,6 +232,54 @@
     .hint { font-size:12px; color:var(--text-muted); margin-top:6px; line-height:1.5; }
     .divider { height:1px; background:var(--border); margin:18px 0; }
 
+    /* ── Upgrade pass: editor tools, favorites, multi-select, plan, etc ── */
+    .seg { display:inline-flex; gap:6px; flex-wrap:wrap; }
+    .row-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+    .mini { font-size:12px; padding:6px 11px; }
+    .kbd { font-family:var(--font-mono); font-size:10px; background:rgba(255,255,255,.06); border:1px solid var(--border); border-radius:4px; padding:1px 5px; color:var(--text-muted); }
+
+    .fav-btn { position:absolute; top:6px; right:6px; z-index:2; width:28px; height:28px; border-radius:7px; border:none;
+      background:rgba(0,0,0,.55); color:#fff; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; line-height:1; }
+    .fav-btn.on { color:#fbbf24; }
+    .fav-btn:hover { background:rgba(0,0,0,.8); }
+    .clip-card.sel { outline:2px solid #a78bfa; outline-offset:-2px; }
+    .sel-check { position:absolute; top:6px; left:6px; z-index:2; width:22px; height:22px; border-radius:6px; border:2px solid #fff;
+      background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; color:#fff; font-size:13px; }
+    .selecting .sel-check { display:flex; }
+    .clip-card.sel .sel-check { background:#a78bfa; border-color:#a78bfa; }
+
+    .bulkbar { position:sticky; top:104px; z-index:50; display:none; align-items:center; gap:10px; flex-wrap:wrap;
+      background:var(--bg-card); border:1px solid rgba(167,139,250,.3); border-radius:12px; padding:11px 14px; margin-bottom:16px; }
+    .bulkbar.show { display:flex; }
+    .bulkbar .count { font-weight:700; color:#a78bfa; font-size:13px; }
+
+    .star-on { color:#fbbf24; }
+
+    /* Plan / agenda */
+    .agenda-group { margin-bottom:8px; }
+    .agenda-label { font-size:11px; font-weight:800; letter-spacing:.1em; text-transform:uppercase; margin:18px 0 10px; }
+    .agenda-item { display:flex; align-items:center; gap:12px; background:var(--bg-card); border:1px solid var(--border);
+      border-radius:11px; padding:10px 13px; margin-bottom:9px; }
+    .agenda-item img { width:60px; height:34px; object-fit:cover; border-radius:5px; background:#000; flex-shrink:0; }
+    .agenda-info { flex:1; min-width:0; }
+    .agenda-title { font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .agenda-meta { font-size:11px; color:var(--text-muted); font-family:var(--font-mono); }
+    .agenda-when { font-size:12px; font-weight:700; font-family:var(--font-mono); white-space:nowrap; }
+    .overdue { color:var(--red); } .today { color:var(--green); } .soon { color:var(--accent-cyan); }
+
+    /* Hook ideas */
+    .hook-line { display:flex; align-items:flex-start; gap:10px; background:var(--bg-secondary); border:1px solid var(--border);
+      border-radius:8px; padding:9px 11px; margin-bottom:7px; font-size:13px; line-height:1.45; }
+    .hook-line .copy { flex-shrink:0; cursor:pointer; color:var(--accent-cyan); font-size:11px; font-weight:700; background:none; border:none; padding:2px 4px; }
+    .hook-line .copy:hover { color:#7dd3fc; }
+
+    /* Storage meter */
+    .meter { height:10px; background:var(--bg-secondary); border:1px solid var(--border); border-radius:99px; overflow:hidden; margin:10px 0 6px; }
+    .meter-fill { height:100%; width:0; background:linear-gradient(90deg,#3fb950,#a78bfa); transition:width .3s; }
+    .meter-fill.warn { background:linear-gradient(90deg,#d29922,#f85149); }
+
+    .shape-prev { display:inline-block; border:1.5px solid var(--border-light); border-radius:3px; vertical-align:middle; margin-right:6px; background:rgba(167,139,250,.15); }
+
     @media (max-width:680px) {
       .main { padding:128px 14px 48px; }
       .form-grid2, .range-inputs { grid-template-columns:1fr; }
@@ -281,6 +337,7 @@
     <button class="nav-btn" data-view="library" onclick="go('library')">&#127902; Library</button>
     <button class="nav-btn" data-view="editor" onclick="go('editor')">&#9986; Trim &amp; Clip</button>
     <button class="nav-btn" data-view="projects" onclick="go('projects')">&#127916; Projects</button>
+    <button class="nav-btn" data-view="plan" onclick="go('plan')">&#128197; Plan</button>
     <button class="nav-btn" data-view="settings" onclick="go('settings')">&#9881; Settings</button>
   </nav>
 
@@ -345,6 +402,25 @@
         <select id="lib-source" class="input" onchange="renderLibrary()"><option value="">All sources</option></select>
         <select id="lib-status" class="input" onchange="renderLibrary()"><option value="">All statuses</option></select>
         <select id="lib-platform" class="input" onchange="renderLibrary()"><option value="">All platforms</option></select>
+        <select id="lib-sort" class="input" onchange="renderLibrary()">
+          <option value="new">Newest first</option>
+          <option value="old">Oldest first</option>
+          <option value="long">Longest</option>
+          <option value="short">Shortest</option>
+          <option value="title">Title A–Z</option>
+        </select>
+        <button class="btn btn-ghost mini" id="lib-fav-btn" onclick="toggleFavFilter()">&#9734; Favorites</button>
+        <button class="btn btn-ghost mini" id="lib-select-btn" onclick="toggleSelectMode()">&#9745; Select</button>
+      </div>
+
+      <div class="bulkbar" id="bulkbar">
+        <span class="count" id="bulk-count">0 selected</span>
+        <select class="input mini" id="bulk-status" onchange="bulkSetStatus(this.value)" style="width:auto;"><option value="">Set status…</option></select>
+        <select class="input mini" id="bulk-plat" onchange="bulkAddPlatform(this.value)" style="width:auto;"><option value="">Add platform…</option></select>
+        <button class="btn btn-ghost mini" onclick="bulkFavorite()">&#9733; Favorite</button>
+        <button class="btn btn-ghost mini" onclick="bulkSelectAll()">Select all</button>
+        <button class="btn btn-danger mini" onclick="bulkDelete()">Delete</button>
+        <button class="btn btn-ghost mini" onclick="clearSelection()">Done</button>
       </div>
 
       <div id="lib-grid" class="lib-grid"></div>
@@ -394,15 +470,38 @@
                 <input id="ed-out-range" class="input" type="range" min="0" max="1000" value="1000" oninput="setOutPoint(this.value)">
               </div>
             </div>
+            <div class="row-actions">
+              <button class="btn btn-ghost mini" onclick="setInToPlayhead()">[ Set In to playhead <span class="kbd">I</span></button>
+              <button class="btn btn-ghost mini" onclick="setOutToPlayhead()">Set Out to playhead ] <span class="kbd">O</span></button>
+              <button class="btn btn-ghost mini" onclick="nudge(-0.1)">&#9664; <span class="kbd">,</span></button>
+              <button class="btn btn-ghost mini" onclick="nudge(0.1)"><span class="kbd">.</span> &#9654;</button>
+              <span class="hint" style="margin:0;">Space = play/pause</span>
+            </div>
           </div>
 
           <div class="divider"></div>
           <div class="form-grid2">
             <div>
+              <label class="field-label">Output shape</label>
+              <select id="ed-shape" class="input">
+                <option value="original">Original (keep source)</option>
+                <option value="9x16">Vertical 9:16 — Reels / TikTok / Shorts</option>
+                <option value="1x1">Square 1:1 — feed posts</option>
+                <option value="16x9">Wide 16:9 — YouTube</option>
+              </select>
+            </div>
+            <div>
+              <label class="field-label">Audio</label>
+              <select id="ed-audio" class="input">
+                <option value="keep">Keep audio</option>
+                <option value="mute">Mute (no audio)</option>
+              </select>
+            </div>
+            <div>
               <label class="field-label">Cut quality</label>
               <select id="ed-quality" class="input">
                 <option value="fast">Fast cut — stream copy (quickest)</option>
-                <option value="precise">Precise — re-encode H.264 (slower, frame-accurate)</option>
+                <option value="precise">Precise — re-encode H.264 (frame-accurate)</option>
               </select>
             </div>
             <div>
@@ -417,11 +516,14 @@
           <div class="prog" id="ed-prog" style="display:none;"><div class="prog-bar" id="ed-prog-bar"></div></div>
           <div id="ed-status" class="hint"></div>
 
-          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+          <div class="row-actions" style="margin-top:16px;">
             <button class="btn" id="ed-export-btn" onclick="exportClip()">&#9986;&nbsp; Export clip</button>
-            <button class="btn btn-ghost" onclick="previewSelection()">&#9654;&nbsp; Preview selection</button>
+            <button class="btn btn-ghost" onclick="previewSelection()">&#9654;&nbsp; Preview</button>
+            <button class="btn btn-ghost" onclick="grabCoverFrame()">&#128247;&nbsp; Cover frame (JPG)</button>
+            <button class="btn btn-ghost" id="ed-audio-btn" onclick="extractAudio()">&#127925;&nbsp; Extract audio</button>
+            <button class="btn btn-ghost" id="ed-gif-btn" onclick="exportGif()">&#127902;&nbsp; GIF</button>
           </div>
-          <div class="hint">First export loads the in-browser video engine (~25&nbsp;MB, one time per session). Large 4K files may be slow — trim short selections for best speed.</div>
+          <div class="hint">Cover frame is instant. Clip/audio/GIF use the in-browser engine (~30&nbsp;MB, loads once). Vertical/square reshape and precise cuts re-encode, so they're slower than a fast cut — keep selections short for speed.</div>
         </div>
       </div>
     </section>
@@ -436,6 +538,18 @@
         <button class="btn" onclick="openNewProject()">&#43;&nbsp; New project</button>
       </div>
       <div id="proj-list"></div>
+    </section>
+
+    <!-- PLAN -->
+    <section id="view-plan" class="view">
+      <div class="view-head">
+        <div>
+          <div class="view-title">Plan</div>
+          <div class="view-desc">Schedule clips to post dates and platforms. Stay consistent — that's how you grow.</div>
+        </div>
+      </div>
+      <div class="stat-grid" id="plan-stats"></div>
+      <div id="plan-agenda"></div>
     </section>
 
     <!-- SETTINGS -->
@@ -472,10 +586,36 @@
       </div>
 
       <div class="panel">
-        <div class="panel-title">Local data</div>
-        <div class="hint" style="margin-top:0;">Your footage and clips live in this browser (IndexedDB). Cross-device cloud sync is the planned v2.</div>
-        <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
-          <button class="btn btn-ghost btn-sm" onclick="exportManifest()">Export library manifest (JSON)</button>
+        <div class="panel-title">Storage</div>
+        <div class="hint" style="margin-top:0;">Footage lives in this browser (IndexedDB). The meter shows how much of the browser's allowance you've used.</div>
+        <div class="meter"><div class="meter-fill" id="storage-meter"></div></div>
+        <div class="hint" id="storage-text" style="margin-top:0;">—</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Backup &amp; restore</div>
+        <div class="hint" style="margin-top:0; margin-bottom:12px;">Back up your whole library (footage + clips + projects + plan) to one file, then restore it here or on another device. This is the bridge until cloud sync (v2).</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button class="btn btn-sm" id="backup-btn" onclick="backupAll()">&#11015; Back up everything</button>
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('restore-file').click()">&#11014; Restore from backup</button>
+          <input id="restore-file" type="file" accept=".json,application/json" style="display:none" onchange="restoreFromFile(this.files[0])">
+          <button class="btn btn-ghost btn-sm" onclick="exportManifest()">Export metadata only (JSON)</button>
+        </div>
+        <div class="hint" id="backup-status"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Install</div>
+        <div class="hint" style="margin-top:0;">Install Studio as an app — opens full-screen and works offline (after the engine loads once).</div>
+        <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+          <button class="btn btn-sm" id="install-btn" onclick="promptInstall()" style="display:none;">&#11015; Install Studio app</button>
+          <span class="hint" id="install-hint" style="margin:0;">On iPhone: Share → Add to Home Screen. On desktop Chrome: use the install icon in the address bar.</span>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title" style="color:var(--red)">Danger zone</div>
+        <div style="display:flex; gap:10px; margin-top:6px; flex-wrap:wrap;">
           <button class="btn btn-danger btn-sm" onclick="wipeConfirm()">Erase all Studio data</button>
         </div>
       </div>
@@ -652,7 +792,8 @@ function go(view){
   if(view==='dashboard') renderDashboard();
   if(view==='library')   renderLibrary();
   if(view==='projects')  renderProjects();
-  if(view==='settings')  renderSettings();
+  if(view==='plan')      renderPlan();
+  if(view==='settings')  { renderSettings(); updateStorageMeter(); }
   window.scrollTo({top:0});
 }
 
@@ -661,6 +802,8 @@ function buildSelectors(){
   SOURCES.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; sSrc.appendChild(o); });
   STATUSES.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.name; sStat.appendChild(o); });
   PLATFORMS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent=p.name; sPlat.appendChild(o); });
+  STATUSES.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent='→ '+s.name; $('bulk-status').appendChild(o); });
+  PLATFORMS.forEach(p=>{ const o=document.createElement('option'); o.value=p.id; o.textContent='+ '+p.name; $('bulk-plat').appendChild(o); });
 }
 
 /* ============================================================
@@ -918,30 +1061,48 @@ async function saveAllStaged(){
 /* ============================================================
    LIBRARY
    ============================================================ */
-function renderLibrary(){
+let FAV_ONLY=false, SELECTING=false;
+const SELECTED=new Set();
+
+function libFiltered(){
   const q=($('lib-search').value||'').toLowerCase();
   const fSrc=$('lib-source').value, fStat=$('lib-status').value, fPlat=$('lib-platform').value;
   let list=CLIPS.filter(c=>{
+    if(FAV_ONLY && !c.favorite) return false;
     if(fSrc && c.source!==fSrc) return false;
     if(fStat && c.status!==fStat) return false;
     if(fPlat && !(c.platforms||[]).includes(fPlat)) return false;
-    if(q){ const hay=(c.title+' '+c.filename+' '+(c.notes||'')+' '+(c.tags||[]).join(' ')+' '+(c.origin||'')).toLowerCase(); if(!hay.includes(q)) return false; }
+    if(q){ const hay=(c.title+' '+c.filename+' '+(c.notes||'')+' '+(c.caption||'')+' '+(c.tags||[]).join(' ')+' '+(c.hashtags||'')+' '+(c.origin||'')).toLowerCase(); if(!hay.includes(q)) return false; }
     return true;
   });
+  const sort=$('lib-sort').value;
+  if(sort==='old') list.sort((a,b)=>a.createdAt-b.createdAt);
+  else if(sort==='long') list.sort((a,b)=>(b.duration||0)-(a.duration||0));
+  else if(sort==='short') list.sort((a,b)=>(a.duration||0)-(b.duration||0));
+  else if(sort==='title') list.sort((a,b)=>(a.title||'').localeCompare(b.title||''));
+  else list.sort((a,b)=>b.createdAt-a.createdAt);
+  return list;
+}
+function renderLibrary(){
+  const list=libFiltered();
   const grid=$('lib-grid');
+  grid.classList.toggle('selecting', SELECTING);
   if(!list.length){
     grid.innerHTML=`<div class="empty" style="grid-column:1/-1;">
       <div class="empty-icon">&#127902;</div>
       <div class="empty-text">${CLIPS.length? 'No clips match your filters':'Your Library is empty'}</div>
       <div class="empty-sub">${CLIPS.length? 'Try clearing the filters above.':'Import your first piece of footage to get started.'}</div>
       <button class="btn" onclick="openImport()">&#43; Import footage</button></div>`;
-    return;
+    updateBulkBar(); return;
   }
   grid.innerHTML=list.map(c=>{
-    const st=statById(c.status), sr=srcById(c.source);
-    return `<div class="clip-card" onclick="openDetail('${c.id}')">
+    const st=statById(c.status), sr=srcById(c.source), sel=SELECTED.has(c.id);
+    const onclick = SELECTING ? `toggleSelect('${c.id}')` : `openDetail('${c.id}')`;
+    return `<div class="clip-card ${sel?'sel':''}" onclick="${onclick}">
       <div class="clip-thumb" style="${c.thumb?`background-image:url(${c.thumb})`:''}">
         ${c.thumb?'':'&#127909;'}
+        <div class="sel-check">${sel?'&#10003;':''}</div>
+        <button class="fav-btn ${c.favorite?'on':''}" onclick="event.stopPropagation();toggleFavorite('${c.id}')" title="Favorite">${c.favorite?'&#9733;':'&#9734;'}</button>
         ${c.isClip?'<span class="clip-derived">CLIP</span>':''}
         <span class="clip-dur">${fmtTime(c.duration).split('.')[0]}</span>
       </div>
@@ -952,10 +1113,28 @@ function renderLibrary(){
           <span class="tag ${st.cls}">${esc(st.name)}</span>
           ${(c.platforms||[]).map(p=>`<span class="tag" style="background:rgba(255,255,255,.05); color:var(--text-secondary)">${esc(platById(p).name)}</span>`).join('')}
         </div>
-        <div class="clip-meta">${fmtBytes(c.size)} &middot; ${new Date(c.createdAt).toLocaleDateString()}</div>
+        <div class="clip-meta">${esc(orientationOf(c))} &middot; ${fmtBytes(c.size)} &middot; ${new Date(c.createdAt).toLocaleDateString()}</div>
       </div></div>`;
   }).join('');
+  updateBulkBar();
 }
+
+/* ── Favorites / sort / multi-select ── */
+function toggleFavFilter(){ FAV_ONLY=!FAV_ONLY; $('lib-fav-btn').classList.toggle('btn-ghost',!FAV_ONLY); $('lib-fav-btn').innerHTML=(FAV_ONLY?'&#9733;':'&#9734;')+' Favorites'; $('lib-fav-btn').style.color=FAV_ONLY?'#fbbf24':''; renderLibrary(); }
+async function toggleFavorite(id){ const c=CLIPS.find(x=>x.id===id); if(!c)return; c.favorite=!c.favorite; await idbPut('clips',c); renderLibrary(); }
+function toggleSelectMode(){ SELECTING=!SELECTING; if(!SELECTING) SELECTED.clear(); $('lib-select-btn').style.color=SELECTING?'#a78bfa':''; renderLibrary(); }
+function toggleSelect(id){ if(SELECTED.has(id)) SELECTED.delete(id); else SELECTED.add(id); renderLibrary(); }
+function clearSelection(){ SELECTED.clear(); SELECTING=false; $('lib-select-btn').style.color=''; renderLibrary(); }
+function bulkSelectAll(){ libFiltered().forEach(c=>SELECTED.add(c.id)); renderLibrary(); }
+function updateBulkBar(){
+  const bar=$('bulkbar'); bar.classList.toggle('show', SELECTING);
+  $('bulk-count').textContent=SELECTED.size+' selected';
+  $('bulk-status').value=''; $('bulk-plat').value='';
+}
+async function bulkSetStatus(v){ if(!v||!SELECTED.size)return; for(const id of SELECTED){ const c=CLIPS.find(x=>x.id===id); if(c){ c.status=v; await idbPut('clips',c);} } await refreshAll(); renderLibrary(); toast(SELECTED.size+' updated','success'); }
+async function bulkAddPlatform(v){ if(!v||!SELECTED.size)return; for(const id of SELECTED){ const c=CLIPS.find(x=>x.id===id); if(c){ c.platforms=[...new Set([...(c.platforms||[]),v])]; await idbPut('clips',c);} } await refreshAll(); renderLibrary(); toast('Platform added to '+SELECTED.size,'success'); }
+async function bulkFavorite(){ if(!SELECTED.size)return; for(const id of SELECTED){ const c=CLIPS.find(x=>x.id===id); if(c){ c.favorite=true; await idbPut('clips',c);} } renderLibrary(); toast(SELECTED.size+' favorited','success'); }
+function bulkDelete(){ if(!SELECTED.size)return; const n=SELECTED.size; confirmAction('Delete '+n+' clips', 'Permanently delete '+n+' selected clip'+(n!==1?'s':'')+' and their video data? This cannot be undone.', async()=>{ for(const id of SELECTED){ await idbDel('clips',id); await idbDel('blobs',id); for(const p of PROJECTS){ if((p.clipIds||[]).includes(id)){ p.clipIds=p.clipIds.filter(x=>x!==id); await idbPut('projects',p);} } } SELECTED.clear(); await refreshAll(); renderLibrary(); toast(n+' deleted','success'); }); }
 
 /* ============================================================
    CLIP DETAIL
@@ -995,9 +1174,30 @@ async function openDetail(id){
     <div class="form-row"><label class="field-label">Platforms</label><div class="chips" id="dt-plat">${platChips}</div></div>
     <div class="form-row"><label class="field-label">Tags</label><input class="input" id="dt-tags" value="${esc((c.tags||[]).join(', '))}"></div>
     <div class="form-row"><label class="field-label">Notes</label><textarea class="input" id="dt-notes">${esc(c.notes||'')}</textarea></div>
-    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:6px;">
+
+    <div class="divider"></div>
+    <div class="panel-title" style="margin-bottom:12px;">&#9997; Caption &amp; hooks</div>
+    <div class="form-row"><label class="field-label">Caption</label><textarea class="input" id="dt-caption" placeholder="Write or generate a caption…">${esc(c.caption||'')}</textarea></div>
+    <div class="form-row"><label class="field-label">Hashtags</label><input class="input" id="dt-hashtags" value="${esc(c.hashtags||'')}" placeholder="#reels #fyp #contentcreator"></div>
+    <div class="row-actions">
+      <button class="btn btn-ghost mini" onclick="genHooks('${id}')">&#9883; Suggest hooks</button>
+      <button class="btn btn-ghost mini" onclick="suggestHashtags('${id}')">&#35; Suggest hashtags</button>
+      <button class="btn btn-ghost mini" onclick="copyCaptionPack('${id}')">&#128203; Copy caption + tags</button>
+    </div>
+    <div id="dt-hooks" style="margin-top:12px;"></div>
+
+    <div class="divider"></div>
+    <div class="panel-title" style="margin-bottom:12px;">&#128197; Schedule</div>
+    <div class="form-grid2">
+      <div class="form-row"><label class="field-label">Post date</label><input class="input" type="date" id="dt-date" value="${esc(c.scheduledAt||'')}"></div>
+      <div class="form-row"><label class="field-label">On platform</label>
+        <select class="input" id="dt-sched-plat">${['',...PLATFORMS.map(p=>p.id)].map(pid=>`<option value="${pid}" ${pid===(c.scheduledPlatform||'')?'selected':''}>${pid?esc(platById(pid).name):'— choose —'}</option>`).join('')}</select></div>
+    </div>
+
+    <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
       <button class="btn" onclick="saveDetail('${id}')">Save changes</button>
-      <button class="btn btn-ghost" onclick="loadInEditor('${id}')">&#9986; Trim &amp; Clip</button>
+      <button class="btn btn-ghost" onclick="loadInEditor('${id}')">&#9986; Trim</button>
+      <button class="btn btn-ghost" onclick="toggleFavorite('${id}');this.innerHTML=(CLIPS.find(c=>c.id==='${id}').favorite?'&#9733; Favorited':'&#9734; Favorite')">${c.favorite?'&#9733; Favorited':'&#9734; Favorite'}</button>
       <button class="btn btn-ghost" onclick="downloadClip('${id}')">&#11015; Download</button>
       <button class="btn btn-danger" onclick="deleteClip('${id}')">Delete</button>
     </div>`;
@@ -1011,9 +1211,57 @@ async function saveDetail(id){
   c.platforms=Array.from(document.querySelectorAll('#dt-plat .chip.on')).map(x=>x.dataset.plat);
   c.tags=($('dt-tags').value||'').split(',').map(t=>t.trim()).filter(Boolean);
   c.notes=$('dt-notes').value.trim();
+  c.caption=$('dt-caption').value.trim();
+  c.hashtags=$('dt-hashtags').value.trim();
+  c.scheduledAt=$('dt-date').value||'';
+  c.scheduledPlatform=$('dt-sched-plat').value||'';
   await idbPut('clips', c);
   await refreshAll(); renderLibrary();
   closeOverlay('detail-overlay'); toast('Saved','success');
+}
+
+/* ── Caption & hook generator (deterministic templates, no AI) ── */
+const HOOK_TEMPLATES = [
+  t=>`POV: ${t}`,
+  t=>`Nobody talks about this, but ${t.toLowerCase()}…`,
+  t=>`I tried ${t.toLowerCase()} so you don't have to`,
+  t=>`Watch this before you ${t.toLowerCase()}`,
+  t=>`3 things I learned from ${t.toLowerCase()}`,
+  t=>`This is your sign to ${t.toLowerCase()}`,
+  t=>`Stop scrolling — ${t.toLowerCase()} changed everything`,
+  t=>`Here's what ${t.toLowerCase()} actually looks like`,
+  t=>`The ${t.toLowerCase()} no one shows you`,
+  t=>`Day in the life: ${t.toLowerCase()}`,
+];
+let _hooks=[];
+function genHooks(id){
+  const c=CLIPS.find(x=>x.id===id); if(!c)return;
+  const base=(($('dt-title')&&$('dt-title').value)||c.title||'this').replace(/[—–-]\s*clip$/i,'').trim();
+  const picks=[]; const used=new Set();
+  // deterministic spread across templates seeded by title length
+  let seed=base.length+1;
+  while(picks.length<5 && used.size<HOOK_TEMPLATES.length){ const i=seed%HOOK_TEMPLATES.length; seed+=3; if(used.has(i))continue; used.add(i); picks.push(HOOK_TEMPLATES[i](base)); }
+  _hooks=picks;
+  $('dt-hooks').innerHTML=`<div class="hint" style="margin:0 0 8px;">Tap copy, or drop one into your caption:</div>`+
+    picks.map((h,i)=>`<div class="hook-line"><span style="flex:1">${esc(h)}</span><button class="copy" onclick="copyHook(${i})">Copy</button></div>`).join('');
+}
+function copyHook(i){ const h=_hooks[i]; if(h) copyText(h); }
+function suggestHashtags(id){
+  const c=CLIPS.find(x=>x.id===id); if(!c)return;
+  const plats=Array.from(document.querySelectorAll('#dt-plat .chip.on')).map(x=>x.dataset.plat);
+  const base=['#contentcreator','#creator','#behindthescenes','#bts','#dayinmylife'];
+  const byPlat={ instagram:['#reels','#reelsinstagram','#explore','#igdaily'], tiktok:['#fyp','#foryou','#fypシ','#viral'], youtube:['#shorts','#youtubeshorts','#subscribe'], other:['#video'] };
+  const tagWords=(c.tags||[]).map(t=>'#'+t.replace(/[^a-z0-9]/gi,'')).filter(s=>s.length>1);
+  let set=[...tagWords, ...base]; plats.forEach(p=>{ set=set.concat(byPlat[p]||[]); });
+  const out=[...new Set(set)].slice(0,18).join(' ');
+  $('dt-hashtags').value=out; toast('Hashtags suggested — tweak as you like','success');
+}
+function copyText(t){ navigator.clipboard.writeText(t).then(()=>toast('Copied','success')).catch(()=>toast('Copy failed','error')); }
+function copyCaptionPack(id){
+  const cap=($('dt-caption')&&$('dt-caption').value)||''; const tags=($('dt-hashtags')&&$('dt-hashtags').value)||'';
+  const pack=(cap+(cap&&tags?'\n\n':'')+tags).trim();
+  if(!pack) return toast('Nothing to copy yet','error');
+  copyText(pack);
 }
 function deleteClip(id){
   const c=CLIPS.find(x=>x.id===id);
@@ -1045,7 +1293,10 @@ async function openInEditor(id){
   $('editor-empty').style.display='none'; $('editor-stage').style.display='';
   $('ed-title').textContent=c.title;
   const v=$('ed-video'); v.src=ED.url;
-  v.onloadedmetadata=()=>{ ED.dur=v.duration||c.duration||0; ED.outT=ED.dur; $('ed-in-range').value=0; $('ed-out-range').value=1000; updateRangeUI(); };
+  const finiteDur=()=>{ const vd=v.duration; return (isFinite(vd)&&vd>0)?vd:(c.duration||0); };
+  v.onloadedmetadata=()=>{ ED.dur=finiteDur(); ED.outT=ED.dur; $('ed-in-range').value=0; $('ed-out-range').value=1000; updateRangeUI(); };
+  // Some containers (webm/streamed) only report a real duration after a seek — recover it.
+  v.ondurationchange=()=>{ const d=finiteDur(); if(d&&Math.abs(d-ED.dur)>0.01){ ED.dur=d; if(ED.outT>d||ED.outT===0) ED.outT=d; updateRangeUI(); } };
   v.ontimeupdate=()=>{ if(ED.dur){ $('ed-playhead').style.left=(v.currentTime/ED.dur*100)+'%'; if(v.currentTime>=ED.outT){ v.pause(); } } };
   $('ed-status').textContent=''; $('ed-prog').style.display='none';
 }
@@ -1057,6 +1308,90 @@ function updateRangeUI(){
   const box=$('ed-rangebox'); box.style.left=(ED.inT/ED.dur*100||0)+'%'; box.style.width=((ED.outT-ED.inT)/ED.dur*100||0)+'%';
 }
 function previewSelection(){ const v=$('ed-video'); v.currentTime=ED.inT; v.play(); }
+function setInToPlayhead(){ if(!ED.dur)return; const t=$('ed-video').currentTime; if(t>=ED.outT) return toast('In must be before Out','error'); ED.inT=t; $('ed-in-range').value=Math.round(t/ED.dur*1000); updateRangeUI(); }
+function setOutToPlayhead(){ if(!ED.dur)return; const t=$('ed-video').currentTime; if(t<=ED.inT) return toast('Out must be after In','error'); ED.outT=t; $('ed-out-range').value=Math.round(t/ED.dur*1000); updateRangeUI(); }
+function nudge(d){ const v=$('ed-video'); if(!ED.dur)return; v.currentTime=Math.max(0,Math.min(ED.dur,v.currentTime+d)); }
+
+// Output-shape → ffmpeg crop-to-fill filter (covers, then center-crops)
+function shapeFilter(shape){
+  if(shape==='9x16') return 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920';
+  if(shape==='1x1')  return 'scale=1080:1080:force_original_aspect_ratio=increase,crop=1080:1080';
+  if(shape==='16x9') return 'scale=1920:1080:force_original_aspect_ratio=increase,crop=1920:1080';
+  return '';
+}
+
+// Cover frame — instant, no engine. Captures the current playhead frame as JPG.
+function grabCoverFrame(){
+  const v=$('ed-video'); if(!v||!v.videoWidth) return toast('Load a clip first','error');
+  try{
+    const cv=document.createElement('canvas'); cv.width=v.videoWidth; cv.height=v.videoHeight;
+    cv.getContext('2d').drawImage(v,0,0,cv.width,cv.height);
+    cv.toBlob(b=>{ if(!b) return toast('Could not grab frame','error'); triggerDownload(b,(ED.clip.title||'cover').replace(/[^a-z0-9_-]+/gi,'_')+'_cover.jpg'); toast('Cover frame saved','success'); },'image/jpeg',0.92);
+  }catch(_){ toast('Could not grab frame (browser blocked the frame)','error'); }
+}
+
+async function extractAudio(){
+  if(!ED.file) return;
+  const btn=$('ed-audio-btn'); btn.disabled=true;
+  const prog=$('ed-prog'),bar=$('ed-prog-bar'); prog.style.display='block'; bar.style.width='4%';
+  const setStatus=t=>$('ed-status').textContent=t;
+  try{
+    setStatus('Loading engine…');
+    const ff=await getFFmpeg(r=>{bar.style.width=Math.min(99,Math.round(r*100))+'%';});
+    const ext=(ED.clip.filename||'').toLowerCase().match(/\.(mov|mp4|m4v|webm|avi|mkv)$/);
+    const inName='in'+(ext?ext[0]:'.mp4');
+    await ff.writeFile(inName, await ffFetchFile(ED.file));
+    const ss=ED.inT.toFixed(2), tt=(ED.outT-ED.inT).toFixed(2);
+    setStatus('Extracting audio…');
+    const tryRun=async(args,outName)=>{ try{await ff.deleteFile(outName);}catch(_){} try{ await ff.exec(args); }catch(_){ return null; } let d; try{ d=await ff.readFile(outName); }catch(_){ return null; } return (d&&d.length>=512)?d:null; };
+    let data=await tryRun(['-ss',ss,'-i',inName,'-t',tt,'-vn','-c:a','libmp3lame','-q:a','4','audio.mp3'],'audio.mp3'); let ext2='mp3';
+    if(!data){ data=await tryRun(['-ss',ss,'-i',inName,'-t',tt,'-vn','-c:a','aac','-b:a','192k','audio.m4a'],'audio.m4a'); ext2='m4a'; }
+    if(!data) throw new Error('this clip has no audio track');
+    triggerDownload(new Blob([data.buffer],{type:ext2==='mp3'?'audio/mpeg':'audio/mp4'}), (ED.clip.title||'audio').replace(/[^a-z0-9_-]+/gi,'_')+'.'+ext2);
+    try{await ff.deleteFile(inName);}catch(_){}
+    setStatus('Done.'); toast('Audio extracted ('+ext2.toUpperCase()+')','success');
+  }catch(err){ setStatus(''); toast('Audio extract failed: '+(err.message||err),'error'); }
+  finally{ btn.disabled=false; setTimeout(()=>{prog.style.display='none';bar.style.width='0';},1200); }
+}
+
+async function exportGif(){
+  if(!ED.file) return;
+  const dur=ED.outT-ED.inT; if(dur<=0.05) return toast('Selection is too short','error');
+  if(dur>15) return toast('Keep GIF selections under ~15s','error');
+  const btn=$('ed-gif-btn'); btn.disabled=true;
+  const prog=$('ed-prog'),bar=$('ed-prog-bar'); prog.style.display='block'; bar.style.width='4%';
+  const setStatus=t=>$('ed-status').textContent=t;
+  try{
+    setStatus('Loading engine…');
+    const ff=await getFFmpeg(r=>{bar.style.width=Math.min(99,Math.round(r*100))+'%';});
+    const ext=(ED.clip.filename||'').toLowerCase().match(/\.(mov|mp4|m4v|webm|avi|mkv)$/);
+    const inName='in'+(ext?ext[0]:'.mp4');
+    await ff.writeFile(inName, await ffFetchFile(ED.file));
+    const sf=shapeFilter($('ed-shape').value);
+    const vf=`fps=12,${sf?sf+',':''}scale=480:-2:flags=lanczos`;
+    setStatus('Rendering GIF…');
+    const readGif=async()=>{ let d; try{ d=await ff.readFile('out.gif'); }catch(_){ return null; } return (d&&d.length>=128)?d:null; };
+    try{await ff.deleteFile('out.gif');}catch(_){}
+    try{ await ff.exec(['-ss',ED.inT.toFixed(2),'-i',inName,'-t',dur.toFixed(2),'-vf',vf,'-loop','0','out.gif']); }catch(_){}
+    let data=await readGif();
+    if(!data){
+      // Some sources (odd webm / variable frame timing) yield an empty GIF.
+      // Normalize the selection to a clean intermediate, then render the GIF from that.
+      setStatus('Normalizing clip, then rendering GIF…');
+      try{await ff.deleteFile('norm.mp4');}catch(_){}
+      await ff.exec(['-ss',ED.inT.toFixed(2),'-i',inName,'-t',dur.toFixed(2),'-an','-r','24','-pix_fmt','yuv420p','-c:v','libx264','-preset','ultrafast','norm.mp4']);
+      try{await ff.deleteFile('out.gif');}catch(_){}
+      await ff.exec(['-i','norm.mp4','-vf',vf,'-loop','0','out.gif']);
+      data=await readGif();
+      try{await ff.deleteFile('norm.mp4');}catch(_){}
+    }
+    if(!data) throw new Error('could not render a GIF from this clip');
+    triggerDownload(new Blob([data.buffer],{type:'image/gif'}), (ED.clip.title||'clip').replace(/[^a-z0-9_-]+/gi,'_')+'.gif');
+    try{await ff.deleteFile(inName);await ff.deleteFile('out.gif');}catch(_){}
+    setStatus('Done.'); toast('GIF exported','success');
+  }catch(err){ setStatus(''); toast('GIF failed: '+(err.message||err),'error'); }
+  finally{ btn.disabled=false; setTimeout(()=>{prog.style.display='none';bar.style.width='0';},1200); }
+}
 
 // ffmpeg.wasm 0.12 single-thread. Loader + worker + core JS are self-hosted
 // same-origin under vendor/ (so the Worker isn't cross-origin-blocked); the
@@ -1106,13 +1441,22 @@ async function exportClip(){
     setStatus('Reading file…'); bar.style.width='10%';
     await ff.writeFile(inName, await ffFetchFile(ED.file));
     const quality=$('ed-quality').value;
+    const shape=$('ed-shape').value;
+    const mute=$('ed-audio').value==='mute';
+    const vf=shapeFilter(shape);
     const ss=ED.inT.toFixed(2), tt=dur.toFixed(2);
+    const encArgs=['-ss',ss,'-i',inName,'-t',tt];
+    if(vf) encArgs.push('-vf',vf);
+    encArgs.push('-c:v','libx264','-preset','veryfast','-crf','23');
+    if(mute) encArgs.push('-an'); else encArgs.push('-c:a','aac');
+    encArgs.push('-movflags','+faststart',outName);
     const copyArgs=['-ss',ss,'-i',inName,'-t',tt,'-c','copy','-movflags','+faststart',outName];
-    const encArgs =['-ss',ss,'-i',inName,'-t',tt,'-c:v','libx264','-preset','veryfast','-crf','23','-c:a','aac','-movflags','+faststart',outName];
     const runRead=async(args)=>{ try{await ff.deleteFile(outName);}catch(_){} await ff.exec(args); return await ff.readFile(outName); };
-    setStatus('Cutting clip…');
+    // A reshape, mute, or precise request can't stream-copy — must re-encode.
+    const canCopy = quality!=='precise' && !vf && !mute;
+    setStatus(canCopy ? 'Cutting clip…' : 'Re-encoding…');
     let data;
-    if(quality==='precise'){
+    if(!canCopy){
       data=await runRead(encArgs);
     } else {
       // Fast stream-copy first; auto-fall back to re-encode if the source
@@ -1131,7 +1475,8 @@ async function exportClip(){
     bar.style.width='100%';
 
     const after=$('ed-after').value;
-    const baseName=(ED.clip.title||'clip').replace(/[^a-z0-9_-]+/gi,'_');
+    const shapeTag = shape==='original' ? '' : '_'+shape;
+    const baseName=(ED.clip.title||'clip').replace(/[^a-z0-9_-]+/gi,'_')+shapeTag;
     if(after==='download'||after==='both') triggerDownload(blob, baseName+'_clip.mp4');
     if(after==='save'||after==='both') await saveDerivedClip(blob, dur);
     setStatus('Done.'); toast('Clip exported','success');
@@ -1145,17 +1490,19 @@ async function exportClip(){
 
 async function saveDerivedClip(blob, dur){
   const parent=ED.clip; const id=uid();
-  let thumb=parent.thumb;
-  try{ const m=await probeVideo(new File([blob],'c.mp4',{type:'video/mp4'})); thumb=m.thumb||thumb; }catch(_){}
+  let thumb=parent.thumb, w=parent.width, h=parent.height;
+  try{ const m=await probeVideo(new File([blob],'c.mp4',{type:'video/mp4'})); thumb=m.thumb||thumb; if(m.width){ w=m.width; h=m.height; } }catch(_){}
+  const orientation = (w&&h) ? (w>h*1.15?'horizontal':(h>w*1.12?'vertical':'square')) : (parent.orientation||orientationOf(parent));
   const clip={
     id, isClip:true, parentId:parent.id,
     title: parent.title+' — clip',
     source: parent.source, status:'clipped',
     origin: parent.origin||'', platforms: parent.platforms||[], tags: parent.tags||[],
+    caption: parent.caption||'', hashtags: parent.hashtags||'',
     notes: 'Cut from "'+parent.title+'" ('+fmtTime(ED.inT)+'–'+fmtTime(ED.outT)+')',
     filename: (parent.filename||'clip')+'.clip.mp4', size: blob.size, type:'video/mp4',
-    duration: dur, width: parent.width, height: parent.height, thumb,
-    orientation: parent.orientation||orientationOf(parent), keyframes:[], createdAt: Date.now(),
+    duration: dur, width: w, height: h, thumb,
+    orientation, keyframes:[], createdAt: Date.now(),
   };
   await idbPut('blobs', { id, blob });
   await idbPut('clips', clip);
@@ -1309,6 +1656,93 @@ function wipeConfirm(){
 }
 
 /* ============================================================
+   PLAN (content scheduler)
+   ============================================================ */
+function todayStr(){ const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function daysBetween(a,b){ const da=new Date(a+'T00:00:00'), db=new Date(b+'T00:00:00'); return Math.round((db-da)/86400000); }
+function renderPlan(){
+  const scheduled=CLIPS.filter(c=>c.scheduledAt).sort((a,b)=>a.scheduledAt.localeCompare(b.scheduledAt));
+  const today=todayStr();
+  const postedAll=CLIPS.filter(c=>c.status==='posted').length;
+  const week=scheduled.filter(c=>{ const d=daysBetween(today,c.scheduledAt); return d>=0&&d<=7&&c.status!=='posted'; }).length;
+  $('plan-stats').innerHTML=stat(scheduled.filter(c=>c.status!=='posted').length,'Scheduled')+stat(week,'Next 7 days')+stat(postedAll,'Posted');
+  const groups={ Overdue:[], Today:[], Upcoming:[], Posted:[] };
+  scheduled.forEach(c=>{ if(c.status==='posted'){ groups.Posted.push(c); return; } const d=daysBetween(today,c.scheduledAt); if(d<0)groups.Overdue.push(c); else if(d===0)groups.Today.push(c); else groups.Upcoming.push(c); });
+  const wrap=$('plan-agenda');
+  if(!scheduled.length){ wrap.innerHTML=`<div class="empty"><div class="empty-icon">&#128197;</div><div class="empty-text">Nothing scheduled yet</div><div class="empty-sub">Open any clip → Schedule to set a post date + platform. Consistency is the whole game.</div><button class="btn" onclick="go('library')">Go to Library</button></div>`; return; }
+  let html='';
+  for(const g of ['Overdue','Today','Upcoming','Posted']){ const arr=groups[g]; if(!arr.length)continue;
+    const cls=g==='Overdue'?'overdue':(g==='Today'?'today':(g==='Upcoming'?'soon':''));
+    html+=`<div class="agenda-label ${cls}">${g} (${arr.length})</div>`+arr.map(c=>agendaRow(c,today,g)).join('');
+  }
+  wrap.innerHTML=html;
+}
+function agendaRow(c,today,group){
+  const plat=c.scheduledPlatform?platById(c.scheduledPlatform).name:'—';
+  const diff=daysBetween(today,c.scheduledAt);
+  const whenCls=group==='Overdue'?'overdue':(group==='Today'?'today':(group==='Upcoming'?'soon':''));
+  const when=group==='Posted'?'Posted':(diff===0?'Today':(diff<0?Math.abs(diff)+'d ago':'in '+diff+'d'));
+  return `<div class="agenda-item">
+    <img src="${c.thumb||''}" alt="" onclick="openDetail('${c.id}')" style="cursor:pointer">
+    <div class="agenda-info"><div class="agenda-title">${esc(c.title)}</div>
+      <div class="agenda-meta">${esc(c.scheduledAt)} · ${esc(plat)} · ${esc(orientationOf(c))}</div></div>
+    <div style="text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+      <span class="agenda-when ${whenCls}">${when}</span>
+      ${c.status!=='posted'?`<button class="btn btn-ghost mini" onclick="markPosted('${c.id}')">Mark posted</button>`:`<button class="btn btn-ghost mini" onclick="unschedule('${c.id}')">Clear</button>`}
+    </div></div>`;
+}
+async function markPosted(id){ const c=CLIPS.find(x=>x.id===id); if(!c)return; c.status='posted'; await idbPut('clips',c); await refreshAll(); renderPlan(); toast('Nice — marked posted','success'); }
+async function unschedule(id){ const c=CLIPS.find(x=>x.id===id); if(!c)return; c.scheduledAt=''; c.scheduledPlatform=''; await idbPut('clips',c); await refreshAll(); renderPlan(); }
+
+/* ============================================================
+   BACKUP / RESTORE / STORAGE / INSTALL
+   ============================================================ */
+function blobToB64(blob){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(String(r.result).split(',')[1]||''); r.onerror=rej; r.readAsDataURL(blob); }); }
+function b64ToBlob(b64,type){ const bin=atob(b64||''); const len=bin.length; const arr=new Uint8Array(len); for(let i=0;i<len;i++)arr[i]=bin.charCodeAt(i); return new Blob([arr],{type:type||'video/mp4'}); }
+async function backupAll(){
+  const btn=$('backup-btn'); btn.disabled=true; $('backup-status').textContent='Packing backup… (large libraries take a moment)';
+  try{
+    const clips=await idbAll('clips'); const projects=await idbAll('projects'); const blobs=[];
+    for(const c of clips){ const rec=await idbGet('blobs',c.id); if(rec&&rec.blob){ blobs.push({ id:c.id, type:rec.blob.type, data:await blobToB64(rec.blob) }); } }
+    const json=JSON.stringify({ format:'loop-studio-backup', version:1, exported:new Date().toISOString(), clips, projects, blobs });
+    triggerDownload(new Blob([json],{type:'application/json'}), 'studio-backup-'+todayStr()+'.json');
+    $('backup-status').textContent='Backed up '+clips.length+' clips + '+projects.length+' projects ('+fmtBytes(json.length)+').';
+    toast('Backup downloaded','success');
+  }catch(err){ $('backup-status').textContent=''; toast('Backup failed: '+(err.message||err),'error'); }
+  finally{ btn.disabled=false; }
+}
+function restoreFromFile(file){
+  if(!file) return;
+  const r=new FileReader();
+  r.onload=async()=>{
+    let data; try{ data=JSON.parse(r.result); }catch(_){ return toast('Could not read that file','error'); }
+    if(!data||data.format!=='loop-studio-backup') return toast('Not a Studio backup file','error');
+    const nClips=(data.clips||[]).length;
+    confirmAction('Restore backup', 'Restore '+nClips+' clips + '+(data.projects||[]).length+' projects? Items with the same id are overwritten; everything else is kept.', async()=>{
+      try{
+        for(const c of (data.clips||[])) await idbPut('clips',c);
+        for(const p of (data.projects||[])) await idbPut('projects',p);
+        for(const b of (data.blobs||[])) await idbPut('blobs',{ id:b.id, blob:b64ToBlob(b.data,b.type) });
+        await refreshAll(); renderLibrary(); updateStorageMeter();
+        toast('Restored '+nClips+' clips','success'); go('library');
+      }catch(err){ toast('Restore failed: '+(err.message||err),'error'); }
+    });
+  };
+  r.readAsText(file);
+  $('restore-file').value='';
+}
+async function updateStorageMeter(){
+  try{ if(navigator.storage&&navigator.storage.estimate){
+    const est=await navigator.storage.estimate(); const used=est.usage||0, quota=est.quota||0;
+    const pct=quota?Math.min(100,used/quota*100):0;
+    const fill=$('storage-meter'); if(fill){ fill.style.width=pct.toFixed(1)+'%'; fill.classList.toggle('warn',pct>80); }
+    const t=$('storage-text'); if(t){ t.textContent=fmtBytes(used)+(quota?' of ~'+fmtBytes(quota)+' available ('+pct.toFixed(0)+'%)':'')+' used.'+(pct>80?' ⚠ Running low — back up and clear older raws.':''); }
+  } }catch(_){}
+}
+let _deferredPrompt=null;
+function promptInstall(){ if(_deferredPrompt){ _deferredPrompt.prompt(); _deferredPrompt=null; const b=$('install-btn'); if(b)b.style.display='none'; } else { toast('Use your browser menu → Install / Add to Home Screen','success'); } }
+
+/* ============================================================
    BOOT
    ============================================================ */
 (function boot(){
@@ -1317,6 +1751,31 @@ function wipeConfirm(){
     const track=e.target.closest && e.target.closest('#ed-track');
     if(track && ED.dur){ const r=track.getBoundingClientRect(); const pct=(e.clientX-r.left)/r.width; $('ed-video').currentTime=Math.max(0,Math.min(ED.dur,pct*ED.dur)); }
   });
+
+  // Editor keyboard shortcuts (only when the editor view is active and not typing)
+  document.addEventListener('keydown', e=>{
+    if(!$('view-editor').classList.contains('active')) return;
+    const tag=(e.target.tagName||'').toLowerCase(); if(tag==='input'||tag==='textarea'||tag==='select') return;
+    const v=$('ed-video'); if(!ED.dur) return;
+    if(e.key===' '){ e.preventDefault(); if(v.paused)v.play(); else v.pause(); }
+    else if(e.key==='i'||e.key==='I'){ setInToPlayhead(); }
+    else if(e.key==='o'||e.key==='O'){ setOutToPlayhead(); }
+    else if(e.key===','){ nudge(-0.1); }
+    else if(e.key==='.'){ nudge(0.1); }
+  });
+
+  // Drag-and-drop import anywhere in the app
+  document.addEventListener('dragover', e=>{ if(e.dataTransfer && [...e.dataTransfer.types].includes('Files')) e.preventDefault(); });
+  document.addEventListener('drop', e=>{
+    if(!$('app').classList.contains('active')) return;
+    const files=[...((e.dataTransfer&&e.dataTransfer.files)||[])].filter(f=>f.type.startsWith('video/'));
+    if(files.length){ e.preventDefault(); openImport(); onFilesPicked(files); }
+  });
+
+  // PWA: installable + offline
+  window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); _deferredPrompt=e; const b=$('install-btn'); if(b) b.style.display=''; });
+  if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
+
   if(sessionStorage.getItem('studio_unlocked')==='1'){ enterApp(); }
 })();
 </script>

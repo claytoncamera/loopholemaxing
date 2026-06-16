@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics HUB - Loopholemaxing</title>
+  <meta name="description" content="Private LoopholeMaxing analytics hub for visits, engagement, pages, referrers, raw events, and growth decisions.">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body {
+      background:
+        linear-gradient(180deg, rgba(73,194,143,.055), transparent 320px),
+        var(--bg-primary);
+    }
+    .hub-hero {
+      min-height: 86vh;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(360px, 1.1fr);
+      gap: 36px;
+      align-items: center;
+      padding: 112px var(--space-lg) var(--space-3xl);
+      max-width: var(--max-width);
+      margin: 0 auto;
+    }
+    .hub-hero h1 {
+      font-size: clamp(42px, 7vw, 76px);
+      line-height: 1;
+      letter-spacing: 0;
+      margin-bottom: var(--space-lg);
+    }
+    .hub-hero p {
+      color: var(--text-secondary);
+      font-size: 17px;
+      line-height: 1.7;
+      max-width: 560px;
+      margin-bottom: var(--space-xl);
+    }
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .dashboard-preview {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: rgba(22,27,34,.86);
+      box-shadow: 0 22px 70px rgba(0,0,0,.34);
+      padding: 18px;
+      min-width: 0;
+    }
+    .preview-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .preview-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
+    .preview-pill {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: #49c28f;
+      background: rgba(73,194,143,.1);
+      border: 1px solid rgba(73,194,143,.22);
+      border-radius: 999px;
+      padding: 4px 8px;
+      white-space: nowrap;
+    }
+    .preview-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .preview-metric {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(255,255,255,.025);
+    }
+    .preview-metric span {
+      display: block;
+      color: var(--text-muted);
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 8px;
+    }
+    .preview-metric strong {
+      font-family: var(--font-mono);
+      font-size: clamp(18px, 2.2vw, 24px);
+    }
+    .chart-panel {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      align-items: end;
+      gap: 8px;
+      height: 210px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      background:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        rgba(0,0,0,.12);
+      background-size: 100% 42px;
+    }
+    .chart-panel i {
+      display: block;
+      min-width: 0;
+      border-radius: 5px 5px 2px 2px;
+      background: linear-gradient(180deg, #49c28f, #f0b44c);
+    }
+    .hub-section {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-lg) var(--space-4xl);
+    }
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--space-md);
+    }
+    .hub-tile {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-card);
+      padding: var(--space-lg);
+    }
+    .hub-tile h2 {
+      font-size: 17px;
+      margin-bottom: var(--space-sm);
+    }
+    .hub-tile p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+    @media (max-width: 900px) {
+      .hub-hero {
+        grid-template-columns: 1fr;
+      }
+      .preview-metrics,
+      .hub-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (max-width: 560px) {
+      .hub-hero {
+        padding-top: 92px;
+      }
+      .preview-metrics,
+      .hub-grid {
+        grid-template-columns: 1fr;
+      }
+      .chart-panel {
+        height: 160px;
+        gap: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="top-header">
+    <a href="/" class="logo">Loopholemaxing</a>
+    <nav><ul class="nav-links">
+      <li><a href="/#creations">Creations</a></li>
+      <li><a href="/army-link/" rel="nofollow">Army Link</a></li>
+      <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
+    </ul></nav>
+  </header>
+
+  <main>
+    <section class="hub-hero">
+      <div>
+        <p class="section-label">Private Growth Intelligence</p>
+        <h1>Analytics HUB</h1>
+        <p>Live LoopholeMaxing tracking for visits, sessions, active time, page depth, clicks, referrers, general area, raw event review, and CSV exports across the creation network.</p>
+        <div class="hero-actions">
+          <a href="https://analytics-hub-production-9e6b.up.railway.app" class="btn-primary" rel="nofollow">Open Dashboard &rarr;</a>
+          <a href="/" class="btn-secondary">Back to Library</a>
+        </div>
+      </div>
+
+      <div class="dashboard-preview" aria-label="Analytics dashboard preview">
+        <div class="preview-top">
+          <div class="preview-title">LoopholeMaxing Analytics</div>
+          <div class="preview-pill">Postgres Live</div>
+        </div>
+        <div class="preview-metrics">
+          <div class="preview-metric"><span>Visitors</span><strong>Live</strong></div>
+          <div class="preview-metric"><span>Sessions</span><strong>24/7</strong></div>
+          <div class="preview-metric"><span>Pages</span><strong>All</strong></div>
+          <div class="preview-metric"><span>Events</span><strong>Raw</strong></div>
+        </div>
+        <div class="chart-panel">
+          <i style="height:32%"></i>
+          <i style="height:48%"></i>
+          <i style="height:38%"></i>
+          <i style="height:70%"></i>
+          <i style="height:58%"></i>
+          <i style="height:82%"></i>
+          <i style="height:66%"></i>
+          <i style="height:92%"></i>
+          <i style="height:76%"></i>
+          <i style="height:54%"></i>
+          <i style="height:88%"></i>
+          <i style="height:96%"></i>
+        </div>
+      </div>
+    </section>
+
+    <section class="hub-section">
+      <div class="hub-grid">
+        <article class="hub-tile">
+          <h2>Traffic</h2>
+          <p>Pageviews, visitors, sessions, clicks, and active time by hour or day.</p>
+        </article>
+        <article class="hub-tile">
+          <h2>Pages</h2>
+          <p>Top URLs, page titles, average finished-page time, and max scroll depth.</p>
+        </article>
+        <article class="hub-tile">
+          <h2>Sources</h2>
+          <p>Referrers, campaign parameters, outbound clicks, and cross-site behavior.</p>
+        </article>
+        <article class="hub-tile">
+          <h2>Raw Data</h2>
+          <p>Recent event stream and CSV export for deeper analysis outside the dashboard.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div>Loopholemaxing.com - Clayton Camera - 2026 &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div class="footer-tagline">Research. Analyze. Execute.</div>
+  </footer>
+  <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js" data-site="loopholemaxing"></script>
+</body>
+</html>

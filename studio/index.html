@@ -585,6 +585,25 @@
         <div class="breakdown" id="src-legend"></div>
       </div>
 
+      <div class="panel engine-panel">
+        <div class="eng-head">
+          <span class="eng-badge">&#128225; Cross-device sync</span>
+          <span class="pill" id="sync-state">Off</span>
+        </div>
+        <div class="hint" id="sync-when" style="margin:0 0 14px;">Enter the same code on each device to share your library + finished clips.</div>
+        <div class="form-row">
+          <label class="field-label">Sync code (your private key — keep it secret)</label>
+          <input class="input" id="sync-code-input" placeholder="e.g. ab12c-d34ef-…" autocomplete="off" autocapitalize="off" spellcheck="false">
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" onclick="saveSyncCode()">Turn on sync</button>
+          <button class="btn btn-ghost btn-sm" onclick="genSyncCode()">Generate a code</button>
+          <button class="btn btn-ghost btn-sm" onclick="syncNow(false)">Sync now</button>
+        </div>
+        <div class="hint" id="sync-status" style="margin-top:10px;"></div>
+        <div class="hint" style="margin-top:6px;">Syncs metadata, thumbnails, captions, plan, and your <b>finished clips</b>. Raw originals stay on the device you imported them on (use Backup to move those). To add another device: open Studio there, paste this same code, Turn on sync.</div>
+      </div>
+
       <div class="panel">
         <div class="panel-title">Storage</div>
         <div class="hint" style="margin-top:0;">Footage lives in this browser (IndexedDB). The meter shows how much of the browser's allowance you've used.</div>
@@ -728,7 +747,14 @@ function db() {
 function tx(store, mode='readonly') { return db().then(d => d.transaction(store, mode).objectStore(store)); }
 function idbAll(store) { return tx(store).then(s => new Promise((res,rej)=>{ const r=s.getAll(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>rej(r.error); })); }
 function idbGet(store, id) { return tx(store).then(s => new Promise((res,rej)=>{ const r=s.get(id); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); })); }
-function idbPut(store, val) { return tx(store,'readwrite').then(s => new Promise((res,rej)=>{ const r=s.put(val); r.onsuccess=()=>res(val); r.onerror=()=>rej(r.error); })); }
+function idbPut(store, val, keepStamp) {
+  // Stamp updatedAt on clip/project writes so cross-device sync can do
+  // last-write-wins. keepStamp=true preserves it (used when merging pulled items).
+  if(!keepStamp && val && typeof val==='object' && (store==='clips'||store==='projects')) val.updatedAt=Date.now();
+  return tx(store,'readwrite').then(s => new Promise((res,rej)=>{ const r=s.put(val);
+    r.onsuccess=()=>{ if(!keepStamp && (store==='clips'||store==='projects')) scheduleSync(); res(val); };
+    r.onerror=()=>rej(r.error); }));
+}
 function idbDel(store, id) { return tx(store,'readwrite').then(s => new Promise((res,rej)=>{ const r=s.delete(id); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); })); }
 function idbClear(store) { return tx(store,'readwrite').then(s => new Promise((res,rej)=>{ const r=s.clear(); r.onsuccess=()=>res(); r.onerror=()=>rej(r.error); })); }
 
@@ -780,6 +806,7 @@ async function enterApp(){
   try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persist(); }catch(_){}
   buildSelectors();
   await refreshAll();
+  if(syncEnabled()) syncNow(true); // pull any changes from other devices on entry
 }
 
 /* ============================================================
@@ -1134,7 +1161,7 @@ function updateBulkBar(){
 async function bulkSetStatus(v){ if(!v||!SELECTED.size)return; for(const id of SELECTED){ const c=CLIPS.find(x=>x.id===id); if(c){ c.status=v; await idbPut('clips',c);} } await refreshAll(); renderLibrary(); toast(SELECTED.size+' updated','success'); }
 async function bulkAddPlatform(v){ if(!v||!SELECTED.size)return; for(const id of SELECTED){ const c=CLIPS.find(x=>x.id===id); if(c){ c.platforms=[...new Set([...(c.platforms||[]),v])]; await idbPut('clips',c);} } await refreshAll(); renderLibrary(); toast('Platform added to '+SELECTED.size,'success'); }
 async function bulkFavorite(){ if(!SELECTED.size)return; for(const id of SELECTED){ const c=CLIPS.find(x=>x.id===id); if(c){ c.favorite=true; await idbPut('clips',c);} } renderLibrary(); toast(SELECTED.size+' favorited','success'); }
-function bulkDelete(){ if(!SELECTED.size)return; const n=SELECTED.size; confirmAction('Delete '+n+' clips', 'Permanently delete '+n+' selected clip'+(n!==1?'s':'')+' and their video data? This cannot be undone.', async()=>{ for(const id of SELECTED){ await idbDel('clips',id); await idbDel('blobs',id); for(const p of PROJECTS){ if((p.clipIds||[]).includes(id)){ p.clipIds=p.clipIds.filter(x=>x!==id); await idbPut('projects',p);} } } SELECTED.clear(); await refreshAll(); renderLibrary(); toast(n+' deleted','success'); }); }
+function bulkDelete(){ if(!SELECTED.size)return; const n=SELECTED.size; confirmAction('Delete '+n+' clips', 'Permanently delete '+n+' selected clip'+(n!==1?'s':'')+' and their video data? This cannot be undone.', async()=>{ for(const id of SELECTED){ await idbDel('clips',id); await idbDel('blobs',id); tombstone(id,'clip'); for(const p of PROJECTS){ if((p.clipIds||[]).includes(id)){ p.clipIds=p.clipIds.filter(x=>x!==id); await idbPut('projects',p);} } } SELECTED.clear(); await refreshAll(); renderLibrary(); toast(n+' deleted','success'); scheduleSync(); }); }
 
 /* ============================================================
    CLIP DETAIL
@@ -1142,9 +1169,10 @@ function bulkDelete(){ if(!SELECTED.size)return; const n=SELECTED.size; confirmA
 let _detailUrl=null;
 async function openDetail(id){
   const c=CLIPS.find(x=>x.id===id); if(!c) return;
-  const rec=await idbGet('blobs', id);
+  const blob=await ensureBlob(id);
   if(_detailUrl) URL.revokeObjectURL(_detailUrl);
-  _detailUrl = rec&&rec.blob ? URL.createObjectURL(rec.blob) : null;
+  _detailUrl = blob ? URL.createObjectURL(blob) : null;
+  const noVideoMsg = c.isClip ? 'Finished clip not downloaded on this device yet — hit Sync in Settings.' : 'Raw footage lives on the device you imported it on (raw originals don\'t sync). Use Backup to move it.';
   const st=statById(c.status), sr=srcById(c.source);
   const statOpts=STATUSES.map(s=>`<option value="${s.id}" ${s.id===c.status?'selected':''}>${esc(s.name)}</option>`).join('');
   const platChips=PLATFORMS.map(p=>`<span class="chip ${(c.platforms||[]).includes(p.id)?'on':''}" data-plat="${p.id}" onclick="this.classList.toggle('on')">${esc(p.name)}</span>`).join('');
@@ -1152,7 +1180,7 @@ async function openDetail(id){
   const kfTimes = (c.keyframes||[]).map((k,i)=>({k, t:(c.duration||0)*((i+0.5)/(c.keyframes.length||1))}));
   const sugg = suggestedPlatforms(c);
   $('detail-body').innerHTML=`
-    ${_detailUrl?`<video id="detail-video" class="editor-video" controls playsinline src="${_detailUrl}" style="max-height:38vh;"></video>`:'<div class="hint">Video data not found.</div>'}
+    ${_detailUrl?`<video id="detail-video" class="editor-video" controls playsinline src="${_detailUrl}" style="max-height:38vh;"></video>`:`<div class="eng-read" style="display:block">${esc(noVideoMsg)}</div>`}
     ${kfTimes.length?`<div class="kf-strip">${kfTimes.map(o=>`<img class="kf" src="${o.k}" title="Jump to ${fmtTime(o.t)}" onclick="(document.getElementById('detail-video')||{}).currentTime=${o.t.toFixed(2)}">`).join('')}</div>`:''}
     <div class="eng-read">
       <span><b>&#9883; Engine:</b></span>
@@ -1266,16 +1294,17 @@ function copyCaptionPack(id){
 function deleteClip(id){
   const c=CLIPS.find(x=>x.id===id);
   confirmAction('Delete clip', `Permanently delete "${c?c.title:'this clip'}" and its video data? This cannot be undone.`, async()=>{
-    await idbDel('clips', id); await idbDel('blobs', id);
+    await idbDel('clips', id); await idbDel('blobs', id); tombstone(id,'clip');
     // remove from any projects
     for(const p of PROJECTS){ if((p.clipIds||[]).includes(id)){ p.clipIds=p.clipIds.filter(x=>x!==id); await idbPut('projects',p); } }
-    await refreshAll(); renderLibrary(); closeOverlay('detail-overlay'); toast('Deleted','success');
+    await refreshAll(); renderLibrary(); closeOverlay('detail-overlay'); toast('Deleted','success'); scheduleSync();
   });
 }
 async function downloadClip(id){
-  const rec=await idbGet('blobs', id); const c=CLIPS.find(x=>x.id===id);
-  if(!rec||!rec.blob) return toast('No video data','error');
-  triggerDownload(rec.blob, (c?c.title:'clip').replace(/[^a-z0-9_-]+/gi,'_')+ (c&&c.type&&c.type.includes('mp4')?'.mp4':'.mp4'));
+  const c=CLIPS.find(x=>x.id===id);
+  const blob=await ensureBlob(id);
+  if(!blob) return toast(c&&c.isClip?'Not downloaded yet — hit Sync first':'Raw footage is on your other device','error');
+  triggerDownload(blob, (c?c.title:'clip').replace(/[^a-z0-9_-]+/gi,'_')+'.mp4');
 }
 function triggerDownload(blob, name){ const u=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=u; a.download=name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(()=>URL.revokeObjectURL(u),4000); }
 
@@ -1287,9 +1316,9 @@ let ED={ id:null, url:null, file:null, clip:null, inT:0, outT:0, dur:0 };
 function loadInEditor(id){ closeOverlay('detail-overlay'); go('editor'); openInEditor(id); }
 async function openInEditor(id){
   const c=CLIPS.find(x=>x.id===id); if(!c) return;
-  const rec=await idbGet('blobs', id); if(!rec||!rec.blob) return toast('No video data','error');
+  const blob=await ensureBlob(id); if(!blob) return toast(c.isClip?'Not downloaded yet — hit Sync first':'Raw footage is on the device you imported it on','error');
   if(ED.url) URL.revokeObjectURL(ED.url);
-  ED={ id, url:URL.createObjectURL(rec.blob), file:rec.blob, clip:c, inT:0, outT:c.duration||0, dur:c.duration||0 };
+  ED={ id, url:URL.createObjectURL(blob), file:blob, clip:c, inT:0, outT:c.duration||0, dur:c.duration||0 };
   $('editor-empty').style.display='none'; $('editor-stage').style.display='';
   $('ed-title').textContent=c.title;
   const v=$('ed-video'); v.src=ED.url;
@@ -1573,7 +1602,7 @@ async function renameProject(id,name){ const p=PROJECTS.find(x=>x.id===id); if(!
 async function addToProject(id,cid){ if(!cid)return; const p=PROJECTS.find(x=>x.id===id); if(!p)return; p.clipIds=p.clipIds||[]; p.clipIds.push(cid); await idbPut('projects',p); openProject(id); }
 async function removeFromProject(id,cid){ const p=PROJECTS.find(x=>x.id===id); if(!p)return; p.clipIds=p.clipIds.filter(x=>x!==cid); await idbPut('projects',p); openProject(id); }
 async function moveClip(id,i,dir){ const p=PROJECTS.find(x=>x.id===id); if(!p)return; const a=p.clipIds; const j=i+dir; if(j<0||j>=a.length)return; [a[i],a[j]]=[a[j],a[i]]; await idbPut('projects',p); openProject(id); }
-function deleteProject(id){ const p=PROJECTS.find(x=>x.id===id); confirmAction('Delete project',`Delete "${p?p.name:'project'}"? Your clips stay in the Library.`, async()=>{ await idbDel('projects',id); PROJECTS=PROJECTS.filter(x=>x.id!==id); closeOverlay('project-overlay'); renderProjects(); toast('Project deleted','success'); }); }
+function deleteProject(id){ const p=PROJECTS.find(x=>x.id===id); confirmAction('Delete project',`Delete "${p?p.name:'project'}"? Your clips stay in the Library.`, async()=>{ await idbDel('projects',id); tombstone(id,'project'); PROJECTS=PROJECTS.filter(x=>x.id!==id); closeOverlay('project-overlay'); renderProjects(); toast('Project deleted','success'); scheduleSync(); }); }
 
 async function stitchProject(id){
   const p=PROJECTS.find(x=>x.id===id); if(!p||!p.clipIds.length) return;
@@ -1632,6 +1661,7 @@ async function stitchProject(id){
    ============================================================ */
 function renderSettings(){
   $('src-legend').innerHTML=SOURCES.map(s=>`<div class="bd-row"><span class="bd-name"><span class="dot" style="background:${s.color}"></span>${esc(s.name)}</span><span class="bd-val" style="font-size:11px; color:var(--text-muted)">${s.match.length?'auto':'manual'}</span></div>`).join('');
+  renderSyncSettings();
 }
 async function changePass(e){
   e.preventDefault();
@@ -1741,6 +1771,102 @@ async function updateStorageMeter(){
 }
 let _deferredPrompt=null;
 function promptInstall(){ if(_deferredPrompt){ _deferredPrompt.prompt(); _deferredPrompt=null; const b=$('install-btn'); if(b)b.style.display='none'; } else { toast('Use your browser menu → Install / Add to Home Screen','success'); } }
+
+/* ============================================================
+   CROSS-DEVICE SYNC (library metadata + finished clips)
+   Raw originals are NOT uploaded — they stay on the device that imported them.
+   ============================================================ */
+const SYNC_URL='https://studio-sync-api-production.up.railway.app';
+let _syncTimer=null, _syncing=false;
+function syncCode(){ return localStorage.getItem('studio_sync_code')||''; }
+function syncEnabled(){ return !!syncCode(); }
+function syncHeaders(extra){ return Object.assign({ Authorization:'Bearer '+syncCode() }, extra||{}); }
+function tombstone(id,kind){
+  if(!syncEnabled()) return;
+  const t=JSON.parse(localStorage.getItem('studio_tombstones')||'[]');
+  t.push({id,kind,t:Date.now()}); localStorage.setItem('studio_tombstones',JSON.stringify(t));
+}
+function scheduleSync(){ if(!syncEnabled())return; clearTimeout(_syncTimer); _syncTimer=setTimeout(()=>syncNow(true),2500); }
+
+async function syncNow(silent){
+  if(!syncEnabled()){ if(!silent) toast('Add a sync code first','error'); return; }
+  if(_syncing) return; _syncing=true;
+  const setS=t=>{ const el=$('sync-status'); if(el) el.textContent=t; };
+  try{
+    setS('Syncing…');
+    // 1) PUSH changed metadata + tombstones
+    const lastPushed=+(localStorage.getItem('studio_sync_pushed')||0);
+    let hi=lastPushed; const items=[];
+    CLIPS.forEach(c=>{ const u=c.updatedAt||c.createdAt||0; if(u>lastPushed){ items.push({id:c.id,kind:'clip',data:c,updatedAt:u}); if(u>hi)hi=u; } });
+    PROJECTS.forEach(p=>{ const u=p.updatedAt||p.createdAt||0; if(u>lastPushed){ items.push({id:p.id,kind:'project',data:p,updatedAt:u}); if(u>hi)hi=u; } });
+    const tombs=JSON.parse(localStorage.getItem('studio_tombstones')||'[]');
+    tombs.forEach(t=>{ items.push({id:t.id,kind:t.kind,data:{},updatedAt:t.t,deleted:true}); if(t.t>hi)hi=t.t; });
+    if(items.length){
+      const r=await fetch(SYNC_URL+'/push',{method:'POST',headers:syncHeaders({'Content-Type':'application/json'}),body:JSON.stringify({items})});
+      if(!r.ok) throw new Error('push '+r.status);
+      localStorage.setItem('studio_sync_pushed',String(hi));
+      localStorage.setItem('studio_tombstones','[]');
+    }
+    // 2) UPLOAD finished-clip blobs that aren't in the cloud yet
+    const localFinished=[];
+    for(const c of CLIPS){ if(c.isClip){ const rec=await idbGet('blobs',c.id); if(rec&&rec.blob) localFinished.push(c.id); } }
+    if(localFinished.length){
+      const hr=await fetch(SYNC_URL+'/blobs/have',{method:'POST',headers:syncHeaders({'Content-Type':'application/json'}),body:JSON.stringify({ids:localFinished})});
+      const have=hr.ok? (await hr.json()).have||[] : localFinished;
+      const toUp=localFinished.filter(id=>!have.includes(id));
+      for(let i=0;i<toUp.length;i++){ const id=toUp[i]; const rec=await idbGet('blobs',id); if(!rec||!rec.blob)continue;
+        setS('Uploading clip '+(i+1)+'/'+toUp.length+'…');
+        await fetch(SYNC_URL+'/blob/'+encodeURIComponent(id),{method:'PUT',headers:syncHeaders({'Content-Type':rec.blob.type||'video/mp4'}),body:rec.blob}).catch(()=>{});
+      }
+    }
+    // 3) PULL remote changes
+    const since=+(localStorage.getItem('studio_sync_last')||0);
+    const pr=await fetch(SYNC_URL+'/pull',{method:'POST',headers:syncHeaders({'Content-Type':'application/json'}),body:JSON.stringify({since})});
+    if(!pr.ok) throw new Error('pull '+pr.status);
+    const pd=await pr.json(); let changed=0;
+    for(const it of (pd.items||[])){
+      if(it.deleted){ const store=it.kind==='project'?'projects':'clips'; await idbDel(store,it.id); if(it.kind!=='project') await idbDel('blobs',it.id); changed++; continue; }
+      const store=it.kind==='project'?'projects':'clips';
+      const local=(it.kind==='project'?PROJECTS:CLIPS).find(x=>x.id===it.id);
+      if(!local || (it.updatedAt > (local.updatedAt||0))){ const obj=it.data||{}; obj.id=it.id; obj.updatedAt=it.updatedAt; await idbPut(store,obj,true); changed++; }
+    }
+    localStorage.setItem('studio_sync_last',String(pd.serverTime||since));
+    if(changed){ await refreshAll(); const av=document.querySelector('.view.active'); if(av&&av.id==='view-library')renderLibrary(); if(av&&av.id==='view-plan')renderPlan(); }
+    localStorage.setItem('studio_sync_when',String(Date.now()));
+    setS('Synced · '+new Date().toLocaleTimeString());
+    if(!silent) toast('Sync complete','success');
+    renderSyncSettings();
+  }catch(err){
+    setS('Sync paused (offline?) — will retry');
+    if(!silent) toast('Sync failed: '+(err.message||err),'error');
+  }finally{ _syncing=false; }
+}
+
+// Fetch a clip's video data, pulling from the cloud on demand if not local.
+async function ensureBlob(id){
+  const rec=await idbGet('blobs',id); if(rec&&rec.blob) return rec.blob;
+  if(!syncEnabled()) return null;
+  try{ const res=await fetch(SYNC_URL+'/blob/'+encodeURIComponent(id),{headers:syncHeaders()}); if(!res.ok) return null; const blob=await res.blob(); await idbPut('blobs',{id,blob}); return blob; }catch(_){ return null; }
+}
+
+function genSyncCode(){ const part=()=>Math.random().toString(36).slice(2,7); $('sync-code-input').value=[part(),part(),part(),part()].join('-'); }
+async function saveSyncCode(){
+  const v=($('sync-code-input').value||'').trim();
+  if(!v){ localStorage.removeItem('studio_sync_code'); toast('Sync turned off','success'); renderSyncSettings(); return; }
+  if(v.length<8){ return toast('Sync code must be at least 8 characters','error'); }
+  localStorage.setItem('studio_sync_code',v);
+  // Fresh device/code → full re-sync from scratch.
+  localStorage.setItem('studio_sync_pushed','0'); localStorage.setItem('studio_sync_last','0');
+  renderSyncSettings(); toast('Sync on — syncing now…','success'); syncNow(false);
+}
+function renderSyncSettings(){
+  const on=syncEnabled(); const st=$('sync-state'); if(!st) return;
+  st.textContent = on ? 'On' : 'Off';
+  st.style.color = on ? 'var(--green)' : 'var(--text-muted)';
+  const inp=$('sync-code-input'); if(inp && document.activeElement!==inp) inp.value=syncCode();
+  const when=localStorage.getItem('studio_sync_when');
+  const w=$('sync-when'); if(w) w.textContent = on ? (when?'Last synced '+new Date(+when).toLocaleString():'Not synced yet') : 'Enter the same code on each device to share your library + finished clips.';
+}
 
 /* ============================================================
    BOOT

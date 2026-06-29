@@ -98,7 +98,6 @@
     .creations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--space-lg); }
 
     .creation-card { position: relative; overflow: hidden; display: flex; flex-direction: column; }
-    .rank-badge { position: absolute; top: 12px; right: 14px; font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--text-muted); opacity: .65; }
     .card-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; margin-bottom: var(--space-md); width: fit-content; }
     .tag-live { background: rgba(63,185,80,.15); color: var(--green); }
     .tag-rev  { background: rgba(63,185,80,.22); color: #5fe07a; }
@@ -177,7 +176,7 @@
   <section class="hero">
     <div class="card-tag tag-live" style="margin-bottom:20px;">&#9679; 15 live creations &nbsp;·&nbsp; open for client work</div>
     <h1>Find Every <span>Edge.</span></h1>
-    <p class="hero-sub">I'm Clayton Camera — a founder and operator who builds AI systems, autonomous agents, and full-stack software that find hidden revenue and automate the work teams shouldn't be doing. Below is the real portfolio, ranked by value.</p>
+    <p class="hero-sub">I'm Clayton Camera — a founder and operator who builds AI systems, autonomous agents, and full-stack software that find hidden revenue and automate the work teams shouldn't be doing. Below is a selection of what I've built.</p>
     <div class="hero-cta-row">
       <a class="btn-hire" data-work href="/work-with-clayton/">Work With Clayton &rarr;</a>
       <a href="#creations" class="btn-secondary">View the work &darr;</a>
@@ -235,15 +234,14 @@
   <section class="creations" id="creations">
     <div class="creations-header">
       <p class="section-label">Portfolio</p>
-      <h2 class="section-title">The Work, Ranked by Value</h2>
-      <p class="section-subtitle" style="max-width:600px;margin:0 auto;">Real ventures and systems &mdash; most valuable first. Live products, deep research, no filler.</p>
+      <h2 class="section-title">The Work</h2>
+      <p class="section-subtitle" style="max-width:600px;margin:0 auto;">Real ventures and systems &mdash; live products, deep research, no filler.</p>
     </div>
 
     <div class="creations-grid">
 
       <!-- 1 · OrbitRoute -->
       <div class="card creation-card">
-        <span class="rank-badge">01</span>
         <span class="card-tag tag-live">Live &mdash; Platform</span>
         <h3><span class="icon icon-orbit">&#128752;</span> OrbitRoute</h3>
         <p>The software routing layer for orbital GPU networks &mdash; "the routing layer for the orbital compute era." Routes enterprise AI workloads to orbital compute capacity at ~35% projected savings vs. AWS, GCP, and Azure. <strong>11,000+ satellites tracked, 17 ground stations, 12 autonomous engines, and 5 patents filed</strong> (30-patent portfolio). Live platform on Railway; COO onboarding underway.</p>
@@ -259,7 +257,6 @@
 
       <!-- 2 · Practically Natty / PNP -->
       <div class="card creation-card">
-        <span class="rank-badge">02</span>
         <span class="card-tag tag-rev">Live &mdash; Revenue</span>
         <h3><span class="icon icon-natty">&#128138;</span> Practically Natty (PNP)</h3>
         <p>A live WooCommerce peptide brand where I'm <strong>CTO &amp; Managing Partner</strong>. I architected and built its entire operational backbone: <strong>Command Center 2 (CC2)</strong> &mdash; the ops plugin running shipping, payment verification, email, and order workflows &mdash; plus the full <strong>affiliate system</strong> powering 36 affiliates with commission attribution and a recruiting hierarchy.</p>
@@ -274,7 +271,6 @@
 
       <!-- 3 · MMS HUB (private — showcase only, no public doorway) -->
       <div class="card creation-card">
-        <span class="rank-badge">03</span>
         <span class="card-tag tag-private">Private &mdash; Showcase</span>
         <h3><span class="icon icon-mms">&#9881;</span> MMS HUB</h3>
         <p>A private Money Making Solutions control center: an autonomous multi-strategy trading ecosystem with finance intake, provider readiness, bot orchestration, brokerage-upgrade gates, and system-health monitoring. Brokerage execution is locked by default behind hard caps. <strong>Private system &mdash; not publicly accessible</strong>, shown here as portfolio engineering only.</p>
@@ -289,7 +285,6 @@
 
       <!-- 4 · Universal Analyst Engine -->
       <div class="card creation-card">
-        <span class="rank-badge">04</span>
         <span class="card-tag tag-live">Live &mdash; v1.0</span>
         <h3><span class="icon icon-uae">&#128300;</span> Universal Analyst Engine</h3>
         <p>A multi-domain AI intelligence engine that scores, ranks, and tracks entities across sports, markets, brands, politics, and entertainment. Live narrative ingestion, Polygon.io market data, AI sentiment scoring, and real-time alerts &mdash; 90 entities monitored across 5 domains, running 24/7.</p>
@@ -305,7 +300,6 @@
 
       <!-- 5 · BTC Intelligence Brain -->
       <div class="card creation-card">
-        <span class="rank-badge">05</span>
         <span class="card-tag tag-live">Live &mdash; v5.0</span>
         <h3><span class="icon icon-btc">&#8383;</span> BTC Intelligence Brain</h3>
         <p>A 15-chapter Bitcoin research and analysis workspace. Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, risk management &mdash; with live market data, a 3D diagram of the system, and a research activity feed. Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated coverage index, not a measured benchmark or accuracy score). Educational research only &mdash; not financial advice.</p>
@@ -321,7 +315,6 @@
 
       <!-- 6 · PersonalVault -->
       <div class="card creation-card">
-        <span class="rank-badge">06</span>
         <span class="card-tag tag-live">Live &mdash; v1.0</span>
         <h3><span class="icon icon-ph">&#128274;</span> PersonalVault</h3>
         <p>A zero-knowledge encrypted personal vault for your most sensitive documents. AES-256-GCM encryption runs entirely in your browser &mdash; the server never sees your data. Store IDs, insurance policies, financial accounts, medical records, passwords, and estate documents with military-grade security.</p>
@@ -336,7 +329,6 @@
 
       <!-- 7 · ULTRON -->
       <div class="card creation-card">
-        <span class="rank-badge">07</span>
         <span class="card-tag tag-live">Live &mdash; v0.1</span>
         <h3><span class="icon icon-ultron">&#9883;</span> ULTRON</h3>
         <p>A local-first autonomous AI agent with a non-negotiable human-in-the-loop gate on every side effect. Reads, plans, proposes &mdash; but every trade, file write, deploy, and API call waits for an explicit human <strong>APPROVE</strong>. Zero OpenAI dependency: runs on Ollama locally, Anthropic or Perplexity in the cloud. 30 adversarial tests green, hash-chained audit log, kill switch.</p>
@@ -352,7 +344,6 @@
 
       <!-- 8 · PeptiDex -->
       <div class="card creation-card">
-        <span class="rank-badge">08</span>
         <span class="card-tag tag-live">Live</span>
         <h3><span class="icon icon-peptidex">&#129516;</span> PeptiDex</h3>
         <p>A research-grade peptide knowledge hub &mdash; 79 structured entries across 10 research categories, built to turn compound research into structured education, guides, and affiliate-qualified traffic that feeds Practically Natty. Educational research only &mdash; not medical advice, and PeptiDex does not sell peptides.</p>
@@ -367,7 +358,6 @@
 
       <!-- 9 · KnockFiber -->
       <div class="card creation-card">
-        <span class="rank-badge">09</span>
         <span class="card-tag tag-live">Live &mdash; Recruiting</span>
         <h3><span class="icon icon-knock">&#128682;</span> KnockFiber</h3>
         <p>A national recruiting engine for T-Mobile fiber door-to-door closers. Commission-only, uncapped, paid biweekly on completed installs &mdash; with a clear path from rep to Team Leader override income. No r&eacute;sum&eacute;, no cover letter: apply in 30 seconds or text JOIN. New metros open every month.</p>
@@ -383,7 +373,6 @@
 
       <!-- 10 · NBA Loophole Brain -->
       <div class="card creation-card">
-        <span class="rank-badge">10</span>
         <span class="card-tag tag-live">Live &mdash; v3.0</span>
         <h3><span class="icon icon-nba">&#127936;</span> NBA Loophole Brain</h3>
         <p>A 12-module NBA betting intelligence system built to detect line mistakes before the market corrects. Real-time odds modeling, schedule stress analysis, pace projections, injury impact scoring, prop market edges, arbitrage window scanner, and CLV tracking &mdash; all in one dashboard.</p>
@@ -399,7 +388,6 @@
 
       <!-- 11 · FORMIX (concept / pre-launch) -->
       <div class="card creation-card">
-        <span class="rank-badge">11</span>
         <span class="card-tag tag-concept">Concept &mdash; Pre-launch</span>
         <h3><span class="icon icon-formix">&#129424;</span> FORMIX Ant Protein</h3>
         <p>A performance-nutrition brand concept &mdash; fully built and researched end-to-end, <strong>not yet for sale</strong>. Powered by the most protein-dense organism on earth: a target of 28g complete protein per serving, all 9 essential amino acids, and a ~95% lower carbon footprint than beef. Brand, product spec, and storefront are built and ready for launch.</p>
@@ -414,7 +402,6 @@
 
       <!-- 12 · Agora -->
       <div class="card creation-card">
-        <span class="rank-badge">12</span>
         <span class="card-tag tag-live">Live &mdash; v0.1 Alpha</span>
         <h3><span class="icon icon-agora">&#127963;</span> Agora &mdash; Library of Minds</h3>
         <p>A public-domain reading room for the philosophers who built the operating system of the West. 16 seed authors &mdash; Plato, Aristotle, Socrates, Heraclitus, Parmenides and more &mdash; with a compact catalog, source-traceable provenance (Project Gutenberg, Open Library, Wikidata, Perseus), and an in-browser reader for featured works. Modern copyrighted translations are never bundled.</p>
@@ -430,7 +417,6 @@
 
       <!-- 13 · Creation Command Center (private — owner access) -->
       <div class="card creation-card">
-        <span class="rank-badge">13</span>
         <span class="card-tag tag-private">Private &mdash; Owner access</span>
         <h3><span class="icon icon-creation">&#128640;</span> Creation Command Center</h3>
         <p>A full-stack viral-content command center for the LoopholeMaxing studio. Plan, draft, and ship content through a <strong>six-gate pre-publish workflow</strong>, with a content library, hook-variant generator, Trend Radar, Idea Inbox, deterministic scoring, and an audit log. Built on React + Express + Drizzle + Postgres. <strong>Owner-gated &mdash; sign-in required.</strong></p>
@@ -446,7 +432,6 @@
 
       <!-- 14 · Studio — Content HUB -->
       <div class="card creation-card">
-        <span class="rank-badge">14</span>
         <span class="card-tag tag-live">Live &mdash; v1.0</span>
         <h3><span class="icon icon-studio">&#127909;</span> Studio &mdash; Content HUB</h3>
         <p>A personal content command center. Import footage from GoPro, Nikon, and phone &mdash; Studio auto-tags <strong>where every clip came from</strong>, tracks it through a Raw &rarr; Editing &rarr; Clipped &rarr; Posted pipeline, and lets you <strong>trim and export real clips right in the browser</strong> (ffmpeg.wasm). Assemble clips into projects and stitch them. Local-first, passcode-gated, syncs across devices.</p>
@@ -461,7 +446,6 @@
 
       <!-- 15 · Tallahassee Camera Intelligence (in development) -->
       <div class="card creation-card coming-soon">
-        <span class="rank-badge">15</span>
         <span class="card-tag tag-dev">In Development</span>
         <h3><span class="icon icon-tally">&#128247;</span> Tallahassee Camera Intelligence</h3>
         <p>A real-source public-camera aggregation dashboard for Tallahassee and Leon County. 407 verified cameras dedup'd from 593 raw feeds across City ATMS, FDOT, FL511, WeatherSTEM, FAA, and regional webcams &mdash; live snapshots proxied through a per-source Referer-aware backend. Map-first, dark-themed, with live traffic incidents and congestion overlays.</p>

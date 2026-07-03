@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>The Window</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E🪟%3C/text%3E%3C/svg%3E">
+  <style>
+    :root {
+      --bg: #05070d; --glass: rgba(16, 22, 36, 0.55); --glass-border: rgba(120, 160, 255, 0.14);
+      --text: #e8ecf4; --muted: #8b93a7; --accent: #6ea8ff; --accent2: #9d7bff;
+      --live: #3fb950; --paper: #d29922; --bench: #6e7681; --down: #f85149;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font: 15px/1.55 -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg); color: var(--text); min-height: 100vh;
+    }
+    /* the "glass" backdrop — soft city-lights bokeh behind the panes */
+    .sky { position: fixed; inset: 0; z-index: -2; background:
+      radial-gradient(ellipse 60% 40% at 15% 10%, rgba(110,168,255,.10), transparent 60%),
+      radial-gradient(ellipse 50% 35% at 85% 25%, rgba(157,123,255,.09), transparent 60%),
+      radial-gradient(ellipse 70% 45% at 50% 95%, rgba(63,185,80,.05), transparent 60%),
+      #05070d; }
+    .stars { position: fixed; inset: 0; z-index: -1; opacity: .5; background-image:
+      radial-gradient(1px 1px at 20% 30%, #fff8 0, transparent 100%),
+      radial-gradient(1px 1px at 60% 70%, #fff6 0, transparent 100%),
+      radial-gradient(1.5px 1.5px at 80% 15%, #fff7 0, transparent 100%),
+      radial-gradient(1px 1px at 35% 85%, #fff5 0, transparent 100%),
+      radial-gradient(1px 1px at 90% 55%, #fff6 0, transparent 100%); }
+    .wrap { max-width: 1060px; margin: 0 auto; padding: 28px 18px 80px; }
+
+    /* ── Gate ─────────────────────────────── */
+    #gate { position: fixed; inset: 0; z-index: 50; display: flex; align-items: center; justify-content: center;
+      background: rgba(5,7,13,.88); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+    .gate-card { width: min(400px, 92vw); background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: 18px; padding: 34px 30px; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.5); text-align: center; }
+    .gate-card h1 { font-size: 26px; letter-spacing: -.02em; margin-bottom: 6px; }
+    .gate-card .sub { color: var(--muted); font-size: 13.5px; margin-bottom: 24px; }
+    .gate-card input { width: 100%; padding: 13px 14px; margin-bottom: 12px; border-radius: 11px;
+      border: 1px solid var(--glass-border); background: rgba(8,12,22,.8); color: var(--text);
+      font-size: 16px; text-align: center; letter-spacing: .18em; outline: none; }
+    .gate-card input:focus { border-color: var(--accent); }
+    .gate-card button { width: 100%; padding: 13px; border: 0; border-radius: 11px; cursor: pointer;
+      background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; font-size: 15px; font-weight: 700; }
+    .gate-err { color: var(--down); font-size: 13px; min-height: 18px; margin-top: 10px; }
+    .shake { animation: shake .35s; }
+    @keyframes shake { 20%,60% { transform: translateX(-7px); } 40%,80% { transform: translateX(7px); } }
+
+    /* ── Deck ─────────────────────────────── */
+    #deck { display: none; }
+    .deck-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+    .deck-head h1 { font-size: 30px; letter-spacing: -.02em; }
+    .deck-head h1 .w { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .deck-sub { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+    .toolbar { display: flex; gap: 10px; margin-bottom: 26px; flex-wrap: wrap; }
+    .toolbar input { flex: 1; min-width: 200px; padding: 11px 14px; border-radius: 11px;
+      border: 1px solid var(--glass-border); background: var(--glass); color: var(--text); font-size: 14px; outline: none;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .toolbar input:focus { border-color: var(--accent); }
+    .tbtn { padding: 11px 14px; border-radius: 11px; border: 1px solid var(--glass-border); background: var(--glass);
+      color: var(--muted); font-size: 13px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .tbtn:hover { color: var(--text); border-color: var(--accent); }
+
+    .group { margin-bottom: 34px; }
+    .group > h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em;
+      color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
+    .group > h2::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--glass-border), transparent); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+
+    .pane { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; flex-direction: column;
+      transition: transform .15s, border-color .15s; position: relative; overflow: hidden; }
+    .pane::before { content: ''; position: absolute; top: 0; left: 8%; right: 55%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); }
+    .pane:hover { transform: translateY(-2px); border-color: rgba(110,168,255,.4); }
+    .pane h3 { font-size: 16.5px; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+    .dot.live { background: var(--live); box-shadow: 0 0 8px var(--live); }
+    .dot.paper { background: var(--paper); box-shadow: 0 0 8px var(--paper); }
+    .dot.bench { background: var(--bench); }
+    .dot.down { background: var(--down); box-shadow: 0 0 8px var(--down); }
+    .stag { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: var(--muted); margin-left: auto;
+      border: 1px solid var(--glass-border); border-radius: 7px; padding: 2px 7px; white-space: nowrap; }
+    .pane p { font-size: 13.5px; color: var(--muted); line-height: 1.55; flex: 1; margin-bottom: 12px; }
+    .pane p b { color: var(--text); font-weight: 600; }
+    .links { display: flex; flex-wrap: wrap; gap: 7px; }
+    .links a { font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none;
+      border: 1px solid rgba(110,168,255,.25); border-radius: 9px; padding: 5px 11px; }
+    .links a:hover { background: rgba(110,168,255,.12); }
+    .links .lan { color: var(--paper); border-color: rgba(210,153,34,.3); }
+    .links .repo { color: var(--muted); border-color: var(--glass-border); }
+    .foot { margin-top: 40px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.8; }
+    .foot code { background: rgba(110,168,255,.1); border-radius: 5px; padding: 1px 6px; }
+  </style>
+</head>
+<body>
+  <div class="sky"></div><div class="stars"></div>
+
+  <!-- ── Access gate: first open = create your code; after that = enter it. ── -->
+  <div id="gate">
+    <div class="gate-card" id="gate-card">
+      <h1>🪟 The Window</h1>
+      <div class="sub" id="gate-sub">Enter your access code.</div>
+      <form id="gate-form">
+        <input id="pass1" type="password" inputmode="numeric" autocomplete="off" placeholder="Access code" autofocus>
+        <input id="pass2" type="password" inputmode="numeric" autocomplete="off" placeholder="Repeat code" style="display:none">
+        <button type="submit" id="gate-btn">Open</button>
+      </form>
+      <div class="gate-err" id="gate-err"></div>
+    </div>
+  </div>
+
+  <!-- ── The deck ── -->
+  <div class="wrap" id="deck">
+    <div class="deck-head">
+      <h1>Looking out <span class="w">The Window</span></h1>
+      <button class="tbtn" id="lock-btn">🔒 Lock</button>
+    </div>
+    <div class="deck-sub" id="deck-sub">Everything you've built, in one pane of glass.</div>
+    <div class="toolbar">
+      <input id="filter" type="search" placeholder="Filter creations… (name, tag, description)">
+      <button class="tbtn" id="change-code">Change code</button>
+    </div>
+    <div id="groups"></div>
+    <div class="foot">
+      Owner deck — <code>noindex</code> + robots-blocked, code-gated on this device.<br>
+      The gate is a privacy curtain, not a cryptographic vault (static GitHub Pages) — no tokens or secrets live on this page.<br>
+      <b>LAN</b> links only resolve on the home network. To add a creation: edit <code>DECK</code> in <code>window/index.html</code>.
+    </div>
+  </div>
+
+<script>
+'use strict';
+
+/* ============================================================
+   DECK — everything Clayton has created.
+   To add: append {name, status: live|paper|bench|down, tag, desc, links:[{t,u,cls?}]}
+   to the right group (or add a group). Keep secrets/tokens OUT — public repo.
+   ============================================================ */
+const DECK = [
+  { group: '💸 Revenue & Commerce', items: [
+    { name: 'Practically Natty (PNP)', status: 'live', tag: 'WooCommerce + CC2',
+      desc: '<b>The peptide store.</b> WooCommerce on Hostinger with Command Center 2 (v0.5.37+) running ops: orders, shipping labels (Shippo), revenue intelligence, email broadcasts. July-4th 3-tier sale engine, +10% price raise, mobile header — all live.',
+      links: [ {t:'Store', u:'https://practicallynatty.com'}, {t:'WP Admin / CC2', u:'https://practicallynatty.com/wp-admin/'}, {t:'CC2 Proxy', u:'https://cc2.practicallynatty.com'} ] },
+    { name: 'PNP Affiliate HUB', status: 'live', tag: 'v0.4.x',
+      desc: '<b>Self-serve dashboard for all 36 affiliates</b> at /my-affiliate/: links + QR, commissions & balance, peptide credits (1cr/$10), leaderboard, tiers, team recruiting. Rides SliceWP + elite-leaders engines underneath.',
+      links: [ {t:'HUB', u:'https://practicallynatty.com/my-affiliate/'} ] },
+    { name: 'PeptiDex', status: 'live', tag: '79 entries',
+      desc: '<b>Peptide knowledge hub</b> — research library across 10 categories with original visuals. PNP-adjacent SEO + education asset on Railway.',
+      links: [ {t:'thepeptidex.net', u:'https://www.thepeptidex.net'} ] },
+    { name: 'KnockFiber', status: 'live', tag: 'RCLX funnel · 28+ leads',
+      desc: '<b>Your T-Mobile Fiber D2D recruiting machine.</b> Landing + 49 city pages, lead capture → SQLite → ntfy push to the work phone, mini-CRM, 72-reel content kit (newest-first), posting board, attribution stats. Traffic is the only gap.',
+      links: [ {t:'knockfiber.com', u:'https://www.knockfiber.com'}, {t:'/hub (cmd center)', u:'https://www.knockfiber.com/hub'}, {t:'Pipeline', u:'https://www.knockfiber.com/admin'}, {t:'Content Kit', u:'https://www.knockfiber.com/kit'}, {t:'Posting Board', u:'https://www.knockfiber.com/posts'}, {t:'Stats', u:'https://www.knockfiber.com/stats'} ] },
+  ]},
+  { group: '🛰️ Space', items: [
+    { name: 'OrbitRoute', status: 'live', tag: 'COO onboarding',
+      desc: '<b>Routing layer for the orbital compute era</b> — live SGP4 constellation tracking, ground-station weather viability, uplink routing, ops globe at /viz. 11,000+ sats tracked, 5 patent drafts. Noah onboarding in progress (Master Brief in repo docs/).',
+      links: [ {t:'orbitroute.ai', u:'https://www.orbitroute.ai'}, {t:'Ops Globe /viz', u:'https://www.orbitroute.ai/viz'} ] },
+  ]},
+  { group: '📈 Trading & Intelligence', items: [
+    { name: 'MMS Hub', status: 'paper', tag: 'Mac mini · launchd fleet',
+      desc: '<b>The trading ecosystem.</b> Paper fleet under launchd (Hybrid V6 ×2 venues, Rapid Increase, $30k paper), 4 local services, equity snapshots 4×/day. Cloud portal is the public face. NO live funds until graduation criteria met.',
+      links: [ {t:'Cloud portal', u:'https://moneymakingsolutionsai.com'}, {t:'Hub :8000', u:'http://10.0.0.224:8000', cls:'lan'}, {t:'AI :8001', u:'http://10.0.0.224:8001', cls:'lan'}, {t:'API :8080', u:'http://10.0.0.224:8080', cls:'lan'} ] },
+    { name: 'BTC Brain', status: 'live', tag: 'forecast-only',
+      desc: '<b>Daily BTC forecast engine</b> (6:05am launchd, pure-stdlib py3.14) — issues forecasts, resolves them, emails the accuracy report. Feeds the future OpenClaw maker-only trade agent (designed, unbuilt). No trades, no funds.',
+      links: [ {t:'Ledger (repo)', u:'https://github.com/claytoncamera/loopholemaxing/tree/main/btc-brain', cls:'repo'} ] },
+    { name: 'Universal Analyst Engine', status: 'live', tag: 'FastAPI + Celery',
+      desc: '<b>Multi-domain intelligence platform</b> — sports, politics, macro, climate, entertainment scorecards on Postgres/Redis/Celery. PR #3 (scorecards unique-constraint migration) awaiting your review before live-DB merge.',
+      links: [ {t:'Showcase', u:'/uae/'}, {t:'Repo', u:'https://github.com/claytoncamera/universal-analyst-engine', cls:'repo'} ] },
+    { name: 'MMS Launch Pipeline', status: 'live', tag: 'daily codex automation',
+      desc: '<b>Public-launch marketing engine</b> — nightly scorecard, launch packet, copy bank, CRM summary, outreach copy generated to ~/trading_lab/outputs (also in the Obsidian vault as “MMS Launch Outputs”).',
+      links: [] },
+    { name: 'NBA Loophole Brain', status: 'bench', tag: 'mock mode',
+      desc: 'NBA analytics API deployed on Railway in mock mode — bench experiment, revisit or archive.',
+      links: [ {t:'Showcase', u:'/nba-brain/'} ] },
+  ]},
+  { group: '🎬 Content & Audience', items: [
+    { name: 'Studio', status: 'live', tag: 'PWA · local-first',
+      desc: '<b>In-browser content factory</b> — import footage, clip with ffmpeg.wasm, reshape 9:16, caption/hook generator, plan scheduler, installable offline PWA. Cross-device sync opt-in.',
+      links: [ {t:'Open Studio', u:'/studio/'} ] },
+    { name: 'Studio Engine', status: 'live', tag: 'Mac mini · auto-clip',
+      desc: '<b>Drop footage in ~/StudioInbox</b> → M4 VideoToolbox auto-9:16 + whisper.cpp captions → synced into Studio. Idling until you set the sync code in config.',
+      links: [ {t:'Repo', u:'https://github.com/claytoncamera/loopholemaxing-studio-engine', cls:'repo'} ] },
+    { name: 'Studio Sync', status: 'live', tag: 'Railway + Postgres',
+      desc: 'Cross-device sync API for Studio — library, thumbnails, captions, plan, finished clips. CORS locked to loopholemaxing.com.',
+      links: [ {t:'Health', u:'https://studio-sync-api-production.up.railway.app/health'} ] },
+    { name: 'Analytics HUB', status: 'live', tag: 'owner-gated',
+      desc: '<b>Visit tracking across your properties</b> — loopholemaxing.com, PeptiDex, OrbitRoute, affiliate hub. Origin-guarded tracker + dashboards.',
+      links: [ {t:'Open', u:'/analytics-hub/'} ] },
+    { name: 'Army Link', status: 'live', tag: 'owner-gated',
+      desc: 'Link command center for the agent-army workflow.',
+      links: [ {t:'Open', u:'/army-link/'} ] },
+    { name: 'Creation Command Center', status: 'live', tag: 'Railway',
+      desc: 'Owner-gated creation dashboard on its own subdomain.',
+      links: [ {t:'creation.loopholemaxing.com', u:'https://creation.loopholemaxing.com'} ] },
+    { name: 'LoopholeMaxing Portfolio', status: 'live', tag: 'GitHub Pages',
+      desc: '<b>The public face</b> — 15 creation cards + “Work With Clayton” hire funnel. This Window lives inside it, unlisted.',
+      links: [ {t:'Homepage', u:'/'}, {t:'Work With Clayton', u:'/work-with-clayton/'} ] },
+  ]},
+  { group: '🔐 Infra & Memory', items: [
+    { name: 'PersonalVault', status: 'bench', tag: 'zero-knowledge',
+      desc: 'AES-256-GCM zero-knowledge personal data vault — backend API + React Native app. Dormant on Railway (api.loopholemaxing.com), ready to revive.',
+      links: [ {t:'Showcase', u:'/vault/'}, {t:'Repo', u:'https://github.com/claytoncamera/personal-vault', cls:'repo'} ] },
+    { name: 'Claytron Brain', status: 'live', tag: 'the memory',
+      desc: '<b>The operating brain</b> — engines, safety rules, decisions, journals at ~/brain/claytron-brain. Mirrored to your phone via Obsidian Sync (“Vault 001”). Every session grows it.',
+      links: [] },
+    { name: 'Health Sweep', status: 'live', tag: 'daily launchd',
+      desc: 'All-systems health board (gh + railway + curl) every morning — pushes ALL GREEN / RED to the work phone via ntfy.',
+      links: [] },
+    { name: 'LMX Hub', status: 'bench', tag: 'agency infra',
+      desc: 'Client-site hub (frontend + backend on Railway) + lmx-site-starter Next.js template for per-client deploys.',
+      links: [ {t:'websitehub', u:'https://websitehub.loopholemaxing.com'} ] },
+  ]},
+  { group: '🧪 Blueprints & Bench', items: [
+    { name: 'NAUTILUS', status: 'bench', tag: 'blueprint · 5 patents',
+      desc: '<b>AI yacht command system</b> — master blueprint, 6 AI crew agents, 5 patent drafts, GTM plan. Lives at ~/ai-yacht-captain (also in the Obsidian vault).',
+      links: [] },
+    { name: 'ULTRON', status: 'bench', tag: 'private',
+      desc: 'Autonomous agent system — private repo, showcase page on the portfolio.',
+      links: [ {t:'Showcase', u:'/ultron/'} ] },
+    { name: 'FORMIX', status: 'bench', tag: 'concept',
+      desc: 'Pre-launch concept — showcase only.',
+      links: [ {t:'Showcase', u:'/formix/'} ] },
+    { name: 'Agora', status: 'bench', tag: 'scaffolding',
+      desc: 'Catalog scaffolding built inside UAE — candidate to grow into its own engine.',
+      links: [ {t:'Showcase', u:'/agora/'} ] },
+    { name: 'Tally Cams', status: 'down', tag: 'paused by design',
+      desc: '407-camera Tallahassee public-cam dashboard (Express + SQLite + MapLibre). Railway kept (3GB volume), domain intentionally down.',
+      links: [ {t:'Repo', u:'https://github.com/claytoncamera/tallahassee-cam-intel', cls:'repo'} ] },
+    { name: 'OpenClaw', status: 'bench', tag: 'designed · unbuilt',
+      desc: 'Maker-only autonomous BTC trade agent designed on top of BTC Brain. Phase 1 (signal.json) not started.',
+      links: [] },
+  ]},
+];
+
+/* ============================================================
+   Gate — PBKDF2-SHA256 (150k iters) hash+salt in localStorage.
+   First open (no stored hash) = create the code. sessionStorage
+   keeps it open per-tab; Lock clears the session.
+   ============================================================ */
+const LS_KEY = 'window_gate_v1';
+const $ = id => document.getElementById(id);
+
+async function kdf(code, saltHex) {
+  const enc = new TextEncoder();
+  const salt = new Uint8Array(saltHex.match(/../g).map(h => parseInt(h, 16)));
+  const key = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveBits']);
+  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 150000 }, key, 256);
+  return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('');
+}
+const randSalt = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
+const stored = () => { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch { return null; } };
+
+function setupGate() {
+  const first = !stored();
+  $('gate-sub').textContent = first
+    ? 'First open — create your access code for this device.'
+    : 'Enter your access code.';
+  $('pass2').style.display = first ? '' : 'none';
+  $('gate-btn').textContent = first ? 'Set code & open' : 'Open';
+
+  $('gate-form').onsubmit = async e => {
+    e.preventDefault();
+    const c1 = $('pass1').value, err = $('gate-err');
+    err.textContent = '';
+    if (first) {
+      if (c1.length < 4) return err.textContent = 'Code must be at least 4 characters.';
+      if (c1 !== $('pass2').value) return err.textContent = 'Codes don’t match.';
+      const salt = randSalt();
+      localStorage.setItem(LS_KEY, JSON.stringify({ salt, hash: await kdf(c1, salt) }));
+      unlock();
+    } else {
+      const s = stored();
+      if (await kdf(c1, s.salt) === s.hash) unlock();
+      else {
+        err.textContent = 'Wrong code.';
+        $('gate-card').classList.add('shake');
+        setTimeout(() => $('gate-card').classList.remove('shake'), 400);
+        $('pass1').value = ''; $('pass1').focus();
+      }
+    }
+  };
+}
+
+function unlock() {
+  sessionStorage.setItem(LS_KEY, '1');
+  $('gate').style.display = 'none';
+  $('deck').style.display = 'block';
+  render();
+}
+
+/* ── Render ── */
+function render(filter = '') {
+  const q = filter.trim().toLowerCase();
+  const total = DECK.reduce((n, g) => n + g.items.length, 0);
+  $('deck-sub').textContent = `${total} creations across ${DECK.length} groups — one pane of glass.`;
+  $('groups').innerHTML = DECK.map(g => {
+    const items = g.items.filter(it => !q ||
+      (it.name + ' ' + it.tag + ' ' + it.desc).toLowerCase().includes(q));
+    if (!items.length) return '';
+    return `<div class="group"><h2>${g.group}</h2><div class="grid">` + items.map(it => `
+      <div class="pane">
+        <h3><span class="dot ${it.status}"></span>${it.name}<span class="stag">${it.tag}</span></h3>
+        <p>${it.desc}</p>
+        <div class="links">${it.links.map(l =>
+          `<a href="${l.u}" target="_blank" rel="noopener"${l.cls ? ` class="${l.cls}"` : ''}>${l.t}${l.cls === 'lan' ? ' · LAN' : ''}</a>`).join('')}
+        </div>
+      </div>`).join('') + '</div></div>';
+  }).join('');
+}
+
+/* ── Wire up ── */
+$('filter').addEventListener('input', e => render(e.target.value));
+$('lock-btn').onclick = () => { sessionStorage.removeItem(LS_KEY); location.reload(); };
+$('change-code').onclick = async () => {
+  const old = prompt('Current code:'); if (old === null) return;
+  const s = stored();
+  if (!s || await kdf(old, s.salt) !== s.hash) return alert('Wrong code.');
+  const n1 = prompt('New code (min 4 chars):'); if (!n1 || n1.length < 4) return alert('Too short.');
+  const n2 = prompt('Repeat new code:'); if (n1 !== n2) return alert('Codes don’t match.');
+  const salt = randSalt();
+  localStorage.setItem(LS_KEY, JSON.stringify({ salt, hash: await kdf(n1, salt) }));
+  alert('Code updated on this device.');
+};
+
+if (sessionStorage.getItem(LS_KEY) === '1' && stored()) unlock();
+else setupGate();
+</script>
+</body>
+</html>

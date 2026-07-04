@@ -3,160 +3,347 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loopholemaxing — Find Every Edge</title>
-  <meta name="description" content="The work of Clayton Camera — AI systems, autonomous agents, trading infrastructure, and full-stack software that find hidden revenue and automate operations. Portfolio of live ventures — OrbitRoute, Practically Natty (PNP), MMS Hub, Universal Analyst Engine, BTC Brain, PersonalVault, ULTRON, and more. Available for client work.">
+  <title>Loopholemaxing — Clayton Camera · Founder &amp; Systems Builder</title>
+  <meta name="description" content="The work of Clayton Camera — a technical founder who builds AI systems, autonomous agents, trading infrastructure, and full-stack software that find hidden revenue and automate operations. Live portfolio: OrbitRoute, Practically Natty, MMS Hub, Universal Analyst Engine, BTC Brain, PersonalVault, ULTRON and more. Available for client work.">
   <meta property="og:title" content="Loopholemaxing — Find Every Edge">
   <meta property="og:description" content="Founder &amp; operator. Live ventures across AI, e-commerce, trading, and infrastructure — built end-to-end. Available for client work: 48-hour audit → 5-day build sprint → operator retainer.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#08080d">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   <style>
-    .bg-grid {
-      position: fixed; inset: 0; z-index: -1;
-      background-image: radial-gradient(circle, rgba(59,130,246,0.04) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-    .bg-glow {
-      position: fixed; top: -200px; left: 50%; transform: translateX(-50%);
-      width: 800px; height: 700px;
-      background: radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 65%);
-      z-index: -1;
+    /* ================================================================
+       LOOPHOLEMAXING — home page (v2 redesign)
+       Self-contained: all page styling lives here so the shared
+       styles.css (used by /btc-brain, /uae, /vault, etc.) is untouched.
+       Scoped token overrides below only apply on this page.
+       ================================================================ */
+    :root {
+      --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: 'Space Grotesk', var(--font-body);
+
+      --bg-primary: #08080d;
+      --bg-card: #101017;
+      --bg-card-2: #14141d;
+      --border: #20202b;
+      --border-light: #2c2c3a;
+
+      --text-primary: #f4f4f8;
+      --text-secondary: #a1a1b3;
+      --text-muted: #6d6d80;
+
+      --brand-1: #6366f1;   /* indigo */
+      --brand-2: #3b82f6;   /* blue   */
+      --brand-3: #22d3ee;   /* cyan   */
+      --green: #34d399;
+      --green-deep: #10b981;
+      --grad-brand: linear-gradient(120deg, #818cf8 0%, #38bdf8 50%, #22d3ee 100%);
     }
 
-    /* ── Sticky "Work With Clayton" promo bar (top, always visible) ── */
+    body { font-family: var(--font-body); background: var(--bg-primary); }
+
+    /* ── Ambient background ── */
+    .bg-grid {
+      position: fixed; inset: 0; z-index: -2;
+      background-image: radial-gradient(circle, rgba(99,102,241,0.045) 1px, transparent 1px);
+      background-size: 46px 46px;
+      mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 90% 60% at 50% 0%, #000 40%, transparent 100%);
+    }
+    .bg-aurora {
+      position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none;
+    }
+    .bg-aurora::before, .bg-aurora::after {
+      content: ""; position: absolute; border-radius: 50%; filter: blur(90px);
+    }
+    .bg-aurora::before {
+      top: -260px; left: 50%; transform: translateX(-55%);
+      width: 760px; height: 620px;
+      background: radial-gradient(circle, rgba(99,102,241,0.16), transparent 62%);
+    }
+    .bg-aurora::after {
+      top: 180px; right: -180px; width: 520px; height: 520px;
+      background: radial-gradient(circle, rgba(34,211,238,0.09), transparent 60%);
+    }
+
+    /* ── Sticky "Work With Clayton" promo bar ── */
     .promo-bar {
       position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
       height: 44px; display: flex; align-items: center; justify-content: center; gap: 14px;
       padding: 0 var(--space-lg);
-      background: linear-gradient(90deg, rgba(63,185,80,.16), rgba(59,130,246,.16));
-      border-bottom: 1px solid rgba(63,185,80,.25);
+      background: linear-gradient(90deg, rgba(16,185,129,.14), rgba(99,102,241,.16));
+      border-bottom: 1px solid rgba(52,211,153,.22);
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       font-size: 13px; color: var(--text-primary);
     }
     .promo-bar strong { color: var(--green); }
     .promo-bar .promo-btn {
       font-size: 12px; font-weight: 700; letter-spacing: .02em;
-      padding: 5px 14px; border-radius: 6px; white-space: nowrap;
-      background: var(--green); color: #06210d;
+      padding: 6px 15px; border-radius: 7px; white-space: nowrap;
+      background: var(--green); color: #04231a;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
     }
-    .promo-bar .promo-btn:hover { background: #4cd964; color: #06210d; }
-    /* Page-local: push the shared fixed header below the promo bar */
-    .top-header { top: 44px; }
-    .nav-cta { color: var(--green) !important; font-weight: 700 !important; }
+    .promo-bar .promo-btn:hover { background: #4ce6ad; transform: translateY(-1px); box-shadow: 0 6px 18px rgba(52,211,153,.28); }
 
-    .hero {
-      min-height: 78vh; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; text-align: center;
-      padding: 150px var(--space-lg) var(--space-3xl);
+    /* Header (overrides shared) */
+    .top-header {
+      top: 44px; height: 60px;
+      background: rgba(8,8,13,.72); border-bottom: 1px solid var(--border);
     }
+    .logo { display: inline-flex; align-items: center; gap: 9px; font-family: var(--font-display); letter-spacing: .16em; }
+    .logo .logo-mark {
+      width: 22px; height: 22px; border-radius: 6px; flex-shrink: 0;
+      background: var(--grad-brand); box-shadow: 0 0 18px rgba(56,189,248,.35);
+      position: relative;
+    }
+    .logo .logo-mark::after {
+      content: ""; position: absolute; inset: 5px; border-radius: 3px;
+      background: var(--bg-primary);
+    }
+    .nav-links a { font-family: var(--font-body); }
+    .nav-cta { color: var(--green) !important; font-weight: 700 !important; }
+    .nav-window { font-size: 15px; opacity: .8; }
+    .nav-window:hover { opacity: 1; }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 82vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      padding: 160px var(--space-lg) var(--space-3xl); position: relative;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 9px;
+      font-size: 12.5px; font-weight: 600; letter-spacing: .01em;
+      color: var(--text-secondary);
+      padding: 7px 15px 7px 12px; border-radius: 999px; margin-bottom: 26px;
+      background: rgba(255,255,255,.03);
+      border: 1px solid var(--border-light);
+      backdrop-filter: blur(8px);
+    }
+    .hero-eyebrow .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--green);
+      box-shadow: 0 0 0 4px rgba(52,211,153,.18); animation: pulse 2.4s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
     .hero h1 {
-      font-size: clamp(40px, 7vw, 72px); font-weight: 800;
-      line-height: 1.05; letter-spacing: -0.03em; color: var(--text-primary);
+      font-family: var(--font-display);
+      font-size: clamp(44px, 8vw, 88px); font-weight: 700;
+      line-height: 1.02; letter-spacing: -0.035em; color: var(--text-primary);
       margin-bottom: var(--space-lg);
     }
-    .hero h1 span {
-      background: linear-gradient(135deg, #3b82f6, #a78bfa);
+    .hero h1 .grad {
+      background: var(--grad-brand); background-size: 220% auto;
       -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      animation: gradShift 7s ease-in-out infinite;
     }
-    .hero-sub { font-size: clamp(15px, 2vw, 18px); color: var(--text-secondary); max-width: 560px; line-height: 1.65; margin-bottom: var(--space-xl); }
+    @keyframes gradShift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
+
+    .hero-sub {
+      font-size: clamp(16px, 2vw, 19px); color: var(--text-secondary);
+      max-width: 620px; line-height: 1.6; margin-bottom: var(--space-xl);
+    }
+    .hero-sub strong { color: var(--text-primary); font-weight: 600; }
     .hero-cta-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
     .btn-hire {
-      display: inline-flex; align-items: center; gap: var(--space-sm);
-      padding: 13px 30px; border-radius: 8px; font-size: 15px; font-weight: 700;
-      background: var(--green); color: #06210d; text-decoration: none;
+      display: inline-flex; align-items: center; gap: 9px;
+      padding: 14px 30px; border-radius: 10px; font-size: 15px; font-weight: 700;
+      background: var(--green); color: #04231a; text-decoration: none;
+      box-shadow: 0 8px 26px rgba(16,185,129,.24);
       transition: all var(--transition-base);
     }
-    .btn-hire:hover { background: #4cd964; color: #06210d; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(63,185,80,.25); }
-    .hero-stats { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; margin-top: var(--space-2xl); }
-    .hero-stat { text-align: center; }
-    .hero-stat-val { font-size: 28px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
-    .hero-stat-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+    .btn-hire:hover { background: #4ce6ad; color: #04231a; transform: translateY(-2px); box-shadow: 0 12px 34px rgba(16,185,129,.34); }
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 26px; border-radius: 10px; font-size: 15px; font-weight: 600;
+      background: rgba(255,255,255,.02); color: var(--text-primary);
+      border: 1px solid var(--border-light); text-decoration: none;
+      transition: all var(--transition-base);
+    }
+    .btn-ghost:hover { border-color: var(--brand-2); color: #fff; transform: translateY(-2px); }
 
-    /* ── "Work With Clayton" hero band (the prominent hire CTA; domain-portable) ── */
+    .hero-trust {
+      display: flex; gap: 18px 26px; justify-content: center; flex-wrap: wrap;
+      margin-top: var(--space-xl); font-size: 13px; color: var(--text-muted);
+    }
+    .hero-trust span { display: inline-flex; align-items: center; gap: 7px; }
+    .hero-trust .tick { color: var(--green); font-weight: 700; }
+
+    /* Stat strip */
+    .hero-stats {
+      display: grid; grid-template-columns: repeat(6, 1fr);
+      max-width: 940px; margin: var(--space-2xl) auto 0;
+      border: 1px solid var(--border); border-radius: 16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,0));
+      overflow: hidden;
+    }
+    .hero-stat { text-align: center; padding: 22px 10px; border-right: 1px solid var(--border); }
+    .hero-stat:last-child { border-right: none; }
+    .hero-stat-val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); letter-spacing: -.01em; }
+    .hero-stat-lbl { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
+    .hero-footnote { font-size: 11px; color: var(--text-muted); margin-top: 14px; }
+
+    /* ── WORK WITH CLAYTON band ── */
     .work-band {
-      max-width: var(--max-width); margin: 0 auto var(--space-3xl);
+      max-width: var(--max-width); margin: 0 auto var(--space-4xl);
       padding: var(--space-2xl) var(--space-xl);
-      border: 1px solid rgba(63,185,80,.3); border-radius: 16px;
+      border: 1px solid rgba(52,211,153,.28); border-radius: 20px;
       background:
-        radial-gradient(circle at 0% 0%, rgba(63,185,80,.10), transparent 55%),
-        radial-gradient(circle at 100% 100%, rgba(59,130,246,.08), transparent 55%),
+        radial-gradient(circle at 0% 0%, rgba(52,211,153,.10), transparent 52%),
+        radial-gradient(circle at 100% 100%, rgba(99,102,241,.10), transparent 55%),
         var(--bg-card);
     }
-    .work-band-grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: var(--space-2xl); align-items: center; }
+    .work-band-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: var(--space-2xl); align-items: center; }
     .work-band .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--green); margin-bottom: var(--space-md); }
-    .work-band h2 { font-size: clamp(24px, 3.5vw, 34px); font-weight: 800; line-height: 1.12; letter-spacing: -0.02em; margin-bottom: var(--space-md); color: var(--text-primary); }
+    .work-band h2 { font-family: var(--font-display); font-size: clamp(25px, 3.5vw, 36px); font-weight: 700; line-height: 1.14; letter-spacing: -0.02em; margin-bottom: var(--space-md); color: var(--text-primary); }
     .work-band h2 .green { color: var(--green); }
     .work-band p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--space-lg); max-width: 560px; }
-    .work-tiers { display: flex; flex-direction: column; gap: var(--space-sm); }
-    .work-tier { display: flex; align-items: baseline; gap: var(--space-md); padding: 12px 16px; border: 1px solid var(--border); border-radius: 10px; background: rgba(255,255,255,.02); }
-    .work-tier .amt { font-family: var(--font-mono); font-weight: 800; font-size: 17px; color: var(--text-primary); white-space: nowrap; }
-    .work-tier .desc { font-size: 13px; color: var(--text-secondary); line-height: 1.4; }
+    .work-tiers { display: flex; flex-direction: column; gap: 10px; }
+    .work-tier { display: flex; align-items: baseline; gap: var(--space-md); padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.015); transition: border-color .2s ease, transform .2s ease; }
+    .work-tier:hover { border-color: var(--border-light); transform: translateX(2px); }
+    .work-tier .amt { font-family: var(--font-mono); font-weight: 700; font-size: 16px; color: var(--text-primary); white-space: nowrap; min-width: 74px; }
+    .work-tier .desc { font-size: 13px; color: var(--text-secondary); line-height: 1.45; }
     .work-tier .desc strong { color: var(--text-primary); font-weight: 600; }
     .work-band-cta { margin-top: var(--space-lg); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
     .work-band-note { font-size: 12px; color: var(--text-muted); }
 
-    .creations { padding: var(--space-2xl) var(--space-lg) var(--space-4xl); max-width: var(--max-width); margin: 0 auto; }
-    .creations-header { text-align: center; margin-bottom: var(--space-2xl); }
-    .creations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: var(--space-lg); }
+    /* ── Marquee feature strip ── */
+    .feature-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 22px 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
+    .feature-track { display: flex; gap: 44px; width: max-content; animation: marquee 46s linear infinite; }
+    .feature-strip:hover .feature-track { animation-play-state: paused; }
+    @keyframes marquee { to { transform: translateX(-50%); } }
+    .feature-item { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-secondary); flex-shrink: 0; white-space: nowrap; }
+    .feature-item strong { color: var(--text-primary); font-weight: 600; }
+    .feature-item .fdot { width: 5px; height: 5px; border-radius: 50%; background: var(--brand-2); flex-shrink: 0; }
 
-    .creation-card { position: relative; overflow: hidden; display: flex; flex-direction: column; }
-    .card-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 4px; margin-bottom: var(--space-md); width: fit-content; }
-    .tag-live { background: rgba(63,185,80,.15); color: var(--green); }
-    .tag-rev  { background: rgba(63,185,80,.22); color: #5fe07a; }
+    /* ── CREATIONS ── */
+    .creations { padding: var(--space-4xl) var(--space-lg); max-width: var(--max-width); margin: 0 auto; }
+    .creations-header { text-align: center; margin-bottom: var(--space-xl); }
+    .creations-header .section-label { color: var(--brand-3); }
+    .creations-header .section-title { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 46px); letter-spacing: -.03em; }
+
+    /* Filter chips */
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: var(--space-2xl); }
+    .filter-chip {
+      font-size: 13px; font-weight: 600; letter-spacing: .01em;
+      padding: 8px 16px; border-radius: 999px; cursor: pointer;
+      background: rgba(255,255,255,.02); color: var(--text-secondary);
+      border: 1px solid var(--border); transition: all .18s ease; user-select: none;
+    }
+    .filter-chip:hover { color: var(--text-primary); border-color: var(--border-light); }
+    .filter-chip.active { background: var(--text-primary); color: #0a0a12; border-color: var(--text-primary); }
+
+    .creations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(348px, 1fr)); gap: var(--space-lg); }
+
+    .creation-card {
+      position: relative; overflow: hidden; display: flex; flex-direction: column;
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px;
+      padding: var(--space-lg); transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+    }
+    .creation-card::before {
+      content: ""; position: absolute; inset: 0 0 auto 0; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(99,102,241,.5), transparent);
+      opacity: 0; transition: opacity .3s ease;
+    }
+    .creation-card:hover { border-color: var(--border-light); transform: translateY(-3px); box-shadow: 0 16px 40px -18px rgba(0,0,0,.7); }
+    .creation-card:hover::before { opacity: 1; }
+    .creation-card.hide-card { display: none; }
+
+    .card-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border-radius: 5px; margin-bottom: var(--space-md); width: fit-content; }
+    .tag-live { background: rgba(52,211,153,.14); color: var(--green); }
+    .tag-rev  { background: rgba(52,211,153,.20); color: #5eead4; }
     .tag-dev  { background: rgba(251,191,36,.12); color: #fbbf24; }
     .tag-concept { background: rgba(167,139,250,.14); color: #c4b5fd; }
-    .tag-private { background: rgba(139,148,158,.14); color: var(--text-secondary); }
-    .tag-soon { background: rgba(139,148,158,.1); color: var(--text-muted); }
+    .tag-private { background: rgba(148,163,184,.14); color: #cbd5e1; }
 
-    .creation-card h3 { font-size: 20px; font-weight: 700; margin-bottom: var(--space-sm); color: var(--text-primary); display: flex; align-items: center; gap: 10px; padding-right: 28px; }
-    .creation-card h3 .icon { width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0; }
+    .creation-card h3 { font-family: var(--font-display); font-size: 20px; font-weight: 600; letter-spacing: -.01em; margin-bottom: 6px; color: var(--text-primary); display: flex; align-items: center; gap: 11px; padding-right: 28px; }
+    .creation-card h3 .icon { width: 34px; height: 34px; border-radius: 9px; display: inline-flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
     .icon-btc    { background: rgba(247,147,26,.12);  color: #f7931a; }
-    .icon-ph     { background: rgba(59,130,246,.1);   color: var(--accent-blue); }
-    .icon-nba    { background: rgba(63,185,80,.12);   color: var(--green); }
+    .icon-ph     { background: rgba(59,130,246,.12);   color: #60a5fa; }
+    .icon-nba    { background: rgba(52,211,153,.12);   color: var(--green); }
     .icon-formix { background: rgba(167,139,250,.12); color: #c4b5fd; }
-    .icon-orbit  { background: rgba(167,139,250,.12); color: #a78bfa; }
-    .icon-uae    { background: rgba(20,184,166,.12);  color: #14b8a6; }
+    .icon-orbit  { background: rgba(129,140,248,.14); color: #a5b4fc; }
+    .icon-uae    { background: rgba(20,184,166,.12);  color: #2dd4bf; }
     .icon-ultron { background: rgba(56,214,255,.12);  color: #38d6ff; }
-    .icon-natty  { background: rgba(236,72,153,.12);  color: #ec4899; }
+    .icon-natty  { background: rgba(236,72,153,.12);  color: #f472b6; }
     .icon-peptidex { background: rgba(34,211,238,.12); color: #22d3ee; }
-    .icon-tally  { background: rgba(20,184,166,.12);  color: #14b8a6; }
+    .icon-tally  { background: rgba(20,184,166,.12);  color: #2dd4bf; }
     .icon-mms    { background: rgba(88,166,255,.12);  color: #58a6ff; }
     .icon-agora  { background: rgba(247,185,85,.12);  color: #f7b955; }
-    .icon-knock  { background: rgba(226,0,116,.12);   color: #f0529c; }
+    .icon-knock  { background: rgba(236,72,153,.12);   color: #f472b6; }
     .icon-studio { background: rgba(167,139,250,.12); color: #a78bfa; }
-    .icon-creation { background: rgba(99,102,241,.14); color: #818cf8; }
-    .creation-card p { font-size: 14px; color: var(--text-secondary); line-height: 1.65; flex: 1; margin-bottom: var(--space-md); }
-    .card-meta { display: flex; gap: var(--space-md); flex-wrap: wrap; margin-bottom: var(--space-md); }
-    .card-meta-item { font-size: 11px; font-family: var(--font-mono); color: var(--text-muted); background: rgba(255,255,255,.04); padding: 3px 8px; border-radius: 4px; }
-    .card-action { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--accent-blue); transition: color .2s; }
-    .card-action:hover { color: #7dd3fc; }
+    .icon-creation { background: rgba(99,102,241,.16); color: #818cf8; }
+
+    .card-lead { font-size: 13px; font-weight: 600; color: var(--brand-3); margin-bottom: 10px; letter-spacing: -.005em; }
+    .creation-card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.62; margin-bottom: var(--space-md); }
+
+    /* Value / edge line */
+    .card-edge {
+      display: flex; gap: 10px; align-items: flex-start;
+      font-size: 12.5px; line-height: 1.5; color: var(--text-secondary);
+      padding: 11px 13px; margin-bottom: var(--space-md);
+      background: rgba(52,211,153,.05); border: 1px solid rgba(52,211,153,.16);
+      border-radius: 10px;
+    }
+    .card-edge .edge-ic { color: var(--green); flex-shrink: 0; font-size: 13px; line-height: 1.5; }
+    .card-edge b { color: var(--text-primary); font-weight: 600; }
+
+    .card-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: var(--space-md); margin-top: auto; }
+    .card-meta-item { font-size: 10.5px; font-family: var(--font-mono); color: var(--text-muted); background: rgba(255,255,255,.03); padding: 3px 8px; border-radius: 5px; border: 1px solid var(--border); }
+    .card-action { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #60a5fa; transition: gap .2s ease, color .2s ease; }
+    .card-action:hover { color: #93c5fd; gap: 9px; }
     .card-action.muted { color: var(--text-muted); pointer-events: none; }
-    .creation-card.coming-soon { opacity: .5; }
+    .creation-card.coming-soon { opacity: .58; }
     .creation-card.coming-soon .card-action { pointer-events: none; color: var(--text-muted); }
 
-    /* Feature strip */
-    .feature-strip { background: rgba(255,255,255,.02); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 28px var(--space-lg); overflow-x: auto; }
-    .feature-strip-inner { display: flex; gap: 48px; max-width: var(--max-width); margin: 0 auto; white-space: nowrap; }
-    .feature-item { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-secondary); flex-shrink: 0; }
-    .feature-item strong { color: var(--text-primary); }
+    /* ── Closing CTA ── */
+    .closing { max-width: var(--max-width); margin: 0 auto var(--space-4xl); padding: 0 var(--space-lg); }
+    .closing-inner {
+      text-align: center; padding: var(--space-3xl) var(--space-xl);
+      border-radius: 22px; border: 1px solid var(--border-light);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(99,102,241,.14), transparent 60%),
+        var(--bg-card);
+    }
+    .closing h2 { font-family: var(--font-display); font-size: clamp(26px, 4vw, 40px); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; color: var(--text-primary); margin-bottom: var(--space-md); }
+    .closing p { font-size: 16px; color: var(--text-secondary); max-width: 560px; margin: 0 auto var(--space-xl); line-height: 1.6; }
 
-    .site-footer { border-top: 1px solid var(--border); padding: var(--space-xl) var(--space-lg); text-align: center; color: var(--text-muted); font-size: 13px; }
+    .site-footer { border-top: 1px solid var(--border); padding: var(--space-2xl) var(--space-lg); text-align: center; color: var(--text-muted); font-size: 13px; }
     .site-footer a { color: var(--text-secondary); }
-    .footer-tagline { margin-top: 6px; font-size: 11px; letter-spacing: .08em; text-transform: uppercase; }
+    .site-footer a:hover { color: var(--brand-3); }
+    .footer-tagline { margin-top: 8px; font-family: var(--font-display); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
 
     @media (max-width: 768px) {
       .promo-bar { font-size: 12px; gap: 10px; padding: 0 var(--space-md); }
       .promo-bar .promo-hide-sm { display: none; }
-      .hero { padding: 120px var(--space-md) var(--space-2xl); }
+      .hero { padding: 128px var(--space-md) var(--space-2xl); min-height: 0; }
+      /* Collapse header nav on mobile — the sticky promo bar already carries
+         the hire CTA, so keep only the logo + the 🪟 Window entry. */
+      .top-header { padding: 0 var(--space-md); }
+      .nav-links { gap: 14px; }
+      .nav-links li:not(.nav-window-li) { display: none; }
       .creations-grid { grid-template-columns: 1fr; }
-      .hero-stats { gap: 20px; }
+      .hero-stats { grid-template-columns: repeat(3, 1fr); }
+      .hero-stat:nth-child(3) { border-right: none; }
+      .hero-stat:nth-child(-n+3) { border-bottom: 1px solid var(--border); }
       .work-band-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+    }
+    @media (max-width: 420px) {
+      .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .hero-stat:nth-child(2n) { border-right: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero h1 .grad, .feature-track, .hero-eyebrow .live-dot { animation: none !important; }
     }
   </style>
 </head>
 <body>
   <div class="bg-grid"></div>
-  <div class="bg-glow"></div>
+  <div class="bg-aurora"></div>
 
-  <!-- Sticky hire CTA (always visible). Link is set from WORK_WITH_URL below. -->
+  <!-- Sticky hire CTA (always visible). Link set from WORK_WITH_URL below. -->
   <div class="promo-bar">
     <span><strong>Available for client work</strong><span class="promo-hide-sm"> — AI systems that find hidden revenue &amp; automate operations</span></span>
     <a class="promo-btn" data-work href="/work-with-clayton/">Work With Clayton →</a>
@@ -164,33 +351,40 @@
 
   <!-- Header -->
   <header class="top-header">
-    <a href="/" class="logo">Loopholemaxing</a>
+    <a href="/" class="logo"><span class="logo-mark"></span>Loopholemaxing</a>
     <nav><ul class="nav-links">
       <li><a href="#creations">Creations</a></li>
       <li><a class="nav-cta" data-work href="/work-with-clayton/">Work With Clayton</a></li>
       <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
-      <li><a href="/window/" rel="nofollow" title="The Window" aria-label="The Window">🪟</a></li>
+      <li class="nav-window-li"><a class="nav-window" href="/window/" rel="nofollow" title="The Window" aria-label="The Window">🪟</a></li>
     </ul></nav>
   </header>
 
   <!-- Hero -->
   <section class="hero">
-    <div class="card-tag tag-live" style="margin-bottom:20px;">&#9679; 15 live creations &nbsp;·&nbsp; open for client work</div>
-    <h1>Find Every <span>Edge.</span></h1>
-    <p class="hero-sub">I'm Clayton Camera — a founder and operator who builds AI systems, autonomous agents, and full-stack software that find hidden revenue and automate the work teams shouldn't be doing. Below is a selection of what I've built.</p>
+    <div class="hero-eyebrow"><span class="live-dot"></span> 15 live creations · open for client work</div>
+    <h1>Find Every <span class="grad">Edge.</span></h1>
+    <p class="hero-sub">I'm <strong>Clayton Camera</strong> — a technical founder who builds AI systems, autonomous agents, and full-stack software that <strong>find hidden revenue</strong> and automate the work teams shouldn't be doing. Below is a selection of what I've shipped — live products, not slides.</p>
     <div class="hero-cta-row">
-      <a class="btn-hire" data-work href="/work-with-clayton/">Work With Clayton &rarr;</a>
-      <a href="#creations" class="btn-secondary">View the work &darr;</a>
+      <a class="btn-hire" data-work href="/work-with-clayton/">Work With Clayton →</a>
+      <a href="#creations" class="btn-ghost">Explore the work ↓</a>
+    </div>
+
+    <div class="hero-trust">
+      <span><span class="tick">✓</span> Founder &amp; operator, not an agency</span>
+      <span><span class="tick">✓</span> Ship live systems in days, not months</span>
+      <span><span class="tick">✓</span> Every claim maps to a live URL</span>
     </div>
 
     <div class="hero-stats">
       <div class="hero-stat"><div class="hero-stat-val">15</div><div class="hero-stat-lbl">Live Creations</div></div>
       <div class="hero-stat"><div class="hero-stat-val">5</div><div class="hero-stat-lbl">Domains Shipped</div></div>
-      <div class="hero-stat"><div class="hero-stat-val">15</div><div class="hero-stat-lbl">BTC Chapters</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">6</div><div class="hero-stat-lbl">Build Domains</div></div>
       <div class="hero-stat"><div class="hero-stat-val" id="homepage-btc-iq">189</div><div class="hero-stat-lbl">Coverage Score*</div></div>
       <div class="hero-stat"><div class="hero-stat-val">AES-256</div><div class="hero-stat-lbl">Vault Crypto</div></div>
       <div class="hero-stat"><div class="hero-stat-val">48h</div><div class="hero-stat-lbl">Audit Turnaround</div></div>
     </div>
+    <p class="hero-footnote">*Author-curated coverage index for the BTC research workspace — a breadth measure, not a benchmark or accuracy score.</p>
   </section>
 
   <!-- ============ WORK WITH CLAYTON — prominent hire band ============ -->
@@ -198,36 +392,34 @@
   <section class="work-band" id="work-with-clayton">
     <div class="work-band-grid">
       <div>
-        <p class="eyebrow">&#128736; Work With Clayton</p>
+        <p class="eyebrow">🛠 Work With Clayton</p>
         <h2>AI systems that find <span class="green">hidden revenue</span> and automate the work your team shouldn't be doing.</h2>
         <p>I build the same kind of systems you see below — for companies. Every engagement starts with a fixed-fee audit that puts a dollar figure next to every leak, ranked by speed-to-cash. The audit credits toward the build if you move forward, so the diagnosis costs nothing if we ship together.</p>
         <div class="work-band-cta">
-          <a class="btn-hire" data-work href="/work-with-clayton/">Start the $497 audit &rarr;</a>
-          <span class="work-band-note">48-hour turnaround &nbsp;·&nbsp; no retainer lock-in</span>
+          <a class="btn-hire" data-work href="/work-with-clayton/">Start the $497 audit →</a>
+          <span class="work-band-note">48-hour turnaround · no retainer lock-in</span>
         </div>
       </div>
       <div class="work-tiers">
         <div class="work-tier"><span class="amt">$497</span><span class="desc"><strong>Loophole Audit</strong> — 5-lens diagnosis in 48 hours; every leak priced.</span></div>
         <div class="work-tier"><span class="amt">$1.5–3.5K</span><span class="desc"><strong>Build Sprint</strong> — the highest-ROI fix, shipped in 5 days.</span></div>
-        <div class="work-tier"><span class="amt">$3–7.5K<span style="font-size:12px;color:var(--text-muted)">/mo</span></span><span class="desc"><strong>Operator Retainer</strong> — a continuous build queue, post-sprint.</span></div>
+        <div class="work-tier"><span class="amt">$3–7.5K<span style="font-size:11px;color:var(--text-muted)">/mo</span></span><span class="desc"><strong>Operator Retainer</strong> — a continuous build queue, post-sprint.</span></div>
       </div>
     </div>
   </section>
 
-  <!-- Feature Strip -->
+  <!-- Feature Strip (marquee) -->
   <div class="feature-strip">
-    <div class="feature-strip-inner">
-      <div class="feature-item">&#128752; <strong>OrbitRoute</strong> &mdash; Routing layer for orbital GPU compute; 5 patents filed</div>
-      <div class="feature-item">&#128138; <strong>Practically Natty</strong> &mdash; Live peptide brand; I'm CTO &amp; managing partner</div>
-      <div class="feature-item">&#9881; <strong>MMS HUB</strong> &mdash; Private autonomous trading control center</div>
-      <div class="feature-item">&#128300; <strong>Universal Analyst</strong> &mdash; 90 entities, 5 domains, AI scoring, 24/7</div>
-      <div class="feature-item">&#128308; <strong>BTC Brain</strong> &mdash; Live market intel, 3D neural visualization</div>
-      <div class="feature-item">&#128274; <strong>PersonalVault</strong> &mdash; Zero-knowledge AES-256-GCM encryption</div>
-      <div class="feature-item">&#9883; <strong>ULTRON</strong> &mdash; Local-first agent, 30/30 attack tests, human-gated</div>
-      <div class="feature-item">&#129516; <strong>PeptiDex</strong> &mdash; 79-entry peptide research knowledge hub</div>
-      <div class="feature-item">&#128682; <strong>KnockFiber</strong> &mdash; T-Mobile fiber D2D recruiting engine</div>
-      <div class="feature-item">&#129424; <strong>FORMIX</strong> &mdash; Ant-protein brand concept, fully researched</div>
-      <div class="feature-item">&#9889; <strong>Always expanding</strong> &mdash; Research. Analyze. Execute.</div>
+    <div class="feature-track" id="featureTrack">
+      <div class="feature-item"><span class="fdot"></span> <strong>OrbitRoute</strong> — Routing layer for orbital GPU compute; 5 patents filed</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>Practically Natty</strong> — Live peptide brand; CTO &amp; managing partner</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>MMS HUB</strong> — Private autonomous trading control center</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>Universal Analyst</strong> — 90 entities, 5 domains, AI scoring, 24/7</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>BTC Brain</strong> — 15-chapter market intelligence workspace</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>PersonalVault</strong> — Zero-knowledge AES-256-GCM encryption</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>ULTRON</strong> — Local-first agent, 30/30 attack tests, human-gated</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>PeptiDex</strong> — 79-entry peptide research knowledge hub</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>KnockFiber</strong> — T-Mobile fiber D2D recruiting engine</div>
     </div>
   </div>
 
@@ -236,224 +428,252 @@
     <div class="creations-header">
       <p class="section-label">Portfolio</p>
       <h2 class="section-title">The Work</h2>
-      <p class="section-subtitle" style="max-width:600px;margin:0 auto;">Real ventures and systems &mdash; live products, deep research, no filler.</p>
+      <p class="section-subtitle" style="max-width:600px;margin:12px auto 0;">Real ventures and systems — live products and deep research, ordered by value. Each one lists <strong style="color:var(--text-secondary)">who it helps</strong> and <strong style="color:var(--text-secondary)">the edge it delivers</strong>.</p>
+    </div>
+
+    <!-- Category filter (preserves value-ranked DOM order) -->
+    <div class="filters" id="filters">
+      <span class="filter-chip active" data-filter="all">All</span>
+      <span class="filter-chip" data-filter="ai">AI &amp; Agents</span>
+      <span class="filter-chip" data-filter="trading">Trading &amp; Markets</span>
+      <span class="filter-chip" data-filter="research">Research &amp; Data</span>
+      <span class="filter-chip" data-filter="commerce">Commerce &amp; Growth</span>
+      <span class="filter-chip" data-filter="tools">Security &amp; Tools</span>
     </div>
 
     <div class="creations-grid">
 
       <!-- 1 · OrbitRoute -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; Platform</span>
-        <h3><span class="icon icon-orbit">&#128752;</span> OrbitRoute</h3>
-        <p>The software routing layer for orbital GPU networks &mdash; "the routing layer for the orbital compute era." Routes enterprise AI workloads to orbital compute capacity at ~35% projected savings vs. AWS, GCP, and Azure. <strong>11,000+ satellites tracked, 17 ground stations, 12 autonomous engines, and 5 patents filed</strong> (30-patent portfolio). Live platform on Railway; COO onboarding underway.</p>
+      <div class="card creation-card" data-cats="ai tools">
+        <span class="card-tag tag-live">Live — Platform</span>
+        <h3><span class="icon icon-orbit">🛰</span> OrbitRoute</h3>
+        <p class="card-lead">The routing layer for the orbital-compute era.</p>
+        <p>Routes enterprise AI workloads to orbital GPU capacity at ~35% projected savings vs. AWS, GCP, and Azure. 11,000+ satellites tracked, 17 ground stations, 12 autonomous engines, and 5 patents filed. Live platform on Railway; COO onboarding underway.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> enterprises with heavy AI/GPU workloads → a way to route compute to orbital capacity at a projected fraction of hyperscaler cost.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">11,000+ satellites</span>
           <span class="card-meta-item">17 ground stations</span>
           <span class="card-meta-item">5 patents filed</span>
           <span class="card-meta-item">25ms LEO latency</span>
-          <span class="card-meta-item">$200B+ market</span>
         </div>
-        <a href="https://www.orbitroute.ai" target="_blank" rel="noopener" class="card-action">Visit OrbitRoute &rarr;</a>
+        <a href="https://www.orbitroute.ai" target="_blank" rel="noopener" class="card-action">Visit OrbitRoute →</a>
       </div>
 
       <!-- 2 · Practically Natty / PNP -->
-      <div class="card creation-card">
-        <span class="card-tag tag-rev">Live &mdash; Revenue</span>
-        <h3><span class="icon icon-natty">&#128138;</span> Practically Natty (PNP)</h3>
-        <p>A live WooCommerce peptide brand where I'm <strong>CTO &amp; Managing Partner</strong>. I architected and built its entire operational backbone: <strong>Command Center 2 (CC2)</strong> &mdash; the ops plugin running shipping, payment verification, email, and order workflows &mdash; plus the full <strong>affiliate system</strong> powering 36 affiliates with commission attribution and a recruiting hierarchy.</p>
+      <div class="card creation-card" data-cats="commerce">
+        <span class="card-tag tag-rev">Live — Revenue</span>
+        <h3><span class="icon icon-natty">💊</span> Practically Natty (PNP)</h3>
+        <p class="card-lead">The operational backbone of a live peptide brand.</p>
+        <p>A live WooCommerce brand where I'm <strong>CTO &amp; Managing Partner</strong>. I architected <strong>Command Center 2 (CC2)</strong> — the ops plugin running shipping, payment verification, email, and order workflows — plus the full <strong>affiliate system</strong> powering 36 affiliates with commission attribution and a recruiting hierarchy.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a growing e-commerce operation → one system that runs fulfillment, payments, email, and affiliate payouts instead of manual spreadsheets.</span></div>
         <div class="card-meta">
-          <span class="card-meta-item">CTO / Managing Partner</span>
+          <span class="card-meta-item">CTO / Partner</span>
           <span class="card-meta-item">CC2 ops plugin</span>
           <span class="card-meta-item">36 affiliates</span>
           <span class="card-meta-item">WooCommerce</span>
         </div>
-        <a href="https://practicallynatty.com" target="_blank" rel="noopener" class="card-action">Visit Practically Natty &rarr;</a>
+        <a href="https://practicallynatty.com" target="_blank" rel="noopener" class="card-action">Visit Practically Natty →</a>
       </div>
 
-      <!-- 3 · MMS HUB (private — showcase only, no public doorway) -->
-      <div class="card creation-card">
-        <span class="card-tag tag-private">Private &mdash; Showcase</span>
-        <h3><span class="icon icon-mms">&#9881;</span> MMS HUB</h3>
-        <p>A private Money Making Solutions control center: an autonomous multi-strategy trading ecosystem with finance intake, provider readiness, bot orchestration, brokerage-upgrade gates, and system-health monitoring. Brokerage execution is locked by default behind hard caps. <strong>Private system &mdash; not publicly accessible</strong>, shown here as portfolio engineering only.</p>
+      <!-- 3 · MMS HUB -->
+      <div class="card creation-card" data-cats="trading">
+        <span class="card-tag tag-private">Private — Showcase</span>
+        <h3><span class="icon icon-mms">⚙</span> MMS HUB</h3>
+        <p class="card-lead">A private control center for autonomous trading.</p>
+        <p>A Money Making Solutions control center: a multi-strategy trading ecosystem with finance intake, provider readiness, bot orchestration, brokerage-upgrade gates, and system-health monitoring. Brokerage execution is locked by default behind hard caps. <strong>Private system — shown here as portfolio engineering only.</strong></p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a solo operator running many strategies → one orchestration layer with hard risk caps, so nothing trades live without explicit gates.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">9 services</span>
-          <span class="card-meta-item">autonomous orchestration</span>
+          <span class="card-meta-item">autonomous</span>
           <span class="card-meta-item">hard risk caps</span>
           <span class="card-meta-item">server-side auth</span>
         </div>
-        <span class="card-action muted">Private system &mdash; access restricted</span>
+        <span class="card-action muted">Private system — access restricted</span>
       </div>
 
       <!-- 4 · Universal Analyst Engine -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; v1.0</span>
-        <h3><span class="icon icon-uae">&#128300;</span> Universal Analyst Engine</h3>
-        <p>A multi-domain AI intelligence engine that scores, ranks, and tracks entities across sports, markets, brands, politics, and entertainment. Live narrative ingestion, Polygon.io market data, AI sentiment scoring, and real-time alerts &mdash; 90 entities monitored across 5 domains, running 24/7.</p>
+      <div class="card creation-card" data-cats="ai research">
+        <span class="card-tag tag-live">Live — v1.0</span>
+        <h3><span class="icon icon-uae">🔬</span> Universal Analyst Engine</h3>
+        <p class="card-lead">Momentum intelligence across five worlds at once.</p>
+        <p>A multi-domain AI engine that scores, ranks, and tracks entities across sports, markets, brands, politics, and entertainment. Live narrative ingestion, Polygon.io market data, AI sentiment scoring, and real-time alerts — 90 entities monitored across 5 domains, running 24/7.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> anyone tracking many players across domains → AI scoring and alerts that surface momentum before it becomes obvious.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">90 entities</span>
           <span class="card-meta-item">5 domains</span>
           <span class="card-meta-item">AI scoring</span>
-          <span class="card-meta-item">live alerts</span>
           <span class="card-meta-item">24/7</span>
         </div>
-        <a href="/uae/" class="card-action">Open UAE &rarr;</a>
+        <a href="/uae/" class="card-action">Open UAE →</a>
       </div>
 
       <!-- 5 · BTC Intelligence Brain -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; v5.0</span>
-        <h3><span class="icon icon-btc">&#8383;</span> BTC Intelligence Brain</h3>
-        <p>A 15-chapter Bitcoin research and analysis workspace. Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, risk management &mdash; with live market data, a 3D diagram of the system, and a research activity feed. Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated coverage index, not a measured benchmark or accuracy score). Educational research only &mdash; not financial advice.</p>
+      <div class="card creation-card" data-cats="trading research">
+        <span class="card-tag tag-live">Live — v5.0</span>
+        <h3><span class="icon icon-btc">₿</span> BTC Intelligence Brain</h3>
+        <p class="card-lead">A 15-chapter Bitcoin research workspace.</p>
+        <p>Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, and risk management — with live market data, a 3D diagram of the system, and a research activity feed. Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated breadth index, not an accuracy score). Educational research only — not financial advice.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> serious BTC learners &amp; researchers → scattered market intelligence pulled into one structured, live-data workspace.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">15 chapters</span>
           <span class="card-meta-item">20 modules</span>
-          <span class="card-meta-item">10 charts</span>
           <span class="card-meta-item" id="homepage-btc-iq-badge">Coverage 189*</span>
           <span class="card-meta-item">Educational</span>
         </div>
-        <a href="/btc-brain/" class="card-action">Open BTC Brain &rarr;</a>
+        <a href="/btc-brain/" class="card-action">Open BTC Brain →</a>
       </div>
 
       <!-- 6 · PersonalVault -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; v1.0</span>
-        <h3><span class="icon icon-ph">&#128274;</span> PersonalVault</h3>
-        <p>A zero-knowledge encrypted personal vault for your most sensitive documents. AES-256-GCM encryption runs entirely in your browser &mdash; the server never sees your data. Store IDs, insurance policies, financial accounts, medical records, passwords, and estate documents with military-grade security.</p>
+      <div class="card creation-card" data-cats="tools">
+        <span class="card-tag tag-live">Live — v1.0</span>
+        <h3><span class="icon icon-ph">🔒</span> PersonalVault</h3>
+        <p class="card-lead">A vault where the server never sees your data.</p>
+        <p>A zero-knowledge encrypted vault for your most sensitive documents. AES-256-GCM encryption runs entirely in your browser — the server never sees your data. Store IDs, insurance, financial accounts, medical records, passwords, and estate documents with military-grade security.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> anyone storing sensitive documents → true zero-knowledge encryption, so a server breach exposes nothing readable.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">6 categories</span>
           <span class="card-meta-item">AES-256-GCM</span>
           <span class="card-meta-item">zero-knowledge</span>
-          <span class="card-meta-item">PBKDF2 key derivation</span>
+          <span class="card-meta-item">PBKDF2</span>
         </div>
-        <a href="/vault/" class="card-action">Open Vault &rarr;</a>
+        <a href="/vault/" class="card-action">Open Vault →</a>
       </div>
 
       <!-- 7 · ULTRON -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; v0.1</span>
-        <h3><span class="icon icon-ultron">&#9883;</span> ULTRON</h3>
-        <p>A local-first autonomous AI agent with a non-negotiable human-in-the-loop gate on every side effect. Reads, plans, proposes &mdash; but every trade, file write, deploy, and API call waits for an explicit human <strong>APPROVE</strong>. Zero OpenAI dependency: runs on Ollama locally, Anthropic or Perplexity in the cloud. 30 adversarial tests green, hash-chained audit log, kill switch.</p>
+      <div class="card creation-card" data-cats="ai tools">
+        <span class="card-tag tag-live">Live — v0.1</span>
+        <h3><span class="icon icon-ultron">⚛</span> ULTRON</h3>
+        <p class="card-lead">Autonomy that can't act without your approval.</p>
+        <p>A local-first autonomous AI agent with a non-negotiable human-in-the-loop gate on every side effect. It reads, plans, and proposes — but every trade, file write, deploy, and API call waits for an explicit human <strong>APPROVE</strong>. Zero OpenAI dependency: Ollama locally, Anthropic or Perplexity in the cloud. 30/30 adversarial tests green, hash-chained audit log, kill switch.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> operators who want agent leverage without agent risk → nothing executes until a human clicks approve, with a full audit trail.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">21 tools</span>
-          <span class="card-meta-item">5 integrations</span>
           <span class="card-meta-item">30/30 attack tests</span>
           <span class="card-meta-item">local-first</span>
           <span class="card-meta-item">MIT</span>
         </div>
-        <a href="/ultron/" class="card-action">Open ULTRON &rarr;</a>
+        <a href="/ultron/" class="card-action">Open ULTRON →</a>
       </div>
 
       <!-- 8 · PeptiDex -->
-      <div class="card creation-card">
+      <div class="card creation-card" data-cats="research">
         <span class="card-tag tag-live">Live</span>
-        <h3><span class="icon icon-peptidex">&#129516;</span> PeptiDex</h3>
-        <p>A research-grade peptide knowledge hub &mdash; 79 structured entries across 10 research categories, built to turn compound research into structured education, guides, and affiliate-qualified traffic that feeds Practically Natty. Educational research only &mdash; not medical advice, and PeptiDex does not sell peptides.</p>
+        <h3><span class="icon icon-peptidex">🧫</span> PeptiDex</h3>
+        <p class="card-lead">Scattered peptide research, made legible.</p>
+        <p>A research-grade peptide knowledge hub — 79 structured entries across 10 research categories, built to turn compound research into structured education, guides, and affiliate-qualified traffic that feeds Practically Natty. Educational research only — not medical advice, and PeptiDex does not sell peptides.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> people researching peptides → clean, structured entries instead of scattered forum threads and PDFs.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">79 entries</span>
           <span class="card-meta-item">10 categories</span>
           <span class="card-meta-item">education + guides</span>
-          <span class="card-meta-item">separate domain</span>
         </div>
-        <a href="https://www.thepeptidex.net" target="_blank" rel="noopener" class="card-action">Explore PeptiDex &rarr;</a>
+        <a href="https://www.thepeptidex.net" target="_blank" rel="noopener" class="card-action">Explore PeptiDex →</a>
       </div>
 
       <!-- 9 · KnockFiber -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; Recruiting</span>
-        <h3><span class="icon icon-knock">&#128682;</span> KnockFiber</h3>
-        <p>A national recruiting engine for T-Mobile fiber door-to-door closers. Commission-only, uncapped, paid biweekly on completed installs &mdash; with a clear path from rep to Team Leader override income. No r&eacute;sum&eacute;, no cover letter: apply in 30 seconds or text JOIN. New metros open every month.</p>
+      <div class="card creation-card" data-cats="commerce">
+        <span class="card-tag tag-live">Live — Recruiting</span>
+        <h3><span class="icon icon-knock">🚪</span> KnockFiber</h3>
+        <p class="card-lead">A 30-second door into uncapped D2D income.</p>
+        <p>A national recruiting engine for T-Mobile fiber door-to-door closers. Commission-only, uncapped, paid biweekly on completed installs — with a clear path from rep to Team Leader override income. No résumé, no cover letter: apply in 30 seconds or text JOIN. New metros open every month.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> closers who want uncapped commission work → a frictionless apply flow and a rep-to-leader override path.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">commission-only</span>
           <span class="card-meta-item">uncapped</span>
           <span class="card-meta-item">biweekly pay</span>
-          <span class="card-meta-item">override path</span>
           <span class="card-meta-item">30-sec apply</span>
         </div>
-        <a href="https://knockfiber.com" target="_blank" rel="noopener" class="card-action">Visit KnockFiber &rarr;</a>
+        <a href="https://knockfiber.com" target="_blank" rel="noopener" class="card-action">Visit KnockFiber →</a>
       </div>
 
       <!-- 10 · NBA Loophole Brain -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; v3.0</span>
-        <h3><span class="icon icon-nba">&#127936;</span> NBA Loophole Brain</h3>
-        <p>A 12-module NBA betting intelligence system built to detect line mistakes before the market corrects. Real-time odds modeling, schedule stress analysis, pace projections, injury impact scoring, prop market edges, arbitrage window scanner, and CLV tracking &mdash; all in one dashboard.</p>
+      <div class="card creation-card" data-cats="trading">
+        <span class="card-tag tag-live">Live — v3.0</span>
+        <h3><span class="icon icon-nba">🏀</span> NBA Loophole Brain</h3>
+        <p class="card-lead">Catches mispriced lines before the market does.</p>
+        <p>A 12-module NBA betting intelligence system built to detect line mistakes before the market corrects. Real-time odds modeling, schedule-stress analysis, pace projections, injury-impact scoring, prop-market edges, an arbitrage window scanner, and CLV tracking — all in one dashboard.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> bettors hunting line value → modeling that flags edges and closing-line value before books adjust.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">12 modules</span>
-          <span class="card-meta-item">Totals + Props</span>
           <span class="card-meta-item">Arb Scanner</span>
           <span class="card-meta-item">CLV Tracker</span>
           <span class="card-meta-item">Schedule Stress</span>
         </div>
-        <a href="/nba-brain/" class="card-action">Open NBA Brain &rarr;</a>
+        <a href="/nba-brain/" class="card-action">Open NBA Brain →</a>
       </div>
 
-      <!-- 11 · FORMIX (concept / pre-launch) -->
-      <div class="card creation-card">
-        <span class="card-tag tag-concept">Concept &mdash; Pre-launch</span>
-        <h3><span class="icon icon-formix">&#129424;</span> FORMIX Ant Protein</h3>
-        <p>A performance-nutrition brand concept &mdash; fully built and researched end-to-end, <strong>not yet for sale</strong>. Powered by the most protein-dense organism on earth: a target of 28g complete protein per serving, all 9 essential amino acids, and a ~95% lower carbon footprint than beef. Brand, product spec, and storefront are built and ready for launch.</p>
+      <!-- 11 · FORMIX -->
+      <div class="card creation-card" data-cats="commerce">
+        <span class="card-tag tag-concept">Concept — Pre-launch</span>
+        <h3><span class="icon icon-formix">🐜</span> FORMIX Ant Protein</h3>
+        <p class="card-lead">A performance-nutrition brand, built and ready.</p>
+        <p>A performance-nutrition brand concept — fully built and researched end-to-end, <strong>not yet for sale</strong>. Powered by one of the most protein-dense organisms on earth: a target of 28g complete protein per serving, all 9 essential amino acids, and a ~95% lower carbon footprint than beef. Brand, product spec, and storefront are built and ready for launch.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> the performance-nutrition market → a differentiated, sustainability-led protein brand with the full launch stack already built.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">28g protein (target)</span>
           <span class="card-meta-item">9/9 aminos</span>
-          <span class="card-meta-item">concept build</span>
           <span class="card-meta-item">pre-launch</span>
         </div>
-        <a href="/formix/" class="card-action">View the concept &rarr;</a>
+        <a href="/formix/" class="card-action">View the concept →</a>
       </div>
 
       <!-- 12 · Agora -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; v0.1 Alpha</span>
-        <h3><span class="icon icon-agora">&#127963;</span> Agora &mdash; Library of Minds</h3>
-        <p>A public-domain reading room for the philosophers who built the operating system of the West. 16 seed authors &mdash; Plato, Aristotle, Socrates, Heraclitus, Parmenides and more &mdash; with a compact catalog, source-traceable provenance (Project Gutenberg, Open Library, Wikidata, Perseus), and an in-browser reader for featured works. Modern copyrighted translations are never bundled.</p>
+      <div class="card creation-card" data-cats="research">
+        <span class="card-tag tag-live">Live — v0.1 Alpha</span>
+        <h3><span class="icon icon-agora">🏛</span> Agora — Library of Minds</h3>
+        <p class="card-lead">The West's foundational thinkers, source-traceable.</p>
+        <p>A public-domain reading room for the philosophers who built the operating system of the West. 16 seed authors — Plato, Aristotle, Socrates, Heraclitus, Parmenides and more — with a compact catalog, source-traceable provenance (Gutenberg, Open Library, Wikidata, Perseus), and an in-browser reader. Modern copyrighted translations are never bundled.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> readers of classical philosophy → a clean reading room where every text's provenance is traceable to its public-domain source.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">16 philosophers</span>
           <span class="card-meta-item">30+ works</span>
           <span class="card-meta-item">PD-only</span>
           <span class="card-meta-item">source ledger</span>
-          <span class="card-meta-item">CC0 metadata</span>
         </div>
-        <a href="/agora/" class="card-action">Enter Agora &rarr;</a>
+        <a href="/agora/" class="card-action">Enter Agora →</a>
       </div>
 
-      <!-- 13 · Creation Command Center (private — owner access) -->
-      <div class="card creation-card">
-        <span class="card-tag tag-private">Private &mdash; Owner access</span>
-        <h3><span class="icon icon-creation">&#128640;</span> Creation Command Center</h3>
-        <p>A full-stack viral-content command center for the LoopholeMaxing studio. Plan, draft, and ship content through a <strong>six-gate pre-publish workflow</strong>, with a content library, hook-variant generator, Trend Radar, Idea Inbox, deterministic scoring, and an audit log. Built on React + Express + Drizzle + Postgres. <strong>Owner-gated &mdash; sign-in required.</strong></p>
+      <!-- 13 · Creation Command Center -->
+      <div class="card creation-card" data-cats="ai tools">
+        <span class="card-tag tag-private">Private — Owner access</span>
+        <h3><span class="icon icon-creation">🚀</span> Creation Command Center</h3>
+        <p class="card-lead">Nothing ships until it clears six gates.</p>
+        <p>A full-stack viral-content command center for the LoopholeMaxing studio. Plan, draft, and ship content through a <strong>six-gate pre-publish workflow</strong>, with a content library, hook-variant generator, Trend Radar, Idea Inbox, deterministic scoring, and an audit log. Built on React + Express + Drizzle + Postgres. <strong>Owner-gated — sign-in required.</strong></p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a content operation → a disciplined pipeline where every post passes six quality gates before it publishes.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">six-gate workflow</span>
           <span class="card-meta-item">Trend Radar</span>
-          <span class="card-meta-item">hook generator</span>
           <span class="card-meta-item">React + Postgres</span>
           <span class="card-meta-item">owner login</span>
         </div>
-        <a href="https://creation.loopholemaxing.com" target="_blank" rel="noopener nofollow" class="card-action">Owner access &rarr;</a>
+        <a href="https://creation.loopholemaxing.com" target="_blank" rel="noopener nofollow" class="card-action">Owner access →</a>
       </div>
 
       <!-- 14 · Studio — Content HUB -->
-      <div class="card creation-card">
-        <span class="card-tag tag-live">Live &mdash; v1.0</span>
-        <h3><span class="icon icon-studio">&#127909;</span> Studio &mdash; Content HUB</h3>
-        <p>A personal content command center. Import footage from GoPro, Nikon, and phone &mdash; Studio auto-tags <strong>where every clip came from</strong>, tracks it through a Raw &rarr; Editing &rarr; Clipped &rarr; Posted pipeline, and lets you <strong>trim and export real clips right in the browser</strong> (ffmpeg.wasm). Assemble clips into projects and stitch them. Local-first, passcode-gated, syncs across devices.</p>
+      <div class="card creation-card" data-cats="tools">
+        <span class="card-tag tag-live">Live — v1.0</span>
+        <h3><span class="icon icon-studio">🎬</span> Studio — Content HUB</h3>
+        <p class="card-lead">Import, track, trim and export — in the browser.</p>
+        <p>A personal content command center. Import footage from GoPro, Nikon, and phone — Studio auto-tags <strong>where every clip came from</strong>, tracks it through a Raw → Editing → Clipped → Posted pipeline, and lets you <strong>trim and export real clips right in the browser</strong> (ffmpeg.wasm). Assemble clips into projects and stitch them. Local-first, passcode-gated, syncs across devices.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a solo creator drowning in footage → one place to track every clip's source and cut it without opening a desktop editor.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">import &amp; track</span>
-          <span class="card-meta-item">in-browser trim/export</span>
-          <span class="card-meta-item">project stitch</span>
+          <span class="card-meta-item">in-browser trim</span>
           <span class="card-meta-item">local-first</span>
         </div>
-        <a href="/studio/" class="card-action" rel="nofollow">Open Studio &rarr;</a>
+        <a href="/studio/" class="card-action" rel="nofollow">Open Studio →</a>
       </div>
 
-      <!-- 15 · Tallahassee Camera Intelligence (in development) -->
-      <div class="card creation-card coming-soon">
+      <!-- 15 · Tallahassee Camera Intelligence -->
+      <div class="card creation-card coming-soon" data-cats="research tools">
         <span class="card-tag tag-dev">In Development</span>
-        <h3><span class="icon icon-tally">&#128247;</span> Tallahassee Camera Intelligence</h3>
-        <p>A real-source public-camera aggregation dashboard for Tallahassee and Leon County. 407 verified cameras dedup'd from 593 raw feeds across City ATMS, FDOT, FL511, WeatherSTEM, FAA, and regional webcams &mdash; live snapshots proxied through a per-source Referer-aware backend. Map-first, dark-themed, with live traffic incidents and congestion overlays.</p>
+        <h3><span class="icon icon-tally">📷</span> Tallahassee Camera Intelligence</h3>
+        <p class="card-lead">Every public camera in one live map.</p>
+        <p>A real-source public-camera aggregation dashboard for Tallahassee and Leon County. 407 verified cameras dedup'd from 593 raw feeds across City ATMS, FDOT, FL511, WeatherSTEM, FAA, and regional webcams — live snapshots proxied through a per-source Referer-aware backend. Map-first, dark-themed, with live traffic incidents and congestion overlays.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> Tallahassee / Leon County commuters → every verified public camera and live traffic condition on a single map.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">407 cameras</span>
           <span class="card-meta-item">7 sources</span>
-          <span class="card-meta-item">318 congestion segments</span>
           <span class="card-meta-item">MapLibre + Express</span>
         </div>
         <span class="card-action">Coming back online soon</span>
@@ -462,36 +682,66 @@
     </div>
   </section>
 
+  <!-- Closing CTA -->
+  <section class="closing">
+    <div class="closing-inner">
+      <h2>Have a system that should exist but doesn't yet?</h2>
+      <p>That's the whole job. Start with a 48-hour audit that puts a dollar figure next to every leak in your business — the diagnosis credits toward the build if we ship together.</p>
+      <a class="btn-hire" data-work href="/work-with-clayton/">Work With Clayton →</a>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="site-footer">
-    <div>Clayton Camera &mdash; Loopholemaxing.com &mdash; 2026 &nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div>Clayton Camera — Loopholemaxing.com — 2026 &nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
     <div class="footer-tagline">Research. Analyze. Execute.</div>
   </footer>
 
-  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">&uarr;</button>
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
 
   <script>
     // ── Work-With-Clayton link target. Set this ONE line to the dedicated
-    //    domain (e.g. 'https://hireclayton.com') when it goes live — every
-    //    hire CTA (promo bar, hero, band, nav, footer) updates automatically.
+    //    domain — every hire CTA (promo bar, hero, band, nav, footer, closing)
+    //    updates automatically.
     const WORK_WITH_URL = 'https://workwithclayton.com/';
     document.querySelectorAll('[data-work]').forEach(a => { a.href = WORK_WITH_URL; });
 
+    // Scroll-to-top
     const scrollBtn = document.getElementById('scrollTop');
     window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 300));
     scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // Animate cards
+    // Reveal cards on scroll
     const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if(e.isIntersecting){ e.target.style.opacity='1'; e.target.style.transform='translateY(0)'; }});
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.creation-card').forEach(el => {
-      el.style.opacity='0'; el.style.transform='translateY(16px)';
-      el.style.transition='opacity .5s ease, transform .5s ease'; obs.observe(el);
+      entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.creation-card').forEach((el, i) => {
+      el.style.opacity = '0'; el.style.transform = 'translateY(18px)';
+      el.style.transition = 'opacity .5s ease ' + (i % 3) * 60 + 'ms, transform .5s ease ' + (i % 3) * 60 + 'ms';
+      obs.observe(el);
     });
 
+    // Category filter (preserves DOM / value-ranked order)
+    const chips = document.querySelectorAll('.filter-chip');
+    const cards = document.querySelectorAll('.creation-card');
+    chips.forEach(chip => chip.addEventListener('click', () => {
+      chips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const f = chip.dataset.filter;
+      cards.forEach(card => {
+        const show = f === 'all' || (card.dataset.cats || '').split(' ').includes(f);
+        card.classList.toggle('hide-card', !show);
+      });
+    }));
+
+    // Duplicate marquee content for a seamless loop
+    (function () {
+      const track = document.getElementById('featureTrack');
+      if (track) track.innerHTML += track.innerHTML;
+    })();
+
     // ── Coverage-score sync: read live score from BTC Brain's localStorage ──
-    (function() {
+    (function () {
       try {
         var raw = localStorage.getItem('btc_brain_siie_v1');
         if (raw) {
@@ -504,16 +754,16 @@
           var badge = document.getElementById('homepage-btc-iq-badge');
           if (badge) badge.textContent = 'Coverage ' + liveIQ + '*';
         }
-      } catch(e) {}
+      } catch (e) {}
     })();
 
-    // Animate hero stats
+    // Animate hero stats (count-up)
     document.querySelectorAll('.hero-stat-val').forEach(el => {
       const txt = el.textContent;
-      const num = parseFloat(txt.replace(/[^0-9.]/g,''));
+      const num = parseFloat(txt.replace(/[^0-9.]/g, ''));
       if (!isNaN(num) && num > 10 && !txt.includes('/') && !txt.includes('-')) {
-        const suffix = txt.replace(/[0-9.,]/g,'');
-        let cur = Math.max(0, num - 20), step = Math.ceil(num/40);
+        const suffix = txt.replace(/[0-9.,]/g, '');
+        let cur = Math.max(0, num - 20), step = Math.ceil(num / 40);
         el.textContent = Math.round(cur) + suffix;
         const iv = setInterval(() => {
           cur = Math.min(num, cur + step);

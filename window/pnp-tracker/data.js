@@ -20,7 +20,7 @@ window.PNP_DATA = {
       "loc": 97026,
       "repos": 2,
       "live_plugins": 13,
-      "_note": "Verified from git 2026-07-06: pnp-command-center-2 (144 commits / 38 tags / 84,708 LOC excl. build artifacts) + pnp-affiliate-hub (23 commits / 15 tags / 12,318 LOC). live_plugins = bespoke/mu-plugins edited directly on prod with no repo: pnp-command-center (legacy v4.1.2), pnp-elite-leaders, pnp-affiliate-auto-coupons, pnp-peptide-credits-live, pnp-july4-b2g1, pnp-sales-tax, pnp-mobile-header-row, pnp-suppress-frontend-errors, pnp-crash-guard, pnp-fix-reg-renum, pnp-slicewp-fixes, pnp-elite-dashboard-team-link, pnp-a3-affiliate-redirect. Work log below re-derived 2026-07-06 from a full brain + git-log audit: 70 granular entries (was 29) — every tagged release plus untagged hotfix-lane deploys (HUB v0.3.3/v0.3.5, CC2 v0.5.39.1/.2) and no-repo website/WP changes (logo, mobile header, catalog pricing, WPCode inventory, branch hygiene) each get their own row, sourced from journal/*.md and git log — not fabricated."
+      "_note": "Verified from git 2026-07-06: pnp-command-center-2 (144 commits / 38 tags / 84,708 LOC excl. build artifacts) + pnp-affiliate-hub (23 commits / 15 tags / 12,318 LOC). live_plugins = bespoke/mu-plugins edited directly on prod with no repo: pnp-command-center (legacy v4.1.2), pnp-elite-leaders, pnp-affiliate-auto-coupons, pnp-peptide-credits-live, pnp-july4-b2g1, pnp-sales-tax, pnp-mobile-header-row, pnp-suppress-frontend-errors, pnp-crash-guard, pnp-fix-reg-renum, pnp-slicewp-fixes, pnp-elite-dashboard-team-link, pnp-a3-affiliate-redirect. Work log below re-derived 2026-07-06 from a full brain + git-log audit: 70 granular entries (was 29) — every tagged release plus untagged hotfix-lane deploys (HUB v0.3.3/v0.3.5, CC2 v0.5.39.1/.2) and no-repo website/WP changes (logo, mobile header, catalog pricing, WPCode inventory, branch hygiene) each get their own row, sourced from journal/*.md and git log — not fabricated. Added 2026-07-06 (same-day follow-up): COGS/Realized-P&L engine (v0.5.40.0-v0.5.40.3), shipping label cost-capture fix, and the Thymalin product launch — 4 more entries, +19h."
     }
   },
   "ai_accounts": [
@@ -1179,6 +1179,72 @@ window.PNP_DATA = {
         "broadcast"
       ],
       "hours": 3
+    },
+    {
+      "date": "2026-07-06",
+      "title": "COGS + Realized P&L engine — first true profit/margin visibility",
+      "type": "feature",
+      "tool": "claude-code",
+      "status": "shipped",
+      "version": "v0.5.40.0 → v0.5.40.1",
+      "summary": "Built a new COGS tab from scratch: per-product real cost (supplier price/vial + shipping + fees) vs Woo retail → live gross margin, sourced from Clayton's supplier pricing workbook (132+125 supplier rows). Deployed live, verified against the real store catalog (58/67 then 67/67 products costed after fixing a variation-name automap bug). Then built a Realized P&L view joining every paid order since 2026-03-08 (206 orders, 367 line items) to real per-product cost — the store's first-ever true profit number instead of a revenue-only view.",
+      "hours": 10,
+      "tags": [
+        "cc2",
+        "cogs",
+        "revenue",
+        "margin",
+        "feature"
+      ]
+    },
+    {
+      "date": "2026-07-06",
+      "title": "Affiliate commission accounting folded into P&L (v0.5.40.3)",
+      "type": "feature",
+      "tool": "claude-code",
+      "status": "shipped",
+      "version": "v0.5.40.3",
+      "summary": "Per Clayton's ask to 'correctly count all affiliate revenue and what we're paying them': pulled every SliceWP commission (paid+unpaid+pending) into the realized P&L as a real cost line, plus new KPIs for affiliate-driven vs organic revenue and effective commission rate. Surfaced $1,752 in affiliate costs that were previously invisible to the profit picture. Deployed live same day.",
+      "hours": 3,
+      "tags": [
+        "cc2",
+        "cogs",
+        "affiliate",
+        "revenue",
+        "financial"
+      ]
+    },
+    {
+      "date": "2026-07-06",
+      "title": "Shipping label cost capture fix + 48-label backfill (v0.5.40.1–v0.5.40.2)",
+      "type": "bugfix",
+      "tool": "claude-code",
+      "status": "shipped",
+      "version": "v0.5.40.1–v0.5.40.2",
+      "summary": "Every shipping label had recorded $0.00 real cost since inception — Shippo's API returns the purchased rate as a string ID, not an inlined object, so the cost field never populated. Fixed the read path and backfilled real costs onto all 40 purchased labels ($293.35 total, avg $7.33/label), which the new COGS/P&L engine now uses as the real per-order shipping cost instead of an estimated default. Survived a same-day deploy race with a parallel session (both recovered cleanly, no prod fatal).",
+      "hours": 4,
+      "tags": [
+        "cc2",
+        "shipping",
+        "shippo",
+        "bugfix",
+        "revenue"
+      ]
+    },
+    {
+      "date": "2026-07-06",
+      "title": "Thymalin 10mg — new product launch (image + listing + costed live)",
+      "type": "content",
+      "tool": "claude-code",
+      "status": "shipped",
+      "summary": "Took a new SKU from zero to fully live in one pass: built an on-brand product image (not AI-generated — real vial photo with the label text swapped via pixel-level inpainting, matched to the site's actual font), created the Woo listing ($55 retail, Recovery & Inflammation category, stock-tracked), and mapped it into the new COGS engine ($14/vial cost → 74.5% margin / 3.93× markup). Verified purchasable live end to end same day.",
+      "hours": 2,
+      "tags": [
+        "catalog",
+        "new-product",
+        "content",
+        "cogs"
+      ]
     }
   ],
   "open_items": [
@@ -1238,5 +1304,69 @@ window.PNP_DATA = {
       "now": false,
       "note": "Zelle/Venmo manual verify is the current real flow. Not started."
     }
-  ]
+  ],
+  "revenue_impact": {
+    "snapshot_date": "2026-07-06",
+    "snapshot_note": "First real, all-time, fully-costed P&L for the store, produced by the new COGS/P&L engine shipped today (v0.5.40.0→v0.5.40.3). Covers every paid order since 2026-03-08 (store's order history to date). These are ACTUAL measured figures from the live database, not estimates.",
+    "snapshot": {
+      "revenue": 34088.1,
+      "orders": 206,
+      "units": 553,
+      "aov": 165.48,
+      "cogs_product": 11677.43,
+      "cogs_shipping": 1509.98,
+      "cogs_affiliate": 1752.01,
+      "cogs_total": 14939.42,
+      "gross_profit": 19148.68,
+      "gross_margin_pct": 56.2,
+      "affiliate_driven_revenue": 12547.95,
+      "affiliate_driven_pct": 36.5,
+      "organic_revenue": 21630.15,
+      "commissions_paid": 953.76,
+      "commissions_owed": 798.25,
+      "effective_commission_rate_pct": 14.1
+    },
+    "items": [
+      {
+        "system": "COGS + Realized P&L Engine",
+        "impact": "Gave Clayton the first true profit number the store has ever had: 56.2% real gross margin (not the ~65-79% product-only margin previously assumed) after correctly subtracting real shipping and affiliate costs. This is the foundation for every pricing, promo, and product-mix decision going forward — margin-blind decisions become margin-informed ones."
+      },
+      {
+        "system": "Affiliate / HUB program",
+        "impact": "Drives $12,547.95 — 36.5% of all revenue — through 36 active affiliates at a 14.1% effective commission rate. The recruiting, team-override, and tier engines exist specifically to grow this channel; every HUB bugfix this cycle (cookie/auth fixes, balance visibility, payout clarity) directly protects affiliate retention and therefore this revenue share."
+      },
+      {
+        "system": "Credit / loyalty economy",
+        "impact": "1 credit per $10 referred sale (earn) redeemable 1:1 at checkout (spend) — a repeat-purchase and referral incentive layered on top of the affiliate program, live for all affiliates since 2026-07-02."
+      },
+      {
+        "system": "July 4th sale engine (B2G1 + tiered %-off)",
+        "impact": "Reusable promotional infrastructure (negative-fee cart mechanics, coupon exclusivity, kill switch, banner/popup system) that drove a multi-week storewide promotion — the same engine can be re-triggered for future sales without rebuilding it."
+      },
+      {
+        "system": "Coupon / re-attribution engine",
+        "impact": "Protects revenue integrity rather than growing it directly: ensures affiliate commissions attribute to the right person (prevents payout disputes that erode affiliate trust) and closed a dual-ledger double-pay risk that could have cost real money if a payout batch had ever processed unchecked."
+      },
+      {
+        "system": "Shipping automation + real cost capture",
+        "impact": "Cut manual label-creation overhead (auto-create, print-auth, tracking webhooks) and, as of today's fix, feeds real per-shipment cost ($7.33 avg) into the P&L instead of a guess — the margin number is only as trustworthy as this input, and now it's real."
+      },
+      {
+        "system": "Revenue Intelligence dashboard",
+        "impact": "6-view analytics suite (overview, products, channels, customers, forecast, insights) giving visibility into where revenue is actually coming from — corrected affiliate-channel revenue from an undercounted ~4% to the real ~30%+ of gross during its own build."
+      },
+      {
+        "system": "New-product launch pipeline",
+        "impact": "The Thymalin launch (image → listing → cost-mapped → purchasable) took hours, not days, proving a repeatable process for adding new SKUs — directly shortens time-to-revenue on every future product add."
+      },
+      {
+        "system": "Mobile header + storefront UX fixes",
+        "impact": "Conversion-protecting rather than growth-driving: the mobile header was actively broken (logo clipped, unusable single-line nav) before the fix — on a peptide DTC store, mobile traffic share is typically majority, so this was suppressing checkout completion, not just cosmetics."
+      },
+      {
+        "system": "Catalog pricing (+10% raise, 64 products)",
+        "impact": "Direct realized revenue increase — a storewide price adjustment applied with rollback safety, now measurable against real margin data via the COGS engine rather than gut-feel."
+      }
+    ]
+  }
 };

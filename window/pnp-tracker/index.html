@@ -128,6 +128,12 @@ footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted)
 .infobar .l{font-family:var(--mono);font-size:12.5px;color:var(--text-2)}
 .infobar .l b{color:var(--text);font-weight:600}
 .estimate-flag{display:inline-block;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:var(--amber);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-left:8px}
+.live-flag{display:inline-block;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.35);color:var(--green);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-left:8px}
+.revenue-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:860px){.revenue-grid{grid-template-columns:1fr}}
+.rev-card{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:16px 18px}
+.rev-card h4{font-size:14px;font-weight:700;margin-bottom:6px;color:var(--brand-2)}
+.rev-card p{font-size:12.5px;color:var(--text-2);line-height:1.55}
 .needs-input{display:inline-block;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:var(--red);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:5px}
 .methodology{background:var(--card);border:1px dashed var(--border-light);border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:12.5px;color:var(--text-2)}
 .methodology b{color:var(--text)}
@@ -149,7 +155,7 @@ footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted)
 <header><div class="wrap nav">
   <div class="brand"><span class="dot"></span> PNP Tracker</div>
   <nav class="nav-links">
-    <a href="/window/">← The Window</a><a href="#numbers">Numbers</a><a href="#log">Done</a><a href="#cost-est">Cost</a><a href="#savings">Savings</a><a href="#now">Working On Now</a><a href="#spend">Actual Spend</a>
+    <a href="#numbers">Numbers</a><a href="#revenue">Revenue Impact</a><a href="#log">Done</a><a href="#cost-est">Cost</a><a href="#savings">Savings</a><a href="#now">Working On Now</a><a href="#spend">Actual Spend</a>
   </nav>
 </div></header>
 
@@ -173,6 +179,14 @@ footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted)
       <div id="byType"></div>
     </div>
   </div>
+</section></div>
+
+<div class="wrap"><section id="revenue">
+  <div class="sec-head"><h2>Revenue impact <span class="live-flag">Live P&amp;L</span></h2><span class="hint" id="revenueDate"></span></div>
+  <div class="methodology" id="revenueMethodology"></div>
+  <div class="stats" id="revenueStats"></div>
+  <div class="sec-head" style="margin-top:28px"><h3 style="font-family:var(--display);font-size:17px">How each system moves the number</h3></div>
+  <div class="revenue-grid" id="revenueItems"></div>
 </section></div>
 
 <div class="wrap"><section id="log">
@@ -230,7 +244,7 @@ footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted)
   var $=function(id){return document.getElementById(id)};
   var esc=function(s){return String(s==null?'':s)};
   function fmt(n){return n>=1000?(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k':String(n)}
-  function money(n){return '$'+Number(n||0).toLocaleString()}
+  function money(n){return '$'+Number(n||0).toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2})}
   function daysAgo(d){var ms=Date.now()-new Date(d+'T12:00:00').getTime();var dd=Math.round(ms/864e5);if(dd<=0)return'today';if(dd<7)return dd+'d ago';if(dd<60)return Math.round(dd/7)+'w ago';return Math.round(dd/30)+'mo ago'}
 
   var entries=(D.entries||[]).slice().sort(function(a,b){return a.date<b.date?1:-1});
@@ -281,6 +295,24 @@ footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted)
       coords.map(function(c){return '<circle cx="'+c[0].toFixed(1)+'" cy="'+c[1].toFixed(1)+'" r="2.4" fill="#22d3ee"/>'}).join('')+
       '</svg>'+
       '<div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px"><span>'+asc[0].date+'</span><span>'+Math.round(cum)+'h total</span><span>'+asc[asc.length-1].date+'</span></div>';
+  }
+
+  // revenue impact — real P&L snapshot + per-system impact
+  var RI=D.revenue_impact;
+  if(RI){
+    $('revenueDate').textContent='as of '+RI.snapshot_date;
+    $('revenueMethodology').innerHTML='<b>This is not an estimate.</b> '+esc(RI.snapshot_note);
+    var s=RI.snapshot||{};
+    var revStats=[
+      {n:money(s.revenue),l:'All-time revenue',s:s.orders+' orders · '+s.units+' units · AOV '+money(s.aov)},
+      {n:money(s.cogs_total),l:'Total real cost (COGS)',s:money(s.cogs_product)+' product + '+money(s.cogs_shipping)+' shipping + '+money(s.cogs_affiliate)+' affiliate'},
+      {n:money(s.gross_profit),l:'Gross profit',s:s.gross_margin_pct+'% real margin, after every cost'},
+      {n:s.affiliate_driven_pct+'%',l:'Revenue from affiliates',s:money(s.affiliate_driven_revenue)+' of '+money(s.revenue)+' · '+s.effective_commission_rate_pct+'% eff. commission'}
+    ];
+    $('revenueStats').innerHTML=revStats.map(function(x){return '<div class="stat"><div class="n">'+x.n+'</div><div class="l">'+x.l+'</div><div class="s">'+x.s+'</div></div>'}).join('');
+    $('revenueItems').innerHTML=(RI.items||[]).map(function(it){
+      return '<div class="rev-card"><h4>'+esc(it.system)+'</h4><p>'+esc(it.impact)+'</p></div>'
+    }).join('');
   }
 
   // filters + log

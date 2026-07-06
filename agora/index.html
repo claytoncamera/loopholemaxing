@@ -351,8 +351,40 @@
     <!-- Routed views inject here -->
   </main>
 
-  <!-- ───────── Creation Engine / Atlas (index-only) ───────── -->
-  <div id="creation-engine-wrap">
+  <style id="ce-gate-style">
+    #creation-engine-wrap.ce-locked > *:not(#ce-gate){display:none;}
+    .ce-gate{max-width:660px;}
+    .ce-gate-card{margin-top:18px;padding:22px;border:1px solid var(--agora-edge);border-radius:12px;background:var(--agora-amber-dim);}
+    .ce-gate-card label{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8;margin-bottom:8px;}
+    .ce-gate-card input[type="password"]{width:100%;box-sizing:border-box;padding:12px 14px;font-size:16px;font-family:inherit;color:var(--agora-paper);background:rgba(0,0,0,.35);border:1px solid var(--agora-edge);border-radius:8px;outline:none;}
+    .ce-gate-card input[type="password"]:focus{border-color:var(--agora-amber);}
+    .ce-gate-actions{display:flex;gap:14px;align-items:center;margin-top:14px;flex-wrap:wrap;}
+    #ce-gate-submit{padding:10px 24px;font-size:15px;font-family:inherit;font-weight:600;color:#1a1814;background:var(--agora-amber);border:none;border-radius:8px;cursor:pointer;}
+    #ce-gate-submit:hover{filter:brightness(1.06);}
+    #ce-gate-submit:active{transform:translateY(1px);}
+    #ce-gate-msg{font-size:14px;opacity:.85;}
+    .ce-gate-err{color:#e5534b;} .ce-gate-ok{color:#57ab5a;} .ce-gate-warn{color:#daa520;}
+    .ce-gate-note{margin-top:14px;font-size:12.5px;line-height:1.55;opacity:.6;}
+  </style>
+
+  <!-- ───────── Creation Engine / Atlas (index-only) — passkey-gated ───────── -->
+  <div id="creation-engine-wrap" class="ce-locked">
+    <!-- Soft gate: client-side SHA-256 check. Full security model in the gate script below. -->
+    <section class="ce-section ce-gate" id="ce-gate">
+      <div class="ce-eyebrow">&#9679; Restricted &middot; Private Creations</div>
+      <h2 class="ce-title">Your creations are <span>locked.</span></h2>
+      <p class="ce-lede">This is the private constellation of all your creations. Enter your passkey to view it on this device.</p>
+      <div class="ce-gate-card">
+        <label for="ce-passkey">Passkey</label>
+        <input id="ce-passkey" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" inputmode="numeric" placeholder="Enter access code" aria-describedby="ce-gate-msg">
+        <div class="ce-gate-actions">
+          <button id="ce-gate-submit" type="button">Unlock</button>
+          <span id="ce-gate-msg" role="status" aria-live="polite">Awaiting passkey.</span>
+        </div>
+        <p class="ce-gate-note">Soft gate — your passkey is hashed and checked in this browser (SHA-256); the plaintext is never stored, logged, or sent anywhere. Unlock lasts for this browser tab only. Because this is a static page, treat this as a private-by-default curtain, not a vault — the server-side lock is the follow-up that makes the data itself unreachable to other devices.</p>
+      </div>
+    </section>
+    <div id="ce-locked-body" hidden>
     <section class="ce-section" id="creation-engine">
       <div class="ce-eyebrow">&#9679; Creation Engine &middot; Atlas</div>
       <h2 class="ce-title">Agora is the first public wing of a <span>larger Creation Engine.</span></h2>
@@ -383,6 +415,7 @@
         <ul class="ce-trust-list" id="ce-trust-list"></ul>
       </div>
     </section>
+    </div><!-- /#ce-locked-body -->
   </div>
 
   <footer class="site-footer">
@@ -718,12 +751,94 @@
       }).catch(() => null);
     }
 
-    Promise.all([loadCatalog(), loadLedger(), loadCreations()]).then(([cat, led, ce]) => {
+    // ───────── Creation Engine soft gate (SHA-256, per-tab) ─────────
+    // SECURITY MODEL: this is a static GitHub Pages page. The passkey is hashed
+    // with SHA-256 in the browser and compared to the digest baked below; the
+    // plaintext is never stored, logged, or persisted. On unlock we LAZILY fetch
+    // and render the creations constellation, so a locked visitor never has the
+    // creations data placed in their DOM. Access code is temporary (12345) and
+    // rotated by replacing EXPECTED_DIGEST — there is no in-page change-code UI.
+    // LIMIT: a soft gate cannot make a static file private. /agora/data/
+    // creations.json is still directly fetchable by URL. True privacy requires
+    // the server-side migration (serve creations behind hubapi.loopholemaxing.com).
+    function initCreationGate() {
+      // Temporary access code = 12345 (SHA-256 below). Rotate: replace this digest with
+      //   printf '%s' 'NEWCODE' | shasum -a 256
+      var EXPECTED_DIGEST = '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5';
+      var SESSION_KEY = 'agora_creations_unlocked_v1';
+      var wrap  = document.getElementById('creation-engine-wrap');
+      var gate  = document.getElementById('ce-gate');
+      var body  = document.getElementById('ce-locked-body');
+      var input = document.getElementById('ce-passkey');
+      var btn   = document.getElementById('ce-gate-submit');
+      var msg   = document.getElementById('ce-gate-msg');
+      if (!wrap || !gate || !body) return;
+
+      var rendered = false;
+      function reveal() {
+        if (!rendered) {
+          rendered = true;
+          loadCreations().then(function (ce) { renderCreationEngine(ce); });
+        }
+        wrap.classList.remove('ce-locked');
+        gate.hidden = true;
+        body.hidden = false;
+      }
+      function setMsg(text, kind) {
+        if (!msg) return;
+        msg.textContent = text;
+        msg.className = kind ? ('ce-gate-' + kind) : '';
+      }
+      async function sha256Hex(str) {
+        var buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+        return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+          return ('0' + b.toString(16)).slice(-2);
+        }).join('');
+      }
+      function digestsEqual(a, b) { // length-independent, no early exit
+        if (a.length !== b.length) return false;
+        var diff = 0;
+        for (var i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+        return diff === 0;
+      }
+      async function attempt() {
+        var val = input ? input.value : '';
+        if (!val) { setMsg('Enter your passkey.', 'warn'); return; }
+        if (!(window.crypto && crypto.subtle)) {
+          setMsg('This browser cannot verify the passkey (no WebCrypto over HTTPS).', 'err'); return;
+        }
+        setMsg('Checking…');
+        try {
+          var hex = await sha256Hex(val);
+          if (digestsEqual(hex, EXPECTED_DIGEST)) {
+            try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) {}
+            if (input) input.value = '';
+            setMsg('Unlocked.', 'ok');
+            reveal();
+          } else {
+            setMsg('Incorrect passkey.', 'err');
+          }
+        } catch (e) {
+          setMsg('Verification failed.', 'err');
+        }
+      }
+      if (btn) btn.addEventListener('click', attempt);
+      if (input) input.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') { e.preventDefault(); attempt(); }
+      });
+      var unlocked = false;
+      try { unlocked = sessionStorage.getItem(SESSION_KEY) === '1'; } catch (e) {}
+      if (unlocked) reveal(); else if (input) input.focus();
+    }
+
+    // Public reading room (catalog + ledger) loads for everyone. The creations
+    // constellation is deferred to initCreationGate() and only fetched on unlock.
+    Promise.all([loadCatalog(), loadLedger()]).then(([cat, led]) => {
       CATALOG = cat;
       LEDGER = led;
-      renderCreationEngine(ce);
       window.addEventListener('hashchange', route);
       route();
+      initCreationGate();
     }).catch(err => {
       main.innerHTML = `
         <section class="a-section">

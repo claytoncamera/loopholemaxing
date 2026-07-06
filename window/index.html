@@ -99,14 +99,13 @@
 <body>
   <div class="sky"></div><div class="stars"></div>
 
-  <!-- ── Access gate: first open = create your code; after that = enter it. ── -->
+  <!-- ── Access gate: fixed code (SHA-256, same model as /agora). Every device must enter it. ── -->
   <div id="gate">
     <div class="gate-card" id="gate-card">
       <h1>🪟 The Window</h1>
       <div class="sub" id="gate-sub">Enter your access code.</div>
       <form id="gate-form">
         <input id="pass1" type="password" inputmode="numeric" autocomplete="off" placeholder="Access code" autofocus>
-        <input id="pass2" type="password" inputmode="numeric" autocomplete="off" placeholder="Repeat code" style="display:none">
         <button type="submit" id="gate-btn">Open</button>
       </form>
       <div class="gate-err" id="gate-err"></div>
@@ -122,13 +121,12 @@
     <div class="deck-sub" id="deck-sub">Everything you've built, in one pane of glass.</div>
     <div class="toolbar">
       <input id="filter" type="search" placeholder="Filter creations… (name, tag, description)">
-      <button class="tbtn" id="change-code">Change code</button>
     </div>
     <div id="groups"></div>
     <div class="foot">
-      Owner deck — <code>noindex</code> + robots-blocked, code-gated on this device.<br>
+      Owner deck — <code>noindex</code> + robots-blocked, code-gated on every device.<br>
       The gate is a privacy curtain, not a cryptographic vault (static GitHub Pages) — no tokens or secrets live on this page.<br>
-      <b>LAN</b> links only resolve on the home network. To add a creation: edit <code>DECK</code> in <code>window/index.html</code>.
+      <b>LAN</b> links only resolve on the home network. To add a creation edit <code>DECK</code>; to change the code replace <code>EXPECTED_DIGEST</code> — both in <code>window/index.html</code>.
     </div>
   </div>
 
@@ -240,56 +238,52 @@ const DECK = [
 ];
 
 /* ============================================================
-   Gate — PBKDF2-SHA256 (150k iters) hash+salt in localStorage.
-   First open (no stored hash) = create the code. sessionStorage
-   keeps it open per-tab; Lock clears the session.
+   Gate — fixed access code, SHA-256 checked in-browser against a
+   baked digest (same model as /agora). Temporary code: 12345.
+   Every device must enter it — there is no "create code" path and
+   nothing device-local decides access. sessionStorage keeps it open
+   per-tab; Lock clears the session.
+   Rotate the code: replace EXPECTED_DIGEST with the output of
+     printf '%s' 'NEWCODE' | shasum -a 256
    ============================================================ */
-const LS_KEY = 'window_gate_v1';
+const EXPECTED_DIGEST = '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5';
+const SESSION_KEY = 'window_unlocked_v1';
 const $ = id => document.getElementById(id);
 
-async function kdf(code, saltHex) {
-  const enc = new TextEncoder();
-  const salt = new Uint8Array(saltHex.match(/../g).map(h => parseInt(h, 16)));
-  const key = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt, iterations: 150000 }, key, 256);
-  return [...new Uint8Array(bits)].map(b => b.toString(16).padStart(2, '0')).join('');
+async function sha256Hex(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
 }
-const randSalt = () => [...crypto.getRandomValues(new Uint8Array(16))].map(b => b.toString(16).padStart(2, '0')).join('');
-const stored = () => { try { return JSON.parse(localStorage.getItem(LS_KEY)); } catch { return null; } };
+function digestsEqual(a, b) { // length-independent, no early exit
+  if (a.length !== b.length) return false;
+  let diff = 0;
+  for (let i = 0; i < a.length; i++) diff |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  return diff === 0;
+}
 
 function setupGate() {
-  const first = !stored();
-  $('gate-sub').textContent = first
-    ? 'First open — create your access code for this device.'
-    : 'Enter your access code.';
-  $('pass2').style.display = first ? '' : 'none';
-  $('gate-btn').textContent = first ? 'Set code & open' : 'Open';
+  $('gate-sub').textContent = 'Enter your access code.';
+  $('gate-btn').textContent = 'Open';
 
   $('gate-form').onsubmit = async e => {
     e.preventDefault();
     const c1 = $('pass1').value, err = $('gate-err');
     err.textContent = '';
-    if (first) {
-      if (c1.length < 4) return err.textContent = 'Code must be at least 4 characters.';
-      if (c1 !== $('pass2').value) return err.textContent = 'Codes don’t match.';
-      const salt = randSalt();
-      localStorage.setItem(LS_KEY, JSON.stringify({ salt, hash: await kdf(c1, salt) }));
+    if (!c1) return err.textContent = 'Enter your access code.';
+    if (!(window.crypto && crypto.subtle)) return err.textContent = 'This browser can’t verify the code (needs HTTPS).';
+    if (digestsEqual(await sha256Hex(c1), EXPECTED_DIGEST)) {
       unlock();
     } else {
-      const s = stored();
-      if (await kdf(c1, s.salt) === s.hash) unlock();
-      else {
-        err.textContent = 'Wrong code.';
-        $('gate-card').classList.add('shake');
-        setTimeout(() => $('gate-card').classList.remove('shake'), 400);
-        $('pass1').value = ''; $('pass1').focus();
-      }
+      err.textContent = 'Wrong code.';
+      $('gate-card').classList.add('shake');
+      setTimeout(() => $('gate-card').classList.remove('shake'), 400);
+      $('pass1').value = ''; $('pass1').focus();
     }
   };
 }
 
 function unlock() {
-  sessionStorage.setItem(LS_KEY, '1');
+  try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) {}
   $('gate').style.display = 'none';
   $('deck').style.display = 'block';
   render();
@@ -317,19 +311,9 @@ function render(filter = '') {
 
 /* ── Wire up ── */
 $('filter').addEventListener('input', e => render(e.target.value));
-$('lock-btn').onclick = () => { sessionStorage.removeItem(LS_KEY); location.reload(); };
-$('change-code').onclick = async () => {
-  const old = prompt('Current code:'); if (old === null) return;
-  const s = stored();
-  if (!s || await kdf(old, s.salt) !== s.hash) return alert('Wrong code.');
-  const n1 = prompt('New code (min 4 chars):'); if (!n1 || n1.length < 4) return alert('Too short.');
-  const n2 = prompt('Repeat new code:'); if (n1 !== n2) return alert('Codes don’t match.');
-  const salt = randSalt();
-  localStorage.setItem(LS_KEY, JSON.stringify({ salt, hash: await kdf(n1, salt) }));
-  alert('Code updated on this device.');
-};
+$('lock-btn').onclick = () => { sessionStorage.removeItem(SESSION_KEY); location.reload(); };
 
-if (sessionStorage.getItem(LS_KEY) === '1' && stored()) unlock();
+if (sessionStorage.getItem(SESSION_KEY) === '1') unlock();
 else setupGate();
 </script>
 </body>

@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>PNP Work Tracker — Clayton Camera</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080d; --bg-2:#0d0d14; --card:#101017; --card-2:#14141d; --card-hover:#181822;
+  --border:#20202b; --border-light:#2c2c3a;
+  --text:#f4f4f8; --text-2:#a1a1b3; --muted:#6d6d80;
+  --brand-1:#818cf8; --brand-2:#38bdf8; --brand-3:#22d3ee;
+  --green:#34d399; --amber:#fbbf24; --red:#f87171; --slate:#64748b;
+  --grad:linear-gradient(120deg,#818cf8 0%,#38bdf8 50%,#22d3ee 100%);
+  --font:'Inter',system-ui,-apple-system,sans-serif;
+  --display:'Space Grotesk',var(--font);
+  --mono:'Fira Code','SF Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.55;-webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(1200px 600px at 80% -10%,rgba(56,189,248,.08),transparent),radial-gradient(1000px 500px at 0% 0%,rgba(129,140,248,.07),transparent);
+  background-attachment:fixed}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1120px;margin:0 auto;padding:0 22px}
+.mono{font-family:var(--mono)}
+.grad-text{background:var(--grad);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+
+/* header */
+header{position:sticky;top:0;z-index:50;background:rgba(8,8,13,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:58px}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:15px;letter-spacing:.2px}
+.brand .dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 12px var(--green)}
+.nav-links{display:flex;gap:22px;font-size:13.5px;color:var(--text-2)}
+.nav-links a:hover{color:var(--text)}
+@media(max-width:720px){.nav-links{display:none}}
+
+/* hero */
+.hero{padding:66px 0 30px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--brand-2);margin-bottom:16px}
+.hero h1{font-family:var(--display);font-size:clamp(30px,5vw,50px);line-height:1.05;font-weight:700;letter-spacing:-1px;margin-bottom:16px}
+.hero .sub{font-size:clamp(15px,2vw,18px);color:var(--text-2);max-width:640px}
+.hero .who{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;font-size:13px;color:var(--muted)}
+.hero .who b{color:var(--text-2);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:7px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:5px 13px}
+
+/* stat grid */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:40px 0 10px}
+@media(max-width:860px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--border);border-radius:15px;padding:20px 18px;position:relative;overflow:hidden}
+.stat::before{content:"";position:absolute;inset:0 0 auto 0;height:2px;background:var(--grad);opacity:.7}
+.stat .n{font-family:var(--display);font-size:clamp(26px,4vw,36px);font-weight:700;line-height:1;letter-spacing:-1px}
+.stat .l{font-size:12.5px;color:var(--text-2);margin-top:8px}
+.stat .s{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+/* sections */
+section{padding:44px 0;border-top:1px solid var(--border)}
+.sec-head{display:flex;align-items:baseline;justify-content:space-between;gap:14px;margin-bottom:22px;flex-wrap:wrap}
+.sec-head h2{font-family:var(--display);font-size:23px;font-weight:700;letter-spacing:-.5px}
+.sec-head .hint{font-size:12.5px;color:var(--muted)}
+
+/* by the numbers */
+.numbers{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media(max-width:860px){.numbers{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:15px;padding:20px}
+.panel h3{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--text-2);margin-bottom:16px;font-weight:600}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:11px;font-size:13px}
+.bar-row .k{width:96px;color:var(--text-2);flex-shrink:0;text-transform:capitalize}
+.bar-track{flex:1;height:9px;background:var(--card-2);border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;background:var(--grad);border-radius:6px}
+.bar-row .v{width:54px;text-align:right;color:var(--muted);font-family:var(--mono);font-size:12px}
+.chart{width:100%;height:auto}
+
+/* filters */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.chip{font-size:12.5px;padding:6px 13px;border-radius:999px;border:1px solid var(--border);background:var(--card);color:var(--text-2);cursor:pointer;transition:.15s;user-select:none}
+.chip:hover{border-color:var(--border-light);color:var(--text)}
+.chip.active{background:var(--brand-1);border-color:var(--brand-1);color:#0a0a12;font-weight:600}
+#search{margin-left:auto;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:6px 15px;color:var(--text);font-size:13px;font-family:var(--font);min-width:180px;outline:none}
+#search:focus{border-color:var(--brand-2)}
+
+/* timeline */
+.log{display:flex;flex-direction:column;gap:0}
+.item{display:grid;grid-template-columns:118px 1fr;gap:20px;padding:18px 0;border-top:1px solid var(--border)}
+.item:first-child{border-top:none}
+@media(max-width:640px){.item{grid-template-columns:1fr;gap:8px}}
+.item .when{font-family:var(--mono);font-size:12.5px;color:var(--muted);padding-top:2px}
+.item .when .rel{display:block;color:var(--slate);font-size:11px;margin-top:2px}
+.item .body h4{font-size:15.5px;font-weight:600;margin-bottom:6px}
+.item .body p{font-size:13.5px;color:var(--text-2);margin-bottom:10px}
+.tags{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.badge{font-size:11px;padding:3px 9px;border-radius:6px;font-weight:600;letter-spacing:.3px;border:1px solid transparent}
+.badge.type{color:#0a0a12}
+.badge.meta{background:var(--card-2);border-color:var(--border);color:var(--text-2);font-family:var(--mono);font-weight:500}
+.badge.tool{background:transparent;border-color:var(--border-light);color:var(--text-2)}
+.hrs{color:var(--muted);font-size:12px;font-family:var(--mono)}
+
+/* roadmap */
+.road{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+@media(max-width:720px){.road{grid-template-columns:1fr}}
+.road-card{background:var(--card);border:1px solid var(--border);border-left:3px solid var(--slate);border-radius:12px;padding:16px 18px}
+.road-card.high{border-left-color:var(--red)}
+.road-card.medium{border-left-color:var(--amber)}
+.road-card.low{border-left-color:var(--slate)}
+.road-card h4{font-size:14.5px;font-weight:600;margin-bottom:5px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.road-card .st{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-family:var(--mono);white-space:nowrap}
+.road-card p{font-size:12.5px;color:var(--text-2)}
+
+/* costs */
+.cost-top{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+@media(max-width:720px){.cost-top{grid-template-columns:1fr}}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:11px 12px;border-bottom:1px solid var(--border)}
+th{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+td .amt{font-family:var(--mono);color:var(--text)}
+.tbl-wrap{background:var(--card);border:1px solid var(--border);border-radius:15px;overflow-x:auto}
+
+/* footer */
+footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted);font-size:12.5px}
+.note{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;margin-bottom:24px;color:var(--text-2);font-size:13px}
+.note code{font-family:var(--mono);background:var(--card-2);padding:2px 6px;border-radius:5px;color:var(--brand-2);font-size:12px}
+
+/* info bar (replaces hero) */
+.infobar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:16px 0;border-bottom:1px solid var(--border)}
+.infobar .l{font-family:var(--mono);font-size:12.5px;color:var(--text-2)}
+.infobar .l b{color:var(--text);font-weight:600}
+.estimate-flag{display:inline-block;background:rgba(251,191,36,.12);border:1px solid rgba(251,191,36,.35);color:var(--amber);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:5px;margin-left:8px}
+.needs-input{display:inline-block;background:rgba(248,113,113,.12);border:1px solid rgba(248,113,113,.35);color:var(--red);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 8px;border-radius:5px}
+.methodology{background:var(--card);border:1px dashed var(--border-light);border-radius:12px;padding:14px 16px;margin-bottom:20px;font-size:12.5px;color:var(--text-2)}
+.methodology b{color:var(--text)}
+.savings-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+@media(max-width:860px){.savings-grid{grid-template-columns:1fr}}
+.savings-card{background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--border);border-radius:15px;padding:20px 18px}
+.savings-card .n{font-family:var(--display);font-size:clamp(24px,3.6vw,32px);font-weight:700;line-height:1;letter-spacing:-1px}
+.savings-card .l{font-size:12.5px;color:var(--text-2);margin-top:8px}
+.savings-card .s{font-size:11.5px;color:var(--muted);margin-top:3px}
+.now-list{display:flex;flex-direction:column;gap:10px;margin-bottom:26px}
+.now-card{background:var(--card);border:1px solid var(--green);border-left:4px solid var(--green);border-radius:12px;padding:16px 18px}
+.now-card h4{font-size:14.5px;font-weight:600;margin-bottom:5px;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.now-card .st{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--green);font-family:var(--mono);white-space:nowrap}
+.now-card p{font-size:12.5px;color:var(--text-2)}
+.subhead{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;margin:0 0 12px}
+</style>
+</head>
+<body>
+<header><div class="wrap nav">
+  <div class="brand"><span class="dot"></span> PNP Tracker</div>
+  <nav class="nav-links">
+    <a href="/window/">← The Window</a><a href="#numbers">Numbers</a><a href="#log">Done</a><a href="#cost-est">Cost</a><a href="#savings">Savings</a><a href="#now">Working On Now</a><a href="#spend">Actual Spend</a>
+  </nav>
+</div></header>
+
+<div class="wrap">
+  <div class="infobar">
+    <div class="l" id="period">—</div>
+    <div class="l" id="who"></div>
+  </div>
+</div>
+
+<div class="wrap"><section id="numbers" style="padding-top:26px">
+  <div class="sec-head"><h2>By the numbers</h2><span class="hint">hard facts, pulled from git + the documented log below</span></div>
+  <div class="stats" id="stats"></div>
+  <div class="numbers" style="margin-top:16px">
+    <div class="panel">
+      <h3>Cumulative hours over time</h3>
+      <div id="chart"></div>
+    </div>
+    <div class="panel">
+      <h3>Hours by kind of work</h3>
+      <div id="byType"></div>
+    </div>
+  </div>
+</section></div>
+
+<div class="wrap"><section id="log">
+  <div class="sec-head"><h2>What he has done — full work log</h2><span class="hint" id="logcount"></span></div>
+  <div class="filters" id="typeFilters"></div>
+  <div class="filters" id="toolFilters"></div>
+  <div class="log" id="logList"></div>
+</section></div>
+
+<div class="wrap"><section id="cost-est">
+  <div class="sec-head"><h2>What it would cost <span class="estimate-flag">Estimate</span></h2><span class="hint">if this had been outsourced to an agency/contractor instead</span></div>
+  <div class="methodology" id="costMethodology"></div>
+  <div class="savings-grid" id="costEstCards"></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Kind of work</th><th style="text-align:right">Hours</th><th style="text-align:right">Est. cost @ low rate</th><th style="text-align:right">Est. cost @ high rate</th></tr></thead><tbody id="costEstRows"></tbody></table></div>
+</section></div>
+
+<div class="wrap"><section id="savings">
+  <div class="sec-head"><h2>How he has reduced cost</h2><span class="hint">in-house + AI agents vs. hiring devs/an agency</span></div>
+  <div class="savings-grid" id="savingsCards"></div>
+  <div class="methodology">
+    <b>Honest caveat:</b> this is a cash-cost comparison, not a time comparison — the hours in the work log above were still spent by Clayton either way.
+    What's avoided is the dollar cost of <i>paying someone else</i> to spend them: agency/contractor fees, project-management overhead, and markup.
+    The actual cash outlay shown here is AI tool subscriptions only (below); Hostinger hosting cost is not yet confirmed (flagged in Actual Spend).
+  </div>
+</section></div>
+
+<div class="wrap"><section id="now">
+  <div class="sec-head"><h2>What he is working on now</h2><span class="hint">actively in progress, right now</span></div>
+  <div class="now-list" id="nowList"></div>
+  <p class="subhead">Queued / needs Clayton's input — not currently being worked</p>
+  <div class="road" id="road"></div>
+</section></div>
+
+<div class="wrap"><section id="spend">
+  <div class="sec-head"><h2>Actual spend</h2><span class="hint">real cash tooling + infrastructure cost, to date</span></div>
+  <div class="cost-top" id="costTop"></div>
+  <div class="tbl-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>Account</th><th>Cadence</th><th style="text-align:right">Amount</th></tr></thead><tbody id="costRows"></tbody></table></div>
+</section></div>
+
+<div class="wrap"><footer>
+  <div class="note">
+    <b style="color:var(--text)">Add your own work &amp; costs.</b> This whole page is rendered from one file — <code>data.js</code>.
+    Add an object to <code>entries</code> (from any AI account), a line to <code>costs</code>, or a new <code>ai_accounts</code> entry, then reload. Every number above recomputes automatically.
+    Items marked <span class="needs-input">Needs input</span> or "NEEDS CONFIRM" in <code>data.js</code> are placeholders Clayton should fill in with real figures.
+  </div>
+  <div>PNP Tracker · informational log of PNP/CC2 engineering work · built + maintained by Clayton Camera. No customer data.</div>
+</footer></div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  var D = window.PNP_DATA || {entries:[],costs:[],ai_accounts:[],open_items:[],meta:{}};
+  var M = D.meta||{};
+  var typeColor={build:'#818cf8',feature:'#38bdf8',bugfix:'#f87171',deploy:'#34d399',affiliate:'#fbbf24',infra:'#a78bfa',content:'#f472b6',research:'#22d3ee',ops:'#94a3b8'};
+  var $=function(id){return document.getElementById(id)};
+  var esc=function(s){return String(s==null?'':s)};
+  function fmt(n){return n>=1000?(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k':String(n)}
+  function money(n){return '$'+Number(n||0).toLocaleString()}
+  function daysAgo(d){var ms=Date.now()-new Date(d+'T12:00:00').getTime();var dd=Math.round(ms/864e5);if(dd<=0)return'today';if(dd<7)return dd+'d ago';if(dd<60)return Math.round(dd/7)+'w ago';return Math.round(dd/30)+'mo ago'}
+
+  var entries=(D.entries||[]).slice().sort(function(a,b){return a.date<b.date?1:-1});
+  var totalHours=entries.reduce(function(s,e){return s+(+e.hours||0)},0);
+  var hard=(M.hard_stats)||{};
+  var commits=hard.commits||entries.reduce(function(s,e){return s+(+e.commits||0)},0);
+  var releases=hard.releases||0;
+  var loc=hard.loc||entries.reduce(function(s,e){return s+(+e.loc||0)},0);
+  var rate=+M.value_hourly_rate||0;
+  var value=Math.round(totalHours*rate);
+
+  // period / info bar
+  var start=M.period_start, last=M.last_updated;
+  var weeks=start?Math.max(1,Math.round((new Date(last||Date.now())-new Date(start))/6048e5)):0;
+  $('period').innerHTML='<b>'+esc(M.project||'PNP')+'</b> · '+(start||'')+' → '+(last||'')+' · '+weeks+' weeks tracked'+(M.tagline?' · '+esc(M.tagline):'');
+  $('who').innerHTML=[M.owner,M.role,M.site].filter(Boolean).map(esc).join(' · ');
+
+  // headline stats — hard facts only; cost/value figures live in their own sections below
+  var stats=[
+    {n:fmt(Math.round(totalHours))+'h',l:'Hours of documented work',s:entries.length+' sessions · '+weeks+' weeks'},
+    {n:String(commits),l:'Git commits shipped',s:(hard.repos||2)+' repos, live-verified'},
+    {n:String(releases),l:'Tagged releases',s:'each deployed to production'},
+    {n:fmt(loc),l:'Lines of code',s:'PHP · TypeScript · React, excl. build artifacts'}
+  ];
+  $('stats').innerHTML=stats.map(function(s){return '<div class="stat"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div><div class="s">'+s.s+'</div></div>'}).join('');
+
+  // by type bars
+  var byType={};entries.forEach(function(e){byType[e.type]=(byType[e.type]||0)+(+e.hours||0)});
+  var maxT=Math.max.apply(null,Object.values(byType).concat([1]));
+  $('byType').innerHTML=Object.keys(byType).sort(function(a,b){return byType[b]-byType[a]}).map(function(k){
+    return '<div class="bar-row"><span class="k">'+k+'</span><span class="bar-track"><span class="bar-fill" style="width:'+(byType[k]/maxT*100)+'%;background:'+(typeColor[k]||'var(--grad)')+'"></span></span><span class="v">'+Math.round(byType[k])+'h</span></div>'
+  }).join('');
+
+  // cumulative chart (SVG)
+  var asc=entries.slice().sort(function(a,b){return a.date<b.date?-1:1});
+  var W=560,H=180,pad=6,cum=0,pts=[];
+  asc.forEach(function(e){cum+=(+e.hours||0);pts.push({d:e.date,y:cum})});
+  if(pts.length){
+    var t0=new Date(asc[0].date).getTime(),t1=new Date(asc[asc.length-1].date).getTime()||t0+1,span=Math.max(1,t1-t0);
+    var mx=cum||1;
+    var coords=pts.map(function(p){var x=pad+(new Date(p.d).getTime()-t0)/span*(W-2*pad);var y=H-pad-(p.y/mx)*(H-2*pad);return [x,y]});
+    var line=coords.map(function(c,i){return (i?'L':'M')+c[0].toFixed(1)+' '+c[1].toFixed(1)}).join(' ');
+    var area=line+' L '+coords[coords.length-1][0].toFixed(1)+' '+(H-pad)+' L '+coords[0][0].toFixed(1)+' '+(H-pad)+' Z';
+    $('chart').innerHTML='<svg class="chart" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" height="180">'+
+      '<defs><linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38bdf8" stop-opacity=".35"/><stop offset="1" stop-color="#38bdf8" stop-opacity="0"/></linearGradient></defs>'+
+      '<path d="'+area+'" fill="url(#ag)"/>'+
+      '<path d="'+line+'" fill="none" stroke="#818cf8" stroke-width="2" stroke-linejoin="round"/>'+
+      coords.map(function(c){return '<circle cx="'+c[0].toFixed(1)+'" cy="'+c[1].toFixed(1)+'" r="2.4" fill="#22d3ee"/>'}).join('')+
+      '</svg>'+
+      '<div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px"><span>'+asc[0].date+'</span><span>'+Math.round(cum)+'h total</span><span>'+asc[asc.length-1].date+'</span></div>';
+  }
+
+  // filters + log
+  var types=Array.from(new Set(entries.map(function(e){return e.type})));
+  var tools=(D.ai_accounts||[]).map(function(a){return a.id});
+  var toolName={};(D.ai_accounts||[]).forEach(function(a){toolName[a.id]=a.name});
+  var active={type:'all',tool:'all',q:''};
+  function chipHTML(id,label,kind,on){return '<span class="chip'+(on?' active':'')+'" data-kind="'+kind+'" data-val="'+id+'">'+label+'</span>'}
+  $('typeFilters').innerHTML=chipHTML('all','All work','type',true)+types.map(function(t){return chipHTML(t,t,'type',false)}).join('')+'<input id="search" placeholder="search…">';
+  $('toolFilters').innerHTML='<span style="font-size:12px;color:var(--muted);align-self:center;margin-right:4px">by AI account:</span>'+chipHTML('all','All','tool',true)+tools.map(function(t){return chipHTML(t,(toolName[t]||t).split(' ')[0],'tool',false)}).join('');
+
+  function render(){
+    var list=entries.filter(function(e){
+      return (active.type==='all'||e.type===active.type)&&(active.tool==='all'||e.tool===active.tool)&&
+        (!active.q||(e.title+' '+e.summary+' '+(e.tags||[]).join(' ')).toLowerCase().indexOf(active.q)>-1)
+    });
+    $('logcount').textContent=list.length+' of '+entries.length+' sessions · '+Math.round(list.reduce(function(s,e){return s+(+e.hours||0)},0))+'h';
+    $('logList').innerHTML=list.map(function(e){
+      var meta=[];
+      if(e.version)meta.push('<span class="badge meta">'+esc(e.version)+'</span>');
+      if(e.commits)meta.push('<span class="badge meta">'+e.commits+' commits</span>');
+      if(e.status)meta.push('<span class="badge meta">'+esc(e.status)+'</span>');
+      return '<div class="item"><div class="when">'+e.date+'<span class="rel">'+daysAgo(e.date)+'</span></div>'+
+        '<div class="body"><h4>'+esc(e.title)+'</h4><p>'+esc(e.summary)+'</p>'+
+        '<div class="tags"><span class="badge type" style="background:'+(typeColor[e.type]||'#818cf8')+'">'+e.type+'</span>'+
+        '<span class="badge tool">'+esc((toolName[e.tool]||e.tool).split(' ')[0])+'</span>'+meta.join('')+
+        (e.hours?'<span class="hrs">· '+e.hours+'h</span>':'')+'</div></div></div>';
+    }).join('')||'<p style="color:var(--muted);padding:20px 0">No sessions match that filter.</p>';
+  }
+  document.addEventListener('click',function(ev){
+    var c=ev.target.closest('.chip');if(!c)return;
+    var kind=c.dataset.kind;active[kind]=c.dataset.val;
+    document.querySelectorAll('.chip[data-kind="'+kind+'"]').forEach(function(x){x.classList.toggle('active',x===c)});
+    render();
+  });
+  document.addEventListener('input',function(ev){if(ev.target.id==='search'){active.q=ev.target.value.toLowerCase();render()}});
+  render();
+
+  // working on now vs. queued
+  var order={high:1,medium:2,low:3};
+  var oi=(D.open_items||[]).slice().sort(function(a,b){return (order[a.priority]||4)-(order[b.priority]||4)});
+  var nowItems=oi.filter(function(o){return o.now});
+  var queuedItems=oi.filter(function(o){return !o.now});
+  $('nowList').innerHTML=nowItems.length?nowItems.map(function(o){
+    return '<div class="now-card"><h4>'+esc(o.title)+'<span class="st">● '+esc(o.status||'')+'</span></h4><p>'+esc(o.note||'')+'</p></div>'
+  }).join(''):'<p style="color:var(--muted)">Nothing actively in progress right now — everything open is queued or blocked (below).</p>';
+  $('road').innerHTML=queuedItems.map(function(o){
+    var blocked=/blocked|awaiting|unverified/i.test(o.status||'');
+    return '<div class="road-card '+(o.priority||'low')+'"><h4>'+esc(o.title)+(blocked?'<span class="needs-input">Needs input</span>':'<span class="st">'+esc(o.status||'')+'</span>')+'</h4><p>'+esc(o.note||'')+'</p></div>'
+  }).join('');
+
+  // what it would cost (estimate) — hours × agency rate range, by type
+  var rl=+M.agency_rate_low||150, rh=+M.agency_rate_high||225;
+  $('costMethodology').innerHTML='<b>Methodology:</b> '+esc(M.agency_rate_note||'')+' Figures below = documented hours (work log above) × the stated rate range. Named releases are the same math, just grouped — not separate agency quotes.';
+  var estLow=Math.round(totalHours*rl), estHigh=Math.round(totalHours*rh), estMid=Math.round((estLow+estHigh)/2);
+  $('costEstCards').innerHTML=[
+    {n:money(estLow)+' – '+money(estHigh),l:'Est. cost if outsourced',s:totalHours+'h × $'+rl+'–'+rh+'/hr'},
+    {n:money(estMid),l:'Midpoint estimate',s:'used in the savings comparison below'},
+    {n:releases+' releases / '+commits+' commits',l:'What that would have bought',s:'all shipped to production, not just estimated'}
+  ].map(function(s){return '<div class="savings-card"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div><div class="s">'+s.s+'</div></div>'}).join('');
+  var byTypeRows=Object.keys(byType).sort(function(a,b){return byType[b]-byType[a]});
+  $('costEstRows').innerHTML=byTypeRows.map(function(k){
+    var h=byType[k];
+    return '<tr><td style="text-transform:capitalize">'+esc(k)+'</td><td style="text-align:right" class="mono">'+Math.round(h)+'h</td><td style="text-align:right"><span class="amt">'+money(Math.round(h*rl))+'</span></td><td style="text-align:right"><span class="amt">'+money(Math.round(h*rh))+'</span></td></tr>'
+  }).join('')+'<tr style="font-weight:600"><td>Total</td><td style="text-align:right" class="mono">'+Math.round(totalHours)+'h</td><td style="text-align:right"><span class="amt">'+money(estLow)+'</span></td><td style="text-align:right"><span class="amt">'+money(estHigh)+'</span></td></tr>';
+
+  // costs / actual spend
+  var costs=D.costs||[];
+  var monthly=costs.filter(function(c){return c.recurring==='monthly'}).reduce(function(s,c){return s+(+c.amount||0)},0);
+  var invested=Math.round(monthly*Math.max(1,weeks/4.345));
+  $('costTop').innerHTML=[
+    {n:money(monthly)+'/mo',l:'Recurring tooling + infra'},
+    {n:money(invested),l:'Estimated cash spend to date',s:'≈ '+weeks+' weeks in · Hostinger hosting not yet confirmed, excluded'},
+    {n:(D.ai_accounts||[]).length+' accounts',l:'AI agents working in parallel'}
+  ].map(function(s){return '<div class="stat"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div>'+(s.s?'<div class="s">'+s.s+'</div>':'')+'</div>'}).join('');
+  $('costRows').innerHTML=costs.map(function(c){
+    var flagged=/NEEDS CONFIRM|NOT TRACKED/i.test(c.note||'');
+    return '<tr><td>'+esc(c.item)+(c.note?'<div style="font-size:11px;color:'+(flagged?'var(--amber)':'var(--muted)')+'">'+esc(c.note)+'</div>':'')+'</td><td style="color:var(--text-2)">'+esc(c.category||'')+'</td><td style="color:var(--muted)" class="mono">'+esc(c.account||'—')+'</td><td style="color:var(--muted)">'+esc(c.recurring||'one-time')+'</td><td style="text-align:right"><span class="amt">'+(c.amount?money(c.amount):'—')+'</span></td></tr>'
+  }).join('');
+
+  // how cost has been reduced — agency estimate vs actual cash spend
+  var savings=Math.max(0,estMid-invested);
+  var multiple=invested>0?(estMid/invested):0;
+  var pctSaved=estMid>0?Math.round((savings/estMid)*100):0;
+  $('savingsCards').innerHTML=[
+    {n:money(estMid),l:'Est. agency/contractor cost',s:'midpoint, from Cost section above'},
+    {n:money(invested),l:'Actual cash spent (AI tooling)',s:monthly+'/mo × '+weeks+' weeks — hosting excluded, unconfirmed'},
+    {n:money(savings)+' saved',l:pctSaved+'% cash reduction',s:(multiple?Math.round(multiple)+'× cheaper than outsourcing':'—')}
+  ].map(function(s){return '<div class="savings-card"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div><div class="s">'+s.s+'</div></div>'}).join('');
+})();
+</script>
+</body>
+</html>

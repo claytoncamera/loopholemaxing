@@ -105,7 +105,7 @@
       <h1>🪟 The Window</h1>
       <div class="sub" id="gate-sub">Enter your access code.</div>
       <form id="gate-form">
-        <input id="pass1" type="password" inputmode="numeric" autocomplete="off" placeholder="Access code" autofocus>
+        <input id="pass1" type="password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" placeholder="Access code" autofocus>
         <button type="submit" id="gate-btn">Open</button>
       </form>
       <div class="gate-err" id="gate-err"></div>
@@ -239,14 +239,15 @@ const DECK = [
 
 /* ============================================================
    Gate — fixed access code, SHA-256 checked in-browser against a
-   baked digest (same model as /agora). Temporary code: 12345.
+   baked digest (same model as /agora). The plaintext code is NOT in
+   this file — only its digest below.
    Every device must enter it — there is no "create code" path and
    nothing device-local decides access. sessionStorage keeps it open
    per-tab; Lock clears the session.
    Rotate the code: replace EXPECTED_DIGEST with the output of
      printf '%s' 'NEWCODE' | shasum -a 256
    ============================================================ */
-const EXPECTED_DIGEST = '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5';
+const EXPECTED_DIGEST = 'ec07c9c3e1fc3114ab35cdacc62bab0cc9b99da9f1c96aa6b25aa0c175c77c1f';
 const SESSION_KEY = 'window_unlocked_v1';
 const $ = id => document.getElementById(id);
 

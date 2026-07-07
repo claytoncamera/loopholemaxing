@@ -286,8 +286,8 @@
       <input type="email" id="trialEmail" name="email" placeholder="you@domain.com" required autocomplete="email">
       <button type="submit" class="btn-cyan">Send my trial token</button>
     </form>
-    <div class="u-trial-ok" id="trialOk">&#10003; You're on the list. Check your inbox.</div>
-    <p class="u-trial-note">Stored locally until a hosted form is wired. No data leaves your browser in this preview.</p>
+    <div class="u-trial-ok" id="trialOk">&#10003; You're on the list &mdash; trial tokens go out by email in signup order as hosted slots open.</div>
+    <p class="u-trial-note">Your email goes straight to Clayton's own CRM &mdash; no third-party lists. No card required.</p>
   </section>
 
   <footer class="site-footer">
@@ -295,22 +295,12 @@
     <div class="footer-tagline">Read. Plan. Propose. Approve. Ship.</div>
   </footer>
 
+  <script src="/capture.js"></script>
   <script>
-    // Trial form — stores locally; swap the handler for Stripe/Postmark when keys are in.
-    const form = document.getElementById('trialForm');
-    const ok   = document.getElementById('trialOk');
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
-      const email = document.getElementById('trialEmail').value.trim();
-      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { return; }
-      try {
-        const existing = JSON.parse(localStorage.getItem('ultron_waitlist') || '[]');
-        if (!existing.includes(email)) existing.push(email);
-        localStorage.setItem('ultron_waitlist', JSON.stringify(existing));
-      } catch {}
-      form.style.display = 'none';
-      ok.style.display = 'block';
-    });
+    // Trial form → HUB CRM (lead tagged "[LIST] ULTRON Pro Waitlist").
+    // Swap in Stripe checkout when the hosted daemon + billing are live.
+    wireCaptureForm({ form: 'trialForm', input: 'trialEmail', okEl: 'trialOk',
+      list: 'ULTRON Pro Waitlist', note: '14-day Pro trial signup ($19/mo tier)' });
   </script>
   <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js?v=20260616a" data-site="loopholemaxing"></script>
 </body>

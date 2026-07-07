@@ -2568,6 +2568,36 @@
           style="display:none;list-style:none;padding:0;margin:0;font-size:12px;color:#e6edf3;font-family:ui-monospace,Menlo,Consolas,monospace;"></ul>
     </div>
 
+    <!-- 7.F.1 WEEKLY BRIEF WAITLIST — capture posts to the HUB CRM (/capture.js).
+         Honest framing: email delivery is NOT live yet (waitlist), and the paid
+         tier is explicitly gated on the public ledger beating baseline. -->
+    <div id="p7-brief-waitlist"
+         style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:20px;">
+      <div style="font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">
+        📬 Weekly BTC Brain Brief <span style="color:#d29922;">· launching soon · free</span>
+      </div>
+      <p style="font-size:13px;color:#e6edf3;line-height:1.6;margin:0 0 6px;">
+        One email a week: the ledger's live hit-rate vs. baseline, regime shifts,
+        and what changed in the models. Join now &mdash; you'll get the first issue
+        when delivery goes live.
+      </p>
+      <p style="font-size:12px;color:#8b949e;line-height:1.6;margin:0 0 12px;">
+        The deal: a paid tier only opens <em>if and when</em> the public accuracy
+        ledger above beats its baseline out of sample. Until then, everything here
+        stays free. Not financial advice.
+      </p>
+      <form id="briefForm" novalidate style="display:flex;gap:8px;max-width:440px;">
+        <input type="email" id="briefEmail" placeholder="you@domain.com" required autocomplete="email" aria-label="Email address"
+               style="flex:1;background:#010409;color:#e6edf3;border:1px solid #30363d;border-radius:8px;padding:9px 12px;font-size:13px;font-family:ui-monospace,Menlo,Consolas,monospace;">
+        <button type="submit"
+                style="background:#238636;color:#fff;border:1px solid #2ea043;border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;cursor:pointer;">
+          Join free</button>
+      </form>
+      <div id="briefOk" style="display:none;font-size:13px;color:#3fb950;font-family:ui-monospace,Menlo,Consolas,monospace;">
+        &#10003; You're on the list &mdash; first issue lands when delivery goes live.
+      </div>
+    </div>
+
     <!-- 7.G TRUST FOOTER -->
     <div style="background:#1a1206;border:1px solid #3a2a0a;color:#f0c674;border-radius:10px;padding:14px 18px;font-size:12px;line-height:1.6;">
       <strong style="color:#f7931a;">Reminder:</strong>
@@ -6225,6 +6255,12 @@
 })();
 </script>
 
+  <script src="/capture.js"></script>
+  <script>
+    // Weekly brief waitlist → HUB CRM (lead tagged "[LIST] BTC Brain Brief")
+    wireCaptureForm({ form: 'briefForm', input: 'briefEmail', okEl: 'briefOk',
+      list: 'BTC Brain Brief', note: 'Weekly brief waitlist (btc-brain page)' });
+  </script>
   <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js?v=20260616a" data-site="loopholemaxing"></script>
 </body>
 </html>

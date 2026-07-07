@@ -337,6 +337,19 @@
     @media (prefers-reduced-motion: reduce) {
       .hero h1 .grad, .feature-track, .hero-eyebrow .live-dot { animation: none !important; }
     }
+
+    /* ── The Loophole Letter — email capture band ── */
+    .letter-band { max-width: 760px; margin: 0 auto; padding: var(--space-3xl) var(--space-lg); text-align: center; }
+    .letter-band .eyebrow { margin-bottom: var(--space-sm); }
+    .letter-band h2 { font-size: clamp(24px, 3.6vw, 34px); font-weight: 700; letter-spacing: -.02em; margin-bottom: var(--space-sm); }
+    .letter-band > p { color: var(--text-secondary); line-height: 1.65; max-width: 560px; margin: 0 auto var(--space-xl); }
+    .letter-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
+    .letter-form input { flex: 1; background: rgba(255,255,255,.03); color: var(--text-primary);
+      border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+    .letter-form input:focus { outline: 0; border-color: var(--accent, #3fb950); }
+    .letter-ok { display: none; color: #3fb950; font-family: var(--font-mono); font-size: 14px; margin-top: var(--space-md); }
+    .letter-note { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
+    @media (max-width: 720px) { .letter-form { flex-direction: column; } }
   </style>
 </head>
 <body>
@@ -691,6 +704,19 @@
     </div>
   </section>
 
+  <!-- The Loophole Letter — email capture (posts to the HUB CRM via /capture.js) -->
+  <section class="letter-band" id="letter">
+    <p class="eyebrow">📬 The Loophole Letter</p>
+    <h2>One email a week. What I built, what made money, what didn't.</h2>
+    <p>Build logs, revenue experiments, and the systems behind everything on this page — straight from the operator, not a content team. Free, no spam, unsubscribe anytime.</p>
+    <form class="letter-form" id="letterForm" novalidate>
+      <input type="email" id="letterEmail" name="email" placeholder="you@domain.com" required autocomplete="email" aria-label="Email address">
+      <button type="submit" class="btn-hire">Join free →</button>
+    </form>
+    <div class="letter-ok" id="letterOk">&#10003; You're in — first letter lands with the next drop.</div>
+    <p class="letter-note">Your email goes straight to my own CRM. No third-party lists.</p>
+  </section>
+
   <!-- Footer -->
   <footer class="site-footer">
     <div>Clayton Camera — Loopholemaxing.com — 2026 &nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
@@ -699,7 +725,12 @@
 
   <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
 
+  <script src="/capture.js"></script>
   <script>
+    // The Loophole Letter → HUB CRM (lead tagged "[LIST] Loophole Letter")
+    wireCaptureForm({ form: 'letterForm', input: 'letterEmail', okEl: 'letterOk',
+      list: 'Loophole Letter', note: 'Weekly newsletter signup (homepage)' });
+
     // ── Work-With-Clayton link target. Set this ONE line to the dedicated
     //    domain — every hire CTA (promo bar, hero, band, nav, footer, closing)
     //    updates automatically.

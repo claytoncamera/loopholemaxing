@@ -2,9 +2,9 @@
   "attempts": [
     {
       "error": "all binance derivatives endpoints failed",
-      "fetched_at": "2026-07-07T10:00:26Z",
+      "fetched_at": "2026-07-07T12:38:32Z",
       "kind": "derivatives",
-      "latency_ms": 452,
+      "latency_ms": 220,
       "notes": [
         "funding:fail:GET https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT failed: HTTP Error 451: ",
         "open_interest:fail:GET https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT failed: HTTP Error 451: ",
@@ -15,9 +15,9 @@
     },
     {
       "error": null,
-      "fetched_at": "2026-07-07T10:00:27Z",
+      "fetched_at": "2026-07-07T12:38:33Z",
       "kind": "derivatives",
-      "latency_ms": 1067,
+      "latency_ms": 994,
       "notes": [
         "missing:long_account_pct,short_account_pct"
       ],
@@ -26,9 +26,9 @@
     },
     {
       "error": "all bybit derivatives endpoints failed",
-      "fetched_at": "2026-07-07T10:00:28Z",
+      "fetched_at": "2026-07-07T12:38:34Z",
       "kind": "derivatives",
-      "latency_ms": 232,
+      "latency_ms": 198,
       "notes": [
         "tickers:fail:GET https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT failed: HTTP Error 403: Forbidden",
         "long_short:fail:GET https://api.bybit.com/v5/market/account-ratio?category=linear&symbol=BTCUSDT&period=5min&limit=1 failed: HTTP Error 403: Forbidden"
@@ -37,28 +37,28 @@
       "status": "failed"
     },
     {
-      "error": "deribit book_summary failed",
-      "fetched_at": "2026-07-07T10:00:28Z",
+      "error": null,
+      "fetched_at": "2026-07-07T12:38:34Z",
       "kind": "derivatives",
-      "latency_ms": 171,
+      "latency_ms": 210,
       "notes": [
-        "book_summary:fail:GET https://www.deribit.com/api/v2/public/get_book_summary_by_instrument?instrument_name=BTC-PERPETUAL failed: HTTP Error 503: Service Unavailable"
+        "missing:next_funding_time_ms,open_interest_btc,long_short_ratio,long_account_pct,short_account_pct"
       ],
       "source": "deribit",
-      "status": "failed"
+      "status": "degraded"
     }
   ],
   "data": {
-    "funding_rate": 4.32101792105e-05,
+    "funding_rate": 2.16145979402e-05,
     "long_account_pct": null,
-    "long_short_ratio": 1.47,
-    "mark_price": 63220.7,
+    "long_short_ratio": 1.46,
+    "mark_price": 63539.7,
     "next_funding_time_ms": 1783468800000,
-    "open_interest_btc": 31019.16510000012,
+    "open_interest_btc": 30847.67720000013,
     "short_account_pct": null
   },
   "error": null,
-  "fetched_at": "2026-07-07T10:00:27Z",
+  "fetched_at": "2026-07-07T12:38:33Z",
   "kind": "derivatives",
   "notes": [
     "missing:long_account_pct,short_account_pct"

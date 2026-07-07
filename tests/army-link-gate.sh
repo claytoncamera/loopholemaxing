@@ -84,16 +84,29 @@ if [ -f "$GATE_FILE" ]; then
   done
 fi
 
-# ── 3. Homepage links to /army-link/ ──────────────────────────────────────────
+# ── 3. Homepage must NOT surface /army-link/ ─────────────────────────────────
+# Deliberate access-control decision (2026-06-29 gating pass): internal/ops
+# tools stay OFF the public portfolio. /army-link/ is noindex + robots-
+# disallowed and must not be linked or named on the public homepage.
 if [ -f "$HOME_FILE" ]; then
-  if ! grep -q -F -- '/army-link/' "$HOME_FILE"; then
-    echo "FAIL: $HOME_FILE does not link to /army-link/"
+  if grep -q -F -- '/army-link/' "$HOME_FILE"; then
+    echo "FAIL: $HOME_FILE links to /army-link/ (must stay unlinked from the public homepage)"
     FAIL=1
   fi
-  if ! grep -q -F -- 'Army Link' "$HOME_FILE"; then
-    echo "FAIL: $HOME_FILE does not mention 'Army Link'"
+  if grep -q -F -- 'Army Link' "$HOME_FILE"; then
+    echo "FAIL: $HOME_FILE mentions 'Army Link' (must stay unnamed on the public homepage)"
     FAIL=1
   fi
+fi
+
+# ── 3b. Gating hardening: robots disallow + noindex meta ─────────────────────
+if [ -f "robots.txt" ] && ! grep -q -F -- 'Disallow: /army-link/' robots.txt; then
+  echo "FAIL: robots.txt does not disallow /army-link/"
+  FAIL=1
+fi
+if [ -f "$GATE_FILE" ] && ! grep -q -F -- 'noindex' "$GATE_FILE"; then
+  echo "FAIL: $GATE_FILE missing noindex meta"
+  FAIL=1
 fi
 
 # ── 4. Plaintext-passkey absence scan ─────────────────────────────────────────

@@ -159,6 +159,34 @@
     .top-back { font-size: 13px; color: var(--text-secondary); }
     .top-back:hover { color: var(--text-primary); }
 
+    /* ── Live board (unlocked panel) ── */
+    .b-head { display:flex; align-items:center; gap:10px; margin-top: var(--space-lg); flex-wrap:wrap; }
+    .b-head h3 { font-size: 15px; font-weight: 700; }
+    .b-stamp { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+    .b-refresh {
+      margin-left:auto; background: transparent; color: #a78bfa; cursor: pointer;
+      border: 1px solid rgba(167,139,250,.4); border-radius: 6px;
+      font-size: 12px; font-weight: 600; padding: 5px 10px; font-family: inherit;
+    }
+    .b-refresh:hover { background: rgba(167,139,250,.08); }
+    .b-tile h4 { display:flex; align-items:center; gap:8px; }
+    .b-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--text-muted); flex-shrink:0; }
+    .b-dot.ok   { background: #3fb950; box-shadow: 0 0 6px rgba(63,185,80,.6); }
+    .b-dot.warn { background: #d29922; box-shadow: 0 0 6px rgba(210,153,34,.6); }
+    .b-dot.err  { background: #f85149; box-shadow: 0 0 6px rgba(248,81,73,.6); }
+    .b-val { font-family: var(--font-mono); font-size: 12px; color: var(--text-secondary); display:block; margin-top: 4px; line-height: 1.6; }
+    .b-row { display:flex; justify-content: space-between; gap: 10px; font-size: 12.5px; padding: 5px 0; border-bottom: 1px dashed var(--border); }
+    .b-row:last-child { border-bottom: 0; }
+    .b-row .k { color: var(--text-primary); }
+    .b-row .v { color: var(--text-secondary); font-family: var(--font-mono); font-size: 11.5px; text-align: right; }
+    .b-reach { display:flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .b-chip {
+      display:inline-flex; align-items:center; gap:6px;
+      font-family: var(--font-mono); font-size: 11px; color: var(--text-secondary);
+      border: 1px solid var(--border-light); border-radius: 999px; padding: 4px 10px;
+    }
+    .b-note { font-size: 11px; color: var(--text-muted); margin-top: 8px; line-height: 1.55; }
+
     @media (max-width: 600px) {
       .nexus-wrap { padding: 72px var(--space-md) var(--space-2xl); }
     }
@@ -242,30 +270,69 @@
     <div class="nexus-panel" id="nexusPanel" data-nexus-panel aria-hidden="true">
       <h2 style="margin-top:var(--space-xl); font-size:22px; font-weight:700;">Command Nexus &mdash; Overview</h2>
       <p class="nexus-sub" style="margin-top:8px;">
-        Read-only orchestration view. Aggregates the public BTC Brain, NBA Brain,
-        Universal Analyst Engine, and ULTRON audit log. No order routing, no broker
-        connection, no trade execution &mdash; this surface only observes and queues
-        proposals for explicit human approval inside ULTRON.
+        Read-only live board across the estate: HUB CRM health, capture-list growth,
+        Studio Sync, BTC Brain feed freshness, the public forecast ledger, and
+        network reachability of every live domain. Every tile fetches a real source;
+        failures render as <em>unreachable</em>, never as fake data. No order routing,
+        no broker connection, no trade execution &mdash; nothing can be executed from here.
       </p>
 
+      <!-- Live board: real fetches, no fabrication. Every tile labels its own
+           data source and failure state honestly. -->
+      <div class="b-head">
+        <h3>Live Board</h3>
+        <span class="b-stamp" id="boardStamp">not loaded</span>
+        <button class="b-refresh" id="boardRefresh" type="button">Refresh</button>
+      </div>
+
       <div class="panel-grid">
-        <div class="panel-tile">
-          <h4>Audit</h4>
-          <p>Hash-chained ULTRON audit log review. All side effects visible, none executed from here.</p>
+        <div class="panel-tile b-tile" id="tile-hub">
+          <h4><span class="b-dot"></span> HUB CRM API</h4>
+          <span class="b-val">&mdash;</span>
+          <p>hubapi.loopholemaxing.com/health &mdash; the CRM behind leads + capture lists.</p>
         </div>
-        <div class="panel-tile">
-          <h4>Orchestration</h4>
-          <p>Queue research/analysis tasks across BTC Brain, NBA Brain, and UAE for batch review.</p>
+
+        <div class="panel-tile b-tile" id="tile-lists">
+          <h4><span class="b-dot"></span> Capture Lists</h4>
+          <span class="b-val">&mdash;</span>
+          <div id="listRows"></div>
+          <p style="margin-top:6px;">Aggregate signup counts (no PII) from /api/v1/leads/list-counts.</p>
         </div>
-        <div class="panel-tile">
-          <h4>Command</h4>
-          <p>Human-gated dispatch only. Every action requires explicit APPROVE inside ULTRON.</p>
+
+        <div class="panel-tile b-tile" id="tile-studio">
+          <h4><span class="b-dot"></span> Studio Sync</h4>
+          <span class="b-val">&mdash;</span>
+          <p>studio-sync API health &mdash; cross-device clip sync backend.</p>
         </div>
-        <div class="panel-tile">
-          <h4>Status</h4>
-          <p>Live posture from the public creations &mdash; uptime, last-refresh, feed health.</p>
+
+        <div class="panel-tile b-tile" id="tile-feeds">
+          <h4><span class="b-dot"></span> BTC Brain Feeds</h4>
+          <span class="b-val">&mdash;</span>
+          <p>data/public/source_health.json &mdash; per-feed freshness vs budget.</p>
+        </div>
+
+        <div class="panel-tile b-tile" id="tile-ledger">
+          <h4><span class="b-dot"></span> BTC Forecast Ledger</h4>
+          <span class="b-val">&mdash;</span>
+          <p>ledger/public/accuracy.json &mdash; resolved forecasts, hit rate vs baseline. No edge is reported as no edge.</p>
+        </div>
+
+        <div class="panel-tile b-tile" id="tile-brief">
+          <h4><span class="b-dot"></span> Daily Briefing</h4>
+          <span class="b-val">&mdash;</span>
+          <p>briefings/index.json &mdash; latest generated briefing artifact.</p>
         </div>
       </div>
+
+      <div class="b-head" style="margin-top: var(--space-lg);">
+        <h3>Estate Reachability</h3>
+      </div>
+      <div class="b-reach" id="reachRow"></div>
+      <p class="b-note">
+        Opaque no-cors probes: a green dot means the host answered at the network
+        level &mdash; it does <strong>not</strong> verify the app is healthy. APIs with
+        CORS open (tiles above) are the real health signals.
+      </p>
 
       <div class="nexus-actions">
         <a class="nexus-link" id="nexus-open" href="#" target="_blank" rel="noopener noreferrer">
@@ -629,6 +696,223 @@
 
       // Probe server availability so the badge reflects truth before any submit.
       probeServer();
+    })();
+  </script>
+  <script>
+    /**
+     * Live Board — loads ONLY after the gate unlocks (observes .is-unlocked).
+     * Separate IIFE by design: the gate script above is contract-tested
+     * (tests/army-link-*.spec.mjs) and stays untouched.
+     *
+     * Honesty rules: every tile fetches a real source; failures render as
+     * "unreachable", never as fake data. Reachability chips are labeled as
+     * network-level only.
+     */
+    (function () {
+      'use strict';
+
+      var HUB = 'https://hubapi.loopholemaxing.com';
+      var panel = document.getElementById('nexusPanel');
+      var stamp = document.getElementById('boardStamp');
+      var refreshBtn = document.getElementById('boardRefresh');
+      if (!panel || !stamp) return;
+
+      var loadedOnce = false;
+
+      function tile(id) {
+        var t = document.getElementById(id);
+        if (!t) return { dot: function () {}, val: function () {} };
+        var dotEl = t.querySelector('.b-dot');
+        var valEl = t.querySelector('.b-val');
+        return {
+          dot: function (state) { if (dotEl) dotEl.className = 'b-dot' + (state ? ' ' + state : ''); },
+          val: function (html) { if (valEl) valEl.innerHTML = html; }
+        };
+      }
+
+      function fetchJson(url, timeoutMs) {
+        var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+        var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeoutMs || 6000) : null;
+        return fetch(url, { cache: 'no-store', credentials: 'omit', signal: ctrl ? ctrl.signal : undefined })
+          .then(function (r) {
+            if (!r.ok) throw new Error('http ' + r.status);
+            return r.json();
+          })
+          .finally(function () { if (timer) clearTimeout(timer); });
+      }
+
+      function probe(url, timeoutMs) {
+        var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+        var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeoutMs || 6000) : null;
+        return fetch(url, { mode: 'no-cors', cache: 'no-store', credentials: 'omit', signal: ctrl ? ctrl.signal : undefined })
+          .then(function () { return true; })
+          .catch(function () { return false; })
+          .finally(function () { if (timer) clearTimeout(timer); });
+      }
+
+      function esc(s) {
+        return String(s).replace(/[&<>"']/g, function (c) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+      }
+
+      function ago(iso) {
+        if (!iso) return 'never';
+        var t = Date.parse(iso);
+        if (isNaN(t)) return esc(iso);
+        var s = Math.max(0, (Date.now() - t) / 1000);
+        if (s < 90) return Math.round(s) + 's ago';
+        if (s < 5400) return Math.round(s / 60) + 'm ago';
+        if (s < 129600) return Math.round(s / 3600) + 'h ago';
+        return Math.round(s / 86400) + 'd ago';
+      }
+
+      function pct(x) { return (100 * x).toFixed(1) + '%'; }
+
+      function loadHub() {
+        var t = tile('tile-hub');
+        return fetchJson(HUB + '/health').then(function (j) {
+          t.dot(j && j.status === 'ok' ? 'ok' : 'warn');
+          t.val('status: ' + esc(j.status || '?') + ' &middot; env: ' + esc(j.env || '?'));
+        }).catch(function (e) {
+          t.dot('err'); t.val('unreachable (' + esc(e.message) + ')');
+        });
+      }
+
+      function loadLists() {
+        var t = tile('tile-lists');
+        var rows = document.getElementById('listRows');
+        return fetchJson(HUB + '/api/v1/leads/list-counts').then(function (j) {
+          var lists = (j && j.lists) || [];
+          t.dot('ok');
+          t.val('total signups: ' + (j.total || 0));
+          if (rows) {
+            rows.innerHTML = lists.length
+              ? lists.map(function (e) {
+                  return '<div class="b-row"><span class="k">' + esc(e.list_name) + '</span>' +
+                         '<span class="v">' + e.count + ' &middot; ' + ago(e.latest_signup) + '</span></div>';
+                }).join('')
+              : '<div class="b-row"><span class="k">No list signups yet</span><span class="v">&mdash;</span></div>';
+          }
+        }).catch(function (e) {
+          t.dot('err'); t.val('unreachable (' + esc(e.message) + ')');
+        });
+      }
+
+      function loadStudio() {
+        var t = tile('tile-studio');
+        return fetchJson('https://studio-sync-api-production.up.railway.app/health').then(function (j) {
+          var ok = j && (j.ok === true || j.status === 'ok');
+          t.dot(ok ? 'ok' : 'warn');
+          t.val(ok ? 'healthy' : esc(JSON.stringify(j)).slice(0, 80));
+        }).catch(function (e) {
+          t.dot('err'); t.val('unreachable (' + esc(e.message) + ')');
+        });
+      }
+
+      function loadFeeds() {
+        var t = tile('tile-feeds');
+        return fetchJson('/btc-brain/data/public/source_health.json').then(function (j) {
+          var src = (j && j.sources) || {};
+          var keys = Object.keys(src);
+          var okN = keys.filter(function (k) { return src[k] && src[k].status === 'ok'; }).length;
+          var overall = (j && j.overall) || '?';
+          t.dot(overall === 'ok' ? 'ok' : (okN > 0 ? 'warn' : 'err'));
+          t.val(okN + '/' + keys.length + ' feeds ok &middot; overall: ' + esc(overall) +
+                '<br>generated ' + ago(j.generated_at));
+        }).catch(function (e) {
+          t.dot('err'); t.val('artifact missing (' + esc(e.message) + ')');
+        });
+      }
+
+      function loadLedger() {
+        var t = tile('tile-ledger');
+        return fetchJson('/btc-brain/ledger/public/accuracy.json').then(function (j) {
+          var hz = (j && j.by_horizon) || {};
+          var keys = Object.keys(hz);
+          var totalN = 0, edge = false, lines = [];
+          keys.sort().forEach(function (k) {
+            var h = hz[k] || {};
+            totalN += h.n || 0;
+            if (typeof h.hit_rate === 'number' && typeof h.baseline_hit_rate === 'number') {
+              if (h.hit_rate > h.baseline_hit_rate + 0.001) edge = true;
+              lines.push(esc(k) + ': ' + pct(h.hit_rate) + ' vs base ' + pct(h.baseline_hit_rate) + ' (n=' + (h.n || 0) + ')');
+            }
+          });
+          t.dot(totalN > 0 ? (edge ? 'ok' : 'warn') : 'err');
+          t.val(lines.join('<br>') +
+                '<br><strong>' + (edge ? 'edge over baseline detected' : 'no edge over baseline yet') + '</strong> &middot; ' + totalN + ' resolved');
+        }).catch(function (e) {
+          t.dot('err'); t.val('artifact missing (' + esc(e.message) + ')');
+        });
+      }
+
+      function loadBrief() {
+        var t = tile('tile-brief');
+        return fetchJson('/btc-brain/data/public/briefings/index.json').then(function (j) {
+          var b = (j && j.briefings && j.briefings[0]) || null;
+          if (!b) { t.dot('warn'); t.val('no briefings published'); return; }
+          t.dot('ok');
+          t.val('latest: ' + esc(b.date) + ' &middot; generated ' + ago(b.generated_at));
+        }).catch(function (e) {
+          t.dot('err'); t.val('artifact missing (' + esc(e.message) + ')');
+        });
+      }
+
+      // NOTE: websitehub.loopholemaxing.com is deliberately absent — it ships
+      // Cross-Origin-Resource-Policy: same-origin, which makes browsers reject
+      // no-cors probes even when the site is healthy (verified 2026-07-07).
+      // Its backend health is the HUB CRM tile above.
+      var REACH = [
+        ['orbitroute.ai', 'https://orbitroute.ai/'],
+        ['workwithclayton.com', 'https://workwithclayton.com/'],
+        ['knockfiber.com', 'https://www.knockfiber.com/'],
+        ['thepeptidex.net', 'https://thepeptidex.net/'],
+        ['creation hub', 'https://creation.loopholemaxing.com/']
+      ];
+
+      function loadReach() {
+        var row = document.getElementById('reachRow');
+        if (!row) return Promise.resolve();
+        row.innerHTML = REACH.map(function (r, i) {
+          return '<span class="b-chip" id="reach-' + i + '"><span class="b-dot"></span>' + esc(r[0]) + '</span>';
+        }).join('');
+        return Promise.all(REACH.map(function (r, i) {
+          // One retry: cold DNS/TLS can fail a first probe transiently.
+          return probe(r[1]).then(function (up) {
+            return up || probe(r[1]);
+          }).then(function (up) {
+            var chip = document.getElementById('reach-' + i);
+            var dot = chip && chip.querySelector('.b-dot');
+            if (dot) dot.className = 'b-dot ' + (up ? 'ok' : 'err');
+          });
+        }));
+      }
+
+      function loadBoard() {
+        stamp.textContent = 'loading…';
+        var started = Date.now();
+        Promise.allSettled([
+          loadHub(), loadLists(), loadStudio(), loadFeeds(), loadLedger(), loadBrief(), loadReach()
+        ]).then(function () {
+          stamp.textContent = 'updated ' + new Date().toLocaleTimeString() +
+            ' (' + ((Date.now() - started) / 1000).toFixed(1) + 's)';
+        });
+      }
+
+      function maybeLoad() {
+        if (panel.classList.contains('is-unlocked') && !loadedOnce) {
+          loadedOnce = true;
+          loadBoard();
+        }
+      }
+
+      if (typeof MutationObserver === 'function') {
+        new MutationObserver(maybeLoad).observe(panel, { attributes: true, attributeFilter: ['class'] });
+      }
+      maybeLoad(); // covers session-restored unlock on page load
+
+      if (refreshBtn) refreshBtn.addEventListener('click', loadBoard);
     })();
   </script>
   <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js?v=20260616a" data-site="loopholemaxing"></script>

@@ -152,6 +152,42 @@ footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted)
 </style>
 </head>
 <body>
+<!-- ── Access gate: same code-gate as /window/ (SHA-256 digest, shared
+     session key). Unlocking the Window landing unlocks this in the same
+     tab; a direct URL hit shows the gate instead of the tracker. This is
+     a client-side privacy curtain on static GitHub Pages, NOT real auth —
+     no secret/token lives on this page. For true access control put this
+     behind Cloudflare Access / an auth host. ── -->
+<style>
+  body:not(.wunlocked) > *:not(#wgate){ display:none !important; }
+  #wgate{ position:fixed; inset:0; z-index:99999; display:flex; align-items:center; justify-content:center;
+    background:rgba(8,8,13,.975); backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px);
+    font-family:var(--font,system-ui,-apple-system,sans-serif); }
+  body.wunlocked #wgate{ display:none; }
+  #wgate .gc{ width:min(400px,92vw); background:#101017; border:1px solid #2c2c3a; border-radius:18px;
+    padding:32px 28px; text-align:center; box-shadow:0 20px 60px rgba(0,0,0,.6); }
+  #wgate h1{ font-size:24px; margin-bottom:6px; color:#f4f4f8; }
+  #wgate .sub{ color:#a1a1b3; font-size:13.5px; margin-bottom:22px; }
+  #wgate input{ width:100%; padding:13px 14px; margin-bottom:12px; border-radius:11px; border:1px solid #2c2c3a;
+    background:#08080d; color:#f4f4f8; font-size:16px; text-align:center; letter-spacing:.18em; outline:none; }
+  #wgate input:focus{ border-color:#38bdf8; }
+  #wgate button{ width:100%; padding:13px; border:0; border-radius:11px; cursor:pointer; color:#06121a; font-weight:700; font-size:15px;
+    background:linear-gradient(120deg,#818cf8,#38bdf8,#22d3ee); }
+  #wgate .err{ color:#f87171; font-size:13px; min-height:18px; margin-top:10px; }
+  #wgate .shake{ animation:wsh .35s; }
+  @keyframes wsh{ 20%,60%{transform:translateX(-7px)} 40%,80%{transform:translateX(7px)} }
+</style>
+<div id="wgate">
+  <div class="gc" id="wgc">
+    <h1>🪟 The Window</h1>
+    <div class="sub">Enter your access code to view this tracker.</div>
+    <form id="wgf">
+      <input id="wgp" type="password" inputmode="text" autocapitalize="off" autocorrect="off" spellcheck="false" autocomplete="off" placeholder="Access code" autofocus>
+      <button type="submit">Open</button>
+    </form>
+    <div class="err" id="wge"></div>
+  </div>
+</div>
 <header><div class="wrap nav">
   <div class="brand"><span class="dot"></span> PNP Tracker</div>
   <nav class="nav-links">
@@ -402,6 +438,29 @@ footer{padding:40px 0 60px;border-top:1px solid var(--border);color:var(--muted)
     {n:money(invested),l:'Actual cash spent (AI tooling)',s:monthly+'/mo × '+weeks+' weeks — hosting excluded, unconfirmed'},
     {n:money(savings)+' saved',l:pctSaved+'% cash reduction',s:(multiple?Math.round(multiple)+'× cheaper than outsourcing':'—')}
   ].map(function(s){return '<div class="savings-card"><div class="n">'+s.n+'</div><div class="l">'+s.l+'</div><div class="s">'+s.s+'</div></div>'}).join('');
+})();
+</script>
+<script>
+/* Window sub-path gate — mirrors /window/: same SHA-256 access code and the
+   same shared session key, so entering the code once (here or on the Window
+   landing) opens both in that tab. Privacy curtain only; no secret stored. */
+(function(){
+  var EXPECTED_DIGEST='ec07c9c3e1fc3114ab35cdacc62bab0cc9b99da9f1c96aa6b25aa0c175c77c1f';
+  var SESSION_KEY='window_unlocked_v1';
+  var $=function(id){return document.getElementById(id)};
+  function reveal(){ document.body.classList.add('wunlocked'); }
+  async function sha256Hex(str){ var b=await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return [].map.call(new Uint8Array(b), function(x){ return x.toString(16).padStart(2,'0'); }).join(''); }
+  function eq(a,b){ if(a.length!==b.length) return false; var d=0; for(var i=0;i<a.length;i++) d|=a.charCodeAt(i)^b.charCodeAt(i); return d===0; }
+  try{ if(sessionStorage.getItem(SESSION_KEY)==='1'){ reveal(); return; } }catch(e){}
+  var f=$('wgf'), er=$('wge');
+  f.onsubmit=async function(ev){ ev.preventDefault();
+    var v=$('wgp').value; er.textContent='';
+    if(!v){ er.textContent='Enter your access code.'; return; }
+    if(!(window.crypto&&crypto.subtle)){ er.textContent='This browser can’t verify the code (needs HTTPS).'; return; }
+    if(eq(await sha256Hex(v), EXPECTED_DIGEST)){ try{ sessionStorage.setItem(SESSION_KEY,'1'); }catch(_){}; reveal(); }
+    else{ er.textContent='Wrong code.'; $('wgc').classList.add('shake'); setTimeout(function(){ $('wgc').classList.remove('shake'); },400); $('wgp').value=''; $('wgp').focus(); }
+  };
 })();
 </script>
 </body>

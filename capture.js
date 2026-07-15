@@ -29,6 +29,10 @@
       body: JSON.stringify(payload)
     });
     if (!res.ok) throw new Error('capture failed: HTTP ' + res.status);
+    try {
+      // Analytics conversion (best-effort; the CRM POST above is the source of truth).
+      if (window.lmx && window.lmx.track) window.lmx.track('lead_submit', { list: list });
+    } catch (e) { /* ignore */ }
     return res.json();
   };
 

@@ -307,6 +307,27 @@
     <div class="gate-title">Enter your Studio</div>
     <div class="gate-sub">Your content HUB — import, track, trim, and assemble. Passcode-protected on this device.</div>
     <div id="gate-err" class="gate-err"></div>
+    <div id="invite-flow" style="display:none;">
+      <div id="inv-step-1">
+        <p style="margin:0 0 16px;">You've been invited to <b>Studio</b> — a private content workspace: import footage, trim, caption, plan, and sync across your devices.</p>
+        <button class="btn" style="width:100%;" onclick="redeemInvite()">&#127916; Activate my Studio</button>
+        <div class="gate-err" id="inv-err" style="margin-top:10px;"></div>
+      </div>
+      <div id="inv-step-2" style="display:none;">
+        <p style="margin:0 0 8px;"><b>Your Studio is ready.</b> This is your sync code — it is the key to your account on other devices. Save it somewhere safe:</p>
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <input class="input" id="inv-code" readonly style="font-family:monospace;font-size:12px;">
+          <button class="btn btn-sm" onclick="navigator.clipboard.writeText($('inv-code').value).then(()=>toast('Sync code copied — save it!','success'))">Copy</button>
+        </div>
+        <p style="margin:0 0 8px;">Now set a passcode for this device:</p>
+        <div class="form-grid2" style="margin-bottom:12px;">
+          <input class="input" id="inv-pass1" type="password" placeholder="Passcode" autocomplete="new-password">
+          <input class="input" id="inv-pass2" type="password" placeholder="Repeat passcode" autocomplete="new-password">
+        </div>
+        <button class="btn" style="width:100%;" onclick="finishInvite()">Enter Studio &rarr;</button>
+        <div class="gate-err" id="inv-err2" style="margin-top:10px;"></div>
+      </div>
+    </div>
     <form id="gate-form" onsubmit="return doUnlock(event)">
       <div class="form-row">
         <label class="field-label">Passcode</label>
@@ -314,7 +335,7 @@
       </div>
       <button class="btn btn-full" type="submit">Unlock Studio</button>
     </form>
-    <div class="hint" style="margin-top:18px;">Default passcode is <code>12345</code> — change it under Settings once you're in.</div>
+    <div class="hint" id="gate-hint" style="margin-top:18px;">Default passcode is <code>12345</code> — change it under Settings once you're in.</div>
   </div>
 </div>
 
@@ -606,6 +627,27 @@
         <div class="hint" style="margin-top:6px;">Syncs metadata, thumbnails, captions, plan, and your <b>finished clips</b>. Raw originals stay on the device you imported them on (use Backup to move those). To add another device: open Studio there, paste this same code, Turn on sync.</div>
       </div>
 
+      <div class="panel engine-panel">
+        <div class="eng-head">
+          <span class="eng-badge">&#128140; Invite people (owner)</span>
+        </div>
+        <div class="hint" style="margin:0 0 14px;">Mint one-time login links. Each link provisions a fresh, isolated Studio account (own library, own sync, 2GB cloud clip storage). Needs the admin key from the sync server.</div>
+        <div class="form-row">
+          <label class="field-label">Admin key</label>
+          <input class="input" id="adm-key" type="password" placeholder="paste once — stored on this device only" autocomplete="off">
+        </div>
+        <div class="form-row">
+          <label class="field-label">Label (who is this for?)</label>
+          <input class="input" id="inv-label" placeholder="e.g. Jake — RCLX reels">
+        </div>
+        <div class="row-actions">
+          <button class="btn btn-sm" onclick="mintInvite()">&#128279; New invite link</button>
+          <button class="btn btn-ghost btn-sm" onclick="listInvites()">Show invites</button>
+        </div>
+        <div id="inv-out" class="hint" style="margin-top:10px;"></div>
+        <div id="inv-list" style="margin-top:6px;"></div>
+      </div>
+
       <div class="panel">
         <div class="panel-title">Storage</div>
         <div class="hint" style="margin-top:0;">Footage lives in this browser (IndexedDB). The meter shows how much of the browser's allowance you've used.</div>
@@ -784,6 +826,72 @@ $('confirm-ok').onclick = ()=>{ closeOverlay('confirm-overlay'); if(_confirmCb) 
 /* ============================================================
    GATE
    ============================================================ */
+/* ── Invite onboarding (?invite=TOKEN → one-time redeem → fresh account) ── */
+let _inviteToken=null;
+function inviteBoot(){
+  const t=new URLSearchParams(location.search).get('invite');
+  const admEl=$('adm-key'); if(admEl && localStorage.getItem('studio_admin_key')) admEl.value=localStorage.getItem('studio_admin_key');
+  if(!t) return;
+  _inviteToken=t;
+  document.querySelector('.gate-title').textContent='Welcome to Studio';
+  document.querySelector('.gate-sub').textContent='One tap and this device becomes your own private content studio.';
+  $('gate-form').style.display='none'; $('gate-hint').style.display='none';
+  $('invite-flow').style.display='block';
+  if(localStorage.getItem('studio_sync_code')){
+    $('inv-step-1').innerHTML='<p style="margin:0;">This device is already connected to a Studio account. To accept the invite without replacing it, open the link on the new person\'s device (or a private window).</p>';
+  }
+}
+async function redeemInvite(){
+  $('inv-err').textContent='';
+  try{
+    const r=await fetch(SYNC_URL+'/invite/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:_inviteToken})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+    $('inv-code').value=j.syncCode;
+    $('inv-step-1').style.display='none'; $('inv-step-2').style.display='block';
+  }catch(e){ $('inv-err').textContent='Could not activate: '+e.message; }
+}
+async function finishInvite(){
+  $('inv-err2').textContent='';
+  const a=$('inv-pass1').value, b=$('inv-pass2').value;
+  if(a.length<4){ $('inv-err2').textContent='Passcode needs at least 4 characters.'; return; }
+  if(a!==b){ $('inv-err2').textContent='Passcodes don\'t match.'; return; }
+  localStorage.setItem('studio_pass_hash', await sha256(a));
+  localStorage.setItem('studio_sync_code', $('inv-code').value);
+  localStorage.setItem('studio_sync_when', String(Date.now()));
+  sessionStorage.setItem('studio_unlocked','1');
+  history.replaceState(null,'',location.pathname);
+  enterApp();
+  toast('Welcome — your Studio is live. Sync is on.','success');
+  try{ syncNow(true); }catch(_){}
+}
+/* ── Owner: mint + list invites (admin key stored locally only) ── */
+function admKey(){ const v=($('adm-key').value||'').trim(); if(v) localStorage.setItem('studio_admin_key',v); return v||localStorage.getItem('studio_admin_key')||''; }
+async function mintInvite(){
+  const k=admKey(); const out=$('inv-out');
+  if(!k){ out.textContent='Paste the admin key first (railway variables → ADMIN_KEY).'; return; }
+  out.textContent='Minting…';
+  try{
+    const r=await fetch(SYNC_URL+'/invite/new',{method:'POST',headers:{'Content-Type':'application/json','X-Admin-Key':k},body:JSON.stringify({label:$('inv-label').value||''})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+    await navigator.clipboard.writeText(j.url).catch(()=>{});
+    out.innerHTML='&#9989; Link copied to clipboard (valid 7 days, one use):<br><code style="word-break:break-all;">'+esc(j.url)+'</code>';
+    $('inv-label').value='';
+  }catch(e){ out.textContent='Mint failed: '+e.message; }
+}
+async function listInvites(){
+  const k=admKey(); const el=$('inv-list');
+  if(!k){ $('inv-out').textContent='Paste the admin key first.'; return; }
+  try{
+    const r=await fetch(SYNC_URL+'/invites',{headers:{'X-Admin-Key':k}});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok) throw new Error(j.error||('HTTP '+r.status));
+    el.innerHTML=(j.invites||[]).map(v=>`<div class="bd-row"><span class="bd-name">${esc(v.label||'(no label)')}</span><span class="bd-val" style="font-size:11px;">${v.redeemedAt?'&#9989; joined '+new Date(v.redeemedAt).toLocaleDateString():(v.expiresAt<Date.now()?'expired':'&#9203; pending')}</span></div>`).join('')||'<div class="eng-empty">No invites yet.</div>';
+  }catch(e){ $('inv-out').textContent='List failed: '+e.message; }
+}
+document.addEventListener('DOMContentLoaded', inviteBoot);
+
 async function doUnlock(e){
   e.preventDefault();
   const pass = $('gate-pass').value;

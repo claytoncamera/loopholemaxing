@@ -362,6 +362,7 @@
           <span id="eng-backfill-wrap"></span>
         </div>
         <div class="eng-sub">Auto-reads every clip on import — orientation, platform fit, and what to do next.</div>
+        <div id="engine-cockpit"></div>
         <div class="eng-cols">
           <div>
             <div class="eng-col-title">&#9986; Ready to clip <span style="color:var(--text-muted);font-weight:400" id="eng-clip-count"></span></div>
@@ -878,6 +879,7 @@ function renderEngine(){
   $('eng-post-list').innerHTML = postCand.length ? postCand.slice(0,6).map(row).join('') : '<div class="eng-empty">No short verticals queued — vertical clips under 90s land here, ready to post.</div>';
   $('eng-clip-count').textContent = clipCand.length ? '('+clipCand.length+')' : '';
   $('eng-post-count').textContent = postCand.length ? '('+postCand.length+')' : '';
+  renderEngineCockpit();
   // Offer a backfill if any older clips predate the engine (no orientation read)
   const stale = CLIPS.filter(c=>!c.orientation && (c.width||c.duration));
   $('eng-backfill-wrap').innerHTML = stale.length ? `<button class="btn btn-ghost btn-sm" onclick="backfillEngine()">Analyze ${stale.length} older clip${stale.length!==1?'s':''}</button>` : '';
@@ -899,6 +901,113 @@ async function backfillEngine(){
   await refreshAll();
   toast('Engine analysis complete','success');
 }
+/* ============================================================
+   MAC-MINI ENGINE COCKPIT — status, remote config, ranked review feed
+   (engine_status / engine_config items flow through the same sync account)
+   ============================================================ */
+const ENGINE = JSON.parse(localStorage.getItem('studio_engine_state')||'{"status":null,"config":null}');
+function engineSave(){ localStorage.setItem('studio_engine_state', JSON.stringify(ENGINE)); }
+const ENGINE_CFG_KEYS = [
+  ['maxClips','number','Max clips/video'], ['minClipScore','number','Min score'],
+  ['clipMinSeconds','number','Min length (s)'], ['clipMaxSeconds','number','Max length (s)'],
+  ['captionStyle','select:hormozi,clean,karaoke','Caption style'],
+  ['burnCaptions','bool','Burn captions'], ['loudnessNormalize','bool','-14 LUFS audio'],
+  ['reframe','select:smart,center','Reframe'], ['removeSilence','bool','Cut silences'],
+  ['removeFillers','bool','Cut “um/uh”'], ['llmProvider','select:ollama,claude-cli,off','AI ranking'],
+];
+function engCfgVal(k, dflt){ const c=(ENGINE.config&&ENGINE.config.config)||{}; const e=(ENGINE.status&&ENGINE.status.effectiveConfig)||{}; return c[k]!==undefined?c[k]:(e[k]!==undefined?e[k]:dflt); }
+const CAPTION_PREVIEW = {
+  hormozi:'<span style="font-family:Arial Black,sans-serif;font-weight:900;color:#fff;text-shadow:0 2px 6px #000,0 0 3px #000;">MADE <span style="color:#FFE800;font-size:1.15em;">$3,000</span> IN</span>',
+  clean:'<span style="font-family:Helvetica,Arial,sans-serif;font-weight:700;color:#fff;text-shadow:0 2px 5px #000;">made <span style="font-size:1.12em;">$3,000</span> in</span>',
+  karaoke:'<span style="font-family:Arial Black,sans-serif;font-weight:900;"><span style="color:#FFE800;">MADE $3,0</span><span style="color:#fff;">00 IN</span></span>',
+};
+function scoreColor(s){ return s>=75?'#22c55e':s>=55?'#eab308':'#94a3b8'; }
+function engineReviewList(){
+  return CLIPS.filter(c=>c.engine==='v2'&&c.isClip&&!(c.tags||[]).includes('approved')&&!(c.tags||[]).includes('skipped'))
+              .sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,8);
+}
+function renderEngineCockpit(){
+  const el=$('engine-cockpit'); if(!el) return;
+  const st=ENGINE.status;
+  const age=st? Math.round((Date.now()-(st.at||0))/60000):null;
+  const live=st && age<3;
+  const stLine = !st ? 'Engine not seen yet — it reports here once the sync code is set on the Mac mini.'
+    : `${live?'🟢':'🟡'} ${esc(st.state||'?')}${st.file?' · '+esc(st.file):''}${st.stage?' · '+esc(st.stage):''} · v${esc(st.version||'?')} · ${age<1?'just now':age+'m ago'}${live?'':' (stale)'}`;
+  const review=engineReviewList();
+  const rows=review.map(c=>`
+    <div class="eng-item" style="align-items:center;">
+      <img src="${c.thumb||''}" alt="" onclick="openDetail('${c.id}')" style="cursor:pointer;">
+      <div class="eng-item-t" onclick="openDetail('${c.id}')" style="cursor:pointer;">
+        <div class="eng-item-name"><b style="color:${scoreColor(c.score||0)};">${c.score||'—'}</b> · ${esc(c.title)}</div>
+        <div class="eng-item-note">${esc(c.scoreReason||'')}${c.cutSec?` · ${c.cutSec}s cut`:''}${c.reframeMode?` · ${esc(c.reframeMode)}`:''}</div>
+      </div>
+      <button class="btn btn-sm" onclick="engineApprove('${c.id}')">&#10003; Approve</button>
+      <button class="btn btn-ghost btn-sm" onclick="engineSkip('${c.id}')">Skip</button>
+    </div>`).join('');
+  const cfgInputs=ENGINE_CFG_KEYS.map(([k,type,label])=>{
+    const v=engCfgVal(k, type==='bool'?true:'');
+    if(type==='bool') return `<label class="field-label" style="display:flex;gap:6px;align-items:center;margin:0;"><input type="checkbox" data-engcfg="${k}" ${v?'checked':''}> ${label}</label>`;
+    if(type.startsWith('select:')) return `<label class="field-label" style="margin:0;">${label}<select class="input mini" data-engcfg="${k}" onchange="if('${k}'==='captionStyle')$('cap-preview').innerHTML=CAPTION_PREVIEW[this.value]||''">${type.slice(7).split(',').map(o=>`<option ${o===String(v)?'selected':''}>${o}</option>`).join('')}</select></label>`;
+    return `<label class="field-label" style="margin:0;">${label}<input class="input mini" type="number" data-engcfg="${k}" value="${esc(String(v))}"></label>`;
+  }).join('');
+  el.innerHTML=`
+    <div class="eng-read" style="display:block;margin-bottom:10px;">${stLine}</div>
+    ${review.length?`<div class="eng-col-title">&#127942; Auto-clips to review <span style="color:var(--text-muted);font-weight:400">(${review.length})</span></div><div class="eng-list">${rows}</div>`:''}
+    <details style="margin:10px 0 14px;">
+      <summary class="field-label" style="cursor:pointer;">&#9881; Mac-mini engine settings (applies on next poll)</summary>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:10px 0;">${cfgInputs}</div>
+      <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+        <button class="btn btn-sm" onclick="engineSaveConfig()">Save to engine</button>
+        <div id="cap-preview" style="background:#1a1a2e;border-radius:8px;padding:8px 14px;font-size:15px;">${CAPTION_PREVIEW[engCfgVal('captionStyle','hormozi')]||''}</div>
+      </div>
+    </details>`;
+}
+async function engineSaveConfig(){
+  const config={};
+  document.querySelectorAll('[data-engcfg]').forEach(inp=>{
+    const k=inp.dataset.engcfg;
+    config[k]= inp.type==='checkbox'? inp.checked : (inp.type==='number'? +inp.value : inp.value);
+  });
+  ENGINE.config={config}; engineSave();
+  if(!syncEnabled()){ toast('Set a sync code first — the engine reads config through sync','error'); return; }
+  try{
+    const r=await fetch(SYNC_URL+'/push',{method:'POST',headers:syncHeaders({'Content-Type':'application/json'}),
+      body:JSON.stringify({items:[{id:'engine_config',kind:'engine_config',updatedAt:Date.now(),data:{config}}]})});
+    if(!r.ok) throw new Error(r.status);
+    toast('Engine config saved — applies within ~15s','success');
+  }catch(e){ toast('Could not reach sync: '+e.message,'error'); }
+}
+function nextOpenSlot(platform){
+  const taken=new Set(CLIPS.filter(c=>c.scheduledAt&&c.scheduledPlatform===platform).map(c=>c.scheduledAt));
+  const d=new Date();
+  for(let i=1;i<=60;i++){ const day=new Date(d.getTime()+i*864e5).toISOString().slice(0,10); if(!taken.has(day)) return day; }
+  return '';
+}
+async function engineApprove(id){
+  const c=CLIPS.find(x=>x.id===id); if(!c) return;
+  c.tags=[...new Set([...(c.tags||[]),'approved'])]; c.favorite=true;
+  c.scheduledPlatform=(c.platforms&&c.platforms[0])||'instagram';
+  c.scheduledAt=c.scheduledAt||nextOpenSlot(c.scheduledPlatform);
+  c.updatedAt=Date.now();
+  await idbPut('clips',c); await refreshAll();
+  toast(`Approved → queued ${c.scheduledAt} on ${platById(c.scheduledPlatform).name}`,'success');
+}
+async function engineSkip(id){
+  const c=CLIPS.find(x=>x.id===id); if(!c) return;
+  c.tags=[...new Set([...(c.tags||[]),'skipped'])]; c.updatedAt=Date.now();
+  await idbPut('clips',c); await refreshAll();
+}
+async function copyPublicLink(id){
+  if(!syncEnabled()){ toast('Sync required for public links','error'); return; }
+  try{
+    const r=await fetch(SYNC_URL+'/blob/'+encodeURIComponent(id)+'/link',{method:'POST',headers:syncHeaders()});
+    if(!r.ok) throw new Error(r.status===503?'not configured on server':('HTTP '+r.status));
+    const j=await r.json();
+    await navigator.clipboard.writeText(j.url);
+    toast('Public link copied (valid 24h)','success');
+  }catch(e){ toast('Link failed: '+e.message,'error'); }
+}
+
 function stat(v,l){ return `<div class="stat"><div class="stat-val">${esc(v)}</div><div class="stat-lbl">${esc(l)}</div></div>`; }
 function breakdown(defs, pick, colorOf, nameOf){
   return defs.map(d=>{ const n=CLIPS.filter(c=>pick(c)===d.id).length;
@@ -1188,7 +1297,13 @@ async function openDetail(id){
       <span class="ori-badge">${esc(orientationOf(c))}</span>
       <span>${esc(lengthNote(c))}</span>
       <span>Best for: <b>${sugg.map(p=>esc(platById(p).name)).join(', ')||'—'}</b></span>
+      ${c.engine==='v2'&&c.isClip?`<span>Score: <b style="color:${scoreColor(c.score||0)}">${c.score||'—'}/100</b></span>`:''}
     </div>
+    ${c.engine==='v2'&&c.isClip&&c.scoreReason?`<div class="eng-read" style="display:block;">${esc(c.scoreReason)}${c.hookLine?` · Hook: “${esc(c.hookLine)}”`:''}</div>`:''}
+    ${heatBarHtml(c)}
+    ${(c.sentences&&c.sentences.length)?`
+      <div class="form-row" style="margin-top:10px;"><label class="field-label">&#128269; Find moments (search what was said)</label>
+      <input class="input" placeholder="e.g. pricing, hook, secret…" oninput="findMoments('${id}',this.value)"><div id="fm-results"></div></div>`:''}
     <div class="breakdown" style="margin:16px 0;">
       <div class="bd-row"><span class="bd-name"><span class="dot" style="background:${sr.color}"></span>Source</span><span class="bd-val" style="font-size:12px;">${esc(sr.name)}</span></div>
       <div class="bd-row"><span class="bd-name">Duration</span><span class="bd-val">${fmtTime(c.duration).split('.')[0]}</span></div>
@@ -1228,9 +1343,33 @@ async function openDetail(id){
       <button class="btn btn-ghost" onclick="loadInEditor('${id}')">&#9986; Trim</button>
       <button class="btn btn-ghost" onclick="toggleFavorite('${id}');this.innerHTML=(CLIPS.find(c=>c.id==='${id}').favorite?'&#9733; Favorited':'&#9734; Favorite')">${c.favorite?'&#9733; Favorited':'&#9734; Favorite'}</button>
       <button class="btn btn-ghost" onclick="downloadClip('${id}')">&#11015; Download</button>
+      ${c.isClip?`<button class="btn btn-ghost" onclick="copyPublicLink('${id}')">&#128279; Public link</button>`:''}
       <button class="btn btn-danger" onclick="deleteClip('${id}')">Delete</button>
     </div>`;
   openOverlay('detail-overlay');
+}
+
+/* ── Engine v2 extras in the detail view ── */
+function heatBarHtml(c){
+  if(!c.heatCurve||!c.heatCurve.length) return '';
+  const n=c.heatCurve.length, dur=c.duration||n;
+  const stops=c.heatCurve.map((v,i)=>{ const hue=Math.round(220-180*Math.min(1,v)); return `hsl(${hue} 80% ${Math.round(30+35*Math.min(1,v))}%) ${(i/n*100).toFixed(1)}%`; }).join(',');
+  const marks=(c.candidates||[]).map(cd=>{
+    const l=(cd.start/dur*100).toFixed(1), w=Math.max(1,((cd.end-cd.start)/dur*100)).toFixed(1);
+    return `<div title="score ${cd.score}: ${esc(cd.reason||'')}" onclick="(document.getElementById('detail-video')||{}).currentTime=${cd.start}"
+      style="position:absolute;left:${l}%;width:${w}%;top:-3px;bottom:-3px;border:2px solid ${scoreColor(cd.score)};border-radius:4px;cursor:pointer;"></div>`;
+  }).join('');
+  return `<div class="form-row" style="margin-top:12px;"><label class="field-label">Highlight heat (click a box to jump)</label>
+    <div style="position:relative;height:18px;border-radius:6px;background:linear-gradient(90deg,${stops});">${marks}</div></div>`;
+}
+function findMoments(id,q){
+  const c=CLIPS.find(x=>x.id===id); const el=$('fm-results'); if(!el) return;
+  q=(q||'').trim().toLowerCase();
+  if(!c||!c.sentences||q.length<2){ el.innerHTML=''; return; }
+  const hits=c.sentences.filter(s=>s[1].toLowerCase().includes(q)).slice(0,8);
+  el.innerHTML=hits.length? hits.map(s=>`<div class="eng-item" style="cursor:pointer;" onclick="(document.getElementById('detail-video')||{}).currentTime=${s[0]}">
+      <span class="pill">${fmtTime(s[0]).split('.')[0]}</span><div class="eng-item-t"><div class="eng-item-note">${esc(s[1])}</div></div></div>`).join('')
+    : '<div class="eng-empty">No match in the transcript.</div>';
 }
 async function saveDetail(id){
   const c=CLIPS.find(x=>x.id===id); if(!c) return;
@@ -1820,18 +1959,25 @@ async function syncNow(silent){
         await fetch(SYNC_URL+'/blob/'+encodeURIComponent(id),{method:'PUT',headers:syncHeaders({'Content-Type':rec.blob.type||'video/mp4'}),body:rec.blob}).catch(()=>{});
       }
     }
-    // 3) PULL remote changes
+    // 3) PULL remote changes — compound (since, sinceId) cursor; kinds routed:
+    // clip/project → stores, engine_* → ENGINE state, anything else ignored.
     const since=+(localStorage.getItem('studio_sync_last')||0);
-    const pr=await fetch(SYNC_URL+'/pull',{method:'POST',headers:syncHeaders({'Content-Type':'application/json'}),body:JSON.stringify({since})});
+    const sinceId=localStorage.getItem('studio_sync_last_id')||'';
+    const pr=await fetch(SYNC_URL+'/pull',{method:'POST',headers:syncHeaders({'Content-Type':'application/json'}),body:JSON.stringify({since,sinceId})});
     if(!pr.ok) throw new Error('pull '+pr.status);
-    const pd=await pr.json(); let changed=0;
+    const pd=await pr.json(); let changed=0, engChanged=false;
     for(const it of (pd.items||[])){
+      if(it.kind==='engine_status'){ if(!it.deleted){ ENGINE.status=it.data||null; engChanged=true; } continue; }
+      if(it.kind==='engine_config'){ if(!it.deleted){ ENGINE.config=it.data||null; engChanged=true; } continue; }
+      if(it.kind!=='clip'&&it.kind!=='project') continue; // engine_command acks, future kinds
       if(it.deleted){ const store=it.kind==='project'?'projects':'clips'; await idbDel(store,it.id); if(it.kind!=='project') await idbDel('blobs',it.id); changed++; continue; }
       const store=it.kind==='project'?'projects':'clips';
       const local=(it.kind==='project'?PROJECTS:CLIPS).find(x=>x.id===it.id);
       if(!local || (it.updatedAt > (local.updatedAt||0))){ const obj=it.data||{}; obj.id=it.id; obj.updatedAt=it.updatedAt; await idbPut(store,obj,true); changed++; }
     }
-    localStorage.setItem('studio_sync_last',String(pd.serverTime||since));
+    if(engChanged){ engineSave(); const av=document.querySelector('.view.active'); if(av&&av.id==='view-dashboard') renderEngineCockpit(); }
+    if(pd.cursor){ localStorage.setItem('studio_sync_last',String(pd.cursor.since)); localStorage.setItem('studio_sync_last_id',String(pd.cursor.sinceId)); }
+    else if(!(pd.items||[]).length){ /* nothing new — keep cursor where it is */ }
     if(changed){ await refreshAll(); const av=document.querySelector('.view.active'); if(av&&av.id==='view-library')renderLibrary(); if(av&&av.id==='view-plan')renderPlan(); }
     localStorage.setItem('studio_sync_when',String(Date.now()));
     setS('Synced · '+new Date().toLocaleTimeString());

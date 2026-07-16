@@ -202,6 +202,9 @@ const DECK = [
       links: [ {t:'Homepage', u:'/'}, {t:'Work With Clayton', u:'/work-with-clayton/'} ] },
   ]},
   { group: '🔐 Infra & Memory', items: [
+    { name: 'Claytron NOC', status: 'live', tag: 'command wall · :8090',
+      desc: '<b>The two-TV command wall</b> — the ambient layer every engine was missing: problems used to surface only when you went looking. <b>Systems pane:</b> 18 endpoint probes (code + latency), 12 launchd jobs, Mac-mini CPU/mem/disk gauges. <b>Business pane:</b> PNP sales, RCLX funnel + producing-rep goal, MMS equity, brain metrics. Runs its <b>own 60s probe loop</b> — the daily sweep file is 8h stale by evening, and a wall rendering that as live would lie. Standalone read-only: own repo, own launchd job, own port; touches no engine.',
+      links: [ {t:'Systems TV', u:'http://Claytons-Mac-mini.local:8090/', cls:'lan'}, {t:'Business TV', u:'http://Claytons-Mac-mini.local:8090/ops', cls:'lan'} ] },
     { name: 'PersonalVault', status: 'bench', tag: 'zero-knowledge',
       desc: 'AES-256-GCM zero-knowledge personal data vault — backend API + React Native app. Dormant on Railway (api.loopholemaxing.com), ready to revive.',
       links: [ {t:'Showcase', u:'/vault/'}, {t:'Repo', u:'https://github.com/claytoncamera/personal-vault', cls:'repo'} ] },

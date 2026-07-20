@@ -1,0 +1,131 @@
+{
+  "date": "2026-07-20",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-07-20T12:26:18Z",
+  "id": "briefing-2026-07-20",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.5426251691474966,
+      "baseline_brier": 0.24818309495514732,
+      "baseline_hit_rate": 0.5426251691474966,
+      "brier": 0.24999915139899706,
+      "display_ready": true,
+      "generated_at": "2026-07-20T11:53:48Z",
+      "hit_rate": 0.5426251691474966,
+      "logloss": 0.6931459752317415,
+      "metrics_version": "metrics-v0.1.0",
+      "min_n_display": 20,
+      "n": 1478,
+      "total_forecasts": 1482,
+      "total_resolved": 1478
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-07-20T11:13:08Z",
+      "funding_rate": -6.0190500972e-06,
+      "long_short_ratio": 1.62,
+      "mark_price": 64385.4,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 31021.56370000013,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-07-20T11:13:09Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 64612.85333333333,
+        "r1": 64987.62666666666,
+        "r2": 65293.47333333333,
+        "recent_high": 65050.87,
+        "recent_low": 63702.01,
+        "s1": 64307.00666666667,
+        "s2": 63932.23333333334,
+        "sma_20": 63132.468499999995,
+        "sma_200": null,
+        "sma_50": 63353.478200000005,
+        "vwap_session": 64385.37977941686
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Fear",
+      "fear_greed_value": 29,
+      "fetched_at": "2026-07-20T11:13:09Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-07-20T11:13:09Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-07-20T11:13:07Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-07-20T11:13:07Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-07-20T11:13:07Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-07-20T11:13:07Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-07-20T11:13:07Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-07-20T11:13:07Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-07-20T11:13:08Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-07-20T11:13:09Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-07-20T11:13:09Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-07-20"
+}

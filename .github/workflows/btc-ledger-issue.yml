@@ -60,8 +60,10 @@ jobs:
         run: |
           cd btc-brain/ledger
           python tests/test_ledger.py
+          python tests/test_schedule_forecasts.py
+          python tests/test_edge_upgrade.py
 
-      - name: Issue scheduled forecasts (baseline / shadow)
+      - name: Issue scheduled forecasts (baseline + policy24 dual shadow)
         run: |
           DRY="${{ github.event.inputs.dry_run || 'false' }}"
           HORIZONS="${{ github.event.inputs.horizons || '1h,4h,12h,24h' }}"
@@ -69,6 +71,7 @@ jobs:
             --root btc-brain/ledger/data
             --candles btc-brain/data/public/candles_1h.json
             --horizons "$HORIZONS"
+            --mode dual
           )
           if [ "$DRY" = "true" ]; then ARGS+=(--dry-run); fi
           python btc-brain/ledger/scripts/schedule_forecasts.py "${ARGS[@]}" \
@@ -80,11 +83,25 @@ jobs:
             --root btc-brain/ledger/data \
             | tee /tmp/resolve.json
 
-      - name: Rebuild accuracy.json
+      - name: Rebuild accuracy.json (metrics v0.2)
         run: |
           python btc-brain/ledger/scripts/metrics.py \
             --root btc-brain/ledger/data \
             --out  btc-brain/ledger/public/accuracy.json
+
+      - name: Hunt edges (continuous improvement report)
+        run: |
+          python btc-brain/ledger/scripts/edge_hunter.py \
+            --root btc-brain/ledger/data \
+            --out  btc-brain/ledger/public/edge_report.json
+
+      - name: Emit paper signal.json (24h only)
+        run: |
+          python btc-brain/ledger/scripts/emit_signal.py \
+            --root btc-brain/ledger/data \
+            --accuracy btc-brain/ledger/public/accuracy.json \
+            --out btc-brain/ledger/public/signal.json \
+            --horizons 24h
 
       - name: Commit ledger updates
         id: commit
@@ -97,9 +114,11 @@ jobs:
           git config user.email "btc-brain-bot@users.noreply.github.com"
           git add btc-brain/ledger/data/forecasts.jsonl \
                   btc-brain/ledger/data/resolutions.jsonl \
-                  btc-brain/ledger/public/accuracy.json
+                  btc-brain/ledger/public/accuracy.json \
+                  btc-brain/ledger/public/edge_report.json \
+                  btc-brain/ledger/public/signal.json
           .github/scripts/safe_push.sh \
-            "chore(ledger): issue scheduled forecasts + resolve due"
+            "chore(ledger): dual-issue + resolve + edge hunt + signal"
 
   # Bot commits made via GITHUB_TOKEN do NOT trigger the push-based
   # `pages.yml` workflow, so we explicitly invoke the reusable Pages

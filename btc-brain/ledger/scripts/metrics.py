@@ -1,16 +1,17 @@
 """
 Compute public accuracy metrics from the ledger and write accuracy.json.
 
-Buckets: by horizon, by model_version, plus rolling 7d / 30d / 90d windows.
+Buckets: by horizon, by model_version, by direction, by regime, plus rolling
+7d / 30d / 90d windows.
+
 For every bucket we report:
-  - n (sample size)
-  - hit_rate
-  - brier (mean of brier_component, lower is better)
-  - logloss (mean of logloss_component, lower is better)
-  - ece if there are enough probability buckets (n>=20 and >=3 non-empty bins)
-  - baseline_brier  (always-predict-base-rate-of-up, computed in-bucket)
-  - baseline_hit_rate
-  - last_updated
+  - n, hit_rate, brier, logloss, ece
+  - baseline_brier / baseline_hit_rate / base_rate  (legacy majority-of-outcome)
+  - vs_majority_pp  (hit_rate − max(always_up, always_down) on realized moves)
+  - expectancy_bps / expectancy_maker_2bps / expectancy_taker_10bps
+  - hit_up / hit_down / n_up / n_down
+  - always_up_rate / always_down_rate
+  - display_ready
 
 A `display_ready` flag tells the frontend whether the bucket meets the
 minimum sample size for public display (default min_n_display=20).
@@ -19,7 +20,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import math
 import statistics
 import sys
 from collections import defaultdict
@@ -29,9 +29,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from ledger import Ledger, parse_iso_utc, utc_now_iso  # noqa: E402
 
-METRICS_VERSION = "metrics-v0.1.0"
+METRICS_VERSION = "metrics-v0.2.0"
 DEFAULT_MIN_N_DISPLAY = 20
 ECE_BINS = 10
+MAKER_RT = 0.0002   # 2 bps round-trip
+TAKER_RT = 0.0010   # 10 bps round-trip
 
 
 def _outcome_for(forecast: dict, resolution: dict) -> int:
@@ -39,16 +41,18 @@ def _outcome_for(forecast: dict, resolution: dict) -> int:
 
 
 def _prob_for_direction(forecast: dict) -> float:
-    # Probability is *already* the prob assigned to the forecasted direction.
     return float(forecast["probability"])
 
 
-def _ece(pairs: list[tuple[float, int]], bins: int = ECE_BINS) -> float | None:
-    """Expected calibration error.
+def _signed_return(forecast: dict, resolution: dict) -> float:
+    """Return if we took the forecasted direction (no fees)."""
+    ret = float(resolution["actual_return"])
+    if forecast.get("direction") == "up":
+        return ret
+    return -ret
 
-    pairs: list of (predicted_prob, outcome ∈ {0,1}).
-    Returns None if not enough non-empty bins (<3) or n<20.
-    """
+
+def _ece(pairs: list[tuple[float, int]], bins: int = ECE_BINS) -> float | None:
     if len(pairs) < 20:
         return None
     buckets: list[list[tuple[float, int]]] = [[] for _ in range(bins)]
@@ -68,16 +72,10 @@ def _ece(pairs: list[tuple[float, int]], bins: int = ECE_BINS) -> float | None:
 
 
 def _baseline(pairs: list[tuple[float, int]]) -> dict:
-    """Baseline = predict the in-bucket base rate of `up=correct` for every row.
-
-    Brier and hit_rate of always-predicting the base rate.
-    """
     if not pairs:
         return {"baseline_hit_rate": None, "baseline_brier": None, "base_rate": None}
     base_rate = sum(o for _, o in pairs) / len(pairs)
-    # If we always predict the majority class, hit_rate = max(base_rate, 1-base_rate).
     baseline_hit_rate = max(base_rate, 1 - base_rate)
-    # Brier of always predicting `base_rate`:
     baseline_brier = sum((base_rate - o) ** 2 for _, o in pairs) / len(pairs)
     return {
         "baseline_hit_rate": baseline_hit_rate,
@@ -91,7 +89,11 @@ def _bucket_metrics(rows: list[dict], min_n_display: int) -> dict:
     pairs: list[tuple[float, int]] = []
     briers: list[float] = []
     losses: list[float] = []
+    signed: list[float] = []
     hits = 0
+    n_up = n_down = hit_up = hit_down = 0
+    realized_up = 0
+
     for r in rows:
         f, res = r["forecast"], r["resolution"]
         o = _outcome_for(f, res)
@@ -100,15 +102,52 @@ def _bucket_metrics(rows: list[dict], min_n_display: int) -> dict:
         briers.append(float(res["brier_component"]))
         losses.append(float(res["logloss_component"]))
         hits += o
+        s = _signed_return(f, res)
+        signed.append(s)
+        if float(res["actual_return"]) > 0:
+            realized_up += 1
+        d = f.get("direction")
+        if d == "up":
+            n_up += 1
+            hit_up += o
+        elif d == "down":
+            n_down += 1
+            hit_down += o
+
     n = len(rows)
     base = _baseline(pairs)
+    always_up = (realized_up / n) if n else None
+    always_down = (1.0 - always_up) if always_up is not None else None
+    majority = None
+    if always_up is not None and always_down is not None:
+        majority = max(always_up, always_down)
+    hit_rate = (hits / n) if n else None
+    vs_maj = None
+    if hit_rate is not None and majority is not None:
+        vs_maj = hit_rate - majority
+
+    exp = statistics.fmean(signed) if signed else None
+    exp_bps = (exp * 10000.0) if exp is not None else None
+    maker_bps = ((exp - MAKER_RT) * 10000.0) if exp is not None else None
+    taker_bps = ((exp - TAKER_RT) * 10000.0) if exp is not None else None
+
     return {
         "n": n,
-        "hit_rate": (hits / n) if n else None,
+        "hit_rate": hit_rate,
         "brier": (statistics.fmean(briers) if briers else None),
         "logloss": (statistics.fmean(losses) if losses else None),
         "ece": _ece(pairs),
         **base,
+        "always_up_rate": always_up,
+        "always_down_rate": always_down,
+        "vs_majority_pp": vs_maj,
+        "expectancy_bps": exp_bps,
+        "expectancy_maker_2bps": maker_bps,
+        "expectancy_taker_10bps": taker_bps,
+        "n_up": n_up,
+        "n_down": n_down,
+        "hit_up": (hit_up / n_up) if n_up else None,
+        "hit_down": (hit_down / n_down) if n_down else None,
         "display_ready": n >= min_n_display,
     }
 
@@ -137,15 +176,41 @@ def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
     resolved = _filter_resolved(joined_all)
     now = datetime.now(timezone.utc)
 
-    # Group helpers
     by_horizon: dict[str, list] = defaultdict(list)
     by_model: dict[str, list] = defaultdict(list)
+    by_direction: dict[str, list] = defaultdict(list)
+    by_regime: dict[str, list] = defaultdict(list)
     for r in resolved:
-        by_horizon[r["forecast"]["horizon"]].append(r)
-        by_model[r["forecast"]["model_version"]].append(r)
+        f = r["forecast"]
+        by_horizon[f["horizon"]].append(r)
+        by_model[f["model_version"]].append(r)
+        by_direction[f.get("direction", "unknown")].append(r)
+        by_regime[f.get("regime_at_issue") or "unknown"].append(r)
+
+    # Product edge scoreboard: prefer horizons that clear maker fees + beat majority
+    scoreboard = []
+    for h, rows in sorted(by_horizon.items()):
+        m = _bucket_metrics(rows, min_n_display)
+        maker = m.get("expectancy_maker_2bps")
+        vs = m.get("vs_majority_pp")
+        tradeable = bool(
+            m["n"] >= min_n_display
+            and maker is not None and maker > 0
+            and vs is not None and vs > 0
+        )
+        scoreboard.append({
+            "horizon": h,
+            "n": m["n"],
+            "hit_rate": m["hit_rate"],
+            "expectancy_maker_2bps": maker,
+            "vs_majority_pp": vs,
+            "tradeable": tradeable,
+            "rank_key": (maker if maker is not None else -1e9),
+        })
+    scoreboard.sort(key=lambda x: x["rank_key"], reverse=True)
 
     out = {
-        "schema_version": "1",
+        "schema_version": "2",
         "metrics_version": METRICS_VERSION,
         "generated_at": utc_now_iso(),
         "min_n_display": min_n_display,
@@ -159,6 +224,15 @@ def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
             m: _bucket_metrics(rows, min_n_display)
             for m, rows in sorted(by_model.items())
         },
+        "by_direction": {
+            d: _bucket_metrics(rows, min_n_display)
+            for d, rows in sorted(by_direction.items())
+        },
+        "by_regime": {
+            reg: _bucket_metrics(rows, min_n_display)
+            for reg, rows in sorted(by_regime.items())
+        },
+        "edge_scoreboard": scoreboard,
         "rolling": {
             "7d": _bucket_metrics(_within(7, now, resolved), min_n_display),
             "30d": _bucket_metrics(_within(30, now, resolved), min_n_display),
@@ -181,7 +255,7 @@ def main(argv: list[str]) -> int:
     out_path.write_text(json.dumps(metrics, indent=2, sort_keys=True) + "\n",
                         encoding="utf-8")
     print(f"wrote {out_path} (resolved={metrics['total_resolved']}, "
-          f"forecasts={metrics['total_forecasts']})")
+          f"forecasts={metrics['total_forecasts']}, version={METRICS_VERSION})")
     return 0
 
 

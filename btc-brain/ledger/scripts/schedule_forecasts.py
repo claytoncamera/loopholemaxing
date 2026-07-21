@@ -1,39 +1,27 @@
 """
-Scheduled forecast issuer (baseline / shadow).
+Scheduled forecast issuer (baseline shadow + optional edge-policy dual issuer).
 
-Issues conservative, append-only baseline forecasts for BTCUSD across the
-horizons 1h, 4h, 12h, 24h. This is a *shadow* model — it is never promoted
-and the public UI must remain truth-gated until enough resolutions exist
-for accuracy.json to mark a bucket as display_ready.
+Issues conservative, append-only shadow forecasts for BTCUSD.
 
-Design constraints honored here
--------------------------------
+Models
+------
+1. v0.1.0-baseline-shadow — SMA(24) control; horizons 1h/4h/12h/24h
+2. v0.2.0-shadow-policy24 — edge-focused candidate:
+   - horizons 12h + 24h only (fee-surviving band from live autopsy)
+   - same SMA direction
+   - *inverted* confidence: mild SMA divergence → higher prob (autopsy:
+     high |rel| underperformed)
+   - skips hour 20 UTC (toxic hour in autopsy; shadow filter)
+   - live regime_at_issue from Phase 4 detector
+
+Design constraints
+------------------
 - Append-only. Existing rows are never edited.
-- Per (model_version, horizon, issued_bucket) duplicate prevention. Re-running
-  the issuer in the same hour bucket is a no-op for that bucket.
-- No live ticker. The entry price comes from the most recent **closed** 1h
-  candle in btc-brain/data/public/candles_1h.json. We refuse to issue if the
-  snapshot is missing or stale.
-- No incomplete candles. We use a candle as "closed" only when its close_time
-  is strictly in the past relative to `now`.
-- Calibrated-neutral probabilities. The shadow probability is clamped into a
-  conservative band [0.50, 0.55] so we never publish strong confidence.
-- Clear baseline/shadow labelling. model_version contains "shadow"; the row
-  is not produced by a promoted model.
-- No secrets. Uses only the public artifacts already on disk.
-
-Usage
------
-    python schedule_forecasts.py \
-        --root btc-brain/ledger/data \
-        --candles btc-brain/data/public/candles_1h.json \
-        [--horizons 1h,4h,12h,24h] \
-        [--dry-run]
-
-Exit codes
-    0 — at least one forecast issued, or all eligible buckets already had
-        a forecast (idempotent success).
-    1 — input data unusable (missing snapshot, stale, no closed candle).
+- Per (model_version, horizon, issued_bucket) duplicate prevention.
+- No live ticker. Entry from most recent closed 1h candle.
+- No incomplete candles.
+- Shadow labelling only — never promoted by this script.
+- No secrets.
 """
 from __future__ import annotations
 
@@ -49,19 +37,39 @@ from ledger import (  # noqa: E402
     Ledger,
     new_forecast_id,
     parse_iso_utc,
-    utc_now_iso,
 )
 
-ISSUER_VERSION = "scheduler-v0.1.0"
+# Regime detector (optional — falls back to unknown if import fails)
+_REGIME_OK = False
+try:
+    _PHASE4 = Path(__file__).resolve().parents[2] / "models" / "phase4"
+    if str(_PHASE4) not in sys.path:
+        sys.path.insert(0, str(_PHASE4.parent.parent / "models"))
+    # models/ on path → phase4.regime
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "models"))
+    from phase4.regime import regime_at as _regime_at  # type: ignore  # noqa: E402
+    _REGIME_OK = True
+except Exception:  # noqa: BLE001
+    _REGIME_OK = False
+
+    def _regime_at(closes, **kwargs):  # type: ignore
+        return ("unknown", "unknown")
+
+
+ISSUER_VERSION = "scheduler-v0.2.0"
+
+# ── Baseline model identity (tests pin these names) ──────────────────────────
 MODEL_VERSION = "v0.1.0-baseline-shadow"
 SIGNAL_VERSION = "shadow-v0.1.0"
 CREATED_BY = "scheduled-issuer/baseline-shadow"
 
-# Horizons we issue on every run, mapped to a timedelta and a bucket grid.
-# `bucket_hours` is the spacing between distinct issuance buckets for a
-# horizon. We bucket by horizon length so that, e.g., 4h forecasts are only
-# issued once per 4h grid square — no duplicates from re-running the
-# scheduler at :07 and :37.
+# ── Policy candidate (12h/24h edge path) ─────────────────────────────────────
+POLICY_MODEL_VERSION = "v0.2.0-shadow-policy24"
+POLICY_SIGNAL_VERSION = "shadow-policy24-v0.1.0"
+POLICY_CREATED_BY = "scheduled-issuer/policy24"
+POLICY_HORIZONS = ("12h", "24h")
+POLICY_SKIP_HOURS_UTC = frozenset({20})
+
 HORIZON_SPEC = {
     "1h":  {"delta": timedelta(hours=1),  "bucket_hours": 1},
     "4h":  {"delta": timedelta(hours=4),  "bucket_hours": 4},
@@ -69,31 +77,18 @@ HORIZON_SPEC = {
     "24h": {"delta": timedelta(hours=24), "bucket_hours": 24},
 }
 
-# Conservative probability band. We never publish anything stronger than
-# 0.55 from this baseline. 0.50 is excluded by the schema, so we clamp to
-# (0.50, 0.55].
 PROB_FLOOR = 0.5005
 PROB_CEIL = 0.55
-
-# Snapshot freshness: refuse to issue if the most recent closed 1h candle
-# is older than this. 6 hours is conservative; the snapshot workflow runs
-# every 30 minutes so this only trips during a real outage.
 MAX_SNAPSHOT_STALENESS = timedelta(hours=6)
 
 
-# ── Snapshot helpers ─────────────────────────────────────────────────────────
 def load_candles(path: Path) -> list[dict]:
-    """Return the candle list from a Phase 2 candles_1h.json artifact."""
     raw = json.loads(path.read_text(encoding="utf-8"))
     candles = (raw.get("data") or {}).get("candles") or []
     return list(candles)
 
 
 def latest_closed_candle(candles: list[dict], now: datetime) -> dict | None:
-    """Return the most recent candle whose close_time is strictly past `now`.
-
-    Defends against the in-progress candle showing up at the tail.
-    """
     now_ms = int(now.timestamp() * 1000)
     closed = [c for c in candles if int(c["close_time_ms"]) <= now_ms]
     if not closed:
@@ -101,51 +96,74 @@ def latest_closed_candle(candles: list[dict], now: datetime) -> dict | None:
     return max(closed, key=lambda c: int(c["close_time_ms"]))
 
 
-# ── Signal logic (deterministic, conservative) ───────────────────────────────
-def baseline_direction_and_prob(candles: list[dict], lookback: int = 24) -> tuple[str, float, str]:
-    """Compute a conservative shadow signal from closed 1h candles.
-
-    Strategy: compare the latest *closed* candle close to the simple moving
-    average of the prior `lookback` closes. If above SMA → `up`, else `down`.
-    Probability is mapped to a tiny band above the floor so we never publish
-    a confident claim from a baseline model.
-    """
+def _sma_state(candles: list[dict], lookback: int = 24) -> tuple[str, float, float, str]:
+    """Return (direction, rel, last, reason_core)."""
     closes = [float(c["close"]) for c in candles[-(lookback + 1):]]
     if len(closes) < 2:
-        # Not enough history — neutral up at the floor.
-        return "up", PROB_FLOOR, "insufficient-history"
+        return "up", 0.0, closes[-1] if closes else 0.0, "insufficient-history"
     last = closes[-1]
     prior = closes[:-1]
     sma = sum(prior) / len(prior)
     direction = "up" if last >= sma else "down"
-    # Map distance from SMA to a conservative probability bump within the
-    # [floor, ceil] band. The bigger the divergence, the closer to ceil —
-    # but never above ceil.
-    if sma <= 0:
-        rel = 0.0
-    else:
-        rel = abs(last - sma) / sma
-    # 1% divergence → +0.01 over floor, capped at PROB_CEIL.
+    rel = 0.0 if sma <= 0 else abs(last - sma) / sma
+    reason = f"shadow:sma{lookback} last={last:.2f} sma={sma:.2f} rel={rel:.4f}"
+    return direction, rel, last, reason
+
+
+def baseline_direction_and_prob(candles: list[dict], lookback: int = 24) -> tuple[str, float, str]:
+    """Original baseline: larger |rel| → higher prob (control model)."""
+    direction, rel, _last, reason = _sma_state(candles, lookback=lookback)
+    if reason == "insufficient-history":
+        return "up", PROB_FLOOR, reason
     bump = min(rel, PROB_CEIL - PROB_FLOOR)
     prob = max(PROB_FLOOR, min(PROB_CEIL, PROB_FLOOR + bump))
-    reason = f"shadow:sma{lookback} last={last:.2f} sma={sma:.2f} rel={rel:.4f}"
     return direction, prob, reason
 
 
-# ── Bucketing & duplicate prevention ─────────────────────────────────────────
+def policy24_direction_and_prob(candles: list[dict], lookback: int = 24) -> tuple[str, float, str]:
+    """Edge policy: same direction, *inverted* confidence on |rel|.
+
+    Autopsy 2026-07-21: low SMA divergence hit ~60%; high divergence ~48%.
+    Mild rel gets more confidence; large extensions get floored.
+    """
+    direction, rel, _last, reason = _sma_state(candles, lookback=lookback)
+    if reason == "insufficient-history":
+        return "up", PROB_FLOOR, "policy24:" + reason
+    # Invert: peak confidence near rel≈0.001–0.003, decay after 0.5%
+    if rel <= 0.001:
+        strength = 0.7
+    elif rel <= 0.003:
+        strength = 1.0
+    elif rel <= 0.005:
+        strength = 0.55
+    elif rel <= 0.01:
+        strength = 0.25
+    else:
+        strength = 0.05
+    bump = strength * (PROB_CEIL - PROB_FLOOR)
+    prob = max(PROB_FLOOR, min(PROB_CEIL, PROB_FLOOR + bump))
+    return direction, prob, f"policy24:inv_conf|{reason}"
+
+
+def detect_regime_label(candles: list[dict]) -> str:
+    closes = [float(c["close"]) for c in candles]
+    if len(closes) < 30:
+        return "unknown"
+    try:
+        coarse, _fine = _regime_at(closes)
+        if coarse in ("bull", "bear", "chop", "unknown"):
+            return coarse
+    except Exception:  # noqa: BLE001
+        return "unknown"
+    return "unknown"
+
+
 def issued_bucket(now: datetime, bucket_hours: int) -> datetime:
-    """Floor `now` to the start of the issuance bucket."""
     floored_hour = (now.hour // bucket_hours) * bucket_hours
     return now.replace(minute=0, second=0, microsecond=0, hour=floored_hour)
 
 
 def existing_buckets(forecasts: Iterable[dict], model_version: str) -> set[tuple[str, str]]:
-    """Set of (horizon, issued_bucket_iso) already present for this model.
-
-    issued_at on existing rows is the original issuance time — which by
-    construction was floored to the bucket grid. So we floor by horizon
-    again for safety.
-    """
     out: set[tuple[str, str]] = set()
     for f in forecasts:
         if f.get("model_version") != model_version:
@@ -162,7 +180,6 @@ def existing_buckets(forecasts: Iterable[dict], model_version: str) -> set[tuple
     return out
 
 
-# ── Row builder ──────────────────────────────────────────────────────────────
 def build_row(
     horizon: str,
     issued: datetime,
@@ -172,12 +189,15 @@ def build_row(
     reason: str,
     feature_uri: str,
     source_uri: str,
+    *,
+    model_version: str = MODEL_VERSION,
+    signal_version: str = SIGNAL_VERSION,
+    created_by: str = CREATED_BY,
+    regime_at_issue: str = "unknown",
 ) -> dict:
     spec = HORIZON_SPEC[horizon]
     target = issued + spec["delta"]
     invalidation_dir = "up" if direction == "down" else "down"
-    # An invalidation that triggers on a 5% adverse move is intentionally
-    # loose — we want very few voids from this baseline.
     pct = 0.05
     if invalidation_dir == "up":
         invalid_level = round(entry_price * (1 + pct), 2)
@@ -195,70 +215,101 @@ def build_row(
         "direction": direction,
         "probability": probability,
         "entry_price": entry_price,
-        "model_version": MODEL_VERSION,
-        "signal_version": SIGNAL_VERSION,
-        "regime_at_issue": "unknown",
+        "model_version": model_version,
+        "signal_version": signal_version,
+        "regime_at_issue": regime_at_issue,
         "feature_snapshot_uri": feature_uri,
         "source_snapshot_uri": source_uri,
         "confidence_reason": reason,
         "invalidation": invalidation,
-        "created_by": CREATED_BY,
+        "created_by": created_by,
         "status": "open",
     }
 
 
-# ── Main runner ──────────────────────────────────────────────────────────────
-def run(
+def _prepare(candles_path: Path, now: datetime) -> tuple[list[dict] | None, dict | None, list[dict]]:
+    """Return (candles, last_closed, errors)."""
+    errors: list[dict] = []
+    if not candles_path.exists():
+        errors.append({"reason": f"candles snapshot missing: {candles_path}"})
+        return None, None, errors
+    try:
+        candles = load_candles(candles_path)
+    except Exception as e:  # noqa: BLE001
+        errors.append({"reason": f"candles snapshot unparseable: {e}"})
+        return None, None, errors
+    last_closed = latest_closed_candle(candles, now)
+    if last_closed is None:
+        errors.append({"reason": "no closed candle in snapshot"})
+        return candles, None, errors
+    last_close_time = datetime.fromtimestamp(
+        int(last_closed["close_time_ms"]) / 1000, tz=timezone.utc
+    )
+    age = now - last_close_time
+    if age > MAX_SNAPSHOT_STALENESS:
+        errors.append({
+            "reason": f"snapshot stale: latest closed candle is {age} old",
+            "last_close_time": last_close_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
+        })
+        return candles, None, errors
+    return candles, last_closed, errors
+
+
+def run_model(
     ledger_root: Path,
     candles_path: Path,
     horizons: list[str],
+    *,
+    model_version: str,
+    signal_version: str,
+    created_by: str,
+    signal_fn,
     now: datetime | None = None,
     dry_run: bool = False,
     feature_uri: str | None = None,
     source_uri: str | None = None,
+    skip_hours_utc: frozenset[int] | None = None,
+    closed_candles_for_signal: list[dict] | None = None,
 ) -> dict:
     now = now or datetime.now(timezone.utc)
     summary = {
         "now": now.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "issuer_version": ISSUER_VERSION,
-        "model_version": MODEL_VERSION,
+        "model_version": model_version,
         "issued": [],
         "skipped_duplicate": [],
+        "skipped_filter": [],
         "errors": [],
     }
 
-    if not candles_path.exists():
-        summary["errors"].append({"reason": f"candles snapshot missing: {candles_path}"})
+    candles, last_closed, prep_errors = _prepare(candles_path, now)
+    summary["errors"].extend(prep_errors)
+    if candles is None or last_closed is None:
         return summary
 
-    try:
-        candles = load_candles(candles_path)
-    except Exception as e:  # noqa: BLE001
-        summary["errors"].append({"reason": f"candles snapshot unparseable: {e}"})
-        return summary
-
-    last_closed = latest_closed_candle(candles, now)
-    if last_closed is None:
-        summary["errors"].append({"reason": "no closed candle in snapshot"})
-        return summary
-
-    last_close_time = datetime.fromtimestamp(int(last_closed["close_time_ms"]) / 1000, tz=timezone.utc)
-    age = now - last_close_time
-    if age > MAX_SNAPSHOT_STALENESS:
-        summary["errors"].append({
-            "reason": f"snapshot stale: latest closed candle is {age} old",
-            "last_close_time": last_close_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
-        })
-        return summary
+    # Use only closed candles for signal + regime
+    now_ms = int(now.timestamp() * 1000)
+    closed = [c for c in candles if int(c["close_time_ms"]) <= now_ms]
+    closed.sort(key=lambda c: int(c["close_time_ms"]))
+    if closed_candles_for_signal is not None:
+        closed = closed_candles_for_signal
 
     entry_price = float(last_closed["close"])
-    direction, probability, reason = baseline_direction_and_prob(candles)
+    direction, probability, reason = signal_fn(closed)
+    regime = detect_regime_label(closed)
 
     feature_uri_ = feature_uri or "data/public/candles_1h.json"
     source_uri_ = source_uri or "data/public/candles_1h.json"
 
     ledger = Ledger.at(ledger_root)
-    existing = existing_buckets(ledger.iter_forecasts(), MODEL_VERSION)
+    existing = existing_buckets(ledger.iter_forecasts(), model_version)
+
+    if skip_hours_utc and now.hour in skip_hours_utc:
+        summary["skipped_filter"].append({
+            "reason": f"skip_hour_utc={now.hour}",
+            "model_version": model_version,
+        })
+        return summary
 
     for h in horizons:
         if h not in HORIZON_SPEC:
@@ -280,6 +331,10 @@ def run(
             reason=reason,
             feature_uri=feature_uri_,
             source_uri=source_uri_,
+            model_version=model_version,
+            signal_version=signal_version,
+            created_by=created_by,
+            regime_at_issue=regime,
         )
         if dry_run:
             summary["issued"].append({"dry_run": True, **row})
@@ -289,11 +344,78 @@ def run(
         except Exception as e:  # noqa: BLE001
             summary["errors"].append({"horizon": h, "reason": str(e)})
             continue
-        # Track in-memory so a second horizon at the same bucket doesn't dup.
         existing.add((h, bucket_iso))
         summary["issued"].append(row)
 
     return summary
+
+
+def run(
+    ledger_root: Path,
+    candles_path: Path,
+    horizons: list[str],
+    now: datetime | None = None,
+    dry_run: bool = False,
+    feature_uri: str | None = None,
+    source_uri: str | None = None,
+) -> dict:
+    """Baseline-only issuer — preserves prior API for unit tests."""
+    return run_model(
+        ledger_root,
+        candles_path,
+        horizons,
+        model_version=MODEL_VERSION,
+        signal_version=SIGNAL_VERSION,
+        created_by=CREATED_BY,
+        signal_fn=baseline_direction_and_prob,
+        now=now,
+        dry_run=dry_run,
+        feature_uri=feature_uri,
+        source_uri=source_uri,
+    )
+
+
+def run_all(
+    ledger_root: Path,
+    candles_path: Path,
+    baseline_horizons: list[str],
+    now: datetime | None = None,
+    dry_run: bool = False,
+    feature_uri: str | None = None,
+    source_uri: str | None = None,
+    enable_policy24: bool = True,
+) -> dict:
+    """Dual issuer: baseline control + policy24 edge candidate."""
+    base = run(
+        ledger_root, candles_path, baseline_horizons,
+        now=now, dry_run=dry_run,
+        feature_uri=feature_uri, source_uri=source_uri,
+    )
+    out = {
+        "issuer_version": ISSUER_VERSION,
+        "models": {"baseline": base},
+        "issued_total": len(base.get("issued") or []),
+        "errors": list(base.get("errors") or []),
+    }
+    if enable_policy24:
+        pol = run_model(
+            ledger_root,
+            candles_path,
+            list(POLICY_HORIZONS),
+            model_version=POLICY_MODEL_VERSION,
+            signal_version=POLICY_SIGNAL_VERSION,
+            created_by=POLICY_CREATED_BY,
+            signal_fn=policy24_direction_and_prob,
+            now=now,
+            dry_run=dry_run,
+            feature_uri=feature_uri,
+            source_uri=source_uri,
+            skip_hours_utc=POLICY_SKIP_HOURS_UTC,
+        )
+        out["models"]["policy24"] = pol
+        out["issued_total"] += len(pol.get("issued") or [])
+        out["errors"].extend(pol.get("errors") or [])
+    return out
 
 
 def main(argv: list[str]) -> int:
@@ -302,26 +424,57 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--candles", required=True,
                     help="path to public candles_1h.json snapshot")
     ap.add_argument("--horizons", default="1h,4h,12h,24h",
-                    help="comma-separated horizons to issue")
+                    help="comma-separated baseline horizons")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--feature-snapshot-uri", dest="feature_uri", default=None)
     ap.add_argument("--source-snapshot-uri", dest="source_uri", default=None)
+    ap.add_argument(
+        "--mode",
+        choices=["baseline", "dual"],
+        default="dual",
+        help="baseline=control only; dual=baseline+policy24 (default)",
+    )
+    ap.add_argument("--no-policy24", action="store_true",
+                    help="disable policy24 even in dual mode")
     args = ap.parse_args(argv)
     horizons = [h.strip() for h in args.horizons.split(",") if h.strip()]
-    summary = run(
-        ledger_root=Path(args.root),
-        candles_path=Path(args.candles),
-        horizons=horizons,
-        dry_run=args.dry_run,
-        feature_uri=args.feature_uri,
-        source_uri=args.source_uri,
-    )
+
+    if args.mode == "baseline":
+        summary = run(
+            ledger_root=Path(args.root),
+            candles_path=Path(args.candles),
+            horizons=horizons,
+            dry_run=args.dry_run,
+            feature_uri=args.feature_uri,
+            source_uri=args.source_uri,
+        )
+    else:
+        summary = run_all(
+            ledger_root=Path(args.root),
+            candles_path=Path(args.candles),
+            baseline_horizons=horizons,
+            dry_run=args.dry_run,
+            feature_uri=args.feature_uri,
+            source_uri=args.source_uri,
+            enable_policy24=not args.no_policy24,
+        )
+
     json.dump(summary, sys.stdout, indent=2, default=str)
     sys.stdout.write("\n")
-    # Errors are not fatal if at least one forecast was issued or all were
-    # skipped as duplicates; but a totally-failed run (errors and zero
-    # issues, zero skips) returns 1.
-    if summary["errors"] and not summary["issued"] and not summary["skipped_duplicate"]:
+
+    if args.mode == "baseline":
+        if summary["errors"] and not summary["issued"] and not summary["skipped_duplicate"]:
+            return 1
+        return 0
+
+    # dual mode
+    models = summary.get("models") or {}
+    any_progress = summary.get("issued_total", 0) > 0
+    any_skip = False
+    for m in models.values():
+        if m.get("skipped_duplicate") or m.get("skipped_filter"):
+            any_skip = True
+    if summary.get("errors") and not any_progress and not any_skip:
         return 1
     return 0
 

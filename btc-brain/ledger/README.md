@@ -53,3 +53,15 @@ btc-brain/ledger/
 JSONL today, Postgres later. Schema is identical: every JSONL field maps to a
 column. Migration is `COPY forecasts.jsonl INTO forecasts` table after `\copy`
 of the resolutions table — no transformation required.
+
+## Upgrade 2026-07-21 — dual issuer + continuous edge hunt
+
+- **metrics-v0.2.0**: expectancy (raw/maker/taker), vs_majority_pp, by_direction, by_regime, edge_scoreboard
+- **Dual issuer** (`schedule_forecasts.py --mode dual`):
+  - `v0.1.0-baseline-shadow` — control (1h/4h/12h/24h)
+  - `v0.2.0-shadow-policy24` — 12h+24h only, inverted conf, skip hour 20 UTC, live regime labels
+- **edge_hunter.py** → `public/edge_report.json` every resolve/issue cycle (ranked slices + next experiments)
+- **emit_signal.py** → `public/signal.json` paper contract (24h only; never 1h actionable)
+- Research freeze: `btc-brain/research/edge_autopsy_2026-07-21.md`
+
+Continuous improvement target: raise **24h hit_rate** toward 0.65–0.70 with n≥100 and positive maker expectancy — never by promoting 1h noise.

@@ -607,3 +607,129 @@ class TestOffByOneRegressionLock(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+# ── Metrics v0.2 edge fields ─────────────────────────────────────────────────
+class TestMetricsV2(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _seed_resolved(self, n_up_correct=6, n_up_wrong=2, n_down_correct=4, n_down_wrong=2):
+        L = Ledger.at(self.root)
+        fid = 1
+        rows = []
+        # up correct → actual_return > 0
+        for i in range(n_up_correct):
+            f = _good_forecast(
+                forecast_id=f"{fid:032x}"[:36].replace("x", "0") if False else None,
+                horizon="24h",
+                direction="up",
+                target_rule="close_above_entry",
+                probability=0.52,
+                entry_price=100.0,
+            )
+            # unique ids
+            import uuid
+            f["forecast_id"] = str(uuid.uuid4())
+            f["horizon"] = "24h"
+            L.append_forecast(f)
+            res = {
+                "forecast_id": f["forecast_id"],
+                "resolved_at": "2026-07-01T00:00:00Z",
+                "actual_close": 101.0,
+                "actual_return": 0.01,
+                "direction_correct": True,
+                "brier_component": 0.23,
+                "logloss_component": 0.65,
+                "status": "resolved",
+                "resolver_version": "test",
+                "candle_open_time": "2026-06-30T23:00:00Z",
+                "candle_close_time": "2026-07-01T00:00:00Z",
+                "price_source": "test",
+            }
+            L.append_resolution(res)
+            fid += 1
+        for i in range(n_up_wrong):
+            import uuid
+            f = _good_forecast(horizon="24h", direction="up", target_rule="close_above_entry",
+                               probability=0.52, entry_price=100.0)
+            f["forecast_id"] = str(uuid.uuid4())
+            f["horizon"] = "24h"
+            L.append_forecast(f)
+            L.append_resolution({
+                "forecast_id": f["forecast_id"],
+                "resolved_at": "2026-07-01T00:00:00Z",
+                "actual_close": 99.0,
+                "actual_return": -0.01,
+                "direction_correct": False,
+                "brier_component": 0.27,
+                "logloss_component": 0.73,
+                "status": "resolved",
+                "resolver_version": "test",
+                "candle_open_time": "2026-06-30T23:00:00Z",
+                "candle_close_time": "2026-07-01T00:00:00Z",
+                "price_source": "test",
+            })
+        for i in range(n_down_correct):
+            import uuid
+            f = _good_forecast(horizon="24h", direction="down", target_rule="close_below_entry",
+                               probability=0.52, entry_price=100.0)
+            f["forecast_id"] = str(uuid.uuid4())
+            f["horizon"] = "24h"
+            L.append_forecast(f)
+            L.append_resolution({
+                "forecast_id": f["forecast_id"],
+                "resolved_at": "2026-07-01T00:00:00Z",
+                "actual_close": 99.0,
+                "actual_return": -0.01,
+                "direction_correct": True,
+                "brier_component": 0.23,
+                "logloss_component": 0.65,
+                "status": "resolved",
+                "resolver_version": "test",
+                "candle_open_time": "2026-06-30T23:00:00Z",
+                "candle_close_time": "2026-07-01T00:00:00Z",
+                "price_source": "test",
+            })
+        for i in range(n_down_wrong):
+            import uuid
+            f = _good_forecast(horizon="24h", direction="down", target_rule="close_below_entry",
+                               probability=0.52, entry_price=100.0)
+            f["forecast_id"] = str(uuid.uuid4())
+            f["horizon"] = "24h"
+            L.append_forecast(f)
+            L.append_resolution({
+                "forecast_id": f["forecast_id"],
+                "resolved_at": "2026-07-01T00:00:00Z",
+                "actual_close": 101.0,
+                "actual_return": 0.01,
+                "direction_correct": False,
+                "brier_component": 0.27,
+                "logloss_component": 0.73,
+                "status": "resolved",
+                "resolver_version": "test",
+                "candle_open_time": "2026-06-30T23:00:00Z",
+                "candle_close_time": "2026-07-01T00:00:00Z",
+                "price_source": "test",
+            })
+
+    def test_expectancy_and_direction_fields(self):
+        self._seed_resolved()
+        m = metrics_mod.build(self.root, min_n_display=5)
+        self.assertEqual(m["metrics_version"], "metrics-v0.2.0")
+        h = m["by_horizon"]["24h"]
+        self.assertIn("expectancy_bps", h)
+        self.assertIn("expectancy_maker_2bps", h)
+        self.assertIn("hit_up", h)
+        self.assertIn("hit_down", h)
+        self.assertIn("vs_majority_pp", h)
+        self.assertIn("edge_scoreboard", m)
+        self.assertIn("by_direction", m)
+        # 6+4 correct of 14 = ~0.714 hit
+        self.assertGreater(h["hit_rate"], 0.6)
+        # positive expectancy expected
+        self.assertGreater(h["expectancy_bps"], 0)

@@ -15,26 +15,66 @@
   <meta name="twitter:title" content="Loopholemaxing — Find Every Edge">
   <meta name="twitter:description" content="Clayton Camera — technical founder. Live AI, commerce, and trading systems, each one shipped and running. Available for client work.">
   <meta name="theme-color" content="#08080d">
+  <!-- ── Entity graph ─────────────────────────────────────────────────
+       The canonical Person entity lives at /clayton-camera/ and is
+       identified by a single stable @id used across every property in
+       the network (this site + workwithclayton.com). Referencing one
+       @id everywhere is what lets search engines merge the properties
+       into ONE person instead of several unrelated mentions.
+       If you edit sameAs here, edit it at /clayton-camera/ too — a
+       conflicting profile list weakens the merge.
+       ────────────────────────────────────────────────────────────── -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "ProfilePage",
-    "url": "https://loopholemaxing.com/",
-    "mainEntity": {
-      "@type": "Person",
-      "name": "Clayton Camera",
-      "jobTitle": "Technical Founder & Systems Builder",
-      "url": "https://loopholemaxing.com/",
-      "description": "Technical founder who builds AI systems, autonomous agents, and full-stack software that find hidden revenue and automate operations.",
-      "sameAs": [
-        "https://github.com/claytoncamera",
-        "https://workwithclayton.com/",
-        "https://www.orbitroute.ai",
-        "https://practicallynatty.com",
-        "https://www.thepeptidex.net",
-        "https://knockfiber.com"
-      ]
-    }
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://loopholemaxing.com/#website",
+        "url": "https://loopholemaxing.com/",
+        "name": "Loopholemaxing",
+        "description": "The live portfolio of Clayton Camera — AI systems, autonomous agents, trading infrastructure, and full-stack software.",
+        "inLanguage": "en-US",
+        "publisher": { "@id": "https://loopholemaxing.com/clayton-camera/#person" }
+      },
+      {
+        "@type": "WebPage",
+        "@id": "https://loopholemaxing.com/#webpage",
+        "url": "https://loopholemaxing.com/",
+        "name": "Loopholemaxing — Clayton Camera · Founder & Systems Builder",
+        "isPartOf": { "@id": "https://loopholemaxing.com/#website" },
+        "about": { "@id": "https://loopholemaxing.com/clayton-camera/#person" },
+        "author": { "@id": "https://loopholemaxing.com/clayton-camera/#person" }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://loopholemaxing.com/clayton-camera/#person",
+        "name": "Clayton Camera",
+        "givenName": "Clayton",
+        "familyName": "Camera",
+        "jobTitle": "Technical Founder & Systems Builder",
+        "url": "https://loopholemaxing.com/clayton-camera/",
+        "mainEntityOfPage": "https://loopholemaxing.com/clayton-camera/",
+        "description": "Technical founder who builds AI systems, autonomous agents, and full-stack software that find hidden revenue and automate operations.",
+        "disambiguatingDescription": "Clayton Camera is a person — a technical founder and software engineer based in Orlando, Florida. Not a traffic or weather camera in the towns of Clayton, New York, North Carolina, or California.",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Orlando",
+          "addressRegion": "FL",
+          "addressCountry": "US"
+        },
+        "sameAs": [
+          "https://github.com/claytoncamera",
+          "https://www.instagram.com/clayton_camera/",
+          "https://workwithclayton.com/",
+          "https://loopholemaxing.com/",
+          "https://www.orbitroute.ai",
+          "https://practicallynatty.com",
+          "https://www.thepeptidex.net",
+          "https://knockfiber.com"
+        ]
+      }
+    ]
   }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -423,6 +463,7 @@
     <nav><ul class="nav-links">
       <li><a href="#creations">Creations</a></li>
       <li><a href="#shiplog">Ship Log</a></li>
+      <li><a href="/clayton-camera/">About Clayton</a></li>
       <li><a class="nav-cta" data-work href="/work-with-clayton/">Work With Clayton</a></li>
       <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
       <li class="nav-window-li"><a class="nav-window" href="/window/" rel="nofollow" title="The Window" aria-label="The Window">🪟</a></li>
@@ -433,7 +474,7 @@
   <section class="hero">
     <div class="hero-eyebrow"><span class="live-dot"></span> 15 live creations · open for client work</div>
     <h1>Find Every <span class="grad">Edge.</span></h1>
-    <p class="hero-sub">I'm <strong>Clayton Camera</strong> — a technical founder who builds AI systems, autonomous agents, and full-stack software that <strong>find hidden revenue</strong> and automate the work teams shouldn't be doing. Below is a selection of what I've shipped — live products, not slides.</p>
+    <p class="hero-sub">I'm <a href="/clayton-camera/" style="color:inherit"><strong>Clayton Camera</strong></a> — a technical founder who builds AI systems, autonomous agents, and full-stack software that <strong>find hidden revenue</strong> and automate the work teams shouldn't be doing. Below is a selection of what I've shipped — live products, not slides.</p>
     <div class="hero-cta-row">
       <a class="btn-hire" data-work href="/work-with-clayton/">Work With Clayton →</a>
       <a href="#creations" class="btn-ghost">Explore the work ↓</a>
@@ -856,7 +897,7 @@
 
   <!-- Footer -->
   <footer class="site-footer">
-    <div>Clayton Camera — Loopholemaxing.com — 2026 &nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div><a href="/clayton-camera/">Clayton Camera</a> — Loopholemaxing.com — 2026 &nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
     <div class="footer-tagline">Research. Analyze. Execute.</div>
   </footer>
 

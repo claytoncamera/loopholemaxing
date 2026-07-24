@@ -5,10 +5,38 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Loopholemaxing — Clayton Camera · Founder &amp; Systems Builder</title>
   <meta name="description" content="The work of Clayton Camera — a technical founder who builds AI systems, autonomous agents, trading infrastructure, and full-stack software that find hidden revenue and automate operations. Live portfolio: OrbitRoute, Practically Natty, MMS Hub, Universal Analyst Engine, BTC Brain, PersonalVault, ULTRON and more. Available for client work.">
+  <link rel="canonical" href="https://loopholemaxing.com/">
   <meta property="og:title" content="Loopholemaxing — Find Every Edge">
   <meta property="og:description" content="Founder &amp; operator. Live ventures across AI, e-commerce, trading, and infrastructure — built end-to-end. Available for client work: 48-hour audit → 5-day build sprint → operator retainer.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://loopholemaxing.com/">
+  <meta property="og:site_name" content="Loopholemaxing">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Loopholemaxing — Find Every Edge">
+  <meta name="twitter:description" content="Clayton Camera — technical founder. Live AI, commerce, and trading systems, each one shipped and running. Available for client work.">
   <meta name="theme-color" content="#08080d">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    "url": "https://loopholemaxing.com/",
+    "mainEntity": {
+      "@type": "Person",
+      "name": "Clayton Camera",
+      "jobTitle": "Technical Founder & Systems Builder",
+      "url": "https://loopholemaxing.com/",
+      "description": "Technical founder who builds AI systems, autonomous agents, and full-stack software that find hidden revenue and automate operations.",
+      "sameAs": [
+        "https://github.com/claytoncamera",
+        "https://workwithclayton.com/",
+        "https://www.orbitroute.ai",
+        "https://practicallynatty.com",
+        "https://www.thepeptidex.net",
+        "https://knockfiber.com"
+      ]
+    }
+  }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
@@ -227,12 +255,13 @@
     /* Filter chips */
     .filters { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-bottom: var(--space-2xl); }
     .filter-chip {
-      font-size: 13px; font-weight: 600; letter-spacing: .01em;
-      padding: 8px 16px; border-radius: 999px; cursor: pointer;
+      font-family: inherit; font-size: 13px; font-weight: 600; letter-spacing: .01em;
+      padding: 8px 16px; border-radius: 999px; cursor: pointer; appearance: none;
       background: rgba(255,255,255,.02); color: var(--text-secondary);
       border: 1px solid var(--border); transition: all .18s ease; user-select: none;
     }
     .filter-chip:hover { color: var(--text-primary); border-color: var(--border-light); }
+    .filter-chip:focus-visible { outline: 2px solid var(--brand-3); outline-offset: 2px; }
     .filter-chip.active { background: var(--text-primary); color: #0a0a12; border-color: var(--text-primary); }
 
     .creations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(348px, 1fr)); gap: var(--space-lg); }
@@ -297,6 +326,32 @@
     .card-action.muted { color: var(--text-muted); pointer-events: none; }
     .creation-card.coming-soon { opacity: .58; }
     .creation-card.coming-soon .card-action { pointer-events: none; color: var(--text-muted); }
+
+    /* ── Ship Log ── */
+    .shiplog { max-width: 900px; margin: 0 auto var(--space-4xl); padding: 0 var(--space-lg); }
+    .shiplog-header { text-align: center; margin-bottom: var(--space-xl); }
+    .shiplog-header .section-label { color: var(--green); }
+    .shiplog-header .section-title { font-family: var(--font-display); font-size: clamp(26px, 3.8vw, 38px); letter-spacing: -.03em; }
+    .shiplog-header p { font-size: 14.5px; color: var(--text-secondary); max-width: 560px; margin: 12px auto 0; line-height: 1.65; }
+    .shiplog-list { list-style: none; margin: 0; padding: 0 0 0 var(--space-lg); border-left: 1px solid var(--border); }
+    .ship { position: relative; padding: 0 0 var(--space-lg) 0; }
+    .ship:last-child { padding-bottom: 0; }
+    .ship::before {
+      content: ""; position: absolute; left: calc(-1 * var(--space-lg) - 4px); top: 7px;
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 0 3px rgba(52,211,153,.12);
+    }
+    .ship-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 5px; }
+    .ship-date { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); letter-spacing: .02em; }
+    .ship-tag {
+      font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      padding: 3px 9px; border-radius: 5px; color: var(--brand-3);
+      background: rgba(34,211,238,.10); border: 1px solid rgba(34,211,238,.20);
+    }
+    a.ship-tag:hover { background: rgba(34,211,238,.18); color: #67e8f9; }
+    .ship p { font-size: 14px; color: var(--text-secondary); line-height: 1.62; margin: 0; }
+    .ship p strong { color: var(--text-primary); font-weight: 600; }
+    .shiplog-foot { margin-top: var(--space-xl); font-size: 12.5px; color: var(--text-muted); text-align: center; }
 
     /* ── Closing CTA ── */
     .closing { max-width: var(--max-width); margin: 0 auto var(--space-4xl); padding: 0 var(--space-lg); }
@@ -367,6 +422,7 @@
     <a href="/" class="logo"><span class="logo-mark"></span>Loopholemaxing</a>
     <nav><ul class="nav-links">
       <li><a href="#creations">Creations</a></li>
+      <li><a href="#shiplog">Ship Log</a></li>
       <li><a class="nav-cta" data-work href="/work-with-clayton/">Work With Clayton</a></li>
       <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
       <li class="nav-window-li"><a class="nav-window" href="/window/" rel="nofollow" title="The Window" aria-label="The Window">🪟</a></li>
@@ -386,7 +442,7 @@
     <div class="hero-trust">
       <span><span class="tick">✓</span> Founder &amp; operator, not an agency</span>
       <span><span class="tick">✓</span> Ship live systems in days, not months</span>
-      <span><span class="tick">✓</span> Every claim maps to a live URL</span>
+      <span><span class="tick">✓</span> Every claim maps to a live URL — <a href="#shiplog" style="color:inherit;text-decoration:underline;text-underline-offset:3px">see the ship log</a></span>
     </div>
 
     <div class="hero-stats">
@@ -424,15 +480,15 @@
   <!-- Feature Strip (marquee) -->
   <div class="feature-strip">
     <div class="feature-track" id="featureTrack">
-      <div class="feature-item"><span class="fdot"></span> <strong>OrbitRoute</strong> — Routing layer for orbital GPU compute; 5 patents filed</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>OrbitRoute</strong> — Orbital-vs-terrestrial compute routing; 5 USPTO filings</div>
       <div class="feature-item"><span class="fdot"></span> <strong>Practically Natty</strong> — Live peptide brand; CTO &amp; managing partner</div>
       <div class="feature-item"><span class="fdot"></span> <strong>MMS HUB</strong> — Private autonomous trading control center</div>
       <div class="feature-item"><span class="fdot"></span> <strong>Universal Analyst</strong> — 90 entities, 5 domains, AI scoring, 24/7</div>
-      <div class="feature-item"><span class="fdot"></span> <strong>BTC Brain</strong> — 15-chapter market intelligence workspace</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>BTC Brain</strong> — 15 chapters + a publicly scored forecast ledger</div>
       <div class="feature-item"><span class="fdot"></span> <strong>PersonalVault</strong> — Zero-knowledge AES-256-GCM encryption</div>
       <div class="feature-item"><span class="fdot"></span> <strong>ULTRON</strong> — Local-first agent, 30/30 attack tests, human-gated</div>
       <div class="feature-item"><span class="fdot"></span> <strong>PeptiDex</strong> — 79-entry peptide research knowledge hub</div>
-      <div class="feature-item"><span class="fdot"></span> <strong>KnockFiber</strong> — T-Mobile fiber D2D recruiting engine</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>KnockFiber</strong> — D2D recruiting platform; 117 cities, EN + ES</div>
     </div>
   </div>
 
@@ -441,17 +497,17 @@
     <div class="creations-header">
       <p class="section-label">Portfolio</p>
       <h2 class="section-title">The Work</h2>
-      <p class="section-subtitle" style="max-width:600px;margin:12px auto 0;">Real ventures and systems — live products and deep research, ordered by value. Each one lists <strong style="color:var(--text-secondary)">who it helps</strong> and <strong style="color:var(--text-secondary)">the edge it delivers</strong>.</p>
+      <p class="section-subtitle" style="max-width:600px;margin:12px auto 0;">Real ventures and systems — live products and deep research. Each one lists <strong style="color:var(--text-secondary)">who it helps</strong> and <strong style="color:var(--text-secondary)">the edge it delivers</strong>.</p>
     </div>
 
-    <!-- Category filter (preserves value-ranked DOM order) -->
-    <div class="filters" id="filters">
-      <span class="filter-chip active" data-filter="all">All</span>
-      <span class="filter-chip" data-filter="ai">AI &amp; Agents</span>
-      <span class="filter-chip" data-filter="trading">Trading &amp; Markets</span>
-      <span class="filter-chip" data-filter="research">Research &amp; Data</span>
-      <span class="filter-chip" data-filter="commerce">Commerce &amp; Growth</span>
-      <span class="filter-chip" data-filter="tools">Security &amp; Tools</span>
+    <!-- Category filter (filters in place; never reorders the curated DOM order) -->
+    <div class="filters" id="filters" role="group" aria-label="Filter creations by category">
+      <button type="button" class="filter-chip active" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" class="filter-chip" data-filter="ai" aria-pressed="false">AI &amp; Agents</button>
+      <button type="button" class="filter-chip" data-filter="trading" aria-pressed="false">Trading &amp; Markets</button>
+      <button type="button" class="filter-chip" data-filter="research" aria-pressed="false">Research &amp; Data</button>
+      <button type="button" class="filter-chip" data-filter="commerce" aria-pressed="false">Commerce &amp; Growth</button>
+      <button type="button" class="filter-chip" data-filter="tools" aria-pressed="false">Security &amp; Tools</button>
     </div>
 
     <div class="creations-grid">
@@ -461,13 +517,13 @@
         <span class="card-tag tag-live">Live — Platform</span>
         <h3><span class="icon icon-orbit">🛰</span> OrbitRoute</h3>
         <p class="card-lead">The routing layer for the orbital-compute era.</p>
-        <p>Routes enterprise AI workloads to orbital GPU capacity at ~35% projected savings vs. AWS, GCP, and Azure. 11,000+ satellites tracked, 17 ground stations, 12 autonomous engines, and 5 patents filed. Live platform on Railway; COO onboarding underway.</p>
-        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> enterprises with heavy AI/GPU workloads → a way to route compute to orbital capacity at a projected fraction of hyperscaler cost.</span></div>
+        <p>Decides <em>where</em> an AI workload should run — orbital GPU capacity or terrestrial cloud — using real orbital mechanics: SGP4 tracking across 11,000+ satellites, 32 modeled ground stations, eclipse and weather physics, 23 autonomous engines, 5 USPTO filings. Its public cost-compare endpoint prices orbital at a <strong>~3× premium over GCP today</strong> and returns a "use terrestrial" recommendation — <strong>the platform tells you when not to buy it.</strong> Rebuilt on that honest footing in July 2026 after a 30-agent adversarial audit of its own claims.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> enterprises planning AI/GPU capacity → a modeled, falsifiable answer on when orbital compute actually beats terrestrial, instead of a vendor pitch.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">11,000+ satellites</span>
-          <span class="card-meta-item">17 ground stations</span>
-          <span class="card-meta-item">5 patents filed</span>
-          <span class="card-meta-item">25ms LEO latency</span>
+          <span class="card-meta-item">32 modeled stations</span>
+          <span class="card-meta-item">5 USPTO filings</span>
+          <span class="card-meta-item">800+ tests</span>
         </div>
         <a href="https://www.orbitroute.ai" target="_blank" rel="noopener" class="card-action">Visit OrbitRoute →</a>
       </div>
@@ -477,13 +533,13 @@
         <span class="card-tag tag-rev">Live — Revenue</span>
         <h3><span class="icon icon-natty">💊</span> Practically Natty (PNP)</h3>
         <p class="card-lead">The operational backbone of a live peptide brand.</p>
-        <p>A live WooCommerce brand where I'm <strong>CTO &amp; Managing Partner</strong>. I architected <strong>Command Center 2 (CC2)</strong> — the ops plugin running shipping, payment verification, email, and order workflows — plus the full <strong>affiliate system</strong> powering 36 affiliates with commission attribution and a recruiting hierarchy.</p>
-        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a growing e-commerce operation → one system that runs fulfillment, payments, email, and affiliate payouts instead of manual spreadsheets.</span></div>
+        <p>A live WooCommerce brand where I'm <strong>CTO &amp; Managing Partner</strong>. I architected <strong>Command Center 2 (CC2)</strong> — the ops plugin running shipping, payment verification, inventory, COGS, email, and order workflows — plus the <strong>affiliate system</strong> behind 36 active affiliates, a <strong>customer rewards engine</strong> (credits earned per order, redeemable at checkout), and a <strong>promotion engine</strong> that arms tiered site-wide sales and bundle stacks on schedule without anyone touching the store at midnight.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a growing e-commerce operation → one system that runs fulfillment, payments, promotions, rewards, and affiliate payouts instead of manual spreadsheets.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">CTO / Partner</span>
           <span class="card-meta-item">CC2 ops plugin</span>
           <span class="card-meta-item">36 affiliates</span>
-          <span class="card-meta-item">WooCommerce</span>
+          <span class="card-meta-item">rewards + sale engine</span>
         </div>
         <a href="https://practicallynatty.com" target="_blank" rel="noopener" class="card-action">Visit Practically Natty →</a>
       </div>
@@ -525,13 +581,13 @@
         <span class="card-tag tag-live">Live — v5.0</span>
         <h3><span class="icon icon-btc">₿</span> BTC Intelligence Brain</h3>
         <p class="card-lead">A 15-chapter Bitcoin research workspace.</p>
-        <p>Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, and risk management — with live market data, a 3D diagram of the system, and a research activity feed. Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated breadth index, not an accuracy score). Educational research only — not financial advice.</p>
-        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> serious BTC learners &amp; researchers → scattered market intelligence pulled into one structured, live-data workspace.</span></div>
+        <p>Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, and risk management — with live market data, a 3D diagram of the system, and a research activity feed. It also keeps a <strong>public forecast ledger</strong>: every prediction is timestamped, resolved on schedule, and scored against a dumb baseline. <strong>1,500+ resolved forecasts in, the model still hasn't beaten that baseline overall — and the page says so.</strong> Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated breadth index, not an accuracy score). Educational research only — not financial advice.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> serious BTC learners &amp; researchers → scattered market intelligence in one live workspace, with a scorecard honest enough to report no edge.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">15 chapters</span>
-          <span class="card-meta-item">20 modules</span>
+          <span class="card-meta-item">1,571 resolved</span>
           <span class="card-meta-item" id="homepage-btc-iq-badge">Coverage 189*</span>
-          <span class="card-meta-item">Educational</span>
+          <span class="card-meta-item">scored vs baseline</span>
         </div>
         <a href="/btc-brain/" class="card-action">Open BTC Brain →</a>
       </div>
@@ -587,13 +643,13 @@
       <div class="card creation-card" data-cats="commerce">
         <span class="card-tag tag-live">Live — Recruiting</span>
         <h3><span class="icon icon-knock">🚪</span> KnockFiber</h3>
-        <p class="card-lead">A 30-second door into uncapped D2D income.</p>
-        <p>A national recruiting engine for T-Mobile fiber door-to-door closers. Commission-only, uncapped, paid biweekly on completed installs — with a clear path from rep to Team Leader override income. No résumé, no cover letter: apply in 30 seconds or text JOIN. New metros open every month.</p>
-        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> closers who want uncapped commission work → a frictionless apply flow and a rep-to-leader override path.</span></div>
+        <p class="card-lead">A 30-second door into door-to-door sales work.</p>
+        <p>A recruiting <strong>platform</strong> for door-to-door fiber sales — T-Mobile fiber is the first partner on it. <strong>117 city pages across 26 state and metro hubs</strong>, a bilingual (English/Spanish) apply lane, and a 30-second application with no résumé. Behind the funnel: a crew system that tracks reps, managers, and their teams, with per-install override math computed automatically. Machine-readable job feeds are earnings-claim-free by design and guard-tested on every deploy.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> commission sales crews → a frictionless apply flow, plus a manager-and-team structure that tracks installs and overrides without a spreadsheet.</span></div>
         <div class="card-meta">
-          <span class="card-meta-item">commission-only</span>
-          <span class="card-meta-item">uncapped</span>
-          <span class="card-meta-item">biweekly pay</span>
+          <span class="card-meta-item">117 cities</span>
+          <span class="card-meta-item">EN + ES</span>
+          <span class="card-meta-item">crew + team tracking</span>
           <span class="card-meta-item">30-sec apply</span>
         </div>
         <a href="https://knockfiber.com" target="_blank" rel="noopener" class="card-action">Visit KnockFiber →</a>
@@ -667,11 +723,12 @@
         <span class="card-tag tag-live">Live — v1.0</span>
         <h3><span class="icon icon-studio">🎬</span> Studio — Content HUB</h3>
         <p class="card-lead">Import, track, trim and export — in the browser.</p>
-        <p>A personal content command center. Import footage from GoPro, Nikon, and phone — Studio auto-tags <strong>where every clip came from</strong>, tracks it through a Raw → Editing → Clipped → Posted pipeline, and lets you <strong>trim and export real clips right in the browser</strong> (ffmpeg.wasm). Assemble clips into projects and stitch them. Local-first, passcode-gated, syncs across devices.</p>
-        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a solo creator drowning in footage → one place to track every clip's source and cut it without opening a desktop editor.</span></div>
+        <p>A personal content command center. Import footage from GoPro, Nikon, and phone — Studio auto-tags <strong>where every clip came from</strong>, tracks it through a Raw → Editing → Clipped → Posted pipeline, and lets you <strong>trim and export real clips right in the browser</strong> (ffmpeg.wasm). A companion <strong>auto-clip engine</strong> runs on my Mac mini: drop raw footage in a watch folder and it returns hardware-encoded vertical cuts with on-device transcribed captions, synced back to every device. Multi-device sync and invite-based multi-user shipped July 2026.</p>
+        <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a solo creator drowning in footage → one place to track every clip's source, cut it without a desktop editor, and let a watch folder do the first pass.</span></div>
         <div class="card-meta">
-          <span class="card-meta-item">import &amp; track</span>
           <span class="card-meta-item">in-browser trim</span>
+          <span class="card-meta-item">auto-clip engine</span>
+          <span class="card-meta-item">multi-device sync</span>
           <span class="card-meta-item">local-first</span>
         </div>
         <a href="/studio/" class="card-action" rel="nofollow">Open Studio →</a>
@@ -693,6 +750,86 @@
       </div>
 
     </div>
+  </section>
+
+  <!-- ============ SHIP LOG — dated proof of velocity ============ -->
+  <!-- Maintenance: newest first. Every entry must map to a system on this
+       page and to something a visitor could verify. Internal-only tooling
+       stays out (see the access-control note in the project dossier). -->
+  <section class="shiplog" id="shiplog">
+    <div class="shiplog-header">
+      <p class="section-label">Ship Log</p>
+      <h2 class="section-title">What shipped recently</h2>
+      <p>The systems above aren't finished products sitting still — they get worked on every week. This is the last 30 days, dated. Every line landed on a live system.</p>
+    </div>
+
+    <ol class="shiplog-list">
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 24, 2026</span>
+          <a class="ship-tag" href="https://practicallynatty.com" target="_blank" rel="noopener">Practically Natty</a>
+        </div>
+        <p>Collapsed two generations of affiliate-commission logic into <strong>one writer</strong>. Rehearsed the cutover on a staging clone, proved exactly one system was writing at every step, then flipped production behind a single reversible switch.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 21, 2026</span>
+          <a class="ship-tag" href="/btc-brain/">BTC Brain</a>
+        </div>
+        <p>Added an <strong>edge hunter</strong> over the forecast ledger — it ranks each horizon by expectancy after fees and marks which ones, if any, are actually tradeable. Most aren't. That's the point of scoring yourself.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 20, 2026</span>
+          <a class="ship-tag" href="https://www.orbitroute.ai" target="_blank" rel="noopener">OrbitRoute</a>
+        </div>
+        <p>Ran a <strong>30-agent adversarial audit against my own platform</strong> — then implemented what it found: corrected a pricing constant that had the wrong sign, stripped every claim that couldn't survive a curl, and shipped a cost comparison that recommends the terrestrial competitor when it's cheaper.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 18, 2026</span>
+          <a class="ship-tag" href="https://knockfiber.com" target="_blank" rel="noopener">KnockFiber</a>
+        </div>
+        <p>Built an entire metro in a day: 9 town pages, a metro hub, and a Spanish landing lane — taking the platform to <strong>117 city pages</strong> with a guard test that keeps earnings claims out of every machine-readable feed.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 17, 2026</span>
+          <a class="ship-tag" href="https://knockfiber.com" target="_blank" rel="noopener">KnockFiber</a>
+        </div>
+        <p>Shipped the <strong>crew system</strong> — managers, their teams, and tiered per-install override math tracked end-to-end, replacing a spreadsheet that would have broken at the first team of five.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 17, 2026</span>
+          <a class="ship-tag" href="https://practicallynatty.com" target="_blank" rel="noopener">Practically Natty</a>
+        </div>
+        <p>Reworked the rewards engine so affiliates earn credits on <strong>their own purchases only</strong>, and retired the legacy earning path behind a kill switch that was proven to work in both directions before it went live.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 16, 2026</span>
+          <a class="ship-tag" href="https://practicallynatty.com" target="_blank" rel="noopener">Practically Natty</a>
+        </div>
+        <p>Launched the <strong>promotion engine</strong>: tiered site-wide discounts plus 9 bundle stacks that check out as a single line item and derive their stock from component inventory. It arms and disarms itself on schedule — nobody edits the store at midnight.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 16, 2026</span>
+          <a class="ship-tag" href="/studio/" rel="nofollow">Studio</a>
+        </div>
+        <p>Clipper v2 plus <strong>invite-based multi-user</strong>. The Mac-mini watch folder now returns hardware-encoded vertical cuts with on-device captions to every signed-in device.</p>
+      </li>
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Jul 14, 2026</span>
+          <a class="ship-tag" href="https://practicallynatty.com" target="_blank" rel="noopener">Practically Natty</a>
+        </div>
+        <p>Five new products launched with a <strong>variant consolidation pass</strong> — a new dose became a size option on the existing product instead of a duplicate listing, which is the difference between a clean catalog and a permanent mess.</p>
+      </li>
+    </ol>
+
+    <p class="shiplog-foot">Updated as things ship. Internal ops tooling is deliberately left off this page.</p>
   </section>
 
   <!-- Closing CTA -->
@@ -752,12 +889,13 @@
       obs.observe(el);
     });
 
-    // Category filter (preserves DOM / value-ranked order)
+    // Category filter (hides non-matches; curated DOM order is preserved)
     const chips = document.querySelectorAll('.filter-chip');
     const cards = document.querySelectorAll('.creation-card');
     chips.forEach(chip => chip.addEventListener('click', () => {
-      chips.forEach(c => c.classList.remove('active'));
+      chips.forEach(c => { c.classList.remove('active'); c.setAttribute('aria-pressed', 'false'); });
       chip.classList.add('active');
+      chip.setAttribute('aria-pressed', 'true');
       const f = chip.dataset.filter;
       cards.forEach(card => {
         const show = f === 'all' || (card.dataset.cats || '').split(' ').includes(f);

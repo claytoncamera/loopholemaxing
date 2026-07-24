@@ -19,8 +19,11 @@ FAILED=0
 fail() { echo "  ❌ $1"; FAILED=1; }
 ok()   { echo "  ✅ $1"; }
 
-PERSON_ID="https://loopholemaxing.com/clayton-camera/#person"
-HUB="clayton-camera/index.html"
+# The canonical Person entity lives on its own exact-match domain
+# (claytoncamera.com, registered 2026-07-24). This repo REFERENCES that id;
+# it does not own it. /clayton-camera/ here is a redirect stub.
+PERSON_ID="https://claytoncamera.com/#person"
+STUB="clayton-camera/index.html"
 
 # ── 1. robots.txt advertises a sitemap that actually exists ──────────────
 # This was a live bug: robots.txt pointed at /sitemap.xml → 404.
@@ -42,7 +45,7 @@ fi
 # ── 2. every indexable top-level page is in the sitemap ──────────────────
 # A public page absent from the sitemap is a page Google may never crawl.
 echo "-- sitemap coverage --"
-for p in "/" "/clayton-camera/" "/btc-brain/" "/uae/" "/vault/" "/ultron/" "/nba-brain/" "/agora/" "/formix/"; do
+for p in "/" "/btc-brain/" "/uae/" "/vault/" "/ultron/" "/nba-brain/" "/agora/" "/formix/"; do
   if grep -q "<loc>https://loopholemaxing.com${p}</loc>" sitemap.xml 2>/dev/null; then
     ok "sitemap lists ${p}"
   else
@@ -54,7 +57,7 @@ done
 # These are robots-disallowed + noindex. Listing them in a sitemap
 # contradicts that and invites crawling of internal ops surfaces.
 echo "-- sitemap excludes private surfaces --"
-for p in "analytics-hub" "army-link" "mms-hub" "studio" "window" "work-with-clayton"; do
+for p in "analytics-hub" "army-link" "mms-hub" "studio" "window" "work-with-clayton" "clayton-camera"; do
   if grep -q "loopholemaxing.com/${p}/" sitemap.xml 2>/dev/null; then
     fail "sitemap leaks private/noindex path /${p}/"
   else
@@ -62,35 +65,34 @@ for p in "analytics-hub" "army-link" "mms-hub" "studio" "window" "work-with-clay
   fi
 done
 
-# ── 4. the person hub exists and is shaped for a name query ─────────────
-# Title, H1 and canonical must all carry the literal name — that is the
-# whole reason this page exists.
-echo "-- person entity hub --"
-if [ ! -f "$HUB" ]; then
-  fail "$HUB missing — nothing on the network targets the name query"
+# ── 4. the old hub path is a redirect stub, not a second copy ───────────
+# Two pages competing for the same name query is the exact duplicate that
+# canonicalisation exists to prevent. This path must stay a stub.
+echo "-- /clayton-camera/ redirect stub --"
+if [ ! -f "$STUB" ]; then
+  fail "$STUB missing — inbound links and any stale index entries would 404"
 else
-  ok "$HUB exists"
-  grep -q "<title>Clayton Camera" "$HUB" \
-    && ok "title starts with the name" \
-    || fail "title must START with 'Clayton Camera' (name-query pages lead with the name)"
-  grep -q "<h1>Clayton Camera</h1>" "$HUB" \
-    && ok "h1 is exactly the name" \
-    || fail "h1 must be exactly 'Clayton Camera'"
-  grep -q 'rel="canonical" href="https://loopholemaxing.com/clayton-camera/"' "$HUB" \
-    && ok "canonical is self-referential" \
-    || fail "hub missing self-referential canonical"
-  grep -q 'disambiguatingDescription' "$HUB" \
-    && ok "disambiguatingDescription present (separates person from the webcams)" \
-    || fail "disambiguatingDescription missing — this is the anti-webcam signal"
-  grep -q '"@type": "FAQPage"' "$HUB" \
-    && ok "FAQPage present ('Who is Clayton Camera?')" \
-    || fail "FAQPage missing — answers the literal name query"
+  ok "$STUB exists"
+  grep -q 'rel="canonical" href="https://claytoncamera.com/"' "$STUB" \
+    && ok "canonical points at the new entity home" \
+    || fail "stub must canonicalise to https://claytoncamera.com/"
+  grep -q 'name="robots" content="noindex,follow"' "$STUB" \
+    && ok "noindex,follow (out of the index, still passes equity)" \
+    || fail "stub must be noindex,follow"
+  grep -q 'http-equiv="refresh"' "$STUB" \
+    && ok "meta refresh present (Pages cannot serve a real 301)" \
+    || fail "stub missing meta refresh"
+  if grep -q "<h1>Clayton Camera</h1>" "$STUB"; then
+    fail "stub has been re-expanded into a full page — duplicate of claytoncamera.com"
+  else
+    ok "stub carries no competing page content"
+  fi
 fi
 
 # ── 5. ONE entity id, referenced everywhere ─────────────────────────────
 # Minting a second Person @id splits the entity and wastes every signal.
 echo "-- shared Person @id --"
-for f in index.html "$HUB"; do
+for f in index.html; do
   if grep -q "$PERSON_ID" "$f" 2>/dev/null; then
     ok "$f references the canonical Person @id"
   else
@@ -136,10 +138,10 @@ fi
 # ── 7. the hub is internally linked ─────────────────────────────────────
 # An orphan page accrues no authority no matter how good its schema is.
 echo "-- internal linking --"
-if grep -q 'href="/clayton-camera/"' index.html; then
-  ok "homepage links to the person hub"
+if grep -q 'href="https://claytoncamera.com/"' index.html; then
+  ok "homepage links to the person entity home"
 else
-  fail "homepage does not link to /clayton-camera/ — hub would be an orphan"
+  fail "homepage does not link to claytoncamera.com — entity home loses an internal citation"
 fi
 
 echo

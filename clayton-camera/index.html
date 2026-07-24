@@ -30,9 +30,11 @@
   <meta property="og:site_name" content="Loopholemaxing">
   <meta property="profile:first_name" content="Clayton">
   <meta property="profile:last_name" content="Camera">
+  <meta property="og:image" content="https://loopholemaxing.com/clayton-camera/assets/clayton-camera.jpg">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="Clayton Camera — Technical Founder &amp; Systems Builder">
   <meta name="twitter:description" content="Technical founder in Orlando, FL. Builds AI systems, autonomous agents, and full-stack software, shipped as live products.">
+  <meta name="twitter:image" content="https://loopholemaxing.com/clayton-camera/assets/clayton-camera.jpg">
   <meta name="theme-color" content="#08080d">
 
   <!-- ── Canonical Person entity ──────────────────────────────────────
@@ -57,6 +59,11 @@
       "disambiguatingDescription": "Clayton Camera is a person — a technical founder and software engineer based in Orlando, Florida. Not to be confused with traffic or weather cameras in the towns of Clayton, New York; Clayton, North Carolina; or Clayton, California, nor with photography businesses of a similar name.",
       "url": "https://loopholemaxing.com/clayton-camera/",
       "mainEntityOfPage": "https://loopholemaxing.com/clayton-camera/",
+      "image": {
+        "@type": "ImageObject",
+        "url": "https://loopholemaxing.com/clayton-camera/assets/clayton-camera.jpg",
+        "caption": "Clayton Camera, technical founder and software engineer, Orlando, Florida"
+      },
       "address": {
         "@type": "PostalAddress",
         "addressLocality": "Orlando",
@@ -217,6 +224,13 @@
 
     /* ── hero ── */
     .person-hero { padding: 72px 0 48px; }
+    .name-row { display: flex; align-items: center; gap: 22px; margin-bottom: 18px; flex-wrap: wrap; }
+    .portrait {
+      width: 96px; height: 96px; border-radius: 50%; object-fit: cover;
+      border: 2px solid var(--border-light); flex-shrink: 0;
+      box-shadow: 0 0 0 5px rgba(99,102,241,0.10);
+    }
+    .name-row h1 { margin-bottom: 0; }
     .eyebrow {
       display: inline-flex; align-items: center; gap: 8px;
       font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
@@ -348,7 +362,12 @@
 
     <section class="person-hero">
       <p class="eyebrow"><span class="live-dot"></span> Orlando, Florida · Open for client work</p>
-      <h1>Clayton Camera</h1>
+      <div class="name-row">
+        <img class="portrait" src="assets/clayton-camera.jpg"
+             width="96" height="96"
+             alt="Clayton Camera, technical founder and software engineer based in Orlando, Florida">
+        <h1>Clayton Camera</h1>
+      </div>
       <p class="role"><strong>Technical founder and software engineer.</strong> I build AI systems, autonomous agents, and full-stack software — and I ship them as live products, not slide decks.</p>
 
       <p class="lede">Clayton Camera is a technical founder based in <strong>Orlando, Florida</strong>. He runs several software ventures in parallel — an orbital-compute routing platform, a peptide e-commerce operation, a bilingual fiber-recruiting platform, and a public Bitcoin forecast ledger that grades its own accuracy — writing the code, designing the schemas, building the dashboards, filing the IP, and running the operations himself.</p>

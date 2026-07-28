@@ -89,6 +89,21 @@ else
   fi
 fi
 
+# ── 4b. every sitemap-listed page is self-canonical and entity-wired ────
+# Until 2026-07-28 all seven sub-pages had NO canonical and NO structured
+# data: they sat in the sitemap contributing nothing to the person entity,
+# and any tracking/UTM variant of their URL was a duplicate with no
+# preferred version declared.
+echo "-- sub-page canonicals + entity wiring --"
+for p in btc-brain uae vault ultron nba-brain agora formix; do
+  f="${p}/index.html"
+  [ -f "$f" ] || { fail "${p}/ is listed in the sitemap but missing on disk"; continue; }
+  grep -q "<link rel=\"canonical\" href=\"https://loopholemaxing.com/${p}/\">" "$f" \
+    && ok "/${p}/ self-canonical" || fail "/${p}/ has no self-canonical"
+  grep -q "$PERSON_ID" "$f" \
+    && ok "/${p}/ references the person entity" || fail "/${p}/ has no person reference"
+done
+
 # ── 5. ONE entity id, referenced everywhere ─────────────────────────────
 # Minting a second Person @id splits the entity and wastes every signal.
 echo "-- shared Person @id --"

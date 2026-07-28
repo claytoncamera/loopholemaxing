@@ -5,6 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PersonalVault — Secure Zero-Knowledge Vault | Loopholemaxing</title>
   <meta name="description" content="Your encrypted personal vault. Zero-knowledge AES-256-GCM encryption — your data is only decryptable by you.">
+  <link rel="canonical" href="https://loopholemaxing.com/vault/">
+
+  <!-- Entity wiring. This page had neither a canonical nor any structured
+       data until 2026-07-28, so it sat in the sitemap contributing nothing
+       to the person entity. The Person @id is REFERENCED, never defined —
+       the definition lives on claytoncamera.com. Guarded by
+       tests/seo-scan.sh. -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebPage",
+      "@id": "https://loopholemaxing.com/vault/#webpage",
+      "url": "https://loopholemaxing.com/vault/",
+      "name": "PersonalVault",
+      "isPartOf": {
+        "@id": "https://loopholemaxing.com/#website"
+      },
+      "author": {
+        "@id": "https://claytoncamera.com/#person"
+      },
+      "creator": {
+        "@id": "https://claytoncamera.com/#person"
+      }
+    },
+    {
+      "@type": "Person",
+      "@id": "https://claytoncamera.com/#person",
+      "name": "Clayton Camera",
+      "url": "https://claytoncamera.com/"
+    }
+  ]
+}
+  </script>
+
   <meta property="og:title" content="PersonalVault — Secure Zero-Knowledge Vault">
   <meta property="og:description" content="Store your most sensitive documents encrypted client-side. Zero-knowledge: only you can read your data.">
   <!-- In production (vault/ subdir of repo), styles.css loads from parent. Fallback inline below. -->

@@ -1,41 +1,41 @@
 {
   "disclaimer": "Educational / paper-trading signal for OpenClaw. Not financial advice. No buy/sell instruction is implied.",
   "economics": {
-    "expectancy_maker_2bps": 50.25705084749914,
+    "expectancy_maker_2bps": 46.67868387695323,
     "fee_assumption": "maker_rt_2bps",
-    "hit_rate": 0.6224489795918368,
+    "hit_rate": 0.61,
     "horizon_primary": "24h",
-    "n": 98,
-    "vs_majority_pp": 0.11224489795918369
+    "n": 100,
+    "vs_majority_pp": 0.10999999999999999
   },
   "gates": {
-    "expectancy_maker_2bps": 50.25705084749914,
-    "hit_rate": 0.6224489795918368,
-    "n": 98,
+    "expectancy_maker_2bps": 46.67868387695323,
+    "hit_rate": 0.61,
+    "n": 100,
     "ok": true,
     "reason": "gates_cleared",
-    "rolling_30d_hit": 0.5178268251273345,
-    "vs_majority_pp": 0.11224489795918369
+    "rolling_30d_hit": 0.5143338954468802,
+    "vs_majority_pp": 0.10999999999999999
   },
-  "generated_at": "2026-07-28T23:17:27Z",
+  "generated_at": "2026-07-29T00:11:30Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.1.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "policy24:inv_conf|shadow:sma24 last=63115.57 sma=64774.22 rel=0.0256",
-    "direction": "down",
-    "entry_ref": 63115.57,
-    "expires_at": "2026-07-29T00:00:00Z",
-    "forecast_id": "57b55615-4163-4808-9442-118c4fcc9909",
+    "confidence_reason": "policy24:inv_conf|shadow:sma24 last=63726.38 sma=63500.41 rel=0.0036",
+    "direction": "up",
+    "entry_ref": 63726.38,
+    "expires_at": "2026-07-30T00:00:00Z",
+    "forecast_id": "ed74f164-9197-455a-ab02-e382cd7ef55a",
     "horizon": "24h",
-    "invalidation": "BTC > 66271.35 before target",
-    "issued_at": "2026-07-28T00:00:00Z",
+    "invalidation": "BTC < 60540.06 before target",
+    "issued_at": "2026-07-29T00:00:00Z",
     "model_version": "v0.2.0-shadow-policy24",
-    "probability": 0.502975,
-    "regime": "bear",
-    "signal_id": "sig-57b55615",
+    "probability": 0.527725,
+    "regime": "chop",
+    "signal_id": "sig-ed74f164",
     "signal_version": "shadow-policy24-v0.1.0",
-    "target_rule": "close_below_entry"
+    "target_rule": "close_above_entry"
   },
   "status": "actionable_paper"
 }

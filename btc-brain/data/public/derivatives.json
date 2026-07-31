@@ -2,12 +2,12 @@
   "attempts": [
     {
       "error": "all binance derivatives endpoints failed",
-      "fetched_at": "2026-07-31T15:09:18Z",
+      "fetched_at": "2026-07-31T16:57:17Z",
       "kind": "derivatives",
-      "latency_ms": 170,
+      "latency_ms": 305,
       "notes": [
         "funding:fail:GET https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT failed: HTTP Error 451: ",
-        "open_interest:fail:GET https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT failed: <urlopen error [Errno 104] Connection reset by peer>",
+        "open_interest:fail:GET https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT failed: HTTP Error 451: ",
         "long_short:fail:GET https://fapi.binance.com/futures/data/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1 failed: HTTP Error 451: "
       ],
       "source": "binance",
@@ -15,9 +15,9 @@
     },
     {
       "error": null,
-      "fetched_at": "2026-07-31T15:09:19Z",
+      "fetched_at": "2026-07-31T16:57:18Z",
       "kind": "derivatives",
-      "latency_ms": 1149,
+      "latency_ms": 1253,
       "notes": [
         "missing:long_account_pct,short_account_pct"
       ],
@@ -26,9 +26,9 @@
     },
     {
       "error": "all bybit derivatives endpoints failed",
-      "fetched_at": "2026-07-31T15:09:20Z",
+      "fetched_at": "2026-07-31T16:57:18Z",
       "kind": "derivatives",
-      "latency_ms": 206,
+      "latency_ms": 356,
       "notes": [
         "tickers:fail:GET https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT failed: HTTP Error 403: Forbidden",
         "long_short:fail:GET https://api.bybit.com/v5/market/account-ratio?category=linear&symbol=BTCUSDT&period=5min&limit=1 failed: HTTP Error 403: Forbidden"
@@ -38,9 +38,9 @@
     },
     {
       "error": null,
-      "fetched_at": "2026-07-31T15:09:20Z",
+      "fetched_at": "2026-07-31T16:57:19Z",
       "kind": "derivatives",
-      "latency_ms": 207,
+      "latency_ms": 208,
       "notes": [
         "missing:next_funding_time_ms,open_interest_btc,long_short_ratio,long_account_pct,short_account_pct"
       ],
@@ -49,16 +49,16 @@
     }
   ],
   "data": {
-    "funding_rate": 7.64619531772e-05,
+    "funding_rate": 9.1498268785e-05,
     "long_account_pct": null,
-    "long_short_ratio": 1.4,
-    "mark_price": 62654.1,
-    "next_funding_time_ms": 1785542400000,
-    "open_interest_btc": 31967.78150000017,
+    "long_short_ratio": 1.5,
+    "mark_price": 62857.8,
+    "next_funding_time_ms": 1785571200000,
+    "open_interest_btc": 32530.088700000157,
     "short_account_pct": null
   },
   "error": null,
-  "fetched_at": "2026-07-31T15:09:19Z",
+  "fetched_at": "2026-07-31T16:57:18Z",
   "kind": "derivatives",
   "notes": [
     "missing:long_account_pct,short_account_pct"

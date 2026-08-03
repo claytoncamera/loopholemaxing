@@ -1,0 +1,131 @@
+{
+  "date": "2026-08-03",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-08-03T13:21:01Z",
+  "id": "briefing-2026-08-03",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.5250836120401338,
+      "baseline_brier": 0.24937081240702003,
+      "baseline_hit_rate": 0.5250836120401338,
+      "brier": 0.250289735182506,
+      "display_ready": true,
+      "generated_at": "2026-08-03T12:34:01Z",
+      "hit_rate": 0.5250836120401338,
+      "logloss": 0.6937271720690456,
+      "metrics_version": "metrics-v0.2.0",
+      "min_n_display": 20,
+      "n": 1794,
+      "total_forecasts": 1796,
+      "total_resolved": 1794
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-08-03T12:35:36Z",
+      "funding_rate": 7.8452696559e-06,
+      "long_short_ratio": 2.06,
+      "mark_price": 62595.0,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 32921.64510000018,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-08-03T12:35:36Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 63324.61666666667,
+        "r1": 63905.363333333335,
+        "r2": 64311.236666666664,
+        "recent_high": 63730.49,
+        "recent_low": 62210.14,
+        "s1": 62918.74333333334,
+        "s2": 62337.99666666667,
+        "sma_20": 64434.213,
+        "sma_200": null,
+        "sma_50": 63344.018200000006,
+        "vwap_session": 62758.22432251788
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Fear",
+      "fear_greed_value": 28,
+      "fetched_at": "2026-08-03T12:35:36Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-08-03T12:35:36Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-08-03T12:35:34Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-08-03T12:35:34Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-08-03T12:35:34Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-08-03T12:35:34Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-08-03T12:35:34Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-08-03T12:35:34Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-08-03T12:35:36Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-08-03T12:35:36Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-08-03T12:35:36Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-08-03"
+}

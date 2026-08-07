@@ -1,0 +1,131 @@
+{
+  "date": "2026-08-07",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-08-07T11:08:20Z",
+  "id": "briefing-2026-08-07",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.5238095238095238,
+      "baseline_brier": 0.24943310657596374,
+      "baseline_hit_rate": 0.5238095238095238,
+      "brier": 0.2502710020770735,
+      "display_ready": true,
+      "generated_at": "2026-08-07T11:03:11Z",
+      "hit_rate": 0.5238095238095238,
+      "logloss": 0.6936893824180665,
+      "metrics_version": "metrics-v0.2.0",
+      "min_n_display": 20,
+      "n": 1869,
+      "total_forecasts": 1874,
+      "total_resolved": 1869
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-08-07T10:37:11Z",
+      "funding_rate": 2.42370952831e-05,
+      "long_short_ratio": 1.34,
+      "mark_price": 64847.9,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 31992.84520000022,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-08-07T10:37:12Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 64432.956666666665,
+        "r1": 64778.50333333333,
+        "r2": 65289.706666666665,
+        "recent_high": 64932.11,
+        "recent_low": 64087.41,
+        "s1": 63921.75333333333,
+        "s2": 63576.206666666665,
+        "sma_20": 64385.087,
+        "sma_200": null,
+        "sma_50": 63230.8432,
+        "vwap_session": 64444.50514949651
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Fear",
+      "fear_greed_value": 29,
+      "fetched_at": "2026-08-07T10:37:12Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-08-07T10:37:12Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-08-07T10:37:08Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-08-07T10:37:10Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-08-07T10:37:08Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-08-07T10:37:06Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-08-07T10:37:09Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-08-07T10:37:07Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-08-07T10:37:11Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-08-07T10:37:12Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-08-07T10:37:12Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-08-07"
+}

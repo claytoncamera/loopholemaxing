@@ -54,8 +54,20 @@
     .deck-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
     .deck-head h1 { font-size: 30px; letter-spacing: -.02em; }
     .deck-head h1 .w { background: linear-gradient(135deg, var(--accent), var(--accent2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-    .deck-sub { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
-    .toolbar { display: flex; gap: 10px; margin-bottom: 26px; flex-wrap: wrap; }
+    .deck-sub { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+
+    /* Status ledger — the deck's one-line vital signs, above the search. */
+    .ledger { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+    .lchip { display: flex; align-items: center; gap: 7px; font-size: 12.5px; font-weight: 600;
+      background: var(--glass); border: 1px solid var(--glass-border); border-radius: 10px;
+      padding: 7px 12px; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: var(--muted); }
+    .lchip b { color: var(--text); font-variant-numeric: tabular-nums; }
+    /* Distinct modifier name on purpose: the pane-level `.need` block is declared
+       further down and would otherwise win the cascade over `.lchip.need`. */
+    .lchip.warn { border-color: rgba(210,153,34,.42); color: var(--paper); }
+    .lchip.warn b { color: var(--paper); }
+
+    .toolbar { display: flex; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .toolbar input { flex: 1; min-width: 200px; padding: 11px 14px; border-radius: 11px;
       border: 1px solid var(--glass-border); background: var(--glass); color: var(--text); font-size: 14px; outline: none;
       backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
@@ -63,6 +75,17 @@
     .tbtn { padding: 11px 14px; border-radius: 11px; border: 1px solid var(--glass-border); background: var(--glass);
       color: var(--muted); font-size: 13px; cursor: pointer; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
     .tbtn:hover { color: var(--text); border-color: var(--accent); }
+
+    /* Lens chips — filter the deck by what you came here to look at. */
+    .lenses { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 26px; }
+    .lens { font: inherit; font-size: 12.5px; font-weight: 600; cursor: pointer; color: var(--muted);
+      background: var(--glass); border: 1px solid var(--glass-border); border-radius: 999px; padding: 6px 14px;
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+    .lens:hover { color: var(--text); }
+    .lens:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .lens[aria-pressed="true"] { color: #fff; border-color: transparent;
+      background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+    .lens[aria-pressed="true"].needlens { background: linear-gradient(135deg, #d29922, #b8860b); }
 
     .group { margin-bottom: 34px; }
     .group > h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em;
@@ -76,7 +99,11 @@
     .pane::before { content: ''; position: absolute; top: 0; left: 8%; right: 55%; height: 1px;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent); }
     .pane:hover { transform: translateY(-2px); border-color: rgba(110,168,255,.4); }
-    .pane h3 { font-size: 16.5px; display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    /* Wrap, don't squeeze: a long creation name used to compress into a 3-line
+       column beside its tag chip. The name takes the row; the tag drops below it. */
+    .pane h3 { font-size: 16.5px; display: flex; align-items: center; gap: 8px;
+      margin-bottom: 6px; flex-wrap: wrap; row-gap: 5px; }
+    .pane h3 .nm { flex: 1 1 auto; min-width: 0; }
     .dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
     .dot.live { background: var(--live); box-shadow: 0 0 8px var(--live); }
     .dot.paper { background: var(--paper); box-shadow: 0 0 8px var(--paper); }
@@ -86,12 +113,22 @@
       border: 1px solid var(--glass-border); border-radius: 7px; padding: 2px 7px; white-space: nowrap; }
     .pane p { font-size: 13.5px; color: var(--muted); line-height: 1.55; flex: 1; margin-bottom: 12px; }
     .pane p b { color: var(--text); font-weight: 600; }
+
+    /* "Needs you" — the gate that is a human, not a machine. Amber, never red:
+       these are not failures, they are decisions and actions waiting on Clayton. */
+    .need { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; line-height: 1.5;
+      color: var(--paper); background: rgba(210,153,34,.09); border: 1px solid rgba(210,153,34,.26);
+      border-radius: 10px; padding: 8px 11px; margin-bottom: 12px; }
+    .need .nic { flex: none; }
+    .need b { color: #f0c14b; font-weight: 700; }
+
     .links { display: flex; flex-wrap: wrap; gap: 7px; }
     .links a { font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none;
       border: 1px solid rgba(110,168,255,.25); border-radius: 9px; padding: 5px 11px; }
     .links a:hover { background: rgba(110,168,255,.12); }
     .links .lan { color: var(--paper); border-color: rgba(210,153,34,.3); }
     .links .repo { color: var(--muted); border-color: var(--glass-border); }
+    .empty { color: var(--muted); font-size: 14px; padding: 30px 4px; }
     .foot { margin-top: 40px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.8; }
     .foot code { background: rgba(110,168,255,.1); border-radius: 5px; padding: 1px 6px; }
   </style>
@@ -119,14 +156,17 @@
       <button class="tbtn" id="lock-btn">🔒 Lock</button>
     </div>
     <div class="deck-sub" id="deck-sub">Everything you've built, in one pane of glass.</div>
+    <div class="ledger" id="ledger"></div>
     <div class="toolbar">
       <input id="filter" type="search" placeholder="Filter creations… (name, tag, description)">
     </div>
+    <div class="lenses" id="lenses"></div>
     <div id="groups"></div>
     <div class="foot">
       Owner deck — <code>noindex</code> + robots-blocked, code-gated on every device.<br>
       The gate is a privacy curtain, not a cryptographic vault (static GitHub Pages) — no tokens or secrets live on this page.<br>
-      <b>LAN</b> links only resolve on the home network. To add a creation edit <code>DECK</code>; to change the code replace <code>EXPECTED_DIGEST</code> — both in <code>window/index.html</code>.
+      <b>LAN</b> links only resolve on the home network. To add a creation edit <code>DECK</code>; to change the code replace <code>EXPECTED_DIGEST</code> — both in <code>window/index.html</code>.<br>
+      Deck facts verified <b>2026-08-09</b>. A <code>need</code> field is what the item is waiting on <i>you</i> for — clear it when you clear the blocker.
     </div>
   </div>
 
@@ -135,90 +175,127 @@
 
 /* ============================================================
    DECK — everything Clayton has created.
-   To add: append {name, status: live|paper|bench|down, tag, desc, links:[{t,u,cls?}]}
+   To add: append {name, status: live|paper|bench|down, tag, desc,
+                   need?, links:[{t,u,cls?}]}
    to the right group (or add a group). Keep secrets/tokens OUT — public repo.
+
+   `need` is the human gate: the action or decision this item is blocked on.
+   The whole estate is engineering-complete and waiting on Clayton (full-estate
+   discovery, 2026-08-09) — the deck says so out loud rather than painting
+   everything green. Clear a need when the blocker clears.
+
+   Facts below verified live 2026-08-09 (CC2 overview/inventory/affiliate-payments,
+   knockfiber /health, orbitroute /engines/canary, forge status.json, brain metrics).
    ============================================================ */
 const DECK = [
   { group: '💸 Revenue & Commerce', items: [
-    { name: 'Practically Natty (PNP)', status: 'live', tag: 'WooCommerce + CC2',
-      desc: '<b>The peptide store.</b> WooCommerce on Hostinger with Command Center 2 (v0.5.37+) running ops: orders, shipping labels (Shippo), revenue intelligence, email broadcasts. July-4th 3-tier sale engine, +10% price raise, mobile header — all live.',
+    { name: 'Practically Natty (PNP)', status: 'live', tag: 'WooCommerce + CC2 v0.5.70',
+      desc: '<b>The peptide store — the one engine that has always taken money.</b> $52,316 gross across 290 paid orders, 36 active affiliates, 81 sellable SKUs, $24,397 of inventory at cost. WooCommerce on Hostinger (HPOS) with Command Center 2 running ops: orders, Shippo labels, revenue intelligence, COGS/P&amp;L, broadcasts. The <b>PNP LABS rebrand</b> shipped 08-07 (95 images off the old vial), the SEO layer and gift promo are live, and the Summer Sale closed Jul 31 at <b>$6,254.70 / 34 orders</b>.',
+      need: '<b>$876.65 sitting in 4 on-hold orders</b> — #3198 is 18 days out. And <b>8 SKUs are dark</b>: restock Tesamorelin 10mg first (it alone gates both the Lean Machine and Summer Shred stacks), then 30 mL BAC Water. CJC-1295 is a <b>drafted parent</b> — restocking won\'t fix it, republish it.',
       links: [ {t:'Store', u:'https://practicallynatty.com'}, {t:'WP Admin / CC2', u:'https://practicallynatty.com/wp-admin/'}, {t:'CC2 Proxy', u:'https://cc2.practicallynatty.com'}, {t:'Work Tracker', u:'/window/pnp-tracker/'} ] },
-    { name: 'PNP Affiliate HUB', status: 'live', tag: 'v0.4.x',
-      desc: '<b>Self-serve dashboard for all 36 affiliates</b> at /my-affiliate/: links + QR, commissions & balance, peptide credits (1cr/$10), leaderboard, tiers, team recruiting. Rides SliceWP + elite-leaders engines underneath.',
+    { name: 'PNP Affiliate HUB', status: 'live', tag: 'v0.5.1 · 36 affiliates',
+      desc: '<b>Self-serve dashboard for every affiliate</b> at /my-affiliate/: links + QR, commissions &amp; balance, peptide credits (1cr/$10), leaderboard, tiers, team recruiting. Rides SliceWP + the elite-leaders engine underneath.',
+      need: '<b>$1,395.80 owed across 56 commissions</b> — no payout run in 46 days, oldest genuine third-party 124 days. Samantha Muller is first ($729.24, she drove order #3661) and she is <b>past the $600 1099-NEC threshold with no W-9 on file</b> — collect W-9s before the run.',
       links: [ {t:'HUB', u:'https://practicallynatty.com/my-affiliate/'} ] },
-    { name: 'PeptiDex', status: 'live', tag: '79 entries',
+    { name: 'PNP Apparel · SPLICE', status: 'bench', tag: 'sealed · separate entity',
+      desc: '<b>The apparel venture — built, sealed, one switch from selling.</b> SPLICE storefront on Shopify (<code>qicbg2-wc</code>) behind the <b>PN VAULT</b> front-door film, now at v51. Deploy only via <code>tools/theme_deploy.sh</code> (the admin themes page is an iframe wall — CLI only). Two SKUs are platform-locked withheld; clearing the handle list + 6×10 units restores them.',
+      need: '<b>Shopify Payments onboarding is the sole revenue gate.</b> Then: test order → domain → unseal. Rename the store display name off "Practically Natty" first — this is a separate entity and the password page still carries the wrong name.',
+      links: [ {t:'Repo', u:'https://github.com/claytoncamera/pnp-apparel', cls:'repo'} ] },
+    { name: 'PeptiDex', status: 'live', tag: '79 entries · 10 categories',
       desc: '<b>Peptide knowledge hub</b> — research library across 10 categories with original visuals. PNP-adjacent SEO + education asset on Railway.',
       links: [ {t:'thepeptidex.net', u:'https://www.thepeptidex.net'} ] },
-    { name: 'KnockFiber', status: 'live', tag: 'RCLX funnel · 29+ leads',
-      desc: '<b>Your T-Mobile Fiber D2D recruiting machine.</b> Landing + 49 city pages, lead capture → SQLite → ntfy push to the work phone, mini-CRM, 72-reel content kit (newest-first), posting board, attribution stats. Traffic is the only gap.',
+    { name: 'KnockFiber', status: 'live', tag: 'RCLX funnel · 84 leads',
+      desc: '<b>The T-Mobile Fiber D2D recruiting machine.</b> Grown from 49 city pages to <b>259 cities / 328 sitemap URLs</b>, EN + ES, 2,018 tests green. Lead capture → SQLite → ntfy push to the work phone, mini-CRM, content kit, posting board, attribution stats. 84 leads in, <b>68 with prior D2D experience</b>. Google Jobs markup fixed sitewide; three job feeds built and valid.',
+      need: '<b>Distribution is the whole bottleneck: 0 of 12 board items closed, 0 of 6 aggregators ever submitted, 0 feed-attributed leads all-time.</b> Two fast moves — submit the 3 feeds (~10 min, values prepped; 170 postings age out of WhatJobs\' 28-day window over the next month), and pull the <b>~35 Indeed applicants</b> sitting unlogged in camera.clayton@icloud.com (Youngstown 11 · McAllen 22 · Melbourne 2 — worth ~6 reps at the campaign\'s own 17% rate).',
       links: [ {t:'knockfiber.com', u:'https://www.knockfiber.com'}, {t:'/hub (cmd center)', u:'https://www.knockfiber.com/hub'}, {t:'Pipeline', u:'https://www.knockfiber.com/admin'}, {t:'Content Kit', u:'https://www.knockfiber.com/kit'}, {t:'Posting Board', u:'https://www.knockfiber.com/posts'}, {t:'Stats', u:'https://www.knockfiber.com/stats'} ] },
     { name: 'RCLX / KnockFiber Reps', status: 'live', tag: 'owner-gated · rep · team · payouts',
-      desc: '<b>The rep/team/payout engine behind KnockFiber.</b> Multi-level roster with the per-rep team-building gate, install → RCLX-statement verification, override ledger ($25/install economics), payout batches, audit trail. HQ = the one pane: tiles, hierarchy, by-location, statements, full traceability. Token-guarded on knockfiber.com (403 without your token).',
+      desc: '<b>The rep/team/payout engine behind KnockFiber.</b> Multi-level roster with the per-rep team-building gate, install → RCLX-statement verification, override ledger, payout batches, audit trail. <b>Tiered receive: $25/install</b> for a rep Clayton recruited directly (managers included), <b>$15</b> for a manager\'s team member — and he pays nothing out. Edgar Martinez runs RGV with a team of 5 (the first real downline). Token-guarded — use a cookie jar, a bare <code>?token=</code> eats the 303.',
+      need: 'Promote Edgar + the key installs off the latest RCLX statement — that turns invisible earned money into a tracked receivable.',
       links: [ {t:'Reps HQ', u:'https://www.knockfiber.com/admin/hq'}, {t:'Team roster', u:'https://www.knockfiber.com/admin/team'}, {t:'Installs', u:'https://www.knockfiber.com/admin/installs'}, {t:'Payouts', u:'https://www.knockfiber.com/admin/payouts'} ] },
+    { name: 'PNP Scout', status: 'bench', tag: 'v0.1.0 · built',
+      desc: '<b>Creator discovery + vetting engine</b> (the Pickaxe clone) — AI DM queue, pipeline, briefs &amp; agreements, QR submission portal, review gate. Payouts are read-only by design. 7 open issues are an intentional backlog, not rot.',
+      need: 'Four unlocks before it can run: Apify token, Woo keys, CLI auth, and an outreach IG identity.',
+      links: [ {t:'Private repo', u:'https://github.com/claytoncamera/pnp-scout', cls:'repo'} ] },
+    { name: 'Work With Clayton', status: 'live', tag: 'services funnel · Stripe live',
+      desc: '<b>The near-term cash engine.</b> Own domain, own repo, own Pages site. Offer ladder: <b>$497 Loophole Audit / 48h</b> → $1.5–3.5K build sprint → $3–7.5K/mo operator retainer, audit credits toward the sprint. Stripe payment link is live and wired through a one-line <code>STRIPE_AUDIT_URL</code> constant; intake POSTs into the HUB CRM. The disproved trading claim and the contradictory "Stripe coming soon" FAQ are both <b>gone as of 08-09</b>.',
+      need: 'It has a working buy path and no traffic. Warm intros + one-to-one outbound are the plan of record — nothing has been sent.',
+      links: [ {t:'workwithclayton.com', u:'https://workwithclayton.com/'} ] },
   ]},
   { group: '🛰️ Space', items: [
-    { name: 'OrbitRoute', status: 'live', tag: 'COO onboarding',
-      desc: '<b>Routing layer for the orbital compute era</b> — live SGP4 constellation tracking, ground-station weather viability, uplink routing, ops globe at /viz. 11,000+ sats tracked, 5 patent drafts. Noah onboarding in progress (Master Brief in repo docs/).',
-      links: [ {t:'orbitroute.ai', u:'https://www.orbitroute.ai'}, {t:'Ops Globe /viz', u:'https://www.orbitroute.ai/viz'} ] },
+    { name: 'OrbitRoute', status: 'live', tag: 'solo since 07-11 · 5 USPTO',
+      desc: '<b>Routing layer for the orbital compute era.</b> Live SGP4 tracking of <b>11,848 assets across 37 ground stations</b>, weather viability, uplink routing, ops globe at /viz, 23 engines. Self-test canary is <b>14/14 green</b> over 2,314 runs; the scheduler has turned 5,590 ticks with an 88.9% deadline hit rate. 5 USPTO drafts on a 30-item portfolio. Its own /cost-compare honestly returns an orbital <i>premium</i> vs terrestrial today — the card says so.',
+      need: '<b>Lead discovery is dead</b> — Brave returns 402 (quota burned), 228 hard failures. Pick <b>paid Brave vs Tavily</b>; after Monday\'s 13 drafts the engine produces nothing. Also: 306 outreach sends and <b>not one linked /optimize</b>, the thing being sold — fix the template before those 13 go. And delete the duplicate <code>v=spf1</code> TXT at send.orbitroute.ai (zero-risk, verified).',
+      links: [ {t:'orbitroute.ai', u:'https://www.orbitroute.ai'}, {t:'Ops Globe /viz', u:'https://www.orbitroute.ai/viz'}, {t:'Canary', u:'https://www.orbitroute.ai/api/v1/engines/canary'} ] },
+    { name: 'FORGE', status: 'paper', tag: 'Phase-1 · build-stalled',
+      desc: '<b>The autonomous upgrade foundry for OrbitRoute</b> — it watches prod, finds its own defects, and builds the fixes. Phase-1 runs on launchd every 15 minutes and the ticker is healthy. Backlog stands at 368 new / 20 queued / 6 rejected, with <b>5 diffs parked at the gauntlet cap</b>. Parked diffs are local-only — there is no GitHub copy.',
+      need: '<b>Build engine has been stalled ~8 days at the 5-diff cap.</b> Either flip <code>gauntlet = true</code> in <code>~/claytron-forge/forge.toml</code> (one line) or drain the 5. Worth knowing first: 4 of the 5 target symptoms that are no longer visible in prod (canary 14/14) — only the log-stream split still has value on its own.',
+      links: [ {t:'Private repo', u:'https://github.com/claytoncamera/claytron-forge', cls:'repo'} ] },
   ]},
   { group: '📈 Trading & Intelligence', items: [
-    { name: 'MMS Hub', status: 'paper', tag: 'Mac mini · launchd fleet',
-      desc: '<b>The trading ecosystem.</b> Paper fleet under launchd (Hybrid V6 ×2 venues, Rapid Increase, $30k paper), 4 local services, equity snapshots 4×/day. Cloud portal is the public face. NO live funds until graduation criteria met.',
+    { name: 'MMS Hub', status: 'paper', tag: 'paper only · NOT ready',
+      desc: '<b>The trading ecosystem — honestly, not there yet.</b> Paper fleet sits at <b>$28,292 of $30,000 (−5.69%)</b> and the 08-05 investor audit found <b>0 of 9 bots</b> meet the 10–100 trades/day · 70% WR · 0.5% max-loss bar. Two traps worth remembering: <code>rapid-increase</code> <b>can never trade</b> under its config (it scans the 12 least volatile coins for a +4%/80min spike), and the <b>:8080 v44 API\'s fleet numbers are fabricated</b> — a random walk with hard-coded equity. The authority file is <code>logs/paper/equity_history.csv</code>. No live funds.',
+      need: '🔴 <b>Highest-risk item in the whole estate.</b> Rotate the Schwab app key/secret + Polygon key (they are on <code>main</code>, not just two branches — a purge must run <code>--all</code>), then check Binance.US → API Management for <b>withdrawal permission</b> on the March key and revoke it. A live trade-enabled key also sits plaintext in <code>~/MMS-Deploy/.env</code>, which <code>backup.sh</code> has copied <b>61 times</b>. Risk here compounds with time.',
       links: [ {t:'Cloud portal', u:'https://moneymakingsolutionsai.com'}, {t:'Hub :8000', u:'http://10.0.0.224:8000', cls:'lan'}, {t:'AI :8001', u:'http://10.0.0.224:8001', cls:'lan'}, {t:'API :8080', u:'http://10.0.0.224:8080', cls:'lan'} ] },
-    { name: 'BTC Brain', status: 'live', tag: 'forecast-only',
-      desc: '<b>Daily BTC forecast engine</b> (6:05am launchd, pure-stdlib py3.14) — issues forecasts, resolves them, emails the accuracy report. Feeds the future OpenClaw maker-only trade agent (designed, unbuilt). No trades, no funds.',
+    { name: 'BTC Brain', status: 'live', tag: 'forecast-only · no edge yet',
+      desc: '<b>Daily BTC forecast engine</b> (6:05am launchd, pure-stdlib) — issues forecasts, resolves them, publishes a public ledger and emails the accuracy report. Over 1,571 resolved forecasts it <b>still shows no edge vs baseline</b>, and the public page says exactly that. Feeds the future OpenClaw maker-only agent. No trades, no funds.',
       links: [ {t:'Ledger (repo)', u:'https://github.com/claytoncamera/loopholemaxing/tree/main/btc-brain', cls:'repo'} ] },
     { name: 'Universal Analyst Engine', status: 'live', tag: 'FastAPI + Celery',
-      desc: '<b>Multi-domain intelligence platform</b> — sports, politics, macro, climate, entertainment scorecards on Postgres/Redis/Celery. PR #3 (scorecards unique-constraint migration) awaiting your review before live-DB merge.',
+      desc: '<b>Multi-domain intelligence platform</b> — sports, politics, macro, climate, entertainment scorecards on Postgres/Redis/Celery. Biggest idle burn on Railway (~1.46GB RAM at 0% CPU) and a scale-to-zero candidate.',
+      need: 'PR #3 (scorecards unique-constraint migration) is a schema change — it waits on your review before touching the live DB, per the rules.',
       links: [ {t:'Showcase', u:'/uae/'}, {t:'Repo', u:'https://github.com/claytoncamera/universal-analyst-engine', cls:'repo'} ] },
     { name: 'MMS Launch Pipeline', status: 'live', tag: 'daily codex automation',
-      desc: '<b>Public-launch marketing engine</b> — nightly scorecard, launch packet, copy bank, CRM summary, outreach copy generated to ~/trading_lab/outputs (also in the Obsidian vault as “MMS Launch Outputs”).',
+      desc: '<b>Public-launch marketing engine</b> — nightly scorecard, launch packet, copy bank, CRM summary and outreach copy generated to ~/trading_lab/outputs (mirrored into the Obsidian vault). Note the dependency: it markets a fleet the investor audit says is not ready.',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/trading_lab', cls:'repo'} ] },
     { name: 'NBA Loophole Brain', status: 'bench', tag: 'mock mode',
-      desc: 'NBA analytics API deployed on Railway in mock mode — bench experiment, revisit or archive.',
+      desc: 'NBA analytics API deployed on Railway in mock mode — near-zero cost, deliberately left alone.',
       links: [ {t:'Showcase', u:'/nba-brain/'} ] },
   ]},
   { group: '🎬 Content & Audience', items: [
-    { name: 'Content Hub', status: 'live', tag: 'phone · @clayton_camera',
-      desc: '<b>The personal-brand command hub</b> — the 10-post batch (hook, beats, caption first line, sends-targeted CTA and the compliance constraint on every post), the 57-story bank mined from the brain, the verified platform mechanics, and the do-not-post list. Tap a post to expand it; tap the chip to move it idea → filmed → edited → posted. <b>8 of the 10 need no footage</b> — they are screen recordings of systems already running. Status is stored per device, not synced.',
-      links: [ {t:'Open Hub', u:'https://claude.ai/code/artifact/2ac5baaa-3690-4d97-aaaa-422012597121'}, {t:'Playbook (brain)', u:'https://github.com/claytoncamera/claytron-brain/blob/master/01_projects/personal-brand/CONTENT_PLAYBOOK.md', cls:'repo'} ] },
     { name: 'Studio', status: 'live', tag: 'PWA · local-first',
-      desc: '<b>In-browser content factory</b> — import footage, clip with ffmpeg.wasm, reshape 9:16, caption/hook generator, plan scheduler, installable offline PWA. Cross-device sync opt-in.',
+      desc: '<b>In-browser content factory</b> — import footage, clip with ffmpeg.wasm, reshape 9:16, caption/hook generator, plan scheduler, installable offline PWA. Cross-device sync is opt-in.',
       links: [ {t:'Open Studio', u:'/studio/'} ] },
     { name: 'Studio Engine', status: 'live', tag: 'Mac mini · auto-clip',
-      desc: '<b>Drop footage in ~/StudioInbox</b> → auto-9:16 + whisper.cpp captions + Vision face reframe → clips land in <code>~/StudioInbox/_out</code> with a caption pack. <b>Local-only mode as of 2026-07-18</b> — it had run since 06-16 processing zero files (the whole scan loop was gated on an empty sync code, and renders were deleted before the upload was confirmed). Sync is now optional; a sync failure can never lose local work.',
+      desc: '<b>Drop footage in ~/StudioInbox</b> → auto-9:16 + whisper.cpp captions + Vision face reframe → clips land in <code>~/StudioInbox/_out</code> with a caption pack. <b>Local-only since 07-18</b> — it had run since 06-16 processing zero files (the scan loop was gated on an empty sync code, and renders were deleted before upload was confirmed). Sync is optional now; a sync failure can never lose local work.',
       links: [ {t:'Repo', u:'https://github.com/claytoncamera/loopholemaxing-studio-engine', cls:'repo'} ] },
     { name: 'Studio Sync', status: 'live', tag: 'Railway + Postgres',
       desc: 'Cross-device sync API for Studio — library, thumbnails, captions, plan, finished clips. CORS locked to loopholemaxing.com.',
       links: [ {t:'Health', u:'https://studio-sync-api-production.up.railway.app/health'} ] },
-    { name: 'Analytics HUB', status: 'live', tag: 'owner-gated',
-      desc: '<b>Visit tracking across your properties</b> — loopholemaxing.com, PeptiDex, OrbitRoute, affiliate hub. Origin-guarded tracker + dashboards.',
+    { name: 'Analytics HUB', status: 'live', tag: 'v2 · owner-gated · 8 sites',
+      desc: '<b>One dashboard for the whole estate</b> — network coverage board (per-site tracker health), real geo, human/bot/internal traffic classes, devices, UTM campaigns, referrers, outbound clicks, conversions, realtime, CSV export. v2 fixed v1\'s accuracy: it was 96.9% unconditional heartbeats with ~22% of "humans" being your own tooling. Tracks 8 properties; /window/ is deliberately not one of them.',
       links: [ {t:'Open', u:'/analytics-hub/'} ] },
-    { name: 'Army Link', status: 'live', tag: 'owner-gated',
-      desc: 'Link command center for the agent-army workflow.',
+    { name: 'Army Link', status: 'live', tag: 'owner-gated · phone board',
+      desc: '<b>Zero-token ops glance from the phone</b> — passkey gate + read-only live board: HUB CRM health, capture-list signups, Studio Sync, BTC feed freshness, forecast ledger vs baseline (it says "no edge yet" when that is true), latest briefing, reachability chips.',
       links: [ {t:'Open', u:'/army-link/'} ] },
     { name: 'Creation Command Center', status: 'live', tag: 'Railway',
-      desc: 'Owner-gated creation dashboard on its own subdomain.',
+      desc: 'Owner-gated viral-content dashboard on its own subdomain — content library, hook variants, six-gate pre-publish workflow, trend radar, idea inbox, deterministic scoring.',
       links: [ {t:'creation.loopholemaxing.com', u:'https://creation.loopholemaxing.com'} ] },
-    { name: 'LoopholeMaxing Portfolio', status: 'live', tag: 'GitHub Pages',
-      desc: '<b>The public face</b> — 15 creation cards + “Work With Clayton” hire funnel. This Window lives inside it, unlisted.',
-      links: [ {t:'Homepage', u:'/'}, {t:'Work With Clayton', u:'/work-with-clayton/'} ] },
+    { name: 'LoopholeMaxing Portfolio', status: 'live', tag: 'GitHub Pages · the public face',
+      desc: '<b>The public face</b> — creation cards + ship log + the hire CTA routing to workwithclayton.com. This Window lives inside it, unlisted. It is a <b>repeater</b>: it describes systems that live in other repos, so their honesty fixes never propagate here on their own — a truth-scan guard runs in CI to catch retired claims.',
+      links: [ {t:'Homepage', u:'/'}, {t:'Ship log', u:'/#shiplog'} ] },
+    { name: 'claytoncamera.com', status: 'live', tag: 'the name SERP',
+      desc: '<b>The person entity.</b> Canonical Person <code>@id</code> for the whole network — every other domain <i>references</i> it and none of them redefine it. HTTPS provisioned and enforced. The old <code>/clayton-camera/</code> page here is now a redirect stub, and a test fails the build if anyone re-expands it (two pages competing for one name query is exactly what canonicalisation prevents).',
+      links: [ {t:'claytoncamera.com', u:'https://claytoncamera.com/'} ] },
+    { name: 'Raiden', status: 'live', tag: 'partnership pitch',
+      desc: '<b>raiden.biz</b> — a DJ site for a real friend, live on GitHub Pages since 08-06. It is really a <b>partnership pitch</b>, not a finished site: the content is placeholder until the meeting produces real assets and terms.',
+      need: 'Meeting with the DJ for real content + partnership terms.',
+      links: [ {t:'raiden.biz', u:'https://raiden.biz'} ] },
   ]},
   { group: '🔐 Infra & Memory', items: [
     { name: 'Claytron NOC', status: 'live', tag: 'command wall · :8090',
-      desc: '<b>The two-TV command wall</b> — the ambient layer every engine was missing: problems used to surface only when you went looking. <b>Systems pane:</b> 18 endpoint probes (code + latency), 12 launchd jobs, Mac-mini CPU/mem/disk gauges. <b>Business pane:</b> PNP sales, RCLX funnel + producing-rep goal, MMS equity, brain metrics. Runs its <b>own 60s probe loop</b> — the daily sweep file is 8h stale by evening, and a wall rendering that as live would lie. Standalone read-only: own repo, own launchd job, own port; touches no engine.',
-      links: [ {t:'Systems TV', u:'http://Claytons-Mac-mini.local:8090/', cls:'lan'}, {t:'Business TV', u:'http://Claytons-Mac-mini.local:8090/ops', cls:'lan'} ] },
+      desc: '<b>The two-TV command wall</b> — the ambient layer every engine was missing: problems used to surface only when you went looking. <b>Systems TV:</b> endpoint probes, engine activity feed, OrbitRoute + FORGE engines, backups &amp; data freshness, error-loop detector, launchd, mini vitals. <b>Business TV:</b> money on the table (receivables, affiliate payable, dark SKUs), PNP, RCLX funnel, OrbitRoute outreach, brain. Runs its <b>own 60s probe loop</b> — the daily sweep file is hours stale by evening and a wall rendering that as live would lie. Standalone read-only: own repo, own launchd job, own port; touches no engine.',
+      links: [ {t:'Systems TV', u:'http://Claytons-Mac-mini.local:8090/', cls:'lan'}, {t:'Business TV', u:'http://Claytons-Mac-mini.local:8090/ops', cls:'lan'}, {t:'Repo', u:'https://github.com/claytoncamera/claytron-noc', cls:'repo'} ] },
+    { name: 'Claytron Brain', status: 'live', tag: 'the memory · 9.6k KI',
+      desc: '<b>The operating brain</b> — engines, safety rules, decisions, journals at ~/brain/claytron-brain. Now <b>903k words across 340 journals, 241 decisions, 1,007 commits</b>, knowledge index 9,661. Auto-transported by hooks (SessionStart pulls, every turn checkpoints, SessionEnd pushes) and mirrored to the phone via Obsidian Sync.',
+      need: 'Obsidian is not running post-reboot — phone vault sync is frozen and the Obsidian MCP is down. Reopen it (consider Login Items).',
+      links: [] },
+    { name: 'Health Sweep', status: 'live', tag: 'daily launchd · 19/19',
+      desc: 'All-systems health board (gh + railway + curl) every morning — pushes ALL GREEN / RED to the work phone via ntfy. Last run: <b>ALL GREEN 19/19</b>. Its lesson is written into the wall: an all-000 board means check localhost before believing 14 simultaneous outages.',
+      links: [] },
     { name: 'PersonalVault', status: 'bench', tag: 'zero-knowledge',
       desc: 'AES-256-GCM zero-knowledge personal data vault — backend API + React Native app. Dormant on Railway (api.loopholemaxing.com), ready to revive.',
       links: [ {t:'Showcase', u:'/vault/'}, {t:'Repo', u:'https://github.com/claytoncamera/personal-vault', cls:'repo'} ] },
-    { name: 'Claytron Brain', status: 'live', tag: 'the memory',
-      desc: '<b>The operating brain</b> — engines, safety rules, decisions, journals at ~/brain/claytron-brain. Mirrored to your phone via Obsidian Sync (“Vault 001”). Every session grows it.',
-      links: [] },
-    { name: 'Health Sweep', status: 'live', tag: 'daily launchd',
-      desc: 'All-systems health board (gh + railway + curl) every morning — pushes ALL GREEN / RED to the work phone via ntfy.',
-      links: [] },
     { name: 'LMX Hub', status: 'bench', tag: 'agency infra',
-      desc: 'Client-site hub (frontend + backend on Railway) + lmx-site-starter Next.js template for per-client deploys.',
+      desc: 'Client-site hub (frontend + backend on Railway) + the lmx-site-starter Next.js template for per-client deploys. Also the CRM every site\'s email capture POSTs into.',
       links: [ {t:'websitehub', u:'https://websitehub.loopholemaxing.com'} ] },
   ]},
   { group: '🧪 Blueprints & Bench', items: [
@@ -226,37 +303,38 @@ const DECK = [
       desc: '<b>AI yacht command system</b> — master blueprint, 6 AI crew agents, 5 patent drafts, GTM plan. Lives at ~/ai-yacht-captain (also in the Obsidian vault).',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/ai-yacht-captain', cls:'repo'} ] },
     { name: 'ULTRON', status: 'bench', tag: 'private',
-      desc: 'Autonomous agent system — private repo, showcase page on the portfolio.',
+      desc: 'Autonomous agent system — private repo, showcase page on the portfolio, waitlist wired into the HUB CRM.',
       links: [ {t:'Showcase', u:'/ultron/'} ] },
     { name: 'FORMIX', status: 'bench', tag: 'concept',
-      desc: 'Pre-launch concept — showcase only.',
+      desc: 'Pre-launch concept — built and researched, showcase only, deliberately not for sale.',
       links: [ {t:'Showcase', u:'/formix/'} ] },
     { name: 'Agora', status: 'bench', tag: 'scaffolding',
       desc: 'Catalog scaffolding built inside UAE — candidate to grow into its own engine.',
       links: [ {t:'Showcase', u:'/agora/'} ] },
     { name: 'Tally Cams', status: 'down', tag: 'paused by design',
-      desc: '407-camera Tallahassee public-cam dashboard (Express + SQLite + MapLibre). Railway kept (3GB volume), domain intentionally down.',
+      desc: '407-camera Tallahassee public-cam dashboard (Express + SQLite + MapLibre). Railway service dead since 06-07, cams.loopholemaxing.com 404s, 3.1GB orphan volume still billing.',
+      need: 'Decide: archive or delete. The volume costs money either way.',
       links: [ {t:'Repo', u:'https://github.com/claytoncamera/tallahassee-cam-intel', cls:'repo'} ] },
     { name: 'OpenClaw', status: 'bench', tag: 'designed · unbuilt',
-      desc: 'Maker-only autonomous BTC trade agent designed on top of BTC Brain. Phase 1 (signal.json) not started.',
+      desc: 'Maker-only autonomous BTC trade agent designed on top of BTC Brain. Phase 1 (signal.json) not started — and correctly gated behind the ledger beating baseline, which it has not.',
       links: [] },
   ]},
   /* ── Reference-only: local/unversioned ventures cataloged so nothing is
         lost. TRACKED, NOT PUBLIC — deliberately no open links; these are
         not on the public creations grid and nothing here resolves to a
-        public URL. Repo backup/versioning is being handled separately. ── */
+        public URL. ── */
   { group: '🗂️ Off-Portfolio Ventures — tracked, not public', items: [
-    { name: 'pnp-tracker', status: 'bench', tag: 'internal · local-only · no remote',
-      desc: '<b>Internal PNP work &amp; cost tracker</b> — 70 entries with COGS / P&amp;L. Standalone local repo (<b>~/pnp-tracker</b>, 4 commits) with <b>no git remote yet — zero backup</b>. The read view is reachable from the PNP card above; this entry tracks the source project itself. Reference only — not public.',
+    { name: 'pnp-tracker', status: 'bench', tag: 'internal · local-only',
+      desc: '<b>Internal PNP work &amp; cost tracker</b> — 70 entries with COGS / P&amp;L. Standalone local repo (<b>~/pnp-tracker</b>). The read view is reachable from the PNP card above; this entry tracks the source project itself. Reference only — not public.',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/pnp-tracker', cls:'repo'} ] },
     { name: 'kitchenops-ai', status: 'bench', tag: 'localhost · undeployed',
-      desc: '<b>Restaurant inventory &amp; food-cost SaaS</b> — Node/Express, 13 modules, runs on localhost:4173 with a demo tenant. Working locally but <b>undeployed and not yet under git</b>. Build-out vs. park undecided. Reference only — not public.',
+      desc: '<b>Restaurant inventory &amp; food-cost SaaS</b> — Node/Express, 13 modules, runs on localhost:4173 with a demo tenant. Working locally but undeployed. Build-out vs. park undecided. Reference only — not public.',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/kitchenops-ai', cls:'repo'} ] },
     { name: 'autoscale-engines', status: 'bench', tag: 'idle · experimental',
-      desc: '<b>Autonomous-business engine network</b> (Python) — lead, sales, growth, fulfillment &amp; website engines plus a dashboard. Experimental, <b>idle since March, not under git</b>. Revive / merge / park TBD. Reference only — not public.',
+      desc: '<b>Autonomous-business engine network</b> (Python) — lead, sales, growth, fulfillment &amp; website engines plus a dashboard. Experimental, idle since March. Revive / merge / park TBD. Reference only — not public.',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/autoscale-engines', cls:'repo'} ] },
     { name: 'overnight-arb', status: 'bench', tag: 'research · edge-negative',
-      desc: '<b>Close-to-open equity anomaly research engine.</b> Backtest is <b>edge-negative</b> (net Sharpe 0.37 / CAGR 5.6% vs SPY 12.1% post-2021 costs) — do <b>not</b> trade live. Clean single-commit local <b>master</b>, no remote. Paper / advisory research only. Reference only — not public.',
+      desc: '<b>Close-to-open equity anomaly research engine.</b> Backtest is <b>edge-negative</b> (net Sharpe 0.37 / CAGR 5.6% vs SPY 12.1% post-2021 costs) — do <b>not</b> trade live. The research answered its question with a no, which is a result. Paper / advisory only.',
       links: [] },
   ]},
 ];
@@ -311,27 +389,77 @@ function unlock() {
   try { sessionStorage.setItem(SESSION_KEY, '1'); } catch (e) {}
   $('gate').style.display = 'none';
   $('deck').style.display = 'block';
+  buildLenses();
   render();
 }
 
-/* ── Render ── */
+/* ── Render ──────────────────────────────────────────────────
+   Two independent filters: a text query and a "lens". The lens is the
+   upgrade that matters — `needs you` pulls every human-blocked item into
+   one screen, which is the honest shape of this estate right now.
+   ─────────────────────────────────────────────────────────── */
+const LENSES = [
+  { id: 'all',   label: 'Everything',  test: () => true },
+  { id: 'need',  label: '⚠️ Needs you', test: it => !!it.need, cls: 'needlens' },
+  { id: 'live',  label: 'Live',        test: it => it.status === 'live' },
+  { id: 'paper', label: 'In progress', test: it => it.status === 'paper' },
+  { id: 'bench', label: 'Bench',       test: it => it.status === 'bench' },
+  { id: 'down',  label: 'Down',        test: it => it.status === 'down' },
+];
+let activeLens = 'all';
+
+const ALL = DECK.flatMap(g => g.items);
+
+function buildLenses() {
+  $('lenses').innerHTML = LENSES.map(l => {
+    const n = ALL.filter(l.test).length;
+    /* A real <button> with aria-pressed — the portfolio's filter chips were
+       keyboard-dead divs once; don't repeat that here. */
+    return `<button class="lens ${l.cls || ''}" type="button" data-lens="${l.id}"
+      aria-pressed="${l.id === activeLens}">${l.label} <b>${n}</b></button>`;
+  }).join('');
+  $('lenses').querySelectorAll('.lens').forEach(b => {
+    b.onclick = () => { activeLens = b.dataset.lens; buildLenses(); render($('filter').value); };
+  });
+}
+
 function render(filter = '') {
   const q = filter.trim().toLowerCase();
-  const total = DECK.reduce((n, g) => n + g.items.length, 0);
-  $('deck-sub').textContent = `${total} creations across ${DECK.length} groups — one pane of glass.`;
+  const lens = LENSES.find(l => l.id === activeLens) || LENSES[0];
+
+  /* Ledger — vital signs of the deck itself. */
+  const by = s => ALL.filter(i => i.status === s).length;
+  const needs = ALL.filter(i => i.need).length;
+  $('ledger').innerHTML = [
+    `<div class="lchip"><span class="dot live"></span><b>${by('live')}</b> live</div>`,
+    `<div class="lchip"><span class="dot paper"></span><b>${by('paper')}</b> in progress</div>`,
+    `<div class="lchip"><span class="dot bench"></span><b>${by('bench')}</b> bench</div>`,
+    `<div class="lchip"><span class="dot down"></span><b>${by('down')}</b> down</div>`,
+    `<div class="lchip warn">⚠️ <b>${needs}</b> waiting on you</div>`,
+  ].join('');
+  $('deck-sub').textContent =
+    `${ALL.length} creations across ${DECK.length} groups — one pane of glass.`;
+
+  let shown = 0;
   $('groups').innerHTML = DECK.map(g => {
-    const items = g.items.filter(it => !q ||
-      (it.name + ' ' + it.tag + ' ' + it.desc).toLowerCase().includes(q));
+    const items = g.items.filter(it => lens.test(it) && (!q ||
+      (it.name + ' ' + it.tag + ' ' + it.desc + ' ' + (it.need || '')).toLowerCase().includes(q)));
     if (!items.length) return '';
+    shown += items.length;
     return `<div class="group"><h2>${g.group}</h2><div class="grid">` + items.map(it => `
       <div class="pane">
-        <h3><span class="dot ${it.status}"></span>${it.name}<span class="stag">${it.tag}</span></h3>
+        <h3><span class="dot ${it.status}"></span><span class="nm">${it.name}</span><span class="stag">${it.tag}</span></h3>
         <p>${it.desc}</p>
+        ${it.need ? `<div class="need"><span class="nic">⚠️</span><span>${it.need}</span></div>` : ''}
         <div class="links">${it.links.map(l =>
           `<a href="${l.u}" target="_blank" rel="noopener"${l.cls ? ` class="${l.cls}"` : ''}>${l.t}${l.cls === 'lan' ? ' · LAN' : ''}</a>`).join('')}
         </div>
       </div>`).join('') + '</div></div>';
   }).join('');
+
+  if (!shown) {
+    $('groups').innerHTML = `<div class="empty">Nothing matches that${q ? ` — “${filter.trim()}”` : ''}.</div>`;
+  }
 }
 
 /* ── Wire up ── */

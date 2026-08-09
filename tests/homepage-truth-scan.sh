@@ -21,6 +21,14 @@
 #      analytics tracker, canonical URL.
 #   5. Ship Log present with dated entries (>= 5), so the page can't silently
 #      rot into a stale snapshot.
+#   6. Live figures agree with themselves. The page states the same number in
+#      up to four places (hero stat band, work-band feature list, card body,
+#      card meta chip). On 2026-08-09 a refresh updated the card and missed the
+#      hero and the feature list, so the page served 1,935 and 1,856 forecasts
+#      simultaneously. The Ship Log is EXCLUDED from this check on purpose: it
+#      is a dated historical record, and "the surface is now 255 cities" was
+#      true on the day it was written. Rewriting a dated entry to match today
+#      would be falsifying the log, which is worse than the drift.
 set -u
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 F="$ROOT/index.html"
@@ -76,6 +84,49 @@ else
   echo "FAIL [5] ship log missing or under-populated (found $SHIPS dated entries, need >= 5)"
   FAIL=1
 fi
+
+# 6. Live-figure self-consistency (Ship Log excluded — dated record, see header)
+BODY="$(mktemp)"
+trap 'rm -f "$BODY"' EXIT
+awk '/<section class="shiplog"/ { skip=1 }
+     skip && /<\/section>/      { skip=0; next }
+     !skip                      { print }' "$F" > "$BODY"
+
+consistent() {
+  # consistent <label> <pattern>...  — each pattern must match text whose first
+  # number is the figure. All occurrences across all patterns must agree.
+  local label="$1"; shift
+  local all=""
+  for pat in "$@"; do
+    all="$all$(grep -oE "$pat" "$BODY" | grep -oE '[0-9][0-9,]*' || true)
+"
+  done
+  local uniq count
+  uniq=$(printf '%s\n' "$all" | sed '/^$/d' | sort -u)
+  count=$(printf '%s\n' "$uniq" | sed '/^$/d' | wc -l | tr -d ' ')
+  if [ "$count" -le 1 ]; then
+    say "OK [6] $label consistent ($(printf '%s' "$uniq" | tr '\n' ' '))"
+  else
+    echo "FAIL [6] $label is stated inconsistently across the page: $(printf '%s\n' "$uniq" | tr '\n' ' ')"
+    echo "  (update every occurrence outside the Ship Log — hero band, feature list, card body, card meta)"
+    FAIL=1
+  fi
+}
+
+consistent "BTC forecasts scored" \
+  '[0-9,]+ publicly scored forecasts' \
+  '[0-9,]+ resolved forecasts' \
+  'card-meta-item">[0-9,]+ resolved<' \
+  'hero-stat-val">[0-9,]+</div><div class="hero-stat-lbl">Forecasts Scored'
+
+consistent "KnockFiber city count" \
+  '[0-9,]+ city pages' \
+  '[0-9,]+ cities'
+
+consistent "PeptiDex entry count" \
+  '[0-9,]+ structured entries' \
+  'card-meta-item">[0-9,]+ entries<' \
+  '[0-9,]+ peptides'
 
 if [ $FAIL -ne 0 ]; then
   echo "homepage-truth-scan: FAIL"

@@ -122,6 +122,17 @@
     .need .nic { flex: none; }
     .need b { color: #f0c14b; font-weight: 700; }
 
+    /* A SETTLED decision — deliberately calm, never amber. The opposite of a
+       `need`: something an audit would flag that Clayton has already ruled on.
+       It lives on the card so the next person to update this deck (including
+       me) reads the ruling before re-adding the finding. Losing that is how the
+       MMS credentials got re-raised across three audits and two of his calls. */
+    .settled { display: flex; gap: 8px; align-items: flex-start; font-size: 12.5px; line-height: 1.5;
+      color: var(--muted); background: rgba(120,160,255,.05); border: 1px solid var(--glass-border);
+      border-radius: 10px; padding: 8px 11px; margin-bottom: 12px; }
+    .settled .nic { flex: none; }
+    .settled b { color: var(--text); font-weight: 600; }
+
     .links { display: flex; flex-wrap: wrap; gap: 7px; }
     .links a { font-size: 12.5px; font-weight: 600; color: var(--accent); text-decoration: none;
       border: 1px solid rgba(110,168,255,.25); border-radius: 9px; padding: 5px 11px; }
@@ -176,13 +187,22 @@
 /* ============================================================
    DECK — everything Clayton has created.
    To add: append {name, status: live|paper|bench|down, tag, desc,
-                   need?, links:[{t,u,cls?}]}
+                   need?, note?, links:[{t,u,cls?}]}
    to the right group (or add a group). Keep secrets/tokens OUT — public repo.
 
    `need` is the human gate: the action or decision this item is blocked on.
    The whole estate is engineering-complete and waiting on Clayton (full-estate
    discovery, 2026-08-09) — the deck says so out loud rather than painting
    everything green. Clear a need when the blocker clears.
+
+   `note` is the opposite and exists because of a specific failure: a SETTLED
+   decision. Something an audit would flag that Clayton has already ruled on,
+   recorded here so the next pass reads the ruling before re-adding the finding.
+   The MMS credentials were re-escalated to P0 by three separate audits and cost
+   him two decisions on the same dead item — including once by this very deck, on
+   the day it was built. A `note` is not a softened `need`: it must NOT appear in
+   the "Needs you" lens, and it must never be converted back into one without him
+   reopening it.
 
    Facts below verified live 2026-08-09 (CC2 overview/inventory/affiliate-payments,
    knockfiber /health, orbitroute /engines/canary, forge status.json, brain metrics).
@@ -234,7 +254,7 @@ const DECK = [
   { group: '📈 Trading & Intelligence', items: [
     { name: 'MMS Hub', status: 'paper', tag: 'paper only · NOT ready',
       desc: '<b>The trading ecosystem — honestly, not there yet.</b> Paper fleet sits at <b>$28,292 of $30,000 (−5.69%)</b> and the 08-05 investor audit found <b>0 of 9 bots</b> meet the 10–100 trades/day · 70% WR · 0.5% max-loss bar. Two traps worth remembering: <code>rapid-increase</code> <b>can never trade</b> under its config (it scans the 12 least volatile coins for a +4%/80min spike), and the <b>:8080 v44 API\'s fleet numbers are fabricated</b> — a random walk with hard-coded equity. The authority file is <code>logs/paper/equity_history.csv</code>. No live funds.',
-      need: '🔴 <b>Highest-risk item in the whole estate.</b> Rotate the Schwab app key/secret + Polygon key (they are on <code>main</code>, not just two branches — a purge must run <code>--all</code>), then check Binance.US → API Management for <b>withdrawal permission</b> on the March key and revoke it. A live trade-enabled key also sits plaintext in <code>~/MMS-Deploy/.env</code>, which <code>backup.sh</code> has copied <b>61 times</b>. Risk here compounds with time.',
+      note: '<b>Credentials: dispositioned, closed.</b> The Schwab / Polygon / Binance keys are <b>not</b> an open item — Clayton\'s call, made 2026-06-07 and re-confirmed twice on 2026-08-09: those systems are unused. <code>mms-hub</code> is private, sole collaborator, 0 forks, so there is no third-party read path; the Schwab refresh tokens expired in March and the exchange keys sit in a gitignored <code>.env</code> that never left the mini. <b>No rotation, no history purge.</b> Brain: decision D29 + the 🛑 block at the top of SECURITY_FINDINGS.md. Do not re-raise it here.',
       links: [ {t:'Cloud portal', u:'https://moneymakingsolutionsai.com'}, {t:'Hub :8000', u:'http://10.0.0.224:8000', cls:'lan'}, {t:'AI :8001', u:'http://10.0.0.224:8001', cls:'lan'}, {t:'API :8080', u:'http://10.0.0.224:8080', cls:'lan'} ] },
     { name: 'BTC Brain', status: 'live', tag: 'forecast-only · no edge yet',
       desc: '<b>Daily BTC forecast engine</b> (6:05am launchd, pure-stdlib) — issues forecasts, resolves them, publishes a public ledger and emails the accuracy report. Over 1,571 resolved forecasts it <b>still shows no edge vs baseline</b>, and the public page says exactly that. Feeds the future OpenClaw maker-only agent. No trades, no funds.',
@@ -443,7 +463,8 @@ function render(filter = '') {
   let shown = 0;
   $('groups').innerHTML = DECK.map(g => {
     const items = g.items.filter(it => lens.test(it) && (!q ||
-      (it.name + ' ' + it.tag + ' ' + it.desc + ' ' + (it.need || '')).toLowerCase().includes(q)));
+      (it.name + ' ' + it.tag + ' ' + it.desc + ' ' + (it.need || '') + ' ' + (it.note || ''))
+        .toLowerCase().includes(q)));
     if (!items.length) return '';
     shown += items.length;
     return `<div class="group"><h2>${g.group}</h2><div class="grid">` + items.map(it => `
@@ -451,6 +472,7 @@ function render(filter = '') {
         <h3><span class="dot ${it.status}"></span><span class="nm">${it.name}</span><span class="stag">${it.tag}</span></h3>
         <p>${it.desc}</p>
         ${it.need ? `<div class="need"><span class="nic">⚠️</span><span>${it.need}</span></div>` : ''}
+        ${it.note ? `<div class="settled"><span class="nic">✔︎</span><span>${it.note}</span></div>` : ''}
         <div class="links">${it.links.map(l =>
           `<a href="${l.u}" target="_blank" rel="noopener"${l.cls ? ` class="${l.cls}"` : ''}>${l.t}${l.cls === 'lan' ? ' · LAN' : ''}</a>`).join('')}
         </div>

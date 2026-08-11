@@ -256,8 +256,14 @@ class TestMetrics(unittest.TestCase):
     def _add(self, fid: str, p: float, correct: bool, horizon="1h",
              model="v0.1.0-baseline", resolved_at=None):
         L = Ledger.at(self.root)
+        # Unique issued_at per row: since the 2026-08-11 multi-writer dedupe,
+        # metrics count one forecast per (model, horizon, issued_at) bucket —
+        # which is also the production issuer's own uniqueness invariant, so
+        # a fixture reusing one timestamp models a state that cannot occur.
+        self._issue_counter = getattr(self, "_issue_counter", 0) + 1
+        issued_at = f"2026-04-01T00:{self._issue_counter % 60:02d}:00Z"
         f = _good_forecast(forecast_id=fid, probability=p, horizon=horizon,
-                           model_version=model)
+                           model_version=model, issued_at=issued_at)
         L.append_forecast(f)
         outcome = 1 if correct else 0
         L.append_resolution({

@@ -209,6 +209,41 @@ def _bucket_metrics(rows: list[dict], min_n_display: int) -> dict:
     }
 
 
+def dedupe_joined(joined: list[dict]) -> tuple[list[dict], int]:
+    """Multi-writer safety: keep ONE forecast per (model_version, horizon,
+    issued_at) bucket.
+
+    Since 2026-08-11 the ledger has two writer families — the GitHub Actions
+    crons and the Mac-mini launchd issuer (com.btcbrain.issuer). Issuance is
+    idempotent against the ledger each writer SEES, but two writers issuing
+    the same bucket concurrently on diverged branches can both land after a
+    rebase merge, producing two rows with different forecast_ids for one
+    bucket. Counting both would double-weight that bucket in every stat and
+    every paper trade. Earliest wins: order by issued_at_actual when present
+    (real wall-clock), else file order. Deterministic across writers because
+    the merged JSONL file order is identical for all readers of a commit.
+    """
+    seen: dict[tuple, int] = {}
+    kept: list[dict] = []
+    dropped = 0
+    for pos, r in enumerate(joined):
+        f = r["forecast"]
+        key = (f.get("model_version"), f.get("horizon"), f.get("issued_at"))
+        if key not in seen:
+            seen[key] = len(kept)
+            kept.append(r)
+            continue
+        # Duplicate bucket: keep the earlier issued_at_actual (fallback:
+        # first file occurrence, i.e. the row already kept).
+        prev_idx = seen[key]
+        prev = kept[prev_idx]["forecast"].get("issued_at_actual")
+        cur = f.get("issued_at_actual")
+        if prev is not None and cur is not None and cur < prev:
+            kept[prev_idx] = r
+        dropped += 1
+    return kept, dropped
+
+
 def _filter_resolved(joined: list[dict]) -> list[dict]:
     return [r for r in joined
             if r["resolution"] and r["resolution"].get("status") == "resolved"]
@@ -271,7 +306,7 @@ def _rolling_windows_issued(rows: list[dict], now: datetime) -> dict:
 
 def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
     ledger = Ledger.at(root)
-    joined_all = ledger.joined()
+    joined_all, duplicate_rows_ignored = dedupe_joined(ledger.joined())
     resolved = _filter_resolved(joined_all)
     now = datetime.now(timezone.utc)
 
@@ -317,6 +352,11 @@ def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
         "min_n_display": min_n_display,
         "total_forecasts": sum(1 for _ in ledger.iter_forecasts()),
         "total_resolved": len(resolved),
+        # Multi-writer safety (GHA crons + mini launchd issuer): duplicate
+        # (model, horizon, issued_at) buckets are counted once, earliest
+        # issuance wins. Nonzero here means a concurrent-issue race landed
+        # twice in the append-only file — harmless to stats, visible here.
+        "duplicate_rows_ignored": duplicate_rows_ignored,
         "by_horizon": {
             h: _bucket_metrics(rows, min_n_display)
             for h, rows in sorted(by_horizon.items())
@@ -371,7 +411,7 @@ def build_recent(root: Path, limit: int = RECENT_ROWS) -> dict:
     Replaces the site's 2MB raw-JSONL download for its 25-row table.
     """
     ledger = Ledger.at(root)
-    joined = ledger.joined()
+    joined, _dupes = dedupe_joined(ledger.joined())
     total_issued = len(joined)
     total_resolved = sum(
         1 for r in joined
@@ -419,7 +459,8 @@ def build_trades(root: Path,
     issued_at order, cumulative maker curve + drawdown per group.
     """
     ledger = Ledger.at(root)
-    resolved = _filter_resolved(ledger.joined())
+    deduped, _dupes = dedupe_joined(ledger.joined())
+    resolved = _filter_resolved(deduped)
 
     grouped: dict[tuple[str, str], list[dict]] = defaultdict(list)
     for r in resolved:

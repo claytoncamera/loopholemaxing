@@ -523,3 +523,71 @@ class TestCLIDryRun(_TmpRootCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+class TestMetricsDedupe(unittest.TestCase):
+    """Multi-writer safety: metrics count one row per (model, horizon,
+    issued_at) bucket, earliest issued_at_actual wins."""
+
+    def test_duplicate_bucket_counted_once_earliest_wins(self):
+        sys.path.insert(0, str(SCRIPTS))
+        import metrics as metrics_mod
+
+        def row(fid, actual, prob=0.52):
+            return {
+                "forecast": {
+                    "forecast_id": fid,
+                    "model_version": "v0.1.0-baseline-shadow",
+                    "horizon": "24h",
+                    "issued_at": "2026-08-11T06:00:00Z",
+                    "issued_at_actual": actual,
+                    "direction": "up",
+                    "probability": prob,
+                    "entry_price": 100.0,
+                    "target_time": "2026-08-12T06:00:00Z",
+                },
+                "resolution": None,
+            }
+
+        joined = [
+            row("fid-late", "2026-08-11T06:14:00Z"),
+            row("fid-early", "2026-08-11T06:01:00Z"),
+            {
+                "forecast": {
+                    "forecast_id": "fid-other-bucket",
+                    "model_version": "v0.1.0-baseline-shadow",
+                    "horizon": "24h",
+                    "issued_at": "2026-08-11T07:00:00Z",
+                    "issued_at_actual": "2026-08-11T07:01:00Z",
+                    "direction": "up",
+                    "probability": 0.52,
+                    "entry_price": 100.0,
+                    "target_time": "2026-08-12T07:00:00Z",
+                },
+                "resolution": None,
+            },
+        ]
+        kept, dropped = metrics_mod.dedupe_joined(joined)
+        self.assertEqual(dropped, 1)
+        self.assertEqual(len(kept), 2)
+        kept_ids = {r["forecast"]["forecast_id"] for r in kept}
+        self.assertIn("fid-early", kept_ids)   # earliest wall-clock wins
+        self.assertNotIn("fid-late", kept_ids)
+        self.assertIn("fid-other-bucket", kept_ids)
+
+    def test_no_actual_field_keeps_first_file_occurrence(self):
+        sys.path.insert(0, str(SCRIPTS))
+        import metrics as metrics_mod
+        base = {
+            "model_version": "m", "horizon": "1h",
+            "issued_at": "2026-08-11T06:00:00Z",
+            "direction": "up", "probability": 0.5,
+            "entry_price": 1.0, "target_time": "x",
+        }
+        joined = [
+            {"forecast": dict(base, forecast_id="first"), "resolution": None},
+            {"forecast": dict(base, forecast_id="second"), "resolution": None},
+        ]
+        kept, dropped = metrics_mod.dedupe_joined(joined)
+        self.assertEqual(dropped, 1)
+        self.assertEqual(kept[0]["forecast"]["forecast_id"], "first")

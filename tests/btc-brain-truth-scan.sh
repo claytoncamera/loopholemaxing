@@ -150,11 +150,29 @@ if grep -nE '<span[^>]*color:#3fb950[^>]*>Processing Live</span>' "$F" >/dev/nul
 else
   say "OK [8] no 'Processing Live' green badge on the feed"
 fi
-if grep -F "Scripted demo · not live event stream" "$F" >/dev/null \
-   && grep -F "Demo Loop" "$F" >/dev/null; then
-  say "OK [8b] feed is labeled as scripted demo"
+# 8b (rewritten 2026-08-11): the scripted demo loop was RETIRED and the
+# panel now renders REAL events from ledger/public/recent.json. The guard
+# flips accordingly: the feed must declare its ledger source, must not
+# reintroduce the scripted-demo copy, and its push hook must stay inert so
+# browser-local SIIE events can never leak into a ledger-labeled stream.
+if grep -F "Real events from the public forecast ledger" "$F" >/dev/null \
+   && grep -nE "brain-feed-stream" "$F" >/dev/null \
+   && grep -F "ledger/public/recent.json" "$F" >/dev/null; then
+  say "OK [8b] feed is ledger-backed and declares its source"
 else
-  echo "FAIL [8b] feed missing 'Scripted demo' / 'Demo Loop' labels"
+  echo "FAIL [8b] ledger feed missing source declaration"
+  FAIL=1
+fi
+if grep -F "Scripted demo · not live event stream" "$F" >/dev/null; then
+  echo "FAIL [8c] retired scripted-demo copy has returned"
+  FAIL=1
+else
+  say "OK [8c] scripted-demo loop stays retired"
+fi
+if grep -nE '_btcBrainFeedPush = function\(\) \{ /\* intentionally inert \*/ \}' "$F" >/dev/null; then
+  say "OK [8d] feed push hook is inert (no local events into ledger feed)"
+else
+  echo "FAIL [8d] feed push hook is live — local sandbox events could enter the ledger-labeled feed"
   FAIL=1
 fi
 

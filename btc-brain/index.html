@@ -50,6 +50,29 @@
 }
   </script>
 
+
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://loopholemaxing.com/btc-brain/#faq",
+  "mainEntity": [
+    {"@type": "Question", "name": "What is the BTC Intelligence Brain?",
+     "acceptedAnswer": {"@type": "Answer", "text": "A free Bitcoin education and research site with a live forecast ledger: every prediction is published before its outcome is known, resolved automatically, and scored in public — losses included. It also contains a 15-chapter learning library covering how Bitcoin works, its market cycles, on-chain metrics, and risk management."}},
+    {"@type": "Question", "name": "Is this financial advice?",
+     "acceptedAnswer": {"@type": "Answer", "text": "No. Everything on the site is educational research. Nothing tells you to buy or sell anything, and the site's own measured accuracy shows how hard prediction is."}},
+    {"@type": "Question", "name": "How accurate are the Bitcoin forecasts?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Measured honestly and published continuously: overall accuracy has been roughly equal to a naive always-up baseline, meaning no proven edge yet. The per-horizon breakdown, confidence bounds, and every individual forecast are public in the Forecast Scoreboard."}},
+    {"@type": "Question", "name": "What is a Bitcoin halving?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Roughly every four years the reward for mining new bitcoin is cut in half, slowing the creation of new supply until it stops entirely around the year 2140. The site includes an interactive halving explainer and a full chapter on halving cycles."}},
+    {"@type": "Question", "name": "Can kids and beginners use this site to learn about Bitcoin?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes — that is a core goal. The Start Here section explains Bitcoin without jargon, every chapter opens with a plain-words summary, hoverable definitions cover the vocabulary, and a self-check quiz ties it together. The site explicitly encourages learning before ever risking money."}},
+    {"@type": "Question", "name": "Where does the live market data come from?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Public exchange APIs (Binance data mirror, Coinbase, Kraken) with server-side snapshot artifacts as fallback. When data is stale or unavailable the panels say so explicitly rather than showing fabricated numbers."}}
+  ]
+}
+  </script>
+
   <link rel="stylesheet" href="../styles.css">
   <style>
     /* ========================================
@@ -758,6 +781,90 @@
         font-size: 22px;
       }
     }
+
+    /* ── Education layer (2026-08-11) ─────────────────────────── */
+    .eli12 {
+      background: rgba(88, 166, 255, 0.06);
+      border: 1px solid rgba(88, 166, 255, 0.25);
+      border-left: 3px solid var(--accent-cyan, #58a6ff);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin: 0 0 var(--space-lg) 0;
+      font-size: 13.5px;
+      line-height: 1.65;
+      color: var(--text-primary, #e6edf3);
+    }
+    .eli12 .eli12-tag {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: #58a6ff;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .sidebar-subhead {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--text-muted, #8b949e);
+      padding: 8px 16px 2px 16px;
+      list-style: none;
+    }
+    .gloss {
+      border-bottom: 1px dotted #58a6ff;
+      cursor: help;
+      position: relative;
+    }
+    #gloss-tip {
+      position: absolute;
+      z-index: 2000;
+      max-width: 300px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.55;
+      color: #e6edf3;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+      pointer-events: none;
+    }
+    #gloss-tip .gloss-term {
+      color: #f7931a;
+      font-weight: 700;
+      display: block;
+      margin-bottom: 3px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+    .quiz-q { margin-bottom: 18px; }
+    .quiz-q .q-text { font-size: 14px; font-weight: 600; color: #e6edf3; margin-bottom: 8px; }
+    .quiz-opt {
+      display: block;
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 9px 12px;
+      margin-bottom: 6px;
+      font-size: 13px;
+      color: #c9d1d9;
+      cursor: pointer;
+      transition: border-color .15s, background .15s;
+    }
+    .quiz-opt:hover { border-color: #58a6ff; }
+    .quiz-opt.correct { border-color: #3fb950; background: rgba(63,185,80,.08); }
+    .quiz-opt.wrong { border-color: #f85149; background: rgba(248,81,73,.08); }
+    .quiz-opt.reveal { border-color: #3fb950; }
+    .quiz-explain { display: none; font-size: 12px; color: #8b949e; line-height: 1.55; padding: 6px 2px 0; }
+    .quiz-q.answered .quiz-explain { display: block; }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important; }
+    }
   @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
   </style>
   <!-- Three.js for 3D Neural Brain -->
@@ -830,25 +937,31 @@
     <details class="sidebar-group" id="chaptersGroup">
       <summary class="sidebar-section-label sidebar-group-summary">Learn Bitcoin &mdash; 15 Chapters <span class="sidebar-group-caret">&#9662;</span></summary>
       <ul class="sidebar-nav" id="sidebarNav">
+        <li><a href="#start-here"><span class="chapter-num" style="color:#3fb950;">00</span> Start Here</a></li>
+        <li class="sidebar-subhead">Basics</li>
         <li><a href="#ch01"><span class="chapter-num">01</span> Fundamentals</a></li>
         <li><a href="#ch02"><span class="chapter-num">02</span> Price History</a></li>
         <li><a href="#ch03"><span class="chapter-num">03</span> Halving Cycles</a></li>
         <li><a href="#ch04"><span class="chapter-num">04</span> Bull &amp; Bear Markets</a></li>
+        <li class="sidebar-subhead">Analysis</li>
         <li><a href="#ch05"><span class="chapter-num">05</span> Technical Analysis</a></li>
         <li><a href="#ch06"><span class="chapter-num">06</span> On-Chain Metrics</a></li>
         <li><a href="#ch07"><span class="chapter-num">07</span> Sentiment</a></li>
         <li><a href="#ch08"><span class="chapter-num">08</span> Macro Correlations</a></li>
         <li><a href="#ch09"><span class="chapter-num">09</span> Black Swans</a></li>
+        <li class="sidebar-subhead">Practice</li>
         <li><a href="#ch10"><span class="chapter-num">10</span> Trading Strategies</a></li>
         <li><a href="#ch11"><span class="chapter-num">11</span> Risk Management</a></li>
         <li><a href="#ch12"><span class="chapter-num">12</span> Current Assessment</a></li>
         <li><a href="#ch13"><span class="chapter-num">13</span> Derivatives &amp; OI</a></li>
         <li><a href="#ch14"><span class="chapter-num">14</span> Lightning Network</a></li>
+        <li class="sidebar-subhead">Forecasting</li>
         <li><a href="#ch15"><span class="chapter-num">15</span> Prediction Framework</a></li>
       </ul>
     </details>
     <div class="sidebar-section-label">Reference</div>
     <ul class="sidebar-nav">
+      <li><a href="#quiz"><span class="chapter-num" style="color:#3fb950;">&#10003;</span> Test Yourself</a></li>
       <li><a href="#appendices"><span class="chapter-num">&mdash;</span> Appendices</a></li>
       <li><a href="research/index.html"><span class="chapter-num">&rarr;</span> Research Library</a></li>
     </ul>
@@ -1021,6 +1134,15 @@
     <p class="chapter-desc">Every forecast this system makes is published to an append-only public ledger <em>before</em> the outcome is known, then resolved automatically against the exact-horizon candle close and scored. Nothing is deleted, nothing is cherry-picked — the numbers below include every win and every loss. All figures load from the public artifacts (<code>ledger/public/accuracy.json</code>, <code>signal.json</code>, <code>trades.json</code>); none are typed into this page. Educational research only — not financial advice.</p>
   </div>
 
+
+  <!-- Plain-language reading guide -->
+  <div style="background:rgba(88,166,255,.05);border:1px solid rgba(88,166,255,.2);border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#e6edf3;line-height:1.7;">
+    <strong style="color:#58a6ff;">How to read these numbers (plain words).</strong>
+    A <em>probability</em> of 0.55 means the model thinks "up" is a little more likely than a coin flip — it does NOT mean certainty.
+    The <em>baseline</em> is what you'd score by always guessing the most common answer; skill only exists <em>above</em> that line, which is why we print it next to every hit rate.
+    The <em>Wilson lower bound</em> answers "given this sample size, what's the worst this hit rate could plausibly really be?" — small samples get wide, humble bounds.
+    And <em>maker expectancy</em> subtracts trading fees, because a 55% guesser can still lose money after costs. If a row doesn't clear all three bars, we say so.
+  </div>
   <!-- Plain-English verdict -->
   <div id="sb-verdict" style="background:#0d1117;border:1px solid #21262d;border-left:3px solid #f7931a;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:14px;line-height:1.65;color:#e6edf3;">
     Loading the measured record…
@@ -1726,19 +1848,22 @@
 
 
 
-  <!-- BRAIN ACTIVITY FEED (scripted demo loop until a real event source is wired) -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Brain Activity Feed <span style="color:#d29922;font-size:11px;font-weight:600;">(Scripted demo · not live event stream)</span></h3>
+  <!-- LEDGER FEED — real events from the public forecast ledger.
+       Replaced the scripted demo loop 2026-08-11: the theater is gone,
+       the real thing exists (ledger/public/recent.json). -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Ledger Feed <span style="color:#3fb950;font-size:11px;font-weight:600;">(Real events from the public forecast ledger)</span></h3>
   <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:24px;">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;">
-      <span style="width:7px;height:7px;border-radius:50%;background:#d29922;display:inline-block;"></span>
-      <span style="font-size:11px;color:#d29922;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Demo Loop</span>
-      <span style="font-size:10px;color:#8b949e;margin-left:auto;font-family:monospace;">Static script · numbers below are illustrative</span>
+      <span style="width:7px;height:7px;border-radius:50%;background:#3fb950;display:inline-block;"></span>
+      <span style="font-size:11px;color:#3fb950;font-weight:700;text-transform:uppercase;letter-spacing:.08em;">Ledger-backed</span>
+      <span style="font-size:10px;color:#8b949e;margin-left:auto;font-family:monospace;">source: ledger/public/recent.json · refreshes every 5 min</span>
     </div>
     <div id="brain-feed-stream" style="display:flex;flex-direction:column;gap:0;max-height:380px;overflow-y:auto;">
-      <div style="color:#8b949e;font-size:11px;font-style:italic;">Loading demo loop…</div>
+      <div style="color:#8b949e;font-size:11px;font-style:italic;">Loading ledger events…</div>
     </div>
     <div style="margin-top:10px;font-size:10px;color:#8b949e;">
-      This panel cycles through a scripted sequence of example research moves. It is <strong style="color:#d29922;">not</strong> connected to a live event bus. For ledger-backed forecast events, see the Trust &amp; Transparency section.
+      Every row is a real forecast issue or resolution from the append-only ledger — wins and losses, no
+      selection. Full history and measured accuracy live in the <a href="#scoreboard" style="color:#58a6ff;">Forecast Scoreboard</a>.
     </div>
   </div>
 
@@ -2515,6 +2640,134 @@
 
 <!-- P7-END — phase7 trust block ends here (guard boundary for tests/phase7-trust-scan.sh) -->
 
+
+    <!-- ===== CH 00: START HERE (newcomer on-ramp, 2026-08-11) ===== -->
+    <section class="chapter" id="start-here">
+      <div class="chapter-header">
+        <div class="chapter-number" style="color:#3fb950;">START HERE</div>
+        <h2 class="chapter-title">New to Bitcoin? Read this first.</h2>
+        <p class="chapter-desc">Five minutes, no jargon, no hype — what Bitcoin is, why people care, and how to use this site to actually learn.</p>
+      </div>
+
+      <div style="font-size:14px;line-height:1.75;color:#e6edf3;max-width:760px;">
+        <h3 style="font-size:16px;margin:0 0 8px;">What is Bitcoin?</h3>
+        <p style="margin-bottom:14px;">
+          Bitcoin is <strong>digital money that no company, bank, or government controls</strong>.
+          Instead of a bank keeping the record of who owns what, thousands of computers around the
+          world keep <em>identical copies</em> of one shared record (the <span class="gloss-seed">blockchain</span>),
+          and they constantly check each other. To cheat, you would have to fool most of them at
+          once — which is what makes the record trustworthy without needing a boss.
+        </p>
+        <h3 style="font-size:16px;margin:0 0 8px;">Why do people care?</h3>
+        <p style="margin-bottom:14px;">
+          Two reasons. First, <strong>scarcity</strong>: the rulebook says only 21&nbsp;million bitcoins
+          will ever exist, and nobody can change that without convincing the whole network. Regular money
+          can be printed in unlimited amounts; Bitcoin cannot. Second, <strong>permission-free</strong>:
+          anyone with a phone can receive or send it, anywhere on Earth, without asking a bank for an
+          account. Whether those two properties make it <em>valuable</em> is exactly what the market
+          argues about every day — that argument is the price chart.
+        </p>
+        <h3 style="font-size:16px;margin:0 0 8px;">Why does the price jump around so much?</h3>
+        <p style="margin-bottom:14px;">
+          Because nobody knows what it "should" be worth, the price is pure supply and demand — global,
+          24/7, amplified by borrowed money and emotion. Bitcoin has climbed thousands of percent and it
+          has crashed by more than half <em>many times</em> (see <a href="#ch02" style="color:#58a6ff;">Chapter 2</a>
+          and <a href="#ch04" style="color:#58a6ff;">Chapter 4</a>). Both are normal for this asset.
+        </p>
+
+        <div style="background:#1a1206;border:1px solid #3a2a0a;border-radius:10px;padding:14px 18px;margin:18px 0;">
+          <strong style="color:#f7931a;">Honesty box — read this even if you skip everything else.</strong>
+          <ul style="margin:8px 0 0 18px;line-height:1.7;color:#f0c674;font-size:13px;">
+            <li>This site is for <strong>learning</strong>. It is not financial advice, and nothing here tells you to buy or sell anything.</li>
+            <li>If you are young: the smartest thing you can do with Bitcoin right now is <strong>understand it</strong>. Knowledge compounds and can't crash.</li>
+            <li>Nobody — including us — reliably predicts Bitcoin's price. Our own public scoreboard proves how hard it is: check the <a href="#scoreboard" style="color:#f0c674;text-decoration:underline;">Forecast Scoreboard</a>, where we publish every guess we make, including the wrong ones.</li>
+            <li>Never put in money you can't afford to lose completely. People who ignore this rule fund the lessons everyone else learns for free.</li>
+          </ul>
+        </div>
+
+        <h3 style="font-size:16px;margin:22px 0 8px;">The halving — Bitcoin's built-in clock, interactive</h3>
+        <p style="margin-bottom:12px;">
+          New bitcoins are created as a reward to the computers that secure the network
+          (<span class="gloss-seed">mining</span>). Roughly every four years that reward is <strong>cut in
+          half</strong> — so new supply keeps slowing until it stops entirely around the year 2140.
+          Drag the slider to watch the schedule play out:
+        </p>
+        <div id="halving-widget" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:18px;">
+          <input type="range" id="hw-slider" min="0" max="9" value="4" step="1" style="width:100%;accent-color:#f7931a;">
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;text-align:center;margin:14px 0;">
+            <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Era</div>
+              <div id="hw-era" style="font-size:20px;font-weight:800;font-family:monospace;color:#e6edf3;">—</div>
+              <div id="hw-years" style="font-size:10px;color:#8b949e;">—</div></div>
+            <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Reward per block</div>
+              <div id="hw-reward" style="font-size:20px;font-weight:800;font-family:monospace;color:#f7931a;">—</div>
+              <div style="font-size:10px;color:#8b949e;">every ~10 minutes</div></div>
+            <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">New coins per day</div>
+              <div id="hw-daily" style="font-size:20px;font-weight:800;font-family:monospace;color:#58a6ff;">—</div>
+              <div style="font-size:10px;color:#8b949e;">approximate</div></div>
+            <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Supply issued by era end</div>
+              <div id="hw-supply" style="font-size:20px;font-weight:800;font-family:monospace;color:#3fb950;">—</div>
+              <div style="font-size:10px;color:#8b949e;">of 21,000,000 max</div></div>
+          </div>
+          <div style="height:14px;background:#161b22;border-radius:7px;overflow:hidden;">
+            <div id="hw-bar" style="height:14px;background:linear-gradient(90deg,#f7931a,#3fb950);width:0%;transition:width .3s;"></div>
+          </div>
+          <div id="hw-note" style="margin-top:10px;font-size:11px;color:#8b949e;line-height:1.5;"></div>
+        </div>
+        <script>
+        (function(){
+          // Pure protocol math — 50 BTC initial reward, halving every
+          // 210,000 blocks (~4 years at 10 min/block). No market data.
+          var slider = document.getElementById('hw-slider');
+          if (!slider) return;
+          var NOTES = {
+            0: "Era 1: Bitcoin launches (2009). 50 new coins every ~10 minutes, and almost nobody is watching. Half of all bitcoin that will ever exist is created in this first era.",
+            4: "Era 5: today's era (2024–2028). The reward is 3.125 BTC — about 450 new coins a day, versus 7,200/day in era 1. Supply growth is now under 1% a year.",
+            9: "Era 10 (~2044–2048): the reward is under a tenth of a coin. By now over 99.9% of all bitcoin exists — miners are paid almost entirely by transaction fees instead of new coins."
+          };
+          function fmtBTC(x){
+            if (x >= 1) return x.toLocaleString(undefined,{maximumFractionDigits:3}) + ' BTC';
+            return x.toFixed(8).replace(/0+$/,'').replace(/\\.$/,'') + ' BTC';
+          }
+          function update(){
+            var era = parseInt(slider.value, 10);       // 0-indexed
+            var reward = 50 / Math.pow(2, era);
+            var startYear = 2009 + era * 4;
+            // Supply issued by END of this era: sum of 210000*reward over eras 0..era
+            var issued = 0;
+            for (var e = 0; e <= era; e++) issued += 210000 * (50 / Math.pow(2, e));
+            var pct = issued / 21000000 * 100;
+            document.getElementById('hw-era').textContent = 'Era ' + (era + 1);
+            document.getElementById('hw-years').textContent = '~' + startYear + '–' + (startYear + 4);
+            document.getElementById('hw-reward').textContent = fmtBTC(reward);
+            document.getElementById('hw-daily').textContent = Math.round(reward * 144).toLocaleString() + ' BTC';
+            document.getElementById('hw-supply').textContent = pct.toFixed(pct > 99 ? 2 : 1) + '%';
+            document.getElementById('hw-bar').style.width = pct + '%';
+            document.getElementById('hw-note').textContent = NOTES[era] ||
+              ('Era ' + (era + 1) + ': the reward halves to ' + fmtBTC(reward) +
+               ' per block. Each era adds only half as many new coins as the one before — that is the entire supply story in one rule.');
+          }
+          slider.addEventListener('input', update);
+          update();
+        })();
+        </script>
+
+        <h3 style="font-size:16px;margin:22px 0 8px;">How to use this site</h3>
+        <p style="margin-bottom:8px;">Two ways in, depending on what you want:</p>
+        <ul style="margin:0 0 14px 18px;line-height:1.8;">
+          <li><strong>Learn how Bitcoin works</strong> — read the chapters in order. The 10-minute path:
+            <a href="#ch01" style="color:#58a6ff;">Fundamentals</a> →
+            <a href="#ch03" style="color:#58a6ff;">Halving Cycles</a> →
+            <a href="#ch04" style="color:#58a6ff;">Bull &amp; Bear Markets</a> →
+            <a href="#ch11" style="color:#58a6ff;">Risk Management</a>.
+            Then <a href="#quiz" style="color:#58a6ff;">test yourself</a>. Dotted-underlined words show definitions when you hover or tap them.</li>
+          <li><strong>See the live data</strong> — the <a href="#live-market" style="color:#58a6ff;">Live Market Command Center</a> shows what the market is doing right now, and the <a href="#scoreboard" style="color:#58a6ff;">Forecast Scoreboard</a> shows how our prediction experiments are actually going, measured in public.</li>
+        </ul>
+        <p style="font-size:12px;color:#8b949e;">
+          Every chapter starts with an <span style="color:#58a6ff;">"In plain words"</span> box — if the full text feels heavy, the boxes alone tell the story.
+        </p>
+      </div>
+    </section>
+
     <!-- ===== CH 01: FUNDAMENTALS ===== -->
     <section class="chapter" id="ch01">
       <div class="chapter-header">
@@ -2522,6 +2775,7 @@
         <h2 class="chapter-title">Fundamentals</h2>
         <p class="chapter-desc">Core protocol parameters and network statistics.</p>
       </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Bitcoin is digital money that no single company or government controls. Its rulebook caps the supply at 21 million coins ever, new coins appear on a fixed schedule, and thousands of computers around the world keep the same shared record honest.</div>
       <div class="metric-grid">
         <div class="metric-card">
           <div class="metric-label">Max Supply</div>
@@ -2574,8 +2828,9 @@
         <h2 class="chapter-title">Price History</h2>
         <p class="chapter-desc">Bitcoin price evolution and annual return analysis.</p>
       </div>
-      <img src="charts/01-btc-price-history-log.png" alt="BTC Price History (Log Scale)" class="chart-img" loading="lazy" decoding="async">
-      <img src="charts/09-annual-returns.png" alt="BTC Annual Returns" class="chart-img" loading="lazy" decoding="async">
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Bitcoin's price has grown enormously over 15 years — but never in a straight line. It has crashed by more than half many times. This chapter shows the real yearly numbers, the great ones and the terrible ones.</div>
+      <img src="charts/01-btc-price-history-log.png" width="2676" height="1336" alt="BTC Price History (Log Scale)" class="chart-img" loading="lazy" decoding="async">
+      <img src="charts/09-annual-returns.png" width="2377" height="1182" alt="BTC Annual Returns" class="chart-img" loading="lazy" decoding="async">
 
       <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Yearly Returns (2014–2026)</h3>
       <div class="table-wrap">
@@ -2622,8 +2877,9 @@
         <h2 class="chapter-title">Halving Cycles</h2>
         <p class="chapter-desc">Complete halving cycle framework across all four Bitcoin epochs.</p>
       </div>
-      <img src="charts/02-halving-cycle-comparison.png" alt="Halving Cycle Comparison" class="chart-img" loading="lazy" decoding="async">
-      <img src="charts/08-cycle-overlay.png" alt="Cycle Overlay" class="chart-img" loading="lazy" decoding="async">
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Roughly every four years, the reward for mining new bitcoin is cut in half, so new supply keeps slowing down. The price has historically moved in big waves around these “halvings” — four full cycles so far, each wave smaller than the last.</div>
+      <img src="charts/02-halving-cycle-comparison.png" width="2981" height="924" alt="Halving Cycle Comparison" class="chart-img" loading="lazy" decoding="async">
+      <img src="charts/08-cycle-overlay.png" width="2377" height="1333" alt="Cycle Overlay" class="chart-img" loading="lazy" decoding="async">
 
       <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Halving Data Across All Epochs</h3>
       <div class="table-wrap">
@@ -2660,7 +2916,8 @@
         <h2 class="chapter-title">Bull &amp; Bear Markets</h2>
         <p class="chapter-desc">Historical bear market analysis and structural patterns.</p>
       </div>
-      <img src="charts/04-drawdown-history.png" alt="Drawdown History" class="chart-img" loading="lazy" decoding="async">
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Markets swing between long climbs (bull markets) and long falls (bear markets). Bitcoin's bear markets have lasted about a year and cut the price by 53–85%. Knowing that history keeps whatever is happening today in perspective.</div>
+      <img src="charts/04-drawdown-history.png" width="2680" height="1483" alt="Drawdown History" class="chart-img" loading="lazy" decoding="async">
 
       <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Major Bear Markets</h3>
       <div class="table-wrap">
@@ -2686,7 +2943,8 @@
         <h2 class="chapter-title">Technical Analysis</h2>
         <p class="chapter-desc">Pattern reliability, moving averages, and key technical frameworks.</p>
       </div>
-      <img src="charts/05-moving-averages.png" alt="Moving Averages" class="chart-img" loading="lazy" decoding="async">
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Traders study price charts for repeating shapes and averages. Some patterns work a bit better than a coin flip; none are magic. The percentages in this chapter are author-collected estimates, not guarantees.</div>
+      <img src="charts/05-moving-averages.png" width="2678" height="1333" alt="Moving Averages" class="chart-img" loading="lazy" decoding="async">
 
       <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Pattern Reliability on BTC</h3>
       <div class="table-wrap">
@@ -2719,6 +2977,7 @@
         <h2 class="chapter-title">On-Chain Metrics</h2>
         <p class="chapter-desc">Key blockchain-native valuation indicators and their zone frameworks.</p>
       </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Because Bitcoin's ledger is public, you can measure things no stock market shows — like the average price everyone paid for their coins. These “on-chain” gauges help judge whether Bitcoin looks cheap or expensive compared with its own history.</div>
 
       <div class="zone-card">
         <h4>MVRV Ratio <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Market Value to Realized Value)</span></h4>
@@ -2790,7 +3049,8 @@
         <h2 class="chapter-title">Sentiment</h2>
         <p class="chapter-desc">Fear & Greed Index extremes and their predictive power.</p>
       </div>
-      <img src="charts/03-monthly-returns-heatmap.png" alt="Monthly Returns Heatmap" class="chart-img" loading="lazy" decoding="async">
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>When everyone is terrified, Bitcoin has often been near a bottom; when everyone is euphoric, near a top. The Fear &amp; Greed index turns crowd mood into a number — most useful at its extremes, and never a guarantee.</div>
+      <img src="charts/03-monthly-returns-heatmap.png" width="2380" height="1481" alt="Monthly Returns Heatmap" class="chart-img" loading="lazy" decoding="async">
 
       <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Fear &amp; Greed Extremes — Historical Outcomes</h3>
       <div class="table-wrap">
@@ -2817,6 +3077,7 @@
         <h2 class="chapter-title">Macro Correlations</h2>
         <p class="chapter-desc">Cross-asset relationships, institutional flows, and ETF impact.</p>
       </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Bitcoin doesn't live alone: it tends to move with tech stocks, opposite the dollar, and with how much money exists in the world. Since 2024, giant funds (ETFs) buy and sell it too, which changed how it trades.</div>
 
       <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Cross-Asset Correlation Matrix</h3>
       <div class="table-wrap">
@@ -2855,6 +3116,7 @@
         <h2 class="chapter-title">Black Swan Events</h2>
         <p class="chapter-desc">Critical disruption events and their market impact.</p>
       </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Sudden disasters — exchange collapses, pandemics, frauds — have crashed Bitcoin many times. It has recovered from every one so far, but each event teaches the same lesson: expect surprises, and never keep everything in one place.</div>
 
       <div class="event-timeline">
         <div class="event-card">
@@ -2916,7 +3178,8 @@
         <h2 class="chapter-title">Trading Strategies</h2>
         <p class="chapter-desc">Backtested frameworks, volatility regimes, and composite indicator systems.</p>
       </div>
-      <img src="charts/07-volatility-regimes.png" alt="Volatility Regimes" class="chart-img" loading="lazy" decoding="async">
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>These are rule-based ways people have traded Bitcoin, tested on past data. Past results don't promise future ones — our own live Forecast Scoreboard shows how much harder real-time prediction is than backtesting.</div>
+      <img src="charts/07-volatility-regimes.png" width="2681" height="1483" alt="Volatility Regimes" class="chart-img" loading="lazy" decoding="async">
 
       <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Strategy Backtest Results <span style="font-weight:400;font-size:12px;color:#8b949e;">(author-compiled from public backtests — not ledger-measured)</span></h3>
       <div class="table-wrap">
@@ -2957,6 +3220,7 @@
         <h2 class="chapter-title">Risk Management</h2>
         <p class="chapter-desc">Position sizing frameworks, Kelly Criterion, and leverage mechanics.</p>
       </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>The most important chapter on this site. How much to own, why borrowed money (leverage) wipes people out, and why good traders think about losing before they think about winning. If you read only one chapter, read this one.</div>
 
       <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Position Sizing by Risk Profile</h3>
       <div class="position-grid">
@@ -3012,11 +3276,12 @@
         <h2 class="chapter-title">Market Assessment (April 2026, Archived)</h2>
         <p class="chapter-desc">A point-in-time market assessment written in April 2026 and preserved as a study artifact. Every price, level, and outlook below is <strong>frozen at its writing date</strong> — it is deliberately NOT updated, so readers can judge how a dated assessment aged. For current prices and levels see the <a href="#live-market" style="color:#58a6ff;">Live Market Command Center</a>; for measured forecast performance see the <a href="#scoreboard" style="color:#58a6ff;">Forecast Scoreboard</a>.</p>
       </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>This is a snapshot of what the market looked like in April 2026, deliberately frozen so you can compare it with what actually happened. Watching a confident assessment age is one of the best trading lessons there is.</div>
       <div style="background:#1a1206;border:1px solid #3a2a0a;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#f0c674;">
         ⏳ <strong>Archived:</strong> figures below reflect April 2026 conditions and will disagree with the live panels. That disagreement is the lesson.
       </div>
-      <img src="charts/10-cycle-dashboard.png" alt="Cycle Dashboard" class="chart-img" loading="lazy" decoding="async">
-      <img src="charts/06-volume-analysis.png" alt="Volume Analysis" class="chart-img" loading="lazy" decoding="async">
+      <img src="charts/10-cycle-dashboard.png" width="2978" height="1841" alt="Cycle Dashboard" class="chart-img" loading="lazy" decoding="async">
+      <img src="charts/06-volume-analysis.png" width="2681" height="1483" alt="Volume Analysis" class="chart-img" loading="lazy" decoding="async">
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin: var(--space-xl) 0;">
         <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
@@ -3102,6 +3367,7 @@
     <h2>Derivatives & Open Interest</h2>
     <p class="chapter-desc">Perpetual futures, funding rates, open interest dynamics, options market intelligence, and liquidation cascade mechanics — the derivatives layer that amplifies every BTC cycle.</p>
   </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Some people trade bets ON Bitcoin's price (futures and options) instead of Bitcoin itself. Those bets are far bigger than the real thing and can trigger chain-reaction crashes. These gauges read the temperature of that casino.</div>
 
   <!-- DERIVATIVES OVERVIEW CARDS -->
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">
@@ -3241,6 +3507,7 @@
     <h2>Lightning Network Intelligence</h2>
     <p class="chapter-desc">Bitcoin's Layer 2 payment network &mdash; capacity growth, adoption metrics, routing economics, and what LN signals tell us about BTC's long-term network value.</p>
   </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>The Lightning Network is a faster, cheaper payment layer built on top of Bitcoin — like express lanes on a highway. Its growth is one way to measure whether people actually use Bitcoin, rather than just trade it.</div>
 
   <!-- LN KEY STATS -->
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:28px;">
@@ -3344,6 +3611,7 @@
     <h2>Advanced Prediction Framework</h2>
     <p class="chapter-desc">A disciplined methodology for BTC scenario analysis — tiered inputs, multi-timeframe confidence scoring, historical analog matching, scenario probability weighting, and systematic invalidation logic. <strong style="color:#d29922;">Confidence and analog-match figures below are author-set scenario weights, not measured prediction accuracy.</strong> No live ledger of past predictions exists yet.</p>
   </div>
+      <div class="eli12"><span class="eli12-tag">💡 In plain words</span>How we structure our guesses about where the price may go: ranked signals, scenarios with weights, and clear “this proves us wrong” lines. These are author judgments — the measured version lives in the Forecast Scoreboard.</div>
 
   <!-- PREDICTION PHILOSOPHY CARDS -->
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">
@@ -3433,6 +3701,109 @@
 </section>
 
 
+
+<section class="chapter" id="quiz">
+  <div class="chapter-header">
+    <div class="chapter-number" style="color:#3fb950;">TEST YOURSELF</div>
+    <h2 class="chapter-title">Ten questions</h2>
+    <p class="chapter-desc">No score is saved, nothing is tracked — this is just for you. Each answer explains itself, and every explanation links back to the chapter that covers it.</p>
+  </div>
+  <div id="quiz-root" style="max-width:720px;"></div>
+  <div id="quiz-score" style="display:none;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px 18px;font-size:14px;color:#e6edf3;margin-top:6px;"></div>
+  <button id="quiz-reset" style="display:none;margin-top:12px;background:none;border:1px solid #30363d;border-radius:8px;color:#58a6ff;padding:8px 16px;font-size:13px;cursor:pointer;">Try again</button>
+  <script>
+  (function(){
+    var QS = [
+      {q:"How many bitcoins will ever exist?",
+       o:["21 million","100 million","There is no limit","One per person on Earth"],a:0,
+       e:"The 21 million cap is written into the protocol and enforced by every node. Chapter 1."},
+      {q:"What is a \u201chalving\u201d?",
+       o:["The price falling 50%","The mining reward being cut in half about every four years","Splitting one bitcoin into two","A type of crash"],a:1,
+       e:"Every 210,000 blocks (~4 years) the new-coin reward halves, slowing supply. Chapter 3 — and the slider in Start Here."},
+      {q:"Who controls Bitcoin?",
+       o:["Its inventor","The biggest exchange","The US government","No single party — thousands of independent computers enforce the same rules"],a:3,
+       e:"Changing the rules requires convincing most of the network. That decentralization is the whole point. Chapter 1."},
+      {q:"Bitcoin's worst bear markets cut the price by roughly\u2026",
+       o:["5\u201310%","15\u201320%","53\u201385%","It has never gone down"],a:2,
+       e:"Four major bear markets so far, each cutting 53\u201385% and lasting about a year. Chapter 4."},
+      {q:"Our forecast system is right about 52% of the time overall. Always guessing \u201cup\u201d is also right about 52% of the time. How much predictive skill does that show?",
+       o:["A lot — 52% beats 50%","Roughly none — it matches the naive baseline","It proves prediction is impossible","Can't say without more data"],a:1,
+       e:"Skill means beating the baseline, not beating a coin. This comparison is the honest heart of the Forecast Scoreboard."},
+      {q:"What is the main danger of trading with leverage (borrowed money)?",
+       o:["Higher fees","Slower trades","A small price move against you can wipe out the whole position","It's illegal"],a:2,
+       e:"At 10x leverage a 10% move liquidates you — and Bitcoin moves 10% routinely. Chapter 11."},
+      {q:"What does \u201cnot your keys, not your coins\u201d warn about?",
+       o:["Losing your password","Coins left on an exchange belong to you only as long as the exchange stays honest and solvent","Hardware wallets breaking","Forgetting your seed phrase"],a:1,
+       e:"Mt. Gox and FTX made this lesson expensive. Chapter 9 documents both."},
+      {q:"What is the Lightning Network for?",
+       o:["Mining faster","Fast, cheap everyday payments on top of Bitcoin","Making the price go up","Replacing the blockchain"],a:1,
+       e:"A payment layer above the base chain — express lanes over the highway. Chapter 14."},
+      {q:"Historically, when the Fear &amp; Greed index shows \u201cextreme fear\u201d, Bitcoin has usually been\u2026",
+       o:["About to crash further, always","Closer to a bottom than a top — though it's a tendency, not a rule","Unaffected","At an all-time high"],a:1,
+       e:"March 2020: index at 8, price +232% six months later. A tendency at extremes, never a promise. Chapter 7."},
+      {q:"What's the smartest first move with Bitcoin for a young person?",
+       o:["Buy as much as possible","Borrow to buy more","Learn how it actually works before risking anything","Ignore it completely"],a:2,
+       e:"Understanding compounds and can't crash. That's why this site exists — and why nothing here is investment advice."}
+    ];
+    var root = document.getElementById('quiz-root');
+    if (!root) return;
+    var answered = 0, correct = 0;
+    function esc(s){ return s; }
+    QS.forEach(function(item, qi){
+      var box = document.createElement('div');
+      box.className = 'quiz-q';
+      var opts = item.o.map(function(o, oi){
+        return '<span class="quiz-opt" data-q="'+qi+'" data-o="'+oi+'">'+o+'</span>';
+      }).join('');
+      box.innerHTML = '<div class="q-text">'+(qi+1)+'. '+item.q+'</div>'+opts
+        + '<div class="quiz-explain">'+item.e+'</div>';
+      root.appendChild(box);
+    });
+    root.addEventListener('click', function(ev){
+      var t = ev.target;
+      if (!t.classList || !t.classList.contains('quiz-opt')) return;
+      var qi = +t.getAttribute('data-q'), oi = +t.getAttribute('data-o');
+      var box = t.parentElement;
+      if (box.classList.contains('answered')) return;
+      box.classList.add('answered');
+      answered++;
+      var isRight = (oi === QS[qi].a);
+      if (isRight) { t.classList.add('correct'); correct++; }
+      else {
+        t.classList.add('wrong');
+        var opts = box.querySelectorAll('.quiz-opt');
+        opts[QS[qi].a].classList.add('reveal');
+      }
+      if (answered === QS.length) {
+        var s = document.getElementById('quiz-score');
+        var msg = correct + ' / ' + QS.length + ' — ';
+        if (correct >= 9) msg += 'excellent. You know more than most people trading real money.';
+        else if (correct >= 6) msg += 'solid. The chapters linked in the explanations will fill the gaps.';
+        else msg += 'a great starting point — that\u2019s what the chapters are for. Start with 01, 03, 04, and 11.';
+        s.textContent = msg;
+        s.style.display = 'block';
+        var r = document.getElementById('quiz-reset');
+        r.style.display = 'inline-block';
+        r.onclick = function(){
+          answered = 0; correct = 0;
+          root.innerHTML = ''; s.style.display='none'; r.style.display='none';
+          QS.forEach(function(item, qi){
+            var box = document.createElement('div');
+            box.className = 'quiz-q';
+            var opts = item.o.map(function(o, oi){
+              return '<span class="quiz-opt" data-q="'+qi+'" data-o="'+oi+'">'+o+'</span>';
+            }).join('');
+            box.innerHTML = '<div class="q-text">'+(qi+1)+'. '+item.q+'</div>'+opts
+              + '<div class="quiz-explain">'+item.e+'</div>';
+            root.appendChild(box);
+          });
+        };
+      }
+    });
+  })();
+  </script>
+</section>
+
 <section class="chapter" id="appendices">
       <div class="chapter-header">
         <div class="chapter-number">APPENDICES</div>
@@ -3459,6 +3830,14 @@
 
       <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Glossary</h3>
       <dl class="glossary-grid">
+                <div class="glossary-item"><dt>Bitcoin</dt><dd>Digital money secured by a global network of computers instead of a bank; capped at 21 million coins ever.</dd></div>
+        <div class="glossary-item"><dt>Blockchain</dt><dd>The shared public record of every Bitcoin transaction, kept identical on thousands of computers that constantly cross-check each other.</dd></div>
+        <div class="glossary-item"><dt>Mining</dt><dd>The work of securing the network by racing to add the next block of transactions; the winner earns newly created bitcoin plus fees.</dd></div>
+        <div class="glossary-item"><dt>Wallet</dt><dd>Software or a device that holds the secret keys which control your bitcoin. The coins live on the blockchain; the wallet holds the keys.</dd></div>
+        <div class="glossary-item"><dt>Private Key</dt><dd>The secret number that lets you spend your bitcoin. Anyone who has it, has your coins — which is why it is never shared.</dd></div>
+        <div class="glossary-item"><dt>Satoshi</dt><dd>The smallest unit of bitcoin — one hundred-millionth of a coin. Also the pseudonym of Bitcoin's unknown inventor, Satoshi Nakamoto.</dd></div>
+        <div class="glossary-item"><dt>Exchange</dt><dd>A business where people trade regular money for bitcoin. Convenient, but coins left there are an IOU until withdrawn to your own wallet.</dd></div>
+        <div class="glossary-item"><dt>Leverage</dt><dd>Trading with borrowed money. It multiplies gains AND losses — a small move against a highly leveraged position erases it entirely.</dd></div>
         <div class="glossary-item"><dt>MVRV</dt><dd>Market Value to Realized Value — compares market cap to the cost basis of all coins.</dd></div>
         <div class="glossary-item"><dt>NUPL</dt><dd>Net Unrealized Profit/Loss — proportion of the network in profit vs loss.</dd></div>
         <div class="glossary-item"><dt>Puell Multiple</dt><dd>Daily miner revenue relative to the 365-day average — measures miner profitability.</dd></div>
@@ -3485,6 +3864,108 @@
 </main>
 
   <!-- Footer -->
+
+<script>
+// ── Glossary tooltip layer (2026-08-11) ─────────────────────────────
+// Builds a term dictionary FROM the appendix glossary at runtime (single
+// source of truth), then annotates the first occurrence of each term per
+// chapter in plain paragraphs and list items. Hover or tap shows the
+// definition. Chapters only — live-data sections are left untouched.
+(function(){
+  function boot(){
+    var dict = {};
+    document.querySelectorAll('.glossary-item').forEach(function(it){
+      var dt = it.querySelector('dt'), dd = it.querySelector('dd');
+      if (dt && dd) dict[dt.textContent.trim()] = dd.textContent.trim();
+    });
+    var terms = Object.keys(dict).sort(function(a,b){ return b.length - a.length; });
+    if (!terms.length) return;
+    var rx = new RegExp('\\b(' + terms.map(function(t){
+      return t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }).join('|') + ')\\b', 'i');
+    var lookup = {};
+    terms.forEach(function(t){ lookup[t.toLowerCase()] = t; });
+
+    document.querySelectorAll('section.chapter[id^="ch"], section#start-here').forEach(function(sec){
+      if (sec.id === 'quiz') return;
+      var seen = {};
+      var count = 0;
+      var nodes = sec.querySelectorAll('p, li, dd');
+      for (var i = 0; i < nodes.length && count < 14; i++) {
+        var walker = document.createTreeWalker(nodes[i], NodeFilter.SHOW_TEXT, {
+          acceptNode: function(n){
+            var p = n.parentElement;
+            if (!p) return NodeFilter.FILTER_REJECT;
+            if (p.closest('a, code, script, style, .gloss, .glossary-item, .eli12, .quiz-q')) return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          }
+        });
+        var tn;
+        while ((tn = walker.nextNode()) && count < 14) {
+          var m = rx.exec(tn.nodeValue);
+          if (!m) continue;
+          var canonical = lookup[m[1].toLowerCase()];
+          if (!canonical || seen[canonical]) continue;
+          seen[canonical] = true;
+          count++;
+          var span = document.createElement('span');
+          span.className = 'gloss';
+          span.setAttribute('data-term', canonical);
+          span.setAttribute('tabindex', '0');
+          span.textContent = m[1];
+          var after = tn.splitText(m.index);
+          after.nodeValue = after.nodeValue.slice(m[1].length);
+          tn.parentNode.insertBefore(span, after);
+        }
+      }
+      // Seed spans written directly in the HTML (Start Here) get wired too.
+      sec.querySelectorAll('.gloss-seed').forEach(function(s){
+        var key = lookup[s.textContent.trim().toLowerCase()];
+        if (!key) return;
+        s.className = 'gloss';
+        s.setAttribute('data-term', key);
+        s.setAttribute('tabindex', '0');
+      });
+    });
+
+    var tip = document.createElement('div');
+    tip.id = 'gloss-tip';
+    tip.style.display = 'none';
+    document.body.appendChild(tip);
+    function show(el){
+      var term = el.getAttribute('data-term');
+      if (!term || !dict[term]) return;
+      tip.innerHTML = '<span class="gloss-term"></span>';
+      tip.querySelector('.gloss-term').textContent = term;
+      tip.appendChild(document.createTextNode(dict[term]));
+      tip.style.display = 'block';
+      var r = el.getBoundingClientRect();
+      var top = window.scrollY + r.bottom + 8;
+      var left = Math.max(8, Math.min(window.scrollX + r.left,
+                   window.scrollX + document.documentElement.clientWidth - 316));
+      tip.style.top = top + 'px';
+      tip.style.left = left + 'px';
+    }
+    function hide(){ tip.style.display = 'none'; }
+    document.addEventListener('mouseover', function(e){
+      var g = e.target.closest && e.target.closest('.gloss');
+      if (g) show(g); else hide();
+    });
+    document.addEventListener('click', function(e){
+      var g = e.target.closest && e.target.closest('.gloss');
+      if (g) { e.preventDefault(); show(g); }
+      else hide();
+    });
+    document.addEventListener('focusin', function(e){
+      var g = e.target.closest && e.target.closest('.gloss');
+      if (g) show(g);
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+  else boot();
+})();
+</script>
+
   <footer class="site-footer" style="margin-left: var(--sidebar-width);">
     <div>Loopholemaxing.com — Built by Clayton Camera — 2026 | <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
     <div class="footer-tagline">Research. Analyze. Execute.</div>
@@ -5098,76 +5579,66 @@
 // public benchmark; ledger-backed metrics live in the Trust panel.
 // ============================================================
 
-// ── Brain Activity Feed (scripted demo loop) ────────────────
+// ── Ledger Feed (real events from recent.json, 2026-08-11) ──
 (function() {
-  // Scripted illustrative loop. NO specific live numbers (price levels,
-  // funding %, OI, F&G, MVRV, hash rate, ETF flows, etc.) — those would
-  // be stale the moment this file is committed. Each entry describes a
-  // category of research move. This panel is clearly labeled as a demo
-  // loop in the surrounding markup so it cannot be confused with a real
-  // event stream.
-  var EVENTS = [
-    { type:'live',    msg:'Polling BTC/USDT spot for live ticker + closed-candle OHLC.',            delay:0 },
-    { type:'pattern', msg:'Re-running 15m / 1h / 4h candlestick pattern scan on closed candles.',  delay:4000 },
-    { type:'onchain', msg:'Re-reading on-chain regime indicators (see Chapter 6 for definitions).', delay:8000 },
-    { type:'macro',   msg:'Cross-checking macro/DXY/M2 correlation framework (Chapter 8).',         delay:12000 },
-    { type:'signal',  msg:'Refreshing source freshness budgets from data/public/source_health.json.', delay:16000 },
-    { type:'learn',   msg:'Reviewing historical analog catalogue (Chapters 4, 9) for reference setups.', delay:20000 },
-    { type:'predict', msg:'Forecasts (when issued) are written to ledger/data/forecasts.jsonl — see Trust panel.', delay:24000 },
-    { type:'cycle',   msg:'Re-aligning current price with halving-cycle phase model (Chapter 3).',  delay:28000 },
-    { type:'risk',    msg:'Risk framework (Kelly sizing, drawdown, vol regime) in Chapter 11.',     delay:32000 },
-    { type:'pattern', msg:'Inside-bar / compression check on closed 1h bars.',                       delay:36000 },
-    { type:'signal',  msg:'Cross-timeframe alignment score recomputed from live closed candles.',   delay:40000 },
-    { type:'cycle',   msg:'Pi-cycle / 200-week trigger evaluation against current closed daily.',   delay:44000 },
-    { type:'predict', msg:'No model is rated LIVE until Phase-4 promotion gates pass — see Trust.', delay:48000 },
-  ];
+  // Renders the newest forecast issues + resolutions from the compact
+  // pre-joined artifact. Nothing is scripted or invented; if the artifact
+  // is unavailable the panel says so instead of pretending.
+  function fmtP(x){ return (typeof x === 'number') ? x.toFixed(3) : '—'; }
+  function fmtPx(x){ return (typeof x === 'number') ? '$' + Math.round(x).toLocaleString() : '—'; }
+  function ts(s){ return String(s || '').replace('T',' ').slice(5,16); }
 
-  var COLORS = { live:'#3fb950', pattern:'#d2a8ff', onchain:'#58a6ff', macro:'#d29922', signal:'#f7931a', learn:'#00e5ff', predict:'#69f0ae', cycle:'#ffd54f', risk:'#f85149' };
-  var LABELS  = { live:'LIVE MARKET', pattern:'PATTERN', onchain:'ON-CHAIN', macro:'MACRO', signal:'SIGNAL', learn:'LEARNING', predict:'PREDICT', cycle:'CYCLE', risk:'RISK' };
-
-  function buildFeed() {
+  function render(rows) {
     var el = document.getElementById('brain-feed-stream');
     if (!el) return;
-
-    var addEvent = function(ev) {
-      var col = COLORS[ev.type] || '#8b949e';
-      var lbl = LABELS[ev.type]  || ev.type.toUpperCase();
-      var row = document.createElement('div');
-      row.style.cssText = 'display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #161b22;opacity:0;transition:opacity .4s;';
-      row.innerHTML = '<span style="font-size:9px;font-weight:700;color:'+col+';font-family:monospace;white-space:nowrap;padding-top:2px;min-width:76px;">'+lbl+'</span>'
-                    + '<span style="font-size:11px;color:#e6edf3;line-height:1.5;">'+ev.msg+'</span>';
-      el.insertBefore(row, el.firstChild);
-      setTimeout(function(){ row.style.opacity='1'; }, 20);
-      // Keep max 18 items
-      while (el.children.length > 18) el.removeChild(el.lastChild);
-    };
-
-    // Expose feed push globally for SIIE integration
-    window._btcBrainFeedPush = function(type, msg) { addEvent({ type: type, msg: msg }); };
-
-    // Immediate first events
-    addEvent(EVENTS[0]);
-    addEvent(EVENTS[1]);
-
-    // Queue rest
-    var idx = 2;
-    var addNext = function() {
-      if (!document.getElementById('brain-feed-stream')) return;
-      if (idx < EVENTS.length) {
-        addEvent(EVENTS[idx++]);
-        setTimeout(addNext, 5000 + Math.random()*4000);
+    if (!rows || !rows.length) {
+      el.innerHTML = '<div style="color:#d29922;font-size:11px;">Ledger feed unavailable — recent.json missing or empty.</div>';
+      return;
+    }
+    var out = [];
+    rows.slice(0, 16).forEach(function(r){
+      var isRes = !!r.resolved;
+      var lbl, col, msg;
+      if (isRes) {
+        var ok = (r.direction_correct === true);
+        lbl = ok ? '\u2713 CORRECT' : '\u2717 WRONG';
+        col = ok ? '#3fb950' : '#f85149';
+        msg = ts(r.issued_at) + ' \u00b7 ' + r.horizon + ' ' + String(r.direction || '').toUpperCase()
+            + ' p=' + fmtP(r.probability)
+            + ' \u00b7 entry ' + fmtPx(r.entry_price)
+            + ' \u2192 close ' + fmtPx(r.actual_close)
+            + ' \u00b7 ' + (r.model_version || '');
       } else {
-        // Loop from start
-        idx = 0;
-        setTimeout(addNext, 8000);
+        lbl = 'ISSUED';
+        col = '#58a6ff';
+        msg = ts(r.issued_at) + ' \u00b7 ' + r.horizon + ' ' + String(r.direction || '').toUpperCase()
+            + ' p=' + fmtP(r.probability)
+            + ' \u00b7 entry ' + fmtPx(r.entry_price)
+            + ' \u00b7 resolves at target \u00b7 ' + (r.model_version || '');
       }
-    };
-    setTimeout(addNext, 4000);
+      out.push('<div style="display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid #161b22;">'
+        + '<span style="font-size:9px;font-weight:700;color:' + col + ';font-family:monospace;white-space:nowrap;padding-top:2px;min-width:76px;">' + lbl + '</span>'
+        + '<span style="font-size:11px;color:#e6edf3;line-height:1.5;font-family:monospace;">' + msg + '</span>'
+        + '</div>');
+    });
+    el.innerHTML = out.join('');
   }
 
-  // Boot after DOM ready
-  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', buildFeed); }
-  else { setTimeout(buildFeed, 500); }
+  function load() {
+    fetch('ledger/public/recent.json', { cache: 'no-store' })
+      .then(function(r){ if (!r.ok) throw new Error('no recent.json'); return r.json(); })
+      .then(function(d){ render(d && d.rows); })
+      .catch(function(){ render(null); });
+  }
+
+  // The old scripted demo exposed a push hook that browser-local SIIE
+  // events wrote into. A real-ledger feed must not mix in local sandbox
+  // events — the hook is now inert by design.
+  window._btcBrainFeedPush = function() { /* intentionally inert */ };
+
+  if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', load); }
+  else { load(); }
+  setInterval(load, 5 * 60 * 1000);
 })();
 
 // ── Dynamic IQ Growth Engine ─────────────────────────────────

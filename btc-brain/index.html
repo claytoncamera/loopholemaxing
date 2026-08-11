@@ -860,6 +860,25 @@
     .quiz-opt.reveal { border-color: #3fb950; }
     .quiz-explain { display: none; font-size: 12px; color: #8b949e; line-height: 1.55; padding: 6px 2px 0; }
     .quiz-q.answered .quiz-explain { display: block; }
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      top: 0;
+      z-index: 3000;
+      background: #f7931a;
+      color: #0d1117;
+      font-weight: 700;
+      padding: 10px 18px;
+      border-radius: 0 0 8px 0;
+    }
+    .skip-link:focus {
+      left: 0;
+    }
+    a:focus-visible, button:focus-visible, summary:focus-visible,
+    [tabindex]:focus-visible, input:focus-visible, .quiz-opt:focus-visible {
+      outline: 2px solid #58a6ff;
+      outline-offset: 2px;
+    }
     @media (prefers-reduced-motion: reduce) {
       * { animation-duration: 0.01ms !important;
           animation-iteration-count: 1 !important;
@@ -867,11 +886,17 @@
     }
   @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
   </style>
-  <!-- Three.js for 3D Neural Brain -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Three.js is NOT loaded here. The Neural Brain section lazy-loads it
+       from its own IntersectionObserver-gated loader only when the reader
+       scrolls near the 3D canvas — these head tags were render-blocking
+       ~600KB for a decorative diagram most visitors never reach. -->
+  <link rel="preconnect" href="https://data-api.binance.vision">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
 </head>
 <body>
+
+  <a href="#live-market" class="skip-link">Skip to live market data</a>
+  <a href="#start-here" class="skip-link">Skip to Bitcoin basics</a>
 
   <!-- Top Header Bar -->
   <header class="brain-header">
@@ -925,7 +950,7 @@
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
   <!-- Sidebar Navigation -->
-  <aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar" role="navigation" aria-label="Site sections">
     <div class="sidebar-section-label">Live Intelligence</div>
     <ul class="sidebar-nav">
       <li><a href="#live-market"><span class="chapter-num" style="color:#3fb950;">&#9673;</span> Live Market</a></li>
@@ -1016,11 +1041,11 @@
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
       <thead>
         <tr style="border-bottom:1px solid #21262d;">
-          <th style="text-align:left;padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Timeframe</th>
-          <th style="padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Trend</th>
-          <th style="padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Momentum</th>
-          <th style="padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Signal</th>
-          <th style="text-align:right;padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Note</th>
+          <th scope="col" style="text-align:left;padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Timeframe</th>
+          <th scope="col" style="padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Trend</th>
+          <th scope="col" style="padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Momentum</th>
+          <th scope="col" style="padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Signal</th>
+          <th scope="col" style="text-align:right;padding:10px 12px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Note</th>
         </tr>
       </thead>
       <tbody id="tf-matrix-body">
@@ -1154,13 +1179,13 @@
     <table style="width:100%;border-collapse:collapse;font-size:13px;">
       <thead>
         <tr style="border-bottom:1px solid #21262d;">
-          <th style="text-align:left;padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Horizon</th>
-          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">n</th>
-          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Hit rate</th>
-          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Always-up baseline</th>
-          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">vs majority</th>
-          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Maker expectancy</th>
-          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Wilson 95% LB</th>
+          <th scope="col" style="text-align:left;padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Horizon</th>
+          <th scope="col" style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">n</th>
+          <th scope="col" style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Hit rate</th>
+          <th scope="col" style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Always-up baseline</th>
+          <th scope="col" style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">vs majority</th>
+          <th scope="col" style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Maker expectancy</th>
+          <th scope="col" style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Wilson 95% LB</th>
         </tr>
       </thead>
       <tbody id="sb-horizon-body">
@@ -1330,7 +1355,7 @@
       var gt = '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
         + '<thead><tr style="border-bottom:1px solid #21262d;">'
         + ['Model','Horizon','Trades','Hit rate','Avg/trade (maker)','Total (maker)','Max drawdown'].map(function(h,i){
-            return '<th style="padding:7px 9px;color:#8b949e;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;text-align:'+(i===0?'left':'center')+';">'+h+'</th>';
+            return '<th scope="col" style="padding:7px 9px;color:#8b949e;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;text-align:'+(i===0?'left':'center')+';">'+h+'</th>';
           }).join('')
         + '</tr></thead><tbody>';
       groups.forEach(function(gr){
@@ -1382,7 +1407,7 @@
       if (flag && Array.isArray(flag.last_trades) && flag.last_trades.length) {
         var lt='<div style="font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Last '+Math.min(10,flag.last_trades.length)+' paper trades — '+esc(flag.model_version)+' · '+esc(flag.horizon)+'</div>'
           + '<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="border-bottom:1px solid #21262d;">'
-          + ['Issued','Dir','Entry','Exit','Result (maker)'].map(function(h,i){ return '<th style="padding:6px 9px;color:#8b949e;font-weight:600;font-size:10px;text-transform:uppercase;text-align:'+(i===0?'left':'center')+';">'+h+'</th>'; }).join('')
+          + ['Issued','Dir','Entry','Exit','Result (maker)'].map(function(h,i){ return '<th scope="col" style="padding:6px 9px;color:#8b949e;font-weight:600;font-size:10px;text-transform:uppercase;text-align:'+(i===0?'left':'center')+';">'+h+'</th>'; }).join('')
           + '</tr></thead><tbody>';
         flag.last_trades.slice(-10).reverse().forEach(function(tr){
           lt += '<tr style="border-bottom:1px solid #161b22;">'
@@ -2071,13 +2096,13 @@
         <table style="width:100%;border-collapse:collapse;font-size:12px;font-family:ui-monospace,Menlo,Consolas,monospace;">
           <thead>
             <tr style="text-align:left;color:#8b949e;border-bottom:1px solid #21262d;">
-              <th style="padding:6px 8px;">Issued (UTC)</th>
-              <th style="padding:6px 8px;">Horizon</th>
-              <th style="padding:6px 8px;">Direction</th>
-              <th style="padding:6px 8px;">P</th>
-              <th style="padding:6px 8px;">Model</th>
-              <th style="padding:6px 8px;">Status</th>
-              <th style="padding:6px 8px;">Outcome</th>
+              <th scope="col" style="padding:6px 8px;">Issued (UTC)</th>
+              <th scope="col" style="padding:6px 8px;">Horizon</th>
+              <th scope="col" style="padding:6px 8px;">Direction</th>
+              <th scope="col" style="padding:6px 8px;">P</th>
+              <th scope="col" style="padding:6px 8px;">Model</th>
+              <th scope="col" style="padding:6px 8px;">Status</th>
+              <th scope="col" style="padding:6px 8px;">Outcome</th>
             </tr>
           </thead>
           <tbody id="p7-history-tbody"></tbody>
@@ -2804,8 +2829,8 @@
         </div>
         <div class="metric-card">
           <div class="metric-label">Circulating</div>
-          <div class="metric-value">~19.85M</div>
-          <div class="metric-sub">94.5% mined</div>
+          <div class="metric-value">~19.9M</div>
+          <div class="metric-sub">~94.7% mined</div>
         </div>
         <div class="metric-card">
           <div class="metric-label">Full Nodes</div>
@@ -2836,7 +2861,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Year</th><th>Return</th><th>Year</th><th>Return</th><th>Year</th><th>Return</th></tr>
+            <tr><th scope="col">Year</th><th scope="col">Return</th><th scope="col">Year</th><th scope="col">Return</th><th scope="col">Year</th><th scope="col">Return</th></tr>
           </thead>
           <tbody>
             <tr>
@@ -2886,7 +2911,7 @@
         <table class="data-table">
           <thead>
             <tr>
-              <th>Halving</th><th>Date</th><th>Block Reward</th><th>Price at Halving</th><th>Cycle Peak</th><th>Peak Date</th><th>Days to Peak</th><th>Gain %</th><th>Drawdown %</th>
+              <th scope="col">Halving</th><th scope="col">Date</th><th scope="col">Block Reward</th><th scope="col">Price at Halving</th><th scope="col">Cycle Peak</th><th scope="col">Peak Date</th><th scope="col">Days to Peak</th><th scope="col">Gain %</th><th scope="col">Drawdown %</th>
             </tr>
           </thead>
           <tbody>
@@ -2923,7 +2948,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Bear Market</th><th>Start</th><th>End</th><th>Duration</th><th>Drawdown</th></tr>
+            <tr><th scope="col">Bear Market</th><th scope="col">Start</th><th scope="col">End</th><th scope="col">Duration</th><th scope="col">Drawdown</th></tr>
           </thead>
           <tbody>
             <tr><td>2014–2015</td><td>Dec 2013</td><td>Jan 2015</td><td>410 days</td><td class="negative">-85%</td></tr>
@@ -2950,7 +2975,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Pattern</th><th>BTC Win Rate</th><th>Notes</th></tr>
+            <tr><th scope="col">Pattern</th><th scope="col">BTC Win Rate</th><th scope="col">Notes</th></tr>
           </thead>
           <tbody>
             <tr><td>Head &amp; Shoulders</td><td class="neutral">63%</td><td>Reliable at macro tops</td></tr>
@@ -3056,7 +3081,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Date</th><th>Reading</th><th>Category</th><th>BTC Price</th><th>6-Month After</th></tr>
+            <tr><th scope="col">Date</th><th scope="col">Reading</th><th scope="col">Category</th><th scope="col">BTC Price</th><th scope="col">6-Month After</th></tr>
           </thead>
           <tbody>
             <tr><td>Mar 2020</td><td class="negative">8</td><td><span class="negative">Extreme Fear</span></td><td>$5,000</td><td class="positive">+232%</td></tr>
@@ -3083,7 +3108,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Asset</th><th>Bull Market Corr.</th><th>Bear Market Corr.</th><th>Notes</th></tr>
+            <tr><th scope="col">Asset</th><th scope="col">Bull Market Corr.</th><th scope="col">Bear Market Corr.</th><th scope="col">Notes</th></tr>
           </thead>
           <tbody>
             <tr><td>S&amp;P 500</td><td>0.40–0.70</td><td class="negative">0.60–0.87</td><td>Highest during risk-off</td></tr>
@@ -3185,7 +3210,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Strategy</th><th>CAGR</th><th>Max DD</th><th>Win Rate</th><th>Notes</th></tr>
+            <tr><th scope="col">Strategy</th><th scope="col">CAGR</th><th scope="col">Max DD</th><th scope="col">Win Rate</th><th scope="col">Notes</th></tr>
           </thead>
           <tbody>
             <tr><td>MACD Histogram</td><td class="positive">77.2%</td><td class="negative">-62%</td><td>—</td><td>Beats buy-hold</td></tr>
@@ -3249,7 +3274,7 @@
       <div class="table-wrap">
         <table class="data-table">
           <thead>
-            <tr><th>Leverage</th><th>Liquidation Drop</th></tr>
+            <tr><th scope="col">Leverage</th><th scope="col">Liquidation Drop</th></tr>
           </thead>
           <tbody>
             <tr><td>2x</td><td class="warning">-50%</td></tr>
@@ -3409,10 +3434,10 @@
     <p style="font-size:13px;color:#8b949e;line-height:1.7;margin:0 0 16px;">Funding rates settle every 8 hours and represent the cost of holding a leveraged position. Extreme readings are among the most reliable cycle sentiment signals in BTC markets.</p>
     <table style="width:100%;border-collapse:collapse;font-size:12px;">
       <thead><tr style="border-bottom:1px solid #21262d;">
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Rate (8h)</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Annualized</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Signal</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Action</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Rate (8h)</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Annualized</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Signal</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Action</th>
       </tr></thead>
       <tbody>
         <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#f85149;font-family:monospace;">+0.1% or higher</td><td style="padding:8px 12px;color:#f85149;font-family:monospace;">109%+</td><td style="padding:8px 12px;color:#f85149;">Extreme greed &mdash; leverage overheated</td><td style="padding:8px 12px;color:#e6edf3;">Reduce longs, watch for cascade</td></tr>
@@ -3429,10 +3454,10 @@
   <div style="overflow-x:auto;margin-bottom:20px;">
     <table style="width:100%;border-collapse:collapse;font-size:12px;">
       <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Price</th>
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Open Interest</th>
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal</th>
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Interpretation</th>
+        <th scope="col" style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Price</th>
+        <th scope="col" style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Open Interest</th>
+        <th scope="col" style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal</th>
+        <th scope="col" style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Interpretation</th>
       </tr></thead>
       <tbody>
         <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;color:#8b949e;">New long positions entering &mdash; confirmed uptrend</td></tr>
@@ -3448,10 +3473,10 @@
   <div style="overflow-x:auto;margin-bottom:20px;">
     <table style="width:100%;border-collapse:collapse;font-size:12px;">
       <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Event</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Liquidated</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Price Drop</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Trigger</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Event</th>
+        <th scope="col" style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Liquidated</th>
+        <th scope="col" style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Price Drop</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Trigger</th>
       </tr></thead>
       <tbody>
         <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">COVID Black Thursday (Mar 2020)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$1.2B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-53% in 24h</td><td style="padding:8px 12px;color:#8b949e;">Global risk-off, crypto-native panic</td></tr>
@@ -3548,10 +3573,10 @@
   <div style="overflow-x:auto;margin-bottom:20px;">
     <table style="width:100%;border-collapse:collapse;font-size:12px;">
       <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Period</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Capacity (BTC)</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Channels</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Context</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Period</th>
+        <th scope="col" style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Capacity (BTC)</th>
+        <th scope="col" style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Channels</th>
+        <th scope="col" style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Context</th>
       </tr></thead>
       <tbody>
         <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Mar 2018</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;10</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;1,000</td><td style="padding:7px 12px;color:#8b949e;">Mainnet launch, experimental</td></tr>
@@ -3642,11 +3667,11 @@
   <div style="overflow-x:auto;margin-bottom:24px;">
     <table style="width:100%;border-collapse:collapse;font-size:12px;">
       <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Tier</th>
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Input</th>
-        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Type</th>
-        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal Quality</th>
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Notes</th>
+        <th scope="col" style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Tier</th>
+        <th scope="col" style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Input</th>
+        <th scope="col" style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Type</th>
+        <th scope="col" style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal Quality</th>
+        <th scope="col" style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Notes</th>
       </tr></thead>
       <tbody>
         <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">Halving Cycle Position</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Leading</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">VERY HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">4/4 cycles followed halving math within 15%</td></tr>
@@ -4046,6 +4071,36 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 
+    // ===== Unified poll scheduler (2026-08-11) =====
+    // One 5s heartbeat drives every recurring network task on the page.
+    // Replaces 9 independent setInterval pollers that kept hammering
+    // exchange APIs from hidden tabs. Rules: nothing fires while the tab
+    // is hidden; on return to visibility, overdue tasks fire immediately.
+    window.BTCPoll = (function () {
+      var tasks = [];
+      function runDue(now) {
+        tasks.forEach(function (t) {
+          if (now - t.last >= t.ms) {
+            t.last = now;
+            try { t.fn(); } catch (e) { /* task errors never kill the loop */ }
+          }
+        });
+      }
+      setInterval(function () {
+        if (document.hidden) return;
+        runDue(Date.now());
+      }, 5000);
+      document.addEventListener('visibilitychange', function () {
+        if (!document.hidden) runDue(Date.now());
+      });
+      return {
+        register: function (name, fn, intervalMs) {
+          tasks.push({ name: name, fn: fn, ms: intervalMs, last: Date.now() });
+        },
+        _tasks: tasks
+      };
+    })();
+
   // ============================================
   // LIVE MARKET TAB — Binance API Integration
   // ============================================
@@ -4190,7 +4245,7 @@
   async function fetchBinanceData() {
     try {
       const [ticker24, klines1h, klines4h, klines15m, klines5m, klines1m] = await Promise.all([
-        fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT').then(r => { if(!r.ok) throw new Error('Binance unavailable'); return r.json(); }),
+        fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT').then(r => { if(!r.ok) throw new Error('Binance unavailable'); return r.json(); }).then(t => { window.__btcTickerCache = { t: Date.now(), data: t }; return t; }),
         fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=48').then(r => r.json()),
         fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=20').then(r => r.json()),
         fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=16').then(r => r.json()),
@@ -5094,12 +5149,12 @@
     // fetchBinanceData() always has candles ready when Binance is blocked.
     Promise.all([loadKeyLevelsArtifact(), loadDerivativesArtifact(), loadCandleArtifacts()])
       .then(function () { fetchBinanceData(); });
-    setInterval(fetchBinanceData, 30000);
+    BTCPoll.register('live-market', fetchBinanceData, 30000);
     // Refresh the static artifacts on a slower cadence — they update at
     // backend cycle frequency, not every 30s.
-    setInterval(loadKeyLevelsArtifact, 5 * 60 * 1000);
-    setInterval(loadDerivativesArtifact, 5 * 60 * 1000);
-    setInterval(loadCandleArtifacts,    5 * 60 * 1000);
+    BTCPoll.register('kl-artifact', loadKeyLevelsArtifact, 5 * 60 * 1000);
+    BTCPoll.register('deriv-artifact', loadDerivativesArtifact, 5 * 60 * 1000);
+    BTCPoll.register('candle-artifacts', loadCandleArtifacts, 5 * 60 * 1000);
   }
   if (document.getElementById('live-funding')) {
     // Make sure the derivatives artifact is loaded BEFORE the first
@@ -5107,7 +5162,7 @@
     // races the artifact loader and the catch-block fallback sees a
     // null window.__btcDerivatives, blanking the panel.
     loadDerivativesArtifact().then(function () { fetchDerivativesData(); });
-    setInterval(fetchDerivativesData, 60000);
+    BTCPoll.register('derivatives', fetchDerivativesData, 60000);
   }
   if (document.getElementById('iq-matrices')) {
     renderIQSystem();
@@ -5308,8 +5363,6 @@
     window._btcBrainBuildNode = buildNode;
     window._btcBrainBuildConnection = buildConnection;
     startLoop();
-    updateActiveCount();
-    setInterval(updateActiveCount, 2500);
   }
 
   // ── Scene builders ────────────────────────────────────────
@@ -5560,6 +5613,24 @@
     // Also try immediately if already visible
     var rect = section.getBoundingClientRect();
     if (rect.top < window.innerHeight) initNeural();
+    // Scroll-based fallback (2026-08-11): IntersectionObserver delivery
+    // proved unreliable in at least one embedded-browser environment, and
+    // since the head <script> tags were removed this observer is the ONLY
+    // path to loading three.js. A throttled scroll check guarantees the
+    // 3D still initializes wherever scrolling works at all.
+    var _lastCheck = 0;
+    function _scrollFallback() {
+      if (initialized) { window.removeEventListener('scroll', _scrollFallback); return; }
+      var now = Date.now();
+      if (now - _lastCheck < 500) return;
+      _lastCheck = now;
+      var r = section.getBoundingClientRect();
+      if (r.top < window.innerHeight * 1.5 && r.bottom > 0) {
+        window.removeEventListener('scroll', _scrollFallback);
+        initNeural();
+      }
+    }
+    window.addEventListener('scroll', _scrollFallback, { passive: true });
   }
 
   if (document.readyState === 'loading') {
@@ -5638,7 +5709,8 @@
 
   if (document.readyState === 'loading') { document.addEventListener('DOMContentLoaded', load); }
   else { load(); }
-  setInterval(load, 5 * 60 * 1000);
+  if (window.BTCPoll) BTCPoll.register('ledger-feed', load, 5 * 60 * 1000);
+  else setInterval(load, 5 * 60 * 1000);
 })();
 
 // ── Dynamic IQ Growth Engine ─────────────────────────────────
@@ -5739,6 +5811,13 @@
   }
 
   function updateAwarenessScore() {
+    var C = window.__btcTickerCache;
+    if (C && Date.now() - C.t < 25000) {
+      // The live-market poller fetched this ticker seconds ago — reuse it
+      // instead of issuing a duplicate request.
+      renderAwareness(computeAwareness(C.data), C.data);
+      return;
+    }
     fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT', { cache: 'no-store' })
       .then(function(r){ if (!r.ok) throw new Error('ticker unavailable'); return r.json(); })
       .then(function(ticker) {
@@ -5787,14 +5866,15 @@
     if (ts) ts.textContent = 'Updated ' + new Date().toLocaleTimeString();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', function(){
-      updateAwarenessScore();
-      setInterval(updateAwarenessScore, 45000);
-    });
-  } else {
+  function _startAwareness() {
     updateAwarenessScore();
-    setInterval(updateAwarenessScore, 45000);
+    if (window.BTCPoll) BTCPoll.register('awareness', updateAwarenessScore, 45000);
+    else setInterval(updateAwarenessScore, 45000);
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _startAwareness);
+  } else {
+    _startAwareness();
   }
 })();
 
@@ -6385,9 +6465,11 @@
     fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=50')
       .then(function(r){ return r.json(); })
       .then(function(klines) {
-        fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT')
-          .then(function(r){ return r.json(); })
-          .then(function(ticker){ learningTick(analyzeTrend(_closedOnly(klines)), ticker); });
+        var C = window.__btcTickerCache;
+        var tickerP = (C && Date.now() - C.t < 25000)
+          ? Promise.resolve(C.data)
+          : fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT').then(function(r){ return r.json(); });
+        tickerP.then(function(ticker){ learningTick(analyzeTrend(_closedOnly(klines)), ticker); });
       })
       .catch(function(){ learningTick(null, null); });
   }
@@ -6410,14 +6492,18 @@
     window._btcBrainSIIE = { mem: MEM, computeIQ: computeIQ, modules: MODS, reset: function(){ localStorage.removeItem(MEM_KEY); location.reload(); } };
 
     standaloneTick();
-    setInterval(standaloneTick, 33000);
+    if (window.BTCPoll) BTCPoll.register('siie-tick', standaloneTick, 33000);
+    else setInterval(standaloneTick, 33000);
 
-    // Accumulate uptime every 5 minutes
-    setInterval(function() {
+    // Accumulate uptime every 5 minutes — scheduler-driven, so "tab
+    // uptime" now honestly counts only VISIBLE time.
+    var _uptick = function() {
       MEM.total_uptime_min = (MEM.total_uptime_min || 0) + 5;
       updateDOM();
       saveMem();
-    }, 300000);
+    };
+    if (window.BTCPoll) BTCPoll.register('siie-uptime', _uptick, 300000);
+    else setInterval(_uptick, 300000);
   }
 
   if (document.readyState === 'loading') {
@@ -6951,7 +7037,10 @@
     var p15 = fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=40').then(function(r){return r.json();}).catch(function(){return null;});
     var p1h = fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=60').then(function(r){return r.json();}).catch(function(){return null;});
     var p4h = fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=30').then(function(r){return r.json();}).catch(function(){return null;});
-    var ptk = fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT').then(function(r){return r.json();}).catch(function(){return null;});
+    var _tc = window.__btcTickerCache;
+    var ptk = (_tc && Date.now() - _tc.t < 25000)
+      ? Promise.resolve(_tc.data)
+      : fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT').then(function(r){return r.json();}).catch(function(){return null;});
     Promise.all([p15,p1h,p4h,ptk,fg]).then(function(r){ v2Tick(r[0],r[1],r[2],r[3],r[4]); }).catch(function(){ v2Tick(null,null,null,null,null); });
   }
 
@@ -6988,7 +7077,8 @@
     window._btcBrainSIIEv2 = { mem:V2MEM, spawn:spawnModule, rules:SPAWN_RULES };
 
     fetchAll();
-    setInterval(fetchAll, 35000);
+    if (window.BTCPoll) BTCPoll.register('siie-v2', fetchAll, 35000);
+    else setInterval(fetchAll, 35000);
   }
 
   // Wait for SIIE v1 and Three.js to initialize, then boot

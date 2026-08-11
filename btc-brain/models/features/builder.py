@@ -34,7 +34,13 @@ import math
 from dataclasses import dataclass, field
 from typing import Iterable, Optional
 
-FEATURES_VERSION = "phase3-features-v0.1.0"
+# v0.2.0 (2026-08-11): added the edge-carrying causal features the live
+# ledger identified — SMA24/SMA72 relative distance (the |rel|<0.5% band is
+# the only monthly-stable measured edge), a down-confirmation flag, longer
+# trailing returns, and calendar encodings (weekend/hour — Saturday up-drift
+# and hour-of-day effects are measured in the ledger). All trailing-window
+# causal; no column at row i reads any bar past i.
+FEATURES_VERSION = "phase3-features-v0.2.0"
 
 
 @dataclass
@@ -136,6 +142,34 @@ def _realized_vol(log_returns: list[float], window: int) -> list[float]:
     return out
 
 
+def _trailing_sma(values: list[float], window: int) -> list[float]:
+    """Trailing simple moving average including the current bar.
+
+    For i < window-1 the mean of the available prefix is used (causal —
+    only bars 0..i are read). Output length == input.
+    """
+    out: list[float] = []
+    acc = 0.0
+    for i, v in enumerate(values):
+        acc += v
+        if i >= window:
+            acc -= values[i - window]
+        n = min(i + 1, window)
+        out.append(acc / n if n else 0.0)
+    return out
+
+
+def _trailing_log_return(closes: list[float], lag: int) -> list[float]:
+    """log(close_t / close_{t-lag}); 0.0 while t < lag or on bad prices."""
+    out = [0.0] * len(closes)
+    for i in range(lag, len(closes)):
+        prev = closes[i - lag]
+        cur = closes[i]
+        if prev > 0 and cur > 0:
+            out[i] = math.log(cur / prev)
+    return out
+
+
 def _volume_ratio(volumes: list[float], window: int) -> list[float]:
     """Current volume / SMA(volumes, window). Missing volume becomes 0."""
     out = [1.0] * len(volumes)
@@ -204,6 +238,38 @@ def build_features(
     ema_dist = [
         (closes[i] - ema[i]) / ema[i] if ema[i] > 0 else 0.0 for i in range(n)
     ]
+
+    # v0.2.0 edge-carrying features (all trailing/causal).
+    sma24 = _trailing_sma(closes, 24)
+    sma72 = _trailing_sma(closes, 72)
+    sma24_rel = [
+        (closes[i] - sma24[i]) / sma24[i] if sma24[i] > 0 else 0.0
+        for i in range(n)
+    ]
+    sma72_rel = [
+        (closes[i] - sma72[i]) / sma72[i] if sma72[i] > 0 else 0.0
+        for i in range(n)
+    ]
+    down_confirmed = [
+        1.0 if (sma24_rel[i] < 0.0 and sma72_rel[i] < 0.0) else 0.0
+        for i in range(n)
+    ]
+    ret_4h = _trailing_log_return(closes, 4)
+    ret_24h = _trailing_log_return(closes, 24)
+
+    # Calendar encodings from the bar's open time (UTC). Cyclic sin/cos so
+    # hour 23 sits next to hour 0.
+    hour_sin, hour_cos, dow_sin, dow_cos, is_weekend = [], [], [], [], []
+    for t_ms in open_time_ms:
+        secs = t_ms / 1000.0
+        hour = (secs // 3600.0) % 24.0
+        # Unix epoch (1970-01-01) was a Thursday → dow 0=Mon offset by 3.
+        day = (secs // 86400.0 + 3.0) % 7.0
+        hour_sin.append(math.sin(2.0 * math.pi * hour / 24.0))
+        hour_cos.append(math.cos(2.0 * math.pi * hour / 24.0))
+        dow_sin.append(math.sin(2.0 * math.pi * day / 7.0))
+        dow_cos.append(math.cos(2.0 * math.pi * day / 7.0))
+        is_weekend.append(1.0 if day >= 5.0 else 0.0)
 
     # Optional aligned series: pad with None to match n.
     def _align(series: Optional[list], default=None) -> list:
@@ -282,7 +348,20 @@ def build_features(
         "fear_greed_present",
         "source_freshness_log",
         "source_freshness_present",
-    ] + [f"regime_{r}" for r in REGIME_ONEHOT]
+    ] + [f"regime_{r}" for r in REGIME_ONEHOT] + [
+        # v0.2.0 additions — appended after the regime one-hots so existing
+        # column indices stay stable for any positional consumer.
+        "sma24_rel",
+        "sma72_rel",
+        "down_confirmed",
+        "ret_4h",
+        "ret_24h",
+        "hour_sin",
+        "hour_cos",
+        "dow_sin",
+        "dow_cos",
+        "is_weekend",
+    ]
 
     X: list[list[float]] = []
     for i in range(n):
@@ -300,7 +379,18 @@ def build_features(
             fng_present[i],
             fresh_secs[i],
             fresh_present[i],
-        ] + [regime_cols[r][i] for r in REGIME_ONEHOT]
+        ] + [regime_cols[r][i] for r in REGIME_ONEHOT] + [
+            sma24_rel[i],
+            sma72_rel[i],
+            down_confirmed[i],
+            ret_4h[i],
+            ret_24h[i],
+            hour_sin[i],
+            hour_cos[i],
+            dow_sin[i],
+            dow_cos[i],
+            is_weekend[i],
+        ]
         X.append(row)
 
     return FeatureFrame(

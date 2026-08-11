@@ -1,0 +1,30 @@
+{
+  "candidate_model": null,
+  "evidence": {
+    "baseline_briers": {
+      "last_direction": 0.2531713780918728,
+      "majority": 0.2500299506420197,
+      "mean_reversion": 0.25035361497925007,
+      "momentum": 0.2511306660417933,
+      "random": 0.3387039872163311,
+      "siie_lite": 0.25675412836403816,
+      "sma24_rule": 0.25251766784452295
+    },
+    "best_baseline_brier": 0.2500299506420197,
+    "expectancy_maker_2bps": -7.035048467527198,
+    "logistic_brier": 0.254116479872757,
+    "logistic_hit": 0.4846289752650177,
+    "pooled_majority_rate": 0.515017667844523,
+    "vs_majority_pp": -0.030388692579505272,
+    "wilson_lb_95": 0.47542935574189077
+  },
+  "generated_at": "2026-08-11T03:52:41Z",
+  "horizon": "24h",
+  "reasons": [
+    "hit 0.4846289752650177 does not beat pooled majority 0.515017667844523",
+    "brier 0.254116479872757 not <= best baseline brier 0.2500299506420197"
+  ],
+  "rule": "logistic@24h selected iff pooled OOS hit > pooled OOS majority rate AND pooled OOS Brier <= best baseline Brier on 24h; hyperparameters fixed in code; no search",
+  "schema_version": "phase3-selection-v1",
+  "selected": false
+}

@@ -36,11 +36,16 @@ HORIZON_DELTA = {
 }
 
 # Map our model horizon strings to the ledger's allowed horizon strings.
+# Fixed 2026-08-11: the old mapping sent 12h→"1d" and 24h→"1d" ("ledger does
+# not allow 12h" was stale — ledger.py HORIZONS includes 12h and 24h, and the
+# live ledger holds hundreds of 12h rows). Worse, target_time used the TRUE
+# 12h/24h delta while the row said "1d", so any appended shadow rows would
+# have polluted the 1d accuracy bucket with mixed-window outcomes.
 LEDGER_HORIZON = {
     "1h": "1h",
     "4h": "4h",
-    "12h": "1d",   # ledger does not allow 12h; we shadow-resolve at 1d.
-    "24h": "1d",
+    "12h": "12h",
+    "24h": "24h",
 }
 
 

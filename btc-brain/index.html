@@ -4,8 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BTC Intelligence Brain — Loopholemaxing</title>
-  <meta name="description" content="12-chapter deep research system covering Bitcoin cycles, on-chain metrics, technicals, sentiment, macro correlations, and trading frameworks.">
+  <meta name="description" content="A live Bitcoin forecast ledger with measured, public accuracy — every forecast published before resolution and scored automatically — plus a 15-chapter Bitcoin education library covering cycles, on-chain metrics, technicals, sentiment, macro, and risk.">
   <link rel="canonical" href="https://loopholemaxing.com/btc-brain/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://loopholemaxing.com/btc-brain/">
+  <meta property="og:title" content="BTC Intelligence Brain — a Bitcoin forecast ledger that shows its losses">
+  <meta property="og:description" content="Live market intelligence, a measured forecast scoreboard with every guess on the record, and a 15-chapter Bitcoin education library. Educational research — not financial advice.">
+  <meta property="og:image" content="https://loopholemaxing.com/btc-brain/charts/10-cycle-dashboard.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="BTC Intelligence Brain — a Bitcoin forecast ledger that shows its losses">
+  <meta name="twitter:description" content="Every forecast published before resolution, resolved automatically, scored in public — plus 15 chapters of Bitcoin education.">
+  <meta name="twitter:image" content="https://loopholemaxing.com/btc-brain/charts/10-cycle-dashboard.png">
 
   <!-- Entity wiring. This page had neither a canonical nor any structured
        data until 2026-07-28, so it sat in the sitemap contributing nothing
@@ -196,6 +205,30 @@
     .sidebar-back:hover {
       color: var(--accent-cyan);
     }
+
+    /* Collapsible chapters group */
+    .sidebar-group {
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-top: var(--space-sm);
+      padding-bottom: 2px;
+    }
+    .sidebar-group-summary {
+      cursor: pointer;
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      user-select: none;
+      padding-right: var(--space-md);
+    }
+    .sidebar-group-summary::-webkit-details-marker { display: none; }
+    .sidebar-group-summary:hover { color: var(--text-secondary); }
+    .sidebar-group-caret {
+      font-size: 10px;
+      transition: transform var(--transition-fast);
+    }
+    .sidebar-group[open] .sidebar-group-caret { transform: rotate(180deg); }
 
     /* Main Content */
     .main-content {
@@ -708,6 +741,12 @@
       .brain-header-right {
         display: none;
       }
+
+      /* Inline-styled grids and the footer never collapsed on mobile. */
+      .site-footer { margin-left: 0 !important; }
+      .main-content [style*="grid-template-columns"] {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)) !important;
+      }
     }
 
     @media (max-width: 480px) {
@@ -731,18 +770,20 @@
   <header class="brain-header">
     <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">☰</button>
     <a href="/" class="logo">Loopholemaxing</a>
-    <span class="brain-header-title">BTC Intelligence Brain</span>
-    <span class="brain-header-right">April 2026</span>
+    <h1 class="brain-header-title" style="margin:0;">BTC Intelligence Brain</h1>
+    <span class="brain-header-right" id="header-ledger-stat">Live ledger</span>
   </header>
 
   <!-- Public Disclaimer Banner -->
   <div id="public-disclaimer" role="note" aria-label="Disclaimer" style="background:#1a1206;border-bottom:1px solid #3a2a0a;color:#f0c674;padding:10px 18px;font-size:12px;line-height:1.5;text-align:center;">
     <strong style="color:#f7931a;">Educational research — not financial advice.</strong>
-    Accuracy, confidence, IQ, and analog-match figures shown on this page are
-    <em>experimental, illustrative, and not yet ledger-backed</em>. Any prediction
-    statistics computed in your browser reflect a local sandbox only and are
-    <em>not</em> a measurement of global model performance. Do not trade or
-    allocate capital based on anything shown here.
+    The <a href="#scoreboard" style="color:#f0c674;">Forecast Scoreboard</a> and
+    <a href="#trust-layer" style="color:#f0c674;">Trust &amp; Transparency</a> sections show
+    <em>measured, ledger-backed</em> accuracy — every forecast is published before its outcome
+    is known and scored automatically, losses included. Everything else (research chapters,
+    coverage scores, analog matches, browser-local counters) is <em>editorial context or a
+    local sandbox, not a measurement</em>. Do not trade or allocate capital based on anything
+    shown here.
   </div>
 
   <!-- Phase 2: Source Health Banner (rendered only if artifact loads) -->
@@ -778,954 +819,44 @@
 
   <!-- Sidebar Navigation -->
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-section-label">Chapters</div>
-    <ul class="sidebar-nav" id="sidebarNav">
-      <li><a href="#ch01"><span class="chapter-num">01</span> Fundamentals</a></li>
-      <li><a href="#ch02"><span class="chapter-num">02</span> Price History</a></li>
-      <li><a href="#ch03"><span class="chapter-num">03</span> Halving Cycles</a></li>
-      <li><a href="#ch04"><span class="chapter-num">04</span> Bull & Bear Markets</a></li>
-      <li><a href="#ch05"><span class="chapter-num">05</span> Technical Analysis</a></li>
-      <li><a href="#ch06"><span class="chapter-num">06</span> On-Chain Metrics</a></li>
-      <li><a href="#ch07"><span class="chapter-num">07</span> Sentiment</a></li>
-      <li><a href="#ch08"><span class="chapter-num">08</span> Macro Correlations</a></li>
-      <li><a href="#ch09"><span class="chapter-num">09</span> Black Swans</a></li>
-      <li><a href="#ch10"><span class="chapter-num">10</span> Trading Strategies</a></li>
-      <li><a href="#ch11"><span class="chapter-num">11</span> Risk Management</a></li>
-      <li><a href="#ch12"><span class="chapter-num">12</span> Current Assessment</a></li>
-      <li><a href="#ch13"><span class="chapter-num">13</span> Derivatives & OI</a></li>
-      <li><a href="#ch14"><span class="chapter-num">14</span> Lightning Network</a></li>
-  <li><a href="#ch15"><span class="chapter-num">15</span> Prediction Framework</a></li>
-    </ul>
-    <div class="sidebar-section-label" style="margin-top:16px;">Live Intelligence</div>
+    <div class="sidebar-section-label">Live Intelligence</div>
     <ul class="sidebar-nav">
-      <li><a href="#live-market"><span class="chapter-num" style="color:#3fb950;">◉</span> Live Market</a></li>
-  <li><a href="#neural-brain"><span class="chapter-num" style="color:#d2a8ff;">◈</span> Neural Brain</a></li>
-      <li><a href="#iq-system"><span class="chapter-num" style="color:#d2a8ff;">◈</span> IQ System</a></li>
-      <li><a href="#trust-layer"><span class="chapter-num" style="color:#f7931a;">◆</span> Trust &amp; Transparency</a></li>
+      <li><a href="#live-market"><span class="chapter-num" style="color:#3fb950;">&#9673;</span> Live Market</a></li>
+      <li><a href="#scoreboard"><span class="chapter-num" style="color:#f7931a;">&#9678;</span> Forecast Scoreboard</a></li>
+      <li><a href="#trust-layer"><span class="chapter-num" style="color:#f7931a;">&#9670;</span> Trust &amp; Transparency</a></li>
+      <li><a href="#neural-brain"><span class="chapter-num" style="color:#d2a8ff;">&#9672;</span> Neural Brain</a></li>
+      <li><a href="#iq-system"><span class="chapter-num" style="color:#d2a8ff;">&#9672;</span> Coverage System</a></li>
     </ul>
+    <details class="sidebar-group" id="chaptersGroup">
+      <summary class="sidebar-section-label sidebar-group-summary">Learn Bitcoin &mdash; 15 Chapters <span class="sidebar-group-caret">&#9662;</span></summary>
+      <ul class="sidebar-nav" id="sidebarNav">
+        <li><a href="#ch01"><span class="chapter-num">01</span> Fundamentals</a></li>
+        <li><a href="#ch02"><span class="chapter-num">02</span> Price History</a></li>
+        <li><a href="#ch03"><span class="chapter-num">03</span> Halving Cycles</a></li>
+        <li><a href="#ch04"><span class="chapter-num">04</span> Bull &amp; Bear Markets</a></li>
+        <li><a href="#ch05"><span class="chapter-num">05</span> Technical Analysis</a></li>
+        <li><a href="#ch06"><span class="chapter-num">06</span> On-Chain Metrics</a></li>
+        <li><a href="#ch07"><span class="chapter-num">07</span> Sentiment</a></li>
+        <li><a href="#ch08"><span class="chapter-num">08</span> Macro Correlations</a></li>
+        <li><a href="#ch09"><span class="chapter-num">09</span> Black Swans</a></li>
+        <li><a href="#ch10"><span class="chapter-num">10</span> Trading Strategies</a></li>
+        <li><a href="#ch11"><span class="chapter-num">11</span> Risk Management</a></li>
+        <li><a href="#ch12"><span class="chapter-num">12</span> Current Assessment</a></li>
+        <li><a href="#ch13"><span class="chapter-num">13</span> Derivatives &amp; OI</a></li>
+        <li><a href="#ch14"><span class="chapter-num">14</span> Lightning Network</a></li>
+        <li><a href="#ch15"><span class="chapter-num">15</span> Prediction Framework</a></li>
+      </ul>
+    </details>
     <div class="sidebar-section-label">Reference</div>
     <ul class="sidebar-nav">
-      <li><a href="#appendices"><span class="chapter-num">—</span> Appendices</a></li>
+      <li><a href="#appendices"><span class="chapter-num">&mdash;</span> Appendices</a></li>
+      <li><a href="research/index.html"><span class="chapter-num">&rarr;</span> Research Library</a></li>
     </ul>
-    <a href="/" class="sidebar-back">← Back to Home</a>
+    <a href="/" class="sidebar-back">&larr; Back to Home</a>
   </aside>
 
   <!-- Main Content -->
   <main class="main-content">
-
-    <!-- ===== CH 01: FUNDAMENTALS ===== -->
-    <section class="chapter" id="ch01">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 01</div>
-        <h2 class="chapter-title">Fundamentals</h2>
-        <p class="chapter-desc">Core protocol parameters and network statistics.</p>
-      </div>
-      <div class="metric-grid">
-        <div class="metric-card">
-          <div class="metric-label">Max Supply</div>
-          <div class="metric-value">21M</div>
-          <div class="metric-sub">Hard cap</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Consensus</div>
-          <div class="metric-value">PoW</div>
-          <div class="metric-sub">SHA-256</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Block Time</div>
-          <div class="metric-value">~10 min</div>
-          <div class="metric-sub">Target avg</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Current Reward</div>
-          <div class="metric-value highlight">3.125</div>
-          <div class="metric-sub">BTC per block</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Halving Interval</div>
-          <div class="metric-value">210,000</div>
-          <div class="metric-sub">Blocks</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Circulating</div>
-          <div class="metric-value">~19.85M</div>
-          <div class="metric-sub">94.5% mined</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Full Nodes</div>
-          <div class="metric-value">~18,000+</div>
-          <div class="metric-sub">Global network</div>
-        </div>
-        <div class="metric-card">
-          <div class="metric-label">Genesis Block</div>
-          <div class="metric-value" style="font-size:14px;">Jan 3, 2009</div>
-          <div class="metric-sub">Block 0</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== CH 02: PRICE HISTORY ===== -->
-    
-<section class="chapter" id="ch02">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 02</div>
-        <h2 class="chapter-title">Price History</h2>
-        <p class="chapter-desc">Bitcoin price evolution and annual return analysis.</p>
-      </div>
-      <img src="charts/01-btc-price-history-log.png" alt="BTC Price History (Log Scale)" class="chart-img">
-      <img src="charts/09-annual-returns.png" alt="BTC Annual Returns" class="chart-img">
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Yearly Returns (2014–2026)</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Year</th><th>Return</th><th>Year</th><th>Return</th><th>Year</th><th>Return</th></tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>2014</td><td class="negative">-58%</td>
-              <td>2019</td><td class="positive">+95%</td>
-              <td>2024</td><td class="positive">+121%</td>
-            </tr>
-            <tr>
-              <td>2015</td><td class="positive">+35%</td>
-              <td>2020</td><td class="positive">+305%</td>
-              <td>2025</td><td class="positive">+5%</td>
-            </tr>
-            <tr>
-              <td>2016</td><td class="positive">+125%</td>
-              <td>2021</td><td class="positive">+60%</td>
-              <td>2026 YTD</td><td class="negative">-23%</td>
-            </tr>
-            <tr>
-              <td>2017</td><td class="positive">+1,369%</td>
-              <td>2022</td><td class="negative">-64%</td>
-              <td></td><td></td>
-            </tr>
-            <tr>
-              <td>2018</td><td class="negative">-73%</td>
-              <td>2023</td><td class="positive">+155%</td>
-              <td></td><td></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ===== CH 03: HALVING CYCLES ===== -->
-    
-<section class="chapter" id="ch03">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 03</div>
-        <h2 class="chapter-title">Halving Cycles</h2>
-        <p class="chapter-desc">Complete halving cycle framework across all four Bitcoin epochs.</p>
-      </div>
-      <img src="charts/02-halving-cycle-comparison.png" alt="Halving Cycle Comparison" class="chart-img">
-      <img src="charts/08-cycle-overlay.png" alt="Cycle Overlay" class="chart-img">
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Halving Data Across All Epochs</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Halving</th><th>Date</th><th>Block Reward</th><th>Price at Halving</th><th>Cycle Peak</th><th>Peak Date</th><th>Days to Peak</th><th>Gain %</th><th>Drawdown %</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1st</td><td>Nov 28, 2012</td><td>50→25 BTC</td><td class="highlight">$12</td><td class="positive">$1,163</td><td>Nov 29, 2013</td><td>367</td><td class="positive">9,575%</td><td class="negative">-85%</td>
-            </tr>
-            <tr>
-              <td>2nd</td><td>Jul 9, 2016</td><td>25→12.5 BTC</td><td class="highlight">$650</td><td class="positive">$19,783</td><td>Dec 17, 2017</td><td>526</td><td class="positive">2,943%</td><td class="negative">-84%</td>
-            </tr>
-            <tr>
-              <td>3rd</td><td>May 11, 2020</td><td>12.5→6.25 BTC</td><td class="highlight">$8,600</td><td class="positive">$68,789</td><td>Nov 10, 2021</td><td>547</td><td class="positive">700%</td><td class="negative">-77%</td>
-            </tr>
-            <tr>
-              <td>4th</td><td>Apr 19, 2024</td><td>6.25→3.125 BTC</td><td class="highlight">$64,000</td><td class="positive">$126,296</td><td>Oct 6, 2025</td><td>548</td><td class="positive">715%</td><td class="warning">-53%*</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <p style="font-size: 12px; color: var(--text-muted); margin-top: var(--space-sm);">*ongoing — drawdown may deepen</p>
-    </section>
-
-    <!-- ===== CH 04: BULL & BEAR MARKETS ===== -->
-    
-<section class="chapter" id="ch04">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 04</div>
-        <h2 class="chapter-title">Bull &amp; Bear Markets</h2>
-        <p class="chapter-desc">Historical bear market analysis and structural patterns.</p>
-      </div>
-      <img src="charts/04-drawdown-history.png" alt="Drawdown History" class="chart-img">
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Major Bear Markets</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Bear Market</th><th>Start</th><th>End</th><th>Duration</th><th>Drawdown</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>2014–2015</td><td>Dec 2013</td><td>Jan 2015</td><td>410 days</td><td class="negative">-85%</td></tr>
-            <tr><td>2018</td><td>Dec 2017</td><td>Dec 2018</td><td>364 days</td><td class="negative">-84%</td></tr>
-            <tr><td>2022</td><td>Nov 2021</td><td>Nov 2022</td><td>371 days</td><td class="negative">-77%</td></tr>
-            <tr><td>2025–26</td><td>Oct 2025</td><td>Ongoing</td><td>182+ days</td><td class="warning">-53%</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ===== CH 05: TECHNICAL ANALYSIS ===== -->
-    
-<section class="chapter" id="ch05">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 05</div>
-        <h2 class="chapter-title">Technical Analysis</h2>
-        <p class="chapter-desc">Pattern reliability, moving averages, and key technical frameworks.</p>
-      </div>
-      <img src="charts/05-moving-averages.png" alt="Moving Averages" class="chart-img">
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Pattern Reliability on BTC</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Pattern</th><th>BTC Win Rate</th><th>Notes</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Head &amp; Shoulders</td><td class="neutral">63%</td><td>Reliable at macro tops</td></tr>
-            <tr><td>Double Bottom</td><td class="positive">72%</td><td>Strong at cycle lows</td></tr>
-            <tr><td>Bull Flag</td><td class="neutral">67%</td><td>Works in confirmed uptrends</td></tr>
-            <tr><td>Ascending Triangle</td><td class="neutral">65%</td><td>Breakout above resistance</td></tr>
-            <tr><td>Falling Wedge</td><td class="neutral">68%</td><td>Bullish reversal pattern</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout warning">
-        <strong>Death Cross Warning:</strong> BTC death crosses are NOT reliably bearish — only 36% accurate at a 1-year horizon. Most are buying opportunities.
-      </div>
-    </section>
-
-    <!-- ===== CH 06: ON-CHAIN METRICS ===== -->
-    
-<section class="chapter" id="ch06">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 06</div>
-        <h2 class="chapter-title">On-Chain Metrics</h2>
-        <p class="chapter-desc">Key blockchain-native valuation indicators and their zone frameworks.</p>
-      </div>
-
-      <div class="zone-card">
-        <h4>MVRV Ratio <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Market Value to Realized Value)</span></h4>
-        <div class="zone-bar">
-          <span style="background: var(--green);"></span>
-          <span style="background: var(--text-secondary);"></span>
-          <span style="background: var(--accent-orange);"></span>
-          <span style="background: var(--red);"></span>
-        </div>
-        <div class="zone-levels">
-          <span class="zone-level"><span class="positive">●</span> Below 1.0 — Undervalued</span>
-          <span class="zone-level">1.0–2.5 — Fair Value</span>
-          <span class="zone-level"><span class="warning">●</span> 2.5–3.5 — Overvalued</span>
-          <span class="zone-level"><span class="negative">●</span> Above 3.5 — Euphoria</span>
-        </div>
-      </div>
-
-      <div class="zone-card">
-        <h4>NUPL <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Net Unrealized Profit/Loss)</span></h4>
-        <div class="zone-bar">
-          <span style="background: var(--red);"></span>
-          <span style="background: var(--accent-orange);"></span>
-          <span style="background: var(--yellow);"></span>
-          <span style="background: var(--green);"></span>
-          <span style="background: var(--accent-blue);"></span>
-        </div>
-        <div class="zone-levels">
-          <span class="zone-level"><span class="negative">●</span> &lt;0 — Capitulation</span>
-          <span class="zone-level"><span class="warning">●</span> 0–0.25 — Hope</span>
-          <span class="zone-level"><span class="highlight">●</span> 0.25–0.5 — Optimism</span>
-          <span class="zone-level"><span class="positive">●</span> 0.5–0.75 — Belief</span>
-          <span class="zone-level"><span class="blue">●</span> &gt;0.75 — Euphoria</span>
-        </div>
-      </div>
-
-      <div class="zone-card">
-        <h4>Puell Multiple</h4>
-        <div class="zone-bar">
-          <span style="background: var(--green);"></span>
-          <span style="background: var(--text-muted);"></span>
-          <span style="background: var(--red);"></span>
-        </div>
-        <div class="zone-levels">
-          <span class="zone-level"><span class="positive">●</span> Below 0.5 — Accumulate</span>
-          <span class="zone-level">0.5–1.5 — Normal</span>
-          <span class="zone-level"><span class="negative">●</span> Above 2.0 — Distribution</span>
-        </div>
-      </div>
-
-      <div class="zone-card">
-        <h4>Reserve Risk</h4>
-        <div class="zone-bar">
-          <span style="background: var(--green);"></span>
-          <span style="background: var(--text-muted);"></span>
-          <span style="background: var(--red);"></span>
-        </div>
-        <div class="zone-levels">
-          <span class="zone-level"><span class="positive">●</span> Below 0.002 — Accumulate</span>
-          <span class="zone-level"><span class="negative">●</span> Above 0.02 — Distribute</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== CH 07: SENTIMENT ===== -->
-    
-<section class="chapter" id="ch07">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 07</div>
-        <h2 class="chapter-title">Sentiment</h2>
-        <p class="chapter-desc">Fear & Greed Index extremes and their predictive power.</p>
-      </div>
-      <img src="charts/03-monthly-returns-heatmap.png" alt="Monthly Returns Heatmap" class="chart-img">
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Fear &amp; Greed Extremes — Historical Outcomes</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Date</th><th>Reading</th><th>Category</th><th>BTC Price</th><th>6-Month After</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>Mar 2020</td><td class="negative">8</td><td><span class="negative">Extreme Fear</span></td><td>$5,000</td><td class="positive">+232%</td></tr>
-            <tr><td>Jun 2022</td><td class="negative">6</td><td><span class="negative">Extreme Fear</span></td><td>$17,600</td><td class="positive">+38%</td></tr>
-            <tr><td>Feb 2026</td><td class="negative">5</td><td><span class="negative">Extreme Fear</span></td><td>$60,001</td><td class="neutral">TBD</td></tr>
-            <tr><td>Nov 2021</td><td class="positive">84</td><td><span class="positive">Extreme Greed</span></td><td>$69,000</td><td class="negative">-67%</td></tr>
-            <tr><td>Oct 2025</td><td class="positive">90</td><td><span class="positive">Extreme Greed</span></td><td>$126,000</td><td class="negative">-47%</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <!-- ===== CH 08: MACRO CORRELATIONS ===== -->
-    
-<section class="chapter" id="ch08">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 08</div>
-        <h2 class="chapter-title">Macro Correlations</h2>
-        <p class="chapter-desc">Cross-asset relationships, institutional flows, and ETF impact.</p>
-      </div>
-
-      <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Cross-Asset Correlation Matrix</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Asset</th><th>Bull Market Corr.</th><th>Bear Market Corr.</th><th>Notes</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>S&amp;P 500</td><td>0.40–0.70</td><td class="negative">0.60–0.87</td><td>Highest during risk-off</td></tr>
-            <tr><td>Nasdaq</td><td>0.50–0.80</td><td class="negative">0.70–0.87</td><td>Strongest tech correlation</td></tr>
-            <tr><td>Gold</td><td>0.10–0.40</td><td>-0.20–0.30</td><td>Diverged sharply in 2025</td></tr>
-            <tr><td>DXY</td><td class="negative">-0.30–(-0.60)</td><td class="negative">-0.40–(-0.70)</td><td>Inverse most of the time</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-top: var(--space-xl);">
-        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
-          <div class="metric-label">MicroStrategy Holdings</div>
-          <div class="metric-value highlight" style="font-size: 22px;">762,099 BTC</div>
-          <div class="metric-sub" style="margin-top: 8px;">$57.6B aggregate cost | $75,696 avg price</div>
-        </div>
-        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
-          <div class="metric-label">ETF Cumulative Flows</div>
-          <div class="metric-value positive" style="font-size: 22px;">$56.9B</div>
-          <div class="metric-sub" style="margin-top: 8px;">Since Jan 2024 spot ETF approval</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== CH 09: BLACK SWANS ===== -->
-    
-<section class="chapter" id="ch09">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 09</div>
-        <h2 class="chapter-title">Black Swan Events</h2>
-        <p class="chapter-desc">Critical disruption events and their market impact.</p>
-      </div>
-
-      <div class="event-timeline">
-        <div class="event-card">
-          <div class="event-date">2014</div>
-          <div class="event-body">
-            <h4>Mt. Gox Collapse</h4>
-            <p>850,000 BTC stolen from the world's largest exchange, exposing catastrophic custodial risk.</p>
-            <div class="event-impact negative">Price impact: -47%</div>
-          </div>
-        </div>
-        <div class="event-card">
-          <div class="event-date">Mar 2020</div>
-          <div class="event-body">
-            <h4>COVID Black Thursday</h4>
-            <p>Global liquidity crisis triggered a -53% crash in 24 hours, followed by a historic V-shaped recovery.</p>
-            <div class="event-impact negative">Price impact: -53% in 24h</div>
-          </div>
-        </div>
-        <div class="event-card">
-          <div class="event-date">May 2022</div>
-          <div class="event-body">
-            <h4>Terra/LUNA Death Spiral</h4>
-            <p>Algorithmic stablecoin UST depegged, destroying $60B in value and triggering cascading liquidations across DeFi.</p>
-            <div class="event-impact negative">Systemic contagion event</div>
-          </div>
-        </div>
-        <div class="event-card">
-          <div class="event-date">Nov 2022</div>
-          <div class="event-body">
-            <h4>FTX Collapse</h4>
-            <p>Exchange fraud exposed, leading to bankruptcy. BTC hit $15,476 cycle low — peak fear, peak opportunity.</p>
-            <div class="event-impact negative">Cycle low: $15,476</div>
-          </div>
-        </div>
-        <div class="event-card">
-          <div class="event-date">Mar 2023</div>
-          <div class="event-body">
-            <h4>SVB Banking Crisis</h4>
-            <p>Silicon Valley Bank failure sparked fears of systemic banking contagion. BTC rallied as safe-haven narrative validated.</p>
-            <div class="event-impact positive">BTC: +33% — safe haven signal</div>
-          </div>
-        </div>
-        <div class="event-card">
-          <div class="event-date">Jan 2024</div>
-          <div class="event-body">
-            <h4>Spot ETF Approval</h4>
-            <p>SEC approved 11 spot Bitcoin ETFs, opening historic institutional access and fundamentally changing the market structure.</p>
-            <div class="event-impact positive">$56.9B cumulative inflows</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== CH 10: TRADING STRATEGIES ===== -->
-    
-<section class="chapter" id="ch10">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 10</div>
-        <h2 class="chapter-title">Trading Strategies</h2>
-        <p class="chapter-desc">Backtested frameworks, volatility regimes, and composite indicator systems.</p>
-      </div>
-      <img src="charts/07-volatility-regimes.png" alt="Volatility Regimes" class="chart-img">
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Strategy Backtest Results</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Strategy</th><th>CAGR</th><th>Max DD</th><th>Win Rate</th><th>Notes</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>MACD Histogram</td><td class="positive">77.2%</td><td class="negative">-62%</td><td>—</td><td>Beats buy-hold</td></tr>
-            <tr><td>RSI Momentum</td><td class="positive">122%</td><td class="negative">-39%</td><td>—</td><td>Best risk-adjusted</td></tr>
-            <tr><td>BB Mean Reversion</td><td class="positive">49.7%</td><td>—</td><td>41%</td><td>Only 34% time in market</td></tr>
-            <tr><td>Fear-Based DCA</td><td class="positive">1,145% (total)</td><td>—</td><td>—</td><td>2018–2025 backtest</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="composite-card">
-        <h4>Composite Indicator Scoring System</h4>
-        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: var(--space-md);">7 indicators combined into a single score (0–100). Aggregate reading determines market regime.</p>
-        <div class="composite-bar">
-          <span class="zone-buy"></span>
-          <span class="zone-neutral"></span>
-          <span class="zone-sell"></span>
-        </div>
-        <div class="composite-labels">
-          <span class="positive">0–20: Buy Zone</span>
-          <span class="neutral">20–80: Neutral</span>
-          <span class="negative">80–100: Sell Zone</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== CH 11: RISK MANAGEMENT ===== -->
-    
-<section class="chapter" id="ch11">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 11</div>
-        <h2 class="chapter-title">Risk Management</h2>
-        <p class="chapter-desc">Position sizing frameworks, Kelly Criterion, and leverage mechanics.</p>
-      </div>
-
-      <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Position Sizing by Risk Profile</h3>
-      <div class="position-grid">
-        <div class="position-card">
-          <h4 class="positive">Conservative</h4>
-          <div class="position-range">1–5%</div>
-          <div class="metric-sub">of portfolio in BTC</div>
-        </div>
-        <div class="position-card">
-          <h4 class="highlight">Moderate</h4>
-          <div class="position-range">5–15%</div>
-          <div class="metric-sub">of portfolio in BTC</div>
-        </div>
-        <div class="position-card">
-          <h4 class="negative">Aggressive</h4>
-          <div class="position-range">15–30%</div>
-          <div class="metric-sub">of portfolio in BTC</div>
-        </div>
-      </div>
-
-      <div class="callout">
-        <strong>Kelly Criterion for BTC:</strong> Optimal allocation is 32.8%. In practice, use half-Kelly — <strong>16.4%</strong> — to account for estimation error and tail risk.
-      </div>
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Leverage Liquidation Table</h3>
-      <div class="table-wrap">
-        <table class="data-table">
-          <thead>
-            <tr><th>Leverage</th><th>Liquidation Drop</th></tr>
-          </thead>
-          <tbody>
-            <tr><td>2x</td><td class="warning">-50%</td></tr>
-            <tr><td>3x</td><td class="warning">-33%</td></tr>
-            <tr><td>5x</td><td class="negative">-20%</td></tr>
-            <tr><td>10x</td><td class="negative">-10%</td></tr>
-            <tr><td>25x</td><td class="negative">-4%</td></tr>
-            <tr><td>50x</td><td class="negative">-2%</td></tr>
-            <tr><td>100x</td><td class="negative">-1%</td></tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="callout danger">
-        <strong>Warning:</strong> Leverage above 10x in crypto is effectively gambling. BTC routinely sees 10–20% swings that will liquidate high-leverage positions.
-      </div>
-    </section>
-
-    <!-- ===== CH 12: CURRENT ASSESSMENT ===== -->
-    
-<section class="chapter" id="ch12">
-      <div class="chapter-header">
-        <div class="chapter-number">CHAPTER 12</div>
-        <h2 class="chapter-title">Current Assessment</h2>
-        <p class="chapter-desc">April 2026 — Market positioning, key levels, and outlook.</p>
-      </div>
-      <img src="charts/10-cycle-dashboard.png" alt="Cycle Dashboard" class="chart-img">
-      <img src="charts/06-volume-analysis.png" alt="Volume Analysis" class="chart-img">
-
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin: var(--space-xl) 0;">
-        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
-          <div class="metric-label">Current Price</div>
-          <div class="metric-value highlight" style="font-size: 28px;">$67,010</div>
-        </div>
-        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
-          <div class="metric-label">Market Phase</div>
-          <div class="metric-value negative" style="font-size: 16px; line-height: 1.3;">Distribution / Markdown</div>
-          <div class="metric-sub" style="margin-top: 6px;">5 consecutive red monthly candles</div>
-        </div>
-      </div>
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Key Price Levels</h3>
-      <div class="level-map">
-        <div class="level-item">
-          <span class="level-price positive">$126,296</span>
-          <span class="level-line"></span>
-          <span class="level-label">All-Time High</span>
-        </div>
-        <div class="level-item">
-          <span class="level-price neutral">$100,000</span>
-          <span class="level-line"></span>
-          <span class="level-label">Psychological Level</span>
-        </div>
-        <div class="level-item">
-          <span class="level-price blue">$89,365</span>
-          <span class="level-line"></span>
-          <span class="level-label">200-Day MA</span>
-        </div>
-        <div class="level-item">
-          <span class="level-price warning">$76,000</span>
-          <span class="level-line"></span>
-          <span class="level-label">Resistance</span>
-        </div>
-        <div class="level-item">
-          <span class="level-price" style="color: var(--text-secondary);">$68,600</span>
-          <span class="level-line"></span>
-          <span class="level-label">20/50 MA Convergence</span>
-        </div>
-        <div class="level-item current">
-          <span class="level-price">$67,010</span>
-          <span class="level-line" style="background: var(--accent-orange);"></span>
-          <span class="level-label" style="color: var(--accent-orange); font-weight: 700;">◄ CURRENT PRICE</span>
-        </div>
-        <div class="level-item">
-          <span class="level-price warning">$65,000</span>
-          <span class="level-line"></span>
-          <span class="level-label">Near Support</span>
-        </div>
-        <div class="level-item">
-          <span class="level-price negative">$60,001</span>
-          <span class="level-line"></span>
-          <span class="level-label">Cycle Low</span>
-        </div>
-      </div>
-
-      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Price Outlook</h3>
-      <div class="outlook-grid">
-        <div class="outlook-card">
-          <div class="outlook-timeframe">Short-Term (1 Week)</div>
-          <div class="outlook-range">$64,500 – $69,500</div>
-          <div class="outlook-base">Range-bound, low conviction</div>
-        </div>
-        <div class="outlook-card">
-          <div class="outlook-timeframe">Medium-Term (1 Month)</div>
-          <div class="outlook-range">$58,000 – $76,000</div>
-          <div class="outlook-base">Base case: $62K–$70K</div>
-        </div>
-        <div class="outlook-card">
-          <div class="outlook-timeframe">Long-Term (1 Year)</div>
-          <div class="outlook-range">$48,000 – $110,000</div>
-          <div class="outlook-base">Base case: $55K–$95K</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ===== APPENDICES ===== -->
-    
-<section class="chapter" id="ch13">
-  <div class="chapter-header">
-    <div class="chapter-number">CHAPTER 13</div>
-    <h2>Derivatives & Open Interest</h2>
-    <p class="chapter-desc">Perpetual futures, funding rates, open interest dynamics, options market intelligence, and liquidation cascade mechanics — the derivatives layer that amplifies every BTC cycle.</p>
-  </div>
-
-  <!-- DERIVATIVES OVERVIEW CARDS -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">OI Peak (Oct 2025)</div>
-      <div style="font-size:24px;font-weight:800;color:#f7931a;font-family:monospace;">$56.6B</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">All-time high leverage</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">OI Collapse</div>
-      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">-58%</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">$56.6B &rarr; $23.6B</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Largest Cascade</div>
-      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">$19.35B</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Oct 10, 2025 single day</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">CME Basis Peak</div>
-      <div style="font-size:24px;font-weight:800;color:#3fb950;font-family:monospace;">25%</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Annualized, pre-collapse</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Funding at ATH</div>
-      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">+0.10%</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Per 8h = 109% annualized</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Options Venue</div>
-      <div style="font-size:24px;font-weight:800;color:#d2a8ff;font-family:monospace;">90%</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Deribit market share</div>
-    </div>
-  </div>
-
-  <!-- FUNDING RATES -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Perpetual Funding Rate Intelligence</h3>
-  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:20px;">
-    <p style="font-size:13px;color:#8b949e;line-height:1.7;margin:0 0 16px;">Funding rates settle every 8 hours and represent the cost of holding a leveraged position. Extreme readings are among the most reliable cycle sentiment signals in BTC markets.</p>
-    <table style="width:100%;border-collapse:collapse;font-size:12px;">
-      <thead><tr style="border-bottom:1px solid #21262d;">
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Rate (8h)</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Annualized</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Signal</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Action</th>
-      </tr></thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#f85149;font-family:monospace;">+0.1% or higher</td><td style="padding:8px 12px;color:#f85149;font-family:monospace;">109%+</td><td style="padding:8px 12px;color:#f85149;">Extreme greed &mdash; leverage overheated</td><td style="padding:8px 12px;color:#e6edf3;">Reduce longs, watch for cascade</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#d29922;font-family:monospace;">+0.01% to +0.05%</td><td style="padding:8px 12px;color:#d29922;font-family:monospace;">11&ndash;55%</td><td style="padding:8px 12px;color:#d29922;">Elevated but manageable</td><td style="padding:8px 12px;color:#e6edf3;">Monitor, normal bull regime</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-family:monospace;">-0.001% to +0.01%</td><td style="padding:8px 12px;color:#3fb950;font-family:monospace;">-1% to 11%</td><td style="padding:8px 12px;color:#3fb950;">Neutral &mdash; healthy market</td><td style="padding:8px 12px;color:#e6edf3;">No signal, trend-follow</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#58a6ff;font-family:monospace;">-0.01% to -0.05%</td><td style="padding:8px 12px;color:#58a6ff;font-family:monospace;">-11% to -55%</td><td style="padding:8px 12px;color:#58a6ff;">Bearish leverage heavy &mdash; shorts piling in</td><td style="padding:8px 12px;color:#e6edf3;">Watch for short squeeze</td></tr>
-        <tr><td style="padding:8px 12px;color:#3fb950;font-family:monospace;font-weight:700;">Below -0.05%</td><td style="padding:8px 12px;color:#3fb950;font-family:monospace;font-weight:700;">-55%+</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">Extreme fear &mdash; capitulation signal</td><td style="padding:8px 12px;color:#e6edf3;">High-probability accumulation zone</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- OPEN INTEREST ANALYSIS -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Open Interest Signal Matrix</h3>
-  <div style="overflow-x:auto;margin-bottom:20px;">
-    <table style="width:100%;border-collapse:collapse;font-size:12px;">
-      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Price</th>
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Open Interest</th>
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal</th>
-        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Interpretation</th>
-      </tr></thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;color:#8b949e;">New long positions entering &mdash; confirmed uptrend</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;"><span style="background:#f8514922;color:#f85149;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">BEARISH</span></td><td style="padding:8px 12px;color:#8b949e;">New shorts being added &mdash; bearish pressure</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">SHORTS COVER</span></td><td style="padding:8px 12px;color:#8b949e;">Short squeeze &mdash; longs may not sustain</td></tr>
-        <tr><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;"><span style="background:#58a6ff22;color:#58a6ff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">LONGS FLUSH</span></td><td style="padding:8px 12px;color:#8b949e;">Deleveraging &mdash; possible bottom after flush completes</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- LIQUIDATION CASCADE ANATOMY -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Major Liquidation Events</h3>
-  <div style="overflow-x:auto;margin-bottom:20px;">
-    <table style="width:100%;border-collapse:collapse;font-size:12px;">
-      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Event</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Liquidated</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Price Drop</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Trigger</th>
-      </tr></thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">COVID Black Thursday (Mar 2020)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$1.2B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-53% in 24h</td><td style="padding:8px 12px;color:#8b949e;">Global risk-off, crypto-native panic</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">May 2021 China ban</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$8.6B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-35% in 72h</td><td style="padding:8px 12px;color:#8b949e;">Hashrate crash + regulatory fear</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">LUNA collapse (May 2022)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$2.1B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-25% in 7 days</td><td style="padding:8px 12px;color:#8b949e;">UST depeg, contagion across DeFi</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">FTX collapse (Nov 2022)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$5.2B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-28% in 1 week</td><td style="padding:8px 12px;color:#8b949e;">Exchange fraud, trust collapse</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;font-weight:700;">Oct 10, 2025 (largest ever)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$19.35B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-14% in 24h</td><td style="padding:8px 12px;color:#8b949e;">OI $56.6B &rarr; ETF outflows &rarr; cascade</td></tr>
-        <tr><td style="padding:8px 12px;color:#e6edf3;">Feb 5&ndash;6, 2026</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$6.18B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-8% in 48h</td><td style="padding:8px 12px;color:#8b949e;">7-catalyst convergence, ETF outflows</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- OPTIONS INTELLIGENCE -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Options Market Intelligence</h3>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Put/Call Ratio Signals</div>
-      <div style="font-size:12px;color:#8b949e;line-height:1.8;">
-        <div>PCR <strong style="color:#f85149;">&gt; 1.3</strong> &mdash; Extreme fear, contrarian buy signal</div>
-        <div>PCR <strong style="color:#d29922;">0.8&ndash;1.3</strong> &mdash; Elevated puts, cautious market</div>
-        <div>PCR <strong style="color:#3fb950;">0.5&ndash;0.8</strong> &mdash; Normal, slight call bias</div>
-        <div>PCR <strong style="color:#f85149;">&lt; 0.4</strong> &mdash; Extreme complacency, distribution risk</div>
-        <div style="margin-top:10px;padding:8px;background:#161b22;border-radius:6px;font-size:11px;">At Oct 2025 ATH: $1.17B in $100K calls vs $75K puts. Skew reversed before top.</div>
-      </div>
-    </div>
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">DVOL (Deribit Vol Index)</div>
-      <div style="font-size:12px;color:#8b949e;line-height:1.8;">
-        <div>DVOL <strong style="color:#f85149;">&gt; 90</strong> &mdash; Panic, options expensive, near-term bottom likely</div>
-        <div>DVOL <strong style="color:#d29922;">60&ndash;90</strong> &mdash; Elevated fear, market stressed</div>
-        <div>DVOL <strong style="color:#3fb950;">40&ndash;60</strong> &mdash; Normal volatility regime</div>
-        <div>DVOL <strong style="color:#58a6ff;">&lt; 40</strong> &mdash; Complacency, potential compression before big move</div>
-        <div style="margin-top:10px;padding:8px;background:#161b22;border-radius:6px;font-size:11px;">Feb 5, 2026: 25&delta; put IV hit 95% &mdash; every historical reading above 80 preceded a 30-day recovery.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- DERIVATIVES CYCLE CONNECTION -->
-  <div style="background:linear-gradient(135deg,rgba(210,168,255,0.05),rgba(248,81,73,0.03));border:1px solid #30275a;border-radius:10px;padding:20px;">
-    <div style="font-size:12px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Derivatives Cycle Connection &mdash; How to Use This</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:12px;color:#8b949e;">
-      <div><strong style="color:#3fb950;display:block;margin-bottom:4px;">Accumulation Signal</strong>Funding negative sustained 2+ weeks + OI declining + DVOL &gt; 80 + PCR &gt; 1.2 &rarr; Very high probability bottom</div>
-      <div><strong style="color:#d29922;display:block;margin-bottom:4px;">Distribution Warning</strong>Funding &gt; +0.05% + OI near ATH + PCR &lt; 0.5 + DVOL compressing &rarr; Reduce exposure, expect cascade</div>
-      <div><strong style="color:#58a6ff;display:block;margin-bottom:4px;">Squeeze Setup</strong>Funding deeply negative + price holding key support + OI declining &rarr; Short squeeze candidate</div>
-    </div>
-  </div>
-</section>
-
-
-<section class="chapter" id="ch14">
-  <div class="chapter-header">
-    <div class="chapter-number">CHAPTER 14</div>
-    <h2>Lightning Network Intelligence</h2>
-    <p class="chapter-desc">Bitcoin's Layer 2 payment network &mdash; capacity growth, adoption metrics, routing economics, and what LN signals tell us about BTC's long-term network value.</p>
-  </div>
-
-  <!-- LN KEY STATS -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:28px;">
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Capacity Peak</div>
-      <div style="font-size:22px;font-weight:800;color:#f7931a;font-family:monospace;">5,637 BTC</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Dec 2025 ATH</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Active Nodes</div>
-      <div style="font-size:22px;font-weight:800;color:#58a6ff;font-family:monospace;">~18,000</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Q1 2026 estimate</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Active Channels</div>
-      <div style="font-size:22px;font-weight:800;color:#3fb950;font-family:monospace;">~62,000</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Q1 2026 estimate</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Monthly Volume</div>
-      <div style="font-size:22px;font-weight:800;color:#d2a8ff;font-family:monospace;">$1.17B</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Nov 2025 (River)</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Gini Coefficient</div>
-      <div style="font-size:22px;font-weight:800;color:#d29922;font-family:monospace;">0.97</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">High centralization</div>
-    </div>
-    <div class="card" style="padding:16px;text-align:center;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Launch Date</div>
-      <div style="font-size:22px;font-weight:800;color:#e6edf3;font-family:monospace;">Mar 2018</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Mainnet launch</div>
-    </div>
-  </div>
-
-  <!-- LN CAPACITY GROWTH -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Network Capacity Growth (2018&ndash;2026)</h3>
-  <div style="overflow-x:auto;margin-bottom:20px;">
-    <table style="width:100%;border-collapse:collapse;font-size:12px;">
-      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Period</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Capacity (BTC)</th>
-        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Channels</th>
-        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Context</th>
-      </tr></thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Mar 2018</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;10</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;1,000</td><td style="padding:7px 12px;color:#8b949e;">Mainnet launch, experimental</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2019</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">866</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">35,000</td><td style="padding:7px 12px;color:#8b949e;">Early growth phase</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Jan 2021</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">1,060</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">38,000</td><td style="padding:7px 12px;color:#8b949e;">Pre-bull surge</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Oct 2021</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">3,200+</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">80,000+</td><td style="padding:7px 12px;color:#8b949e;">El Salvador legal tender law</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2022</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">5,100</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">82,000</td><td style="padding:7px 12px;color:#8b949e;">Cash App integration, ATH despite bear</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2023</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">4,800</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">70,000</td><td style="padding:7px 12px;color:#8b949e;">Binance/OKX integration</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2025</td><td style="padding:7px 12px;text-align:center;color:#3fb950;font-family:monospace;font-weight:700;">5,637</td><td style="padding:7px 12px;text-align:center;color:#3fb950;font-family:monospace;font-weight:700;">~65,000</td><td style="padding:7px 12px;color:#8b949e;">All-time capacity high</td></tr>
-        <tr><td style="padding:7px 12px;color:#e6edf3;font-weight:700;">Q1 2026 (est.)</td><td style="padding:7px 12px;text-align:center;color:#d29922;font-family:monospace;font-weight:700;">~5,200</td><td style="padding:7px 12px;text-align:center;color:#d29922;font-family:monospace;font-weight:700;">~62,000</td><td style="padding:7px 12px;color:#8b949e;">Slight decline with BTC price drop</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- LN AS MARKET SIGNAL -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">LN Metrics as Market Signals</h3>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-      <div style="font-size:11px;font-weight:700;color:#3fb950;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Bullish Signals</div>
-      <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:7px;">
-        <li>&#x1F4C8; Capacity growing faster than price &mdash; organic adoption</li>
-        <li>&#x1F4C8; Channel openings accelerating &mdash; new participants entering</li>
-        <li>&#x1F4C8; Volume/capacity ratio rising &mdash; network being actively used</li>
-        <li>&#x1F4C8; New exchange LN integration &mdash; institutional on-ramp expansion</li>
-        <li>&#x1F4C8; AI agent payment adoption &mdash; new autonomous demand</li>
-      </ul>
-    </div>
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-      <div style="font-size:11px;font-weight:700;color:#f85149;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Bearish / Warning Signals</div>
-      <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:7px;">
-        <li>&#x1F4C9; Capacity declining &mdash; channels being closed, funds withdrawn</li>
-        <li>&#x1F4C9; Channel count falling faster than capacity &mdash; large nodes leaving</li>
-        <li>&#x1F4C9; Centralization increasing &mdash; single points of failure risk</li>
-        <li>&#x1F4C9; Volume plateauing despite capacity growth &mdash; adoption stalling</li>
-        <li>&#x1F4C9; Key routing node going offline &mdash; liquidity fragmentation</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- KEY INSIGHT BOX -->
-  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-    <div style="font-size:11px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Key Intelligence &mdash; The 2022 Divergence</div>
-    <p style="font-size:12px;color:#8b949e;line-height:1.7;margin:0;">During the 2022 bear market, LN capacity hit an all-time high (5,100 BTC) while BTC price was down 77%. This was a historically bullish signal &mdash; the network was growing independent of price speculation. The Federal Reserve found that LN could have reduced 2017's on-chain congestion by 93%. Long-term, LN capacity growth relative to price represents genuine adoption vs speculation, making it one of the few metrics that improves during bear markets.</p>
-  </div>
-</section>
-
-<!-- =============================================
-     LIVE MARKET TAB
-     ============================================= -->
-<!-- ============================================================
-     3D NEURAL BRAIN — Bitcoin Intelligence Visualization
-     ============================================================ -->
-
-<section class="chapter" id="ch15">
-  <div class="chapter-header">
-    <div class="chapter-number">CHAPTER 15</div>
-    <h2>Advanced Prediction Framework</h2>
-    <p class="chapter-desc">A disciplined methodology for BTC scenario analysis — tiered inputs, multi-timeframe confidence scoring, historical analog matching, scenario probability weighting, and systematic invalidation logic. <strong style="color:#d29922;">Confidence and analog-match figures below are author-set scenario weights, not measured prediction accuracy.</strong> No live ledger of past predictions exists yet.</p>
-  </div>
-
-  <!-- PREDICTION PHILOSOPHY CARDS -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">
-    <div class="card" style="padding:16px;border-left:3px solid #d2a8ff;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Prediction Philosophy</div>
-      <div style="font-size:13px;color:#e6edf3;font-weight:700;">Probability, Not Certainty</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">BTC forecasting assigns probabilities to scenarios — not predictions of outcomes</div>
-    </div>
-    <div class="card" style="padding:16px;border-left:3px solid #f7931a;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Best Analog (Apr 2026) <span style="color:#d29922;">· Subjective</span></div>
-      <div style="font-size:13px;color:#f7931a;font-weight:700;font-family:monospace;">Mar 2023 — 78%</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Author similarity score — qualitative, not statistically measured</div>
-    </div>
-    <div class="card" style="padding:16px;border-left:3px solid #3fb950;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Cycle-Level Confidence <span style="color:#d29922;">· Scenario Weight</span></div>
-      <div style="font-size:13px;color:#3fb950;font-weight:700;font-family:monospace;">78%</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Author-set scenario weight, not a measured hit rate</div>
-    </div>
-    <div class="card" style="padding:16px;border-left:3px solid #f85149;">
-      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Invalidation Level</div>
-      <div style="font-size:13px;color:#f85149;font-weight:700;font-family:monospace;">$65,000</div>
-      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Daily close below → bear reset, retest $60K</div>
-    </div>
-  </div>
-
-  <!-- TIERED INPUT MATRIX -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Signal Tier Matrix — What Actually Predicts BTC</h3>
-  <div style="overflow-x:auto;margin-bottom:24px;">
-    <table style="width:100%;border-collapse:collapse;font-size:12px;">
-      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Tier</th>
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Input</th>
-        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Type</th>
-        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal Quality</th>
-        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Notes</th>
-      </tr></thead>
-      <tbody>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">Halving Cycle Position</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Leading</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">VERY HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">4/4 cycles followed halving math within 15%</td></tr>
-        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">Funding Rate Extreme</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Contrarian</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">Extremes (&gt;±0.05%) signal reversals 73% of cases</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">MVRV Zone</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Lagging</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">Cycle bottoms always in MVRV &lt;1.0 zone</td></tr>
-        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">Volume Confirmation</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Coincident</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">Breakouts with &lt;1.5× avg vol fail 67% of time</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 2</span></td><td style="padding:8px 12px;color:#e6edf3;">Fear & Greed Extreme</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Contrarian</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MEDIUM</span></td><td style="padding:8px 12px;color:#8b949e;">F&lt;20 → 90d median return +42% (2019-2026)</td></tr>
-        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 2</span></td><td style="padding:8px 12px;color:#e6edf3;">ETF Net Flows</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Leading</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MEDIUM</span></td><td style="padding:8px 12px;color:#8b949e;">3-5 day lag from flows to price response</td></tr>
-        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 2</span></td><td style="padding:8px 12px;color:#e6edf3;">OI Direction</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Coincident</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MEDIUM</span></td><td style="padding:8px 12px;color:#8b949e;">OI rising with price = confirmation; against = warning</td></tr>
-        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#58a6ff22;color:#8b949e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 3</span></td><td style="padding:8px 12px;color:#8b949e;">Social Sentiment</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Lagging</td><td style="padding:8px 12px;text-align:center;"><span style="color:#8b949e;">LOW</span></td><td style="padding:8px 12px;color:#8b949e;">Noisy. Only useful at extreme readings</td></tr>
-        <tr><td style="padding:8px 12px;"><span style="background:#58a6ff22;color:#8b949e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 3</span></td><td style="padding:8px 12px;color:#8b949e;">News Catalysts</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Coincident</td><td style="padding:8px 12px;text-align:center;"><span style="color:#8b949e;">LOW</span></td><td style="padding:8px 12px;color:#8b949e;">Reaction often fades. Trend remains dominant</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- CURRENT SCENARIO PROBABILITIES -->
-  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">April 2026 Scenario Probability Map</h3>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-        <span style="font-size:12px;font-weight:700;color:#e6edf3;">Bear / Cycle Bottom Formation</span>
-        <span style="font-size:20px;font-weight:800;color:#f85149;font-family:monospace;">45%</span>
-      </div>
-      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#f85149;border-radius:2px;width:45%;"></div></div>
-      <div style="font-size:11px;color:#8b949e;">$60K holds as major support. Consolidation 6-12 months before Cycle 5 accumulation phase begins. MVRV 0.41 supports this.</div>
-    </div>
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-        <span style="font-size:12px;font-weight:700;color:#e6edf3;">Accumulation Base Building</span>
-        <span style="font-size:20px;font-weight:800;color:#3fb950;font-family:monospace;">30%</span>
-      </div>
-      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#3fb950;border-radius:2px;width:30%;"></div></div>
-      <div style="font-size:11px;color:#8b949e;">Smart money quietly accumulating at $60-70K range. Matches Dec 2018 and Nov 2022 analog structures. LTH supply at 18-month high.</div>
-    </div>
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-        <span style="font-size:12px;font-weight:700;color:#d29922;font-family:monospace;">Failed Relief / Retest $60K</span>
-        <span style="font-size:20px;font-weight:800;color:#d29922;font-family:monospace;">18%</span>
-      </div>
-      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#d29922;border-radius:2px;width:18%;"></div></div>
-      <div style="font-size:11px;color:#8b949e;">Relief rally to $72-76K then rejection. 5 red monthly candles continue. Break below $60K opens path to $48K 2021 resistance zone.</div>
-    </div>
-    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
-        <span style="font-size:12px;font-weight:700;color:#58a6ff;font-family:monospace;">Early Bull Resumption</span>
-        <span style="font-size:20px;font-weight:800;color:#58a6ff;font-family:monospace;">7%</span>
-      </div>
-      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#58a6ff;border-radius:2px;width:7%;"></div></div>
-      <div style="font-size:11px;color:#8b949e;">Reclaims 200 MA at $89K within 90 days. New ATH before end of 2026. Requires: institutional surge + major catalyst + clean technical breakout.</div>
-    </div>
-  </div>
-</section>
-
-
 <section class="chapter" id="live-market">
   <div class="chapter-header">
     <div class="chapter-number" style="color:#3fb950;">LIVE INTELLIGENCE</div>
@@ -1882,6 +1013,279 @@
      IQ SYSTEM TAB
      ============================================= -->
 
+
+<section class="chapter" id="scoreboard">
+  <div class="chapter-header">
+    <div class="chapter-number" style="color:#f7931a;">LIVE INTELLIGENCE</div>
+    <h2 class="chapter-title">Forecast Scoreboard — Every Guess, Measured</h2>
+    <p class="chapter-desc">Every forecast this system makes is published to an append-only public ledger <em>before</em> the outcome is known, then resolved automatically against the exact-horizon candle close and scored. Nothing is deleted, nothing is cherry-picked — the numbers below include every win and every loss. All figures load from the public artifacts (<code>ledger/public/accuracy.json</code>, <code>signal.json</code>, <code>trades.json</code>); none are typed into this page. Educational research only — not financial advice.</p>
+  </div>
+
+  <!-- Plain-English verdict -->
+  <div id="sb-verdict" style="background:#0d1117;border:1px solid #21262d;border-left:3px solid #f7931a;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:14px;line-height:1.65;color:#e6edf3;">
+    Loading the measured record…
+  </div>
+
+  <!-- Per-horizon table -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 10px;">Accuracy by Horizon</h3>
+  <div style="overflow-x:auto;margin-bottom:8px;">
+    <table style="width:100%;border-collapse:collapse;font-size:13px;">
+      <thead>
+        <tr style="border-bottom:1px solid #21262d;">
+          <th style="text-align:left;padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;letter-spacing:.06em;">Horizon</th>
+          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">n</th>
+          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Hit rate</th>
+          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Always-up baseline</th>
+          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">vs majority</th>
+          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Maker expectancy</th>
+          <th style="padding:8px 10px;color:#8b949e;font-weight:600;font-size:11px;text-transform:uppercase;">Wilson 95% LB</th>
+        </tr>
+      </thead>
+      <tbody id="sb-horizon-body">
+        <tr><td colspan="7" style="padding:12px;color:#d29922;">Loading accuracy artifact…</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="font-size:11px;color:#8b949e;margin-bottom:20px;line-height:1.5;">
+    <strong>How to read this:</strong> a horizon only has real edge if its hit rate beats the majority baseline <em>and</em> the Wilson 95% lower bound clears 50% <em>and</em> expectancy survives fees. Maker expectancy assumes a 2&nbsp;bps round trip. Green means the bar is cleared, amber means promising-but-unproven, red means below baseline.
+  </div>
+
+  <!-- Direction split -->
+  <div id="sb-direction" style="display:none;background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#e6edf3;line-height:1.6;"></div>
+
+  <!-- Current signal -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 10px;">Current Signal <span style="color:#8b949e;font-weight:400;text-transform:none;letter-spacing:0;">— paper contract for the future OpenClaw agent · never a trade instruction</span></h3>
+  <div id="sb-signal" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px 18px;margin-bottom:20px;font-size:13px;color:#e6edf3;">
+    Loading signal artifact…
+  </div>
+
+  <!-- Paper trade tape -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 10px;">Paper Trade Tape</h3>
+  <div id="sb-tape" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px 18px;margin-bottom:12px;">
+    <div id="sb-tape-status" style="font-size:13px;color:#d29922;">Paper trade tape initializing — the tape artifact is generated by the hourly metrics job.</div>
+    <div id="sb-tape-curve" style="display:none;margin-bottom:14px;"></div>
+    <div id="sb-tape-groups" style="display:none;overflow-x:auto;"></div>
+    <div id="sb-tape-last" style="display:none;overflow-x:auto;margin-top:14px;"></div>
+  </div>
+  <div style="font-size:11px;color:#8b949e;margin-bottom:20px;line-height:1.5;">
+    Each resolved forecast is treated as one paper trade of a fixed 1-unit stake in the forecast direction, entered at the recorded entry price and exited at the horizon close, minus a 2&nbsp;bps maker round trip. This is a <em>derivation from the public ledger</em>, not an account statement — no real money is traded by this page.
+  </div>
+
+  <!-- Post-mortems -->
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:14px 18px;margin-bottom:8px;font-size:13px;color:#e6edf3;line-height:1.7;">
+    <strong style="color:#f7931a;">Read our own post-mortems.</strong> The strongest trust signal we can offer is publishing our falsification work:
+    <a href="research/edge_autopsy_2026-07-21.md" style="color:#58a6ff;">the edge autopsy</a> (where the edge lives and where it dies),
+    <a href="research/upgrade_master_plan_2026-07-21.md" style="color:#58a6ff;">the upgrade master plan</a>, and
+    <a href="research/promotion_decision_20260810.md" style="color:#58a6ff;">the latest promotion/kill decision</a>.
+    Raw artifacts for auditors: <a href="ledger/data/forecasts.jsonl" style="color:#58a6ff;">forecasts.jsonl</a> ·
+    <a href="ledger/data/resolutions.jsonl" style="color:#58a6ff;">resolutions.jsonl</a> ·
+    <a href="ledger/public/accuracy.json" style="color:#58a6ff;">accuracy.json</a> ·
+    <a href="ledger/public/edge_report.json" style="color:#58a6ff;">edge_report.json</a> ·
+    <a href="research/index.html" style="color:#58a6ff;">full research library →</a>
+  </div>
+
+  <script>
+  (function(){
+    'use strict';
+    function pct(x, d){ return (x==null||isNaN(x)) ? '—' : ((x*100).toFixed(d==null?1:d))+'%'; }
+    function bps(x){ if(x==null||isNaN(x)) return '—'; var v=x.toFixed(1); return (x>0?'+':'')+v+' bps'; }
+    function wilsonLB(p, n){
+      if(p==null||!n) return null;
+      var z=1.96, z2=z*z;
+      var denom=1+z2/n;
+      var centre=p+z2/(2*n);
+      var margin=z*Math.sqrt((p*(1-p)+z2/(4*n))/n);
+      return (centre-margin)/denom;
+    }
+    function fetchJson(u){
+      return fetch(u,{cache:'no-store'}).then(function(r){ if(!r.ok) throw new Error(u); return r.json(); });
+    }
+    function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+
+    // ---- accuracy: verdict + horizon table + direction ----
+    fetchJson('ledger/public/accuracy.json').then(function(d){
+      var bh = d.by_horizon || {};
+      var order = ['1h','4h','12h','24h'];
+      var rows = '';
+      order.forEach(function(h){
+        var b = bh[h]; if(!b || !b.n) return;
+        var lb = (b.wilson_lb_95!=null) ? b.wilson_lb_95 : wilsonLB(b.hit_rate, b.n);
+        var vsMaj = b.vs_majority_pp;
+        var hitColor = (vsMaj!=null && vsMaj>0 && lb!=null && lb>0.5) ? '#3fb950'
+                     : (vsMaj!=null && vsMaj>0) ? '#d29922' : '#f85149';
+        var makerColor = (b.expectancy_maker_2bps!=null && b.expectancy_maker_2bps>0) ? '#3fb950' : '#f85149';
+        rows += '<tr style="border-bottom:1px solid #161b22;">'
+          + '<td style="padding:8px 10px;font-family:monospace;font-weight:700;color:#e6edf3;">'+esc(h)+'</td>'
+          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:#8b949e;">'+b.n+'</td>'
+          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-weight:700;color:'+hitColor+';">'+pct(b.hit_rate)+'</td>'
+          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:#8b949e;">'+pct(b.always_up_rate)+'</td>'
+          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:'+((vsMaj||0)>0?'#3fb950':'#f85149')+';">'+(vsMaj==null?'—':((vsMaj>0?'+':'')+(vsMaj*100).toFixed(1)+' pp'))+'</td>'
+          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:'+makerColor+';">'+bps(b.expectancy_maker_2bps)+'</td>'
+          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:'+((lb||0)>0.5?'#3fb950':'#8b949e')+';">'+pct(lb)+'</td>'
+          + '</tr>';
+      });
+      document.getElementById('sb-horizon-body').innerHTML =
+        rows || '<tr><td colspan="7" style="padding:12px;color:#d29922;">No per-horizon data yet.</td></tr>';
+
+      // Verdict
+      var g = d.global || {};
+      var h24 = bh['24h'] || null;
+      var r30 = null;
+      if (d.rolling && d.rolling['30d']) {
+        var rb = d.rolling['30d'];
+        r30 = (rb.by_horizon && rb.by_horizon['24h']) ? rb.by_horizon['24h'] : null;
+      }
+      var v = '';
+      if (g.n) {
+        var behind = (g.vs_majority_pp!=null && g.vs_majority_pp < 0);
+        v += '<strong>Across all '+g.n+' resolved forecasts, this system is right '+pct(g.hit_rate)+' of the time'
+           + (g.baseline_hit_rate!=null ? ' — vs '+pct(g.baseline_hit_rate)+' for the naive baseline' : '')+'.</strong> ';
+        v += behind ? 'That is <span style="color:#f85149;">no proven edge overall</span> — and we say so out loud. '
+                    : 'Overall performance is at or above baseline. ';
+      }
+      if (h24 && h24.n) {
+        var lb24 = (h24.wilson_lb_95!=null)?h24.wilson_lb_95:wilsonLB(h24.hit_rate,h24.n);
+        v += 'The <strong>24-hour horizon</strong> is the one place a real edge may live: '
+           + pct(h24.hit_rate)+' over '+h24.n+' forecasts with '+bps(h24.expectancy_maker_2bps)+' maker expectancy — but its Wilson 95% lower bound is '
+           + pct(lb24)+', so it is <span style="color:#d29922;">not yet statistically proven</span>';
+        if (r30 && r30.n) { v += ', and the last 30 days ran '+pct(r30.hit_rate)+' (n='+r30.n+')'; }
+        v += '. ';
+      }
+      v += 'We publish every number either way — see the tape below.';
+      document.getElementById('sb-verdict').innerHTML = v;
+
+      // Direction split
+      var bd = d.by_direction;
+      if (bd && bd.up && bd.down) {
+        var el = document.getElementById('sb-direction');
+        el.style.display = 'block';
+        el.innerHTML = '<strong style="color:#f7931a;">The honest asymmetry:</strong> '
+          + '“up” forecasts hit <span style="font-family:monospace;color:#3fb950;">'+pct(bd.up.hit_rate)+'</span> (n='+bd.up.n+') while '
+          + '“down” forecasts hit only <span style="font-family:monospace;color:#f85149;">'+pct(bd.down.hit_rate)+'</span> (n='+bd.down.n+'). '
+          + 'A trend-following rule that shorts weakness has been persistently wrong at short horizons — price mean-reverts. '
+          + 'This finding is why the current candidate model requires extra confirmation before ever forecasting “down”. '
+          + 'Losing information is still information: this is how a public ledger teaches.';
+      }
+    }).catch(function(){
+      document.getElementById('sb-verdict').textContent = 'Accuracy artifact unavailable — scoreboard cannot render. The raw ledger links below still work.';
+    });
+
+    // ---- signal panel ----
+    fetchJson('ledger/public/signal.json').then(function(sj){
+      var el = document.getElementById('sb-signal');
+      var s = sj.signal || {};
+      var actionable = sj.status === 'actionable_paper';
+      var chip = actionable
+        ? '<span style="background:rgba(63,185,80,.15);color:#3fb950;border:1px solid #3fb950;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:700;">ACTIONABLE (PAPER)</span>'
+        : '<span style="background:rgba(210,153,34,.12);color:#d29922;border:1px solid #d29922;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:700;">'+esc((sj.status||'shadow').toUpperCase())+'</span>';
+      var gates = sj.gates || {};
+      var reasons = gates.reasons || (gates.reason ? [gates.reason] : []);
+      var html = '<div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px;">'+chip
+        + '<span style="font-family:monospace;font-weight:800;font-size:16px;color:'+(s.direction==='up'?'#3fb950':'#f85149')+';">'+esc((s.direction||'—').toUpperCase())+'</span>'
+        + '<span style="font-family:monospace;color:#8b949e;">'+esc(s.horizon||'—')+' · p='+(s.probability!=null?s.probability.toFixed(3):'—')+' · '+esc(s.model_version||'')+'</span></div>'
+        + '<div style="font-size:12px;color:#8b949e;line-height:1.6;">Issued '+esc(s.issued_at||'—')+' · expires '+esc(s.expires_at||'—')
+        + (s.invalidation? ' · invalidation: <span style="font-family:monospace;">'+esc(s.invalidation)+'</span>':'')+'</div>';
+      if (!actionable && reasons.length) {
+        html += '<div style="margin-top:10px;font-size:12px;color:#d29922;line-height:1.6;"><strong>Why this is shadow, not actionable:</strong><br>'
+          + reasons.map(function(r){ return '· '+esc(r); }).join('<br>') + '</div>';
+      }
+      html += '<div style="margin-top:10px;font-size:11px;color:#8b949e;">A signal only reads ACTIONABLE (PAPER) when the emitting model’s own measured record clears every gate (sample size, Wilson lower bound, rolling-window hit rate and fee-adjusted expectancy). Shadow means: published, tracked, not good enough yet. No live trading is connected.</div>';
+      el.innerHTML = html;
+    }).catch(function(){
+      document.getElementById('sb-signal').innerHTML = '<span style="color:#d29922;">Signal artifact unavailable.</span>';
+    });
+
+    // ---- paper trade tape ----
+    fetchJson('ledger/public/trades.json').then(function(t){
+      var groups = (t.groups||[]).slice();
+      if(!groups.length) return;
+      var status = document.getElementById('sb-tape-status');
+      status.style.display = 'none';
+
+      // group summary table
+      var horder = {'24h':0,'12h':1,'4h':2,'1h':3};
+      groups.sort(function(a,b){ return (horder[a.horizon]??9)-(horder[b.horizon]??9) || (b.n-a.n); });
+      var gt = '<table style="width:100%;border-collapse:collapse;font-size:12px;">'
+        + '<thead><tr style="border-bottom:1px solid #21262d;">'
+        + ['Model','Horizon','Trades','Hit rate','Avg/trade (maker)','Total (maker)','Max drawdown'].map(function(h,i){
+            return '<th style="padding:7px 9px;color:#8b949e;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.05em;text-align:'+(i===0?'left':'center')+';">'+h+'</th>';
+          }).join('')
+        + '</tr></thead><tbody>';
+      groups.forEach(function(gr){
+        gt += '<tr style="border-bottom:1px solid #161b22;">'
+          + '<td style="padding:7px 9px;font-family:monospace;color:#e6edf3;">'+esc(gr.model_version)+'</td>'
+          + '<td style="padding:7px 9px;text-align:center;font-family:monospace;color:#8b949e;">'+esc(gr.horizon)+'</td>'
+          + '<td style="padding:7px 9px;text-align:center;font-family:monospace;color:#8b949e;">'+gr.n+'</td>'
+          + '<td style="padding:7px 9px;text-align:center;font-family:monospace;color:'+((gr.hit_rate||0)>0.5?'#3fb950':'#f85149')+';">'+pct(gr.hit_rate)+'</td>'
+          + '<td style="padding:7px 9px;text-align:center;font-family:monospace;color:'+((gr.avg_bps_maker||0)>0?'#3fb950':'#f85149')+';">'+bps(gr.avg_bps_maker)+'</td>'
+          + '<td style="padding:7px 9px;text-align:center;font-family:monospace;color:'+((gr.sum_bps_maker||0)>0?'#3fb950':'#f85149')+';">'+bps(gr.sum_bps_maker)+'</td>'
+          + '<td style="padding:7px 9px;text-align:center;font-family:monospace;color:#f85149;">'+(gr.max_drawdown_bps_maker!=null? gr.max_drawdown_bps_maker.toFixed(0)+' bps':'—')+'</td>'
+          + '</tr>';
+      });
+      gt += '</tbody></table>';
+      var gEl = document.getElementById('sb-tape-groups');
+      gEl.innerHTML = gt; gEl.style.display = 'block';
+
+      // equity curves: all 24h groups on one SVG
+      var g24 = groups.filter(function(gr){ return gr.horizon==='24h' && Array.isArray(gr.curve) && gr.curve.length>1; });
+      if (g24.length) {
+        var W=920,H=220,P=34;
+        var allT=[],allV=[];
+        g24.forEach(function(gr){ gr.curve.forEach(function(p){ allT.push(p[0]); allV.push(p[1]); }); });
+        allV.push(0);
+        var t0=Math.min.apply(null,allT), t1=Math.max.apply(null,allT);
+        var v0=Math.min.apply(null,allV), v1=Math.max.apply(null,allV);
+        if(t1===t0) t1=t0+1; if(v1===v0) v1=v0+1;
+        function X(t){ return P+(W-2*P)*(t-t0)/(t1-t0); }
+        function Y(v){ return H-P-(H-2*P)*(v-v0)/(v1-v0); }
+        var colors=['#f7931a','#58a6ff','#d2a8ff','#3fb950'];
+        var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#010409;border:1px solid #161b22;border-radius:8px;" role="img" aria-label="Cumulative paper P&L, 24h horizon groups">';
+        svg+='<line x1="'+P+'" y1="'+Y(0)+'" x2="'+(W-P)+'" y2="'+Y(0)+'" stroke="#30363d" stroke-dasharray="4 4"/>';
+        svg+='<text x="'+(P+2)+'" y="'+(Y(0)-5)+'" fill="#8b949e" font-size="10" font-family="monospace">0 bps</text>';
+        svg+='<text x="'+(P+2)+'" y="'+(P-6)+'" fill="#8b949e" font-size="10" font-family="monospace">'+v1.toFixed(0)+' bps</text>';
+        var legend='';
+        g24.forEach(function(gr,i){
+          var pts=gr.curve.map(function(p){ return X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1); }).join(' ');
+          svg+='<polyline points="'+pts+'" fill="none" stroke="'+colors[i%colors.length]+'" stroke-width="2"/>';
+          legend+='<span style="color:'+colors[i%colors.length]+';font-family:monospace;font-size:11px;margin-right:14px;">■ '+esc(gr.model_version)+'</span>';
+        });
+        svg+='</svg>';
+        var cEl=document.getElementById('sb-tape-curve');
+        cEl.innerHTML='<div style="font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Cumulative paper P&amp;L — 24h horizon (maker fees included)</div>'+svg+'<div style="margin-top:6px;">'+legend+'</div>';
+        cEl.style.display='block';
+      }
+
+      // last trades of flagship (largest-n 24h group, else largest group)
+      var flag = g24.length ? g24.reduce(function(a,b){return a.n>=b.n?a:b;}) : groups[0];
+      if (flag && Array.isArray(flag.last_trades) && flag.last_trades.length) {
+        var lt='<div style="font-size:11px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;">Last '+Math.min(10,flag.last_trades.length)+' paper trades — '+esc(flag.model_version)+' · '+esc(flag.horizon)+'</div>'
+          + '<table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="border-bottom:1px solid #21262d;">'
+          + ['Issued','Dir','Entry','Exit','Result (maker)'].map(function(h,i){ return '<th style="padding:6px 9px;color:#8b949e;font-weight:600;font-size:10px;text-transform:uppercase;text-align:'+(i===0?'left':'center')+';">'+h+'</th>'; }).join('')
+          + '</tr></thead><tbody>';
+        flag.last_trades.slice(-10).reverse().forEach(function(tr){
+          lt += '<tr style="border-bottom:1px solid #161b22;">'
+            + '<td style="padding:6px 9px;font-family:monospace;color:#8b949e;">'+esc(String(tr.issued_at||'').replace('T',' ').slice(0,16))+'</td>'
+            + '<td style="padding:6px 9px;text-align:center;font-family:monospace;font-weight:700;color:'+(tr.direction==='up'?'#3fb950':'#f85149')+';">'+esc((tr.direction||'').toUpperCase())+'</td>'
+            + '<td style="padding:6px 9px;text-align:center;font-family:monospace;color:#8b949e;">'+(tr.entry_price!=null?Number(tr.entry_price).toLocaleString():'—')+'</td>'
+            + '<td style="padding:6px 9px;text-align:center;font-family:monospace;color:#8b949e;">'+(tr.exit_price!=null?Number(tr.exit_price).toLocaleString():'—')+'</td>'
+            + '<td style="padding:6px 9px;text-align:center;font-family:monospace;font-weight:700;color:'+((tr.ret_bps_maker||0)>0?'#3fb950':'#f85149')+';">'+bps(tr.ret_bps_maker)+'</td>'
+            + '</tr>';
+        });
+        lt+='</tbody></table>';
+        var lEl=document.getElementById('sb-tape-last');
+        lEl.innerHTML=lt; lEl.style.display='block';
+      }
+    }).catch(function(){ /* tape not generated yet — initializing copy stays */ });
+
+    // header ledger stat
+    fetchJson('ledger/public/accuracy.json').then(function(d){
+      var el=document.getElementById('header-ledger-stat');
+      if(el && d.total_resolved){ el.textContent = d.total_resolved.toLocaleString()+' forecasts measured'; }
+    }).catch(function(){});
+  })();
+  </script>
+</section>
+
 <section class="chapter" id="neural-brain">
   <div class="chapter-header">
     <div class="chapter-number" style="color:#d2a8ff;">NEURAL SYSTEM</div>
@@ -1913,14 +1317,11 @@
     <div style="position:absolute;top:14px;left:14px;font-size:11px;font-family:monospace;color:#8b949e;line-height:1.8;background:rgba(0,0,0,0.4);padding:8px 12px;border-radius:6px;backdrop-filter:blur(4px);">
       <div>MODULES: <span style="color:#d2a8ff;font-weight:700;">20</span></div>
       <div>CONNECTIONS: <span style="color:#58a6ff;font-weight:700;">47</span></div>
-      <div>ACTIVE PATHWAYS: <span id="nb-active-paths" style="color:#3fb950;font-weight:700;">—</span></div>
-      <div>IQ: <span id="nb-iq-live" style="color:#f7931a;font-weight:700;">189</span></div>
     </div>
 
-    <!-- Pulse indicator -->
+    <!-- Diagram label (this section is decorative — no live-processing claims) -->
     <div style="position:absolute;top:14px;right:14px;display:flex;align-items:center;gap:6px;background:rgba(0,0,0,0.4);padding:7px 12px;border-radius:6px;backdrop-filter:blur(4px);">
-      <span style="width:7px;height:7px;border-radius:50%;background:#3fb950;display:inline-block;animation:pulse-dot 1.5s infinite;"></span>
-      <span style="font-size:11px;color:#3fb950;font-family:monospace;">LIVE PROCESSING</span>
+      <span style="font-size:11px;color:#8b949e;font-family:monospace;">DECORATIVE DIAGRAM</span>
     </div>
 
     <!-- Bottom legend -->
@@ -2001,10 +1402,10 @@
     <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
       <div style="font-size:11px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">&#9678; What is research-only (not live)</div>
       <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:8px;">
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;margin-top:6px;"></span>Halving-cycle framework &amp; analog comparisons — Chapters 1, 7</li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;margin-top:6px;"></span>On-chain regime (MVRV, Puell, NUPL) — Chapter 3 (no live feed wired into this page)</li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;margin-top:6px;"></span>Macro / DXY / M2 correlation — Chapter 6 (no live feed wired into this page)</li>
-        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;margin-top:6px;"></span>Black-swan playbook — Chapter 11</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;margin-top:6px;"></span>Halving-cycle framework &amp; analog comparisons — Chapters 3, 4</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#58a6ff;flex-shrink:0;margin-top:6px;"></span>On-chain regime (MVRV, Puell, NUPL) — Chapter 6 (no live feed wired into this page)</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;margin-top:6px;"></span>Macro / DXY / M2 correlation — Chapter 8 (no live feed wired into this page)</li>
+        <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#f7931a;flex-shrink:0;margin-top:6px;"></span>Black-swan playbook — Chapter 9</li>
         <li style="display:flex;align-items:flex-start;gap:8px;"><span style="width:6px;height:6px;border-radius:50%;background:#d2a8ff;flex-shrink:0;margin-top:6px;"></span>News / catalysts (Clarity Act, ETF flows, etc.) — no live feed wired; not printed as live readings</li>
       </ul>
     </div>
@@ -2185,49 +1586,21 @@
   <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:24px 0 12px;">Predictive Intelligence Framework</h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
 
-    <!-- Forecast confidence by timeframe -->
+    <!-- Forecast confidence by timeframe — replaced 2026-08-10.
+         The old card showed static placeholder bars (72%/68%/61%/58%/54%/78%)
+         that looked like data. Placeholders that look like data are the one
+         pattern the trust layer exists to prevent. Measured per-horizon
+         accuracy now lives in the Forecast Scoreboard. -->
     <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
-      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Forecast Confidence by Timeframe <span style="color:#d29922;font-weight:600;">(Experimental · Not Ledger-Backed)</span></div>
-      <div style="font-size:10px;color:#8b949e;margin-bottom:12px;">Illustrative scoring framework. Values are static placeholders until a public, signed prediction ledger is wired up.</div>
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
-            <span style="color:#8b949e;">1-Hour</span><span style="color:#3fb950;font-family:monospace;font-weight:700;">72%</span>
-          </div>
-          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#3fb950;border-radius:2px;width:72%;"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
-            <span style="color:#8b949e;">4-Hour</span><span style="color:#3fb950;font-family:monospace;font-weight:700;">68%</span>
-          </div>
-          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#3fb950;border-radius:2px;width:68%;"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
-            <span style="color:#8b949e;">Daily</span><span style="color:#d29922;font-family:monospace;font-weight:700;">61%</span>
-          </div>
-          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#d29922;border-radius:2px;width:61%;"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
-            <span style="color:#8b949e;">Weekly</span><span style="color:#d29922;font-family:monospace;font-weight:700;">58%</span>
-          </div>
-          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#d29922;border-radius:2px;width:58%;"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
-            <span style="color:#8b949e;">Monthly</span><span style="color:#58a6ff;font-family:monospace;font-weight:700;">54%</span>
-          </div>
-          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#58a6ff;border-radius:2px;width:54%;"></div></div>
-        </div>
-        <div>
-          <div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:4px;">
-            <span style="color:#8b949e;">Cycle-Level</span><span style="color:#f7931a;font-family:monospace;font-weight:700;">78%</span>
-          </div>
-          <div style="height:4px;background:#21262d;border-radius:2px;"><div style="height:4px;background:#f7931a;border-radius:2px;width:78%;"></div></div>
-        </div>
+      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">Forecast Confidence by Timeframe</div>
+      <div style="font-size:12px;color:#e6edf3;line-height:1.7;">
+        This card used to show illustrative placeholder bars. They are gone:
+        real, measured per-horizon accuracy — sample sizes, hit rates,
+        baselines, fee-adjusted expectancy, and Wilson confidence bounds —
+        is now rendered from the public ledger in the
+        <a href="#scoreboard" style="color:#58a6ff;">Forecast Scoreboard</a>.
+        No number appears there unless an artifact backs it.
       </div>
-      <div style="font-size:10px;color:#8b949e;margin-top:10px;">Note: confidence percentages are author-set scenario weights, not measured hit rates.</div>
     </div>
 
     <!-- Active prediction outputs -->
@@ -2269,7 +1642,7 @@
         <ul style="margin:0;padding-left:18px;color:#8b949e;line-height:1.7;list-style:disc;">
           <li>Closed-candle OHLC structure (15m / 1h / 4h)</li>
           <li>Derivatives feed (funding, open interest)</li>
-          <li>Macro / on-chain regime (chapters 3 &amp; 6)</li>
+          <li>Macro / on-chain regime (chapters 6 &amp; 8)</li>
           <li>Pivot / SMA reference levels (key_levels.json)</li>
         </ul>
       </div>
@@ -2282,8 +1655,8 @@
       <div>
         <div style="font-size:10px;color:#d29922;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Open research questions</div>
         <ul style="margin:0;padding-left:18px;color:#8b949e;line-height:1.7;list-style:disc;">
-          <li>Cycle-bottom detection (Chapter 1)</li>
-          <li>M2 / BTC correlation framework (Chapter 6)</li>
+          <li>Cycle-bottom detection (Chapter 3)</li>
+          <li>M2 / BTC correlation framework (Chapter 8)</li>
           <li>ETF demand elasticity (no live feed wired)</li>
           <li>Regulatory catalyst tracking (no live feed wired)</li>
         </ul>
@@ -2659,6 +2032,12 @@
       registry:         'models/public/registry.json',
       promotionReport:  'models/public/phase4/phase4_report.json',
       confidence:       'models/public/confidence_intervals.json',
+      // recent.json is a compact pre-joined artifact (last 50 rows + totals)
+      // published by the hourly metrics job. The raw JSONL streams stay
+      // linked for auditors (ledger/data/forecasts.jsonl and
+      // ledger/data/resolutions.jsonl) but are only downloaded as a
+      // fallback — they had grown past 2MB per page load.
+      recent:           'ledger/public/recent.json',
       forecasts:        'ledger/data/forecasts.jsonl',
       resolutions:      'ledger/data/resolutions.jsonl',
       accuracy:         'ledger/public/accuracy.json',
@@ -3005,6 +2384,55 @@
       status.style.color = '#8b949e';
     }
 
+    /* Render the compact pre-joined recent.json artifact. Same table as
+       renderHistory but without downloading the full ledger streams. */
+    function renderHistoryRecent(recent, accuracy) {
+      var status = document.getElementById('p7-history-status');
+      var counts = document.getElementById('p7-history-counts');
+      var wrap   = document.getElementById('p7-history-table-wrap');
+      var tbody  = document.getElementById('p7-history-tbody');
+      var rows = recent.rows.slice(0, 25);
+      counts.style.display = 'block';
+      var accLine = '';
+      if (accuracy && accuracy.global && accuracy.global.display_ready) {
+        accLine = ' · measured hit rate ' + fmtPct(accuracy.global.hit_rate) +
+                  ' on n=' + accuracy.global.n;
+      }
+      counts.textContent = 'Issued: ' + (recent.total_issued != null ? recent.total_issued : '?') +
+        ' · Resolved: ' + (recent.total_resolved != null ? recent.total_resolved : '?') + accLine;
+      if (!rows.length) {
+        status.textContent = 'Prediction history — initializing. ' +
+          'No forecasts have been written to the ledger yet.';
+        status.style.color = '#d29922';
+        wrap.style.display = 'none';
+        return;
+      }
+      tbody.innerHTML = rows.map(function (f) {
+        var statusTxt = f.resolved ? 'resolved' : 'open';
+        var statusColor = f.resolved ? '#3fb950' : '#8b949e';
+        var outcome = '—';
+        if (f.resolved && typeof f.direction_correct === 'boolean') {
+          outcome = f.direction_correct
+            ? '<span style="color:#3fb950;">✓ correct</span>'
+            : '<span style="color:#f85149;">✗ wrong</span>';
+        }
+        var p = (typeof f.probability === 'number') ? f.probability.toFixed(3) : '—';
+        return '<tr style="border-bottom:1px solid #21262d;">' +
+          '<td style="padding:6px 8px;color:#e6edf3;">' + escapeHtml(f.issued_at || '') + '</td>' +
+          '<td style="padding:6px 8px;color:#e6edf3;">' + escapeHtml(f.horizon || '') + '</td>' +
+          '<td style="padding:6px 8px;color:#e6edf3;">' + escapeHtml(f.direction || '') + '</td>' +
+          '<td style="padding:6px 8px;color:#e6edf3;">' + escapeHtml(p) + '</td>' +
+          '<td style="padding:6px 8px;color:#d2a8ff;">' + escapeHtml(f.model_version || '') + '</td>' +
+          '<td style="padding:6px 8px;color:' + statusColor + ';">' + escapeHtml(statusTxt) + '</td>' +
+          '<td style="padding:6px 8px;">' + outcome + '</td>' +
+        '</tr>';
+      }).join('');
+      wrap.style.display = 'block';
+      status.textContent = 'Showing the most recent ' + rows.length +
+        ' forecasts (compact artifact ledger/public/recent.json; raw streams linked for auditors).';
+      status.style.color = '#8b949e';
+    }
+
     /* ---------- 7.F DAILY BRIEFING ARCHIVE ---------- */
     function renderBriefing(idx) {
       var status = document.getElementById('p7-briefing-status');
@@ -3054,13 +2482,23 @@
       fetchJson(TRUST_PATHS.confidence).then(renderConfidence)
         .catch(function () { renderConfidence(null); });
 
-      // Prediction history (jsonl streams + summary accuracy)
+      // Prediction history: compact recent.json first; fall back to the
+      // full jsonl streams only when the compact artifact is unavailable.
       Promise.all([
-        fetchText(TRUST_PATHS.forecasts).catch(function () { return ''; }),
-        fetchText(TRUST_PATHS.resolutions).catch(function () { return ''; }),
+        fetchJson(TRUST_PATHS.recent).catch(function () { return null; }),
         fetchJson(TRUST_PATHS.accuracy).catch(function () { return null; })
       ]).then(function (vals) {
-        renderHistory(parseJsonl(vals[0]), parseJsonl(vals[1]), vals[2]);
+        var recent = vals[0], accuracy = vals[1];
+        if (recent && Array.isArray(recent.rows)) {
+          renderHistoryRecent(recent, accuracy);
+          return;
+        }
+        Promise.all([
+          fetchText(TRUST_PATHS.forecasts).catch(function () { return ''; }),
+          fetchText(TRUST_PATHS.resolutions).catch(function () { return ''; })
+        ]).then(function (raw) {
+          renderHistory(parseJsonl(raw[0]), parseJsonl(raw[1]), accuracy);
+        });
       });
 
       // Briefing archive
@@ -3073,6 +2511,927 @@
     } else { boot(); }
   })();
   </script>
+
+
+<!-- P7-END — phase7 trust block ends here (guard boundary for tests/phase7-trust-scan.sh) -->
+
+    <!-- ===== CH 01: FUNDAMENTALS ===== -->
+    <section class="chapter" id="ch01">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 01</div>
+        <h2 class="chapter-title">Fundamentals</h2>
+        <p class="chapter-desc">Core protocol parameters and network statistics.</p>
+      </div>
+      <div class="metric-grid">
+        <div class="metric-card">
+          <div class="metric-label">Max Supply</div>
+          <div class="metric-value">21M</div>
+          <div class="metric-sub">Hard cap</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Consensus</div>
+          <div class="metric-value">PoW</div>
+          <div class="metric-sub">SHA-256</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Block Time</div>
+          <div class="metric-value">~10 min</div>
+          <div class="metric-sub">Target avg</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Current Reward</div>
+          <div class="metric-value highlight">3.125</div>
+          <div class="metric-sub">BTC per block</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Halving Interval</div>
+          <div class="metric-value">210,000</div>
+          <div class="metric-sub">Blocks</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Circulating</div>
+          <div class="metric-value">~19.85M</div>
+          <div class="metric-sub">94.5% mined</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Full Nodes</div>
+          <div class="metric-value">~18,000+</div>
+          <div class="metric-sub">Global network</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-label">Genesis Block</div>
+          <div class="metric-value" style="font-size:14px;">Jan 3, 2009</div>
+          <div class="metric-sub">Block 0</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 02: PRICE HISTORY ===== -->
+    
+<section class="chapter" id="ch02">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 02</div>
+        <h2 class="chapter-title">Price History</h2>
+        <p class="chapter-desc">Bitcoin price evolution and annual return analysis.</p>
+      </div>
+      <img src="charts/01-btc-price-history-log.png" alt="BTC Price History (Log Scale)" class="chart-img" loading="lazy" decoding="async">
+      <img src="charts/09-annual-returns.png" alt="BTC Annual Returns" class="chart-img" loading="lazy" decoding="async">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Yearly Returns (2014–2026)</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Year</th><th>Return</th><th>Year</th><th>Return</th><th>Year</th><th>Return</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>2014</td><td class="negative">-58%</td>
+              <td>2019</td><td class="positive">+95%</td>
+              <td>2024</td><td class="positive">+121%</td>
+            </tr>
+            <tr>
+              <td>2015</td><td class="positive">+35%</td>
+              <td>2020</td><td class="positive">+305%</td>
+              <td>2025</td><td class="positive">+5%</td>
+            </tr>
+            <tr>
+              <td>2016</td><td class="positive">+125%</td>
+              <td>2021</td><td class="positive">+60%</td>
+              <td>2026 YTD</td><td class="negative">-23%</td>
+            </tr>
+            <tr>
+              <td>2017</td><td class="positive">+1,369%</td>
+              <td>2022</td><td class="negative">-64%</td>
+              <td></td><td></td>
+            </tr>
+            <tr>
+              <td>2018</td><td class="negative">-73%</td>
+              <td>2023</td><td class="positive">+155%</td>
+              <td></td><td></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== CH 03: HALVING CYCLES ===== -->
+    
+<section class="chapter" id="ch03">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 03</div>
+        <h2 class="chapter-title">Halving Cycles</h2>
+        <p class="chapter-desc">Complete halving cycle framework across all four Bitcoin epochs.</p>
+      </div>
+      <img src="charts/02-halving-cycle-comparison.png" alt="Halving Cycle Comparison" class="chart-img" loading="lazy" decoding="async">
+      <img src="charts/08-cycle-overlay.png" alt="Cycle Overlay" class="chart-img" loading="lazy" decoding="async">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Halving Data Across All Epochs</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Halving</th><th>Date</th><th>Block Reward</th><th>Price at Halving</th><th>Cycle Peak</th><th>Peak Date</th><th>Days to Peak</th><th>Gain %</th><th>Drawdown %</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1st</td><td>Nov 28, 2012</td><td>50→25 BTC</td><td class="highlight">$12</td><td class="positive">$1,163</td><td>Nov 29, 2013</td><td>367</td><td class="positive">9,575%</td><td class="negative">-85%</td>
+            </tr>
+            <tr>
+              <td>2nd</td><td>Jul 9, 2016</td><td>25→12.5 BTC</td><td class="highlight">$650</td><td class="positive">$19,783</td><td>Dec 17, 2017</td><td>526</td><td class="positive">2,943%</td><td class="negative">-84%</td>
+            </tr>
+            <tr>
+              <td>3rd</td><td>May 11, 2020</td><td>12.5→6.25 BTC</td><td class="highlight">$8,600</td><td class="positive">$68,789</td><td>Nov 10, 2021</td><td>547</td><td class="positive">700%</td><td class="negative">-77%</td>
+            </tr>
+            <tr>
+              <td>4th</td><td>Apr 19, 2024</td><td>6.25→3.125 BTC</td><td class="highlight">$64,000</td><td class="positive">$126,296</td><td>Oct 6, 2025</td><td>548</td><td class="positive">715%</td><td class="warning">-53%*</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: var(--space-sm);">*ongoing — drawdown may deepen</p>
+    </section>
+
+    <!-- ===== CH 04: BULL & BEAR MARKETS ===== -->
+    
+<section class="chapter" id="ch04">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 04</div>
+        <h2 class="chapter-title">Bull &amp; Bear Markets</h2>
+        <p class="chapter-desc">Historical bear market analysis and structural patterns.</p>
+      </div>
+      <img src="charts/04-drawdown-history.png" alt="Drawdown History" class="chart-img" loading="lazy" decoding="async">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Major Bear Markets</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Bear Market</th><th>Start</th><th>End</th><th>Duration</th><th>Drawdown</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2014–2015</td><td>Dec 2013</td><td>Jan 2015</td><td>410 days</td><td class="negative">-85%</td></tr>
+            <tr><td>2018</td><td>Dec 2017</td><td>Dec 2018</td><td>364 days</td><td class="negative">-84%</td></tr>
+            <tr><td>2022</td><td>Nov 2021</td><td>Nov 2022</td><td>371 days</td><td class="negative">-77%</td></tr>
+            <tr><td>2025–26</td><td>Oct 2025</td><td>Ongoing</td><td>182+ days</td><td class="warning">-53%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== CH 05: TECHNICAL ANALYSIS ===== -->
+    
+<section class="chapter" id="ch05">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 05</div>
+        <h2 class="chapter-title">Technical Analysis</h2>
+        <p class="chapter-desc">Pattern reliability, moving averages, and key technical frameworks.</p>
+      </div>
+      <img src="charts/05-moving-averages.png" alt="Moving Averages" class="chart-img" loading="lazy" decoding="async">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Pattern Reliability on BTC</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Pattern</th><th>BTC Win Rate</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Head &amp; Shoulders</td><td class="neutral">63%</td><td>Reliable at macro tops</td></tr>
+            <tr><td>Double Bottom</td><td class="positive">72%</td><td>Strong at cycle lows</td></tr>
+            <tr><td>Bull Flag</td><td class="neutral">67%</td><td>Works in confirmed uptrends</td></tr>
+            <tr><td>Ascending Triangle</td><td class="neutral">65%</td><td>Breakout above resistance</td></tr>
+            <tr><td>Falling Wedge</td><td class="neutral">68%</td><td>Bullish reversal pattern</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+<div style="font-size:11px;color:#8b949e;margin-top:6px;">Author-compiled estimates from public research and backtests — <em>not</em> measured by this site’s forecast ledger. Measured accuracy lives in the <a href="#scoreboard" style="color:#58a6ff;">Forecast Scoreboard</a>.</div>
+
+      <div class="callout warning">
+        <strong>Death Cross Warning:</strong> BTC death crosses are NOT reliably bearish — only ~36% accurate at a 1-year horizon (author-compiled estimate). Most are buying opportunities.
+      </div>
+    </section>
+
+    <!-- ===== CH 06: ON-CHAIN METRICS ===== -->
+    
+<section class="chapter" id="ch06">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 06</div>
+        <h2 class="chapter-title">On-Chain Metrics</h2>
+        <p class="chapter-desc">Key blockchain-native valuation indicators and their zone frameworks.</p>
+      </div>
+
+      <div class="zone-card">
+        <h4>MVRV Ratio <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Market Value to Realized Value)</span></h4>
+        <div class="zone-bar">
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--text-secondary);"></span>
+          <span style="background: var(--accent-orange);"></span>
+          <span style="background: var(--red);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="positive">●</span> Below 1.0 — Undervalued</span>
+          <span class="zone-level">1.0–2.5 — Fair Value</span>
+          <span class="zone-level"><span class="warning">●</span> 2.5–3.5 — Overvalued</span>
+          <span class="zone-level"><span class="negative">●</span> Above 3.5 — Euphoria</span>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <h4>NUPL <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Net Unrealized Profit/Loss)</span></h4>
+        <div class="zone-bar">
+          <span style="background: var(--red);"></span>
+          <span style="background: var(--accent-orange);"></span>
+          <span style="background: var(--yellow);"></span>
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--accent-blue);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="negative">●</span> &lt;0 — Capitulation</span>
+          <span class="zone-level"><span class="warning">●</span> 0–0.25 — Hope</span>
+          <span class="zone-level"><span class="highlight">●</span> 0.25–0.5 — Optimism</span>
+          <span class="zone-level"><span class="positive">●</span> 0.5–0.75 — Belief</span>
+          <span class="zone-level"><span class="blue">●</span> &gt;0.75 — Euphoria</span>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <h4>Puell Multiple</h4>
+        <div class="zone-bar">
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--text-muted);"></span>
+          <span style="background: var(--red);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="positive">●</span> Below 0.5 — Accumulate</span>
+          <span class="zone-level">0.5–1.5 — Normal</span>
+          <span class="zone-level"><span class="negative">●</span> Above 2.0 — Distribution</span>
+        </div>
+      </div>
+
+      <div class="zone-card">
+        <h4>Reserve Risk</h4>
+        <div class="zone-bar">
+          <span style="background: var(--green);"></span>
+          <span style="background: var(--text-muted);"></span>
+          <span style="background: var(--red);"></span>
+        </div>
+        <div class="zone-levels">
+          <span class="zone-level"><span class="positive">●</span> Below 0.002 — Accumulate</span>
+          <span class="zone-level"><span class="negative">●</span> Above 0.02 — Distribute</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 07: SENTIMENT ===== -->
+    
+<section class="chapter" id="ch07">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 07</div>
+        <h2 class="chapter-title">Sentiment</h2>
+        <p class="chapter-desc">Fear & Greed Index extremes and their predictive power.</p>
+      </div>
+      <img src="charts/03-monthly-returns-heatmap.png" alt="Monthly Returns Heatmap" class="chart-img" loading="lazy" decoding="async">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Fear &amp; Greed Extremes — Historical Outcomes</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Date</th><th>Reading</th><th>Category</th><th>BTC Price</th><th>6-Month After</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Mar 2020</td><td class="negative">8</td><td><span class="negative">Extreme Fear</span></td><td>$5,000</td><td class="positive">+232%</td></tr>
+            <tr><td>Jun 2022</td><td class="negative">6</td><td><span class="negative">Extreme Fear</span></td><td>$17,600</td><td class="positive">+38%</td></tr>
+            <tr><td>Feb 2026</td><td class="negative">5</td><td><span class="negative">Extreme Fear</span></td><td>$60,001</td><td class="neutral">TBD</td></tr>
+            <tr><td>Nov 2021</td><td class="positive">84</td><td><span class="positive">Extreme Greed</span></td><td>$69,000</td><td class="negative">-67%</td></tr>
+            <tr><td>Oct 2025</td><td class="positive">90</td><td><span class="positive">Extreme Greed</span></td><td>$126,000</td><td class="negative">-47%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ===== CH 08: MACRO CORRELATIONS ===== -->
+    
+<section class="chapter" id="ch08">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 08</div>
+        <h2 class="chapter-title">Macro Correlations</h2>
+        <p class="chapter-desc">Cross-asset relationships, institutional flows, and ETF impact.</p>
+      </div>
+
+      <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Cross-Asset Correlation Matrix</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Asset</th><th>Bull Market Corr.</th><th>Bear Market Corr.</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>S&amp;P 500</td><td>0.40–0.70</td><td class="negative">0.60–0.87</td><td>Highest during risk-off</td></tr>
+            <tr><td>Nasdaq</td><td>0.50–0.80</td><td class="negative">0.70–0.87</td><td>Strongest tech correlation</td></tr>
+            <tr><td>Gold</td><td>0.10–0.40</td><td>-0.20–0.30</td><td>Diverged sharply in 2025</td></tr>
+            <tr><td>DXY</td><td class="negative">-0.30–(-0.60)</td><td class="negative">-0.40–(-0.70)</td><td>Inverse most of the time</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin-top: var(--space-xl);">
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">MicroStrategy Holdings</div>
+          <div class="metric-value highlight" style="font-size: 22px;">762,099 BTC</div>
+          <div class="metric-sub" style="margin-top: 8px;">$57.6B aggregate cost | $75,696 avg price</div>
+        </div>
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">ETF Cumulative Flows</div>
+          <div class="metric-value positive" style="font-size: 22px;">$56.9B</div>
+          <div class="metric-sub" style="margin-top: 8px;">Since Jan 2024 spot ETF approval</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 09: BLACK SWANS ===== -->
+    
+<section class="chapter" id="ch09">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 09</div>
+        <h2 class="chapter-title">Black Swan Events</h2>
+        <p class="chapter-desc">Critical disruption events and their market impact.</p>
+      </div>
+
+      <div class="event-timeline">
+        <div class="event-card">
+          <div class="event-date">2014</div>
+          <div class="event-body">
+            <h4>Mt. Gox Collapse</h4>
+            <p>850,000 BTC stolen from the world's largest exchange, exposing catastrophic custodial risk.</p>
+            <div class="event-impact negative">Price impact: -47%</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Mar 2020</div>
+          <div class="event-body">
+            <h4>COVID Black Thursday</h4>
+            <p>Global liquidity crisis triggered a -53% crash in 24 hours, followed by a historic V-shaped recovery.</p>
+            <div class="event-impact negative">Price impact: -53% in 24h</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">May 2022</div>
+          <div class="event-body">
+            <h4>Terra/LUNA Death Spiral</h4>
+            <p>Algorithmic stablecoin UST depegged, destroying $60B in value and triggering cascading liquidations across DeFi.</p>
+            <div class="event-impact negative">Systemic contagion event</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Nov 2022</div>
+          <div class="event-body">
+            <h4>FTX Collapse</h4>
+            <p>Exchange fraud exposed, leading to bankruptcy. BTC hit $15,476 cycle low — peak fear, peak opportunity.</p>
+            <div class="event-impact negative">Cycle low: $15,476</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Mar 2023</div>
+          <div class="event-body">
+            <h4>SVB Banking Crisis</h4>
+            <p>Silicon Valley Bank failure sparked fears of systemic banking contagion. BTC rallied as safe-haven narrative validated.</p>
+            <div class="event-impact positive">BTC: +33% — safe haven signal</div>
+          </div>
+        </div>
+        <div class="event-card">
+          <div class="event-date">Jan 2024</div>
+          <div class="event-body">
+            <h4>Spot ETF Approval</h4>
+            <p>SEC approved 11 spot Bitcoin ETFs, opening historic institutional access and fundamentally changing the market structure.</p>
+            <div class="event-impact positive">$56.9B cumulative inflows</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 10: TRADING STRATEGIES ===== -->
+    
+<section class="chapter" id="ch10">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 10</div>
+        <h2 class="chapter-title">Trading Strategies</h2>
+        <p class="chapter-desc">Backtested frameworks, volatility regimes, and composite indicator systems.</p>
+      </div>
+      <img src="charts/07-volatility-regimes.png" alt="Volatility Regimes" class="chart-img" loading="lazy" decoding="async">
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Strategy Backtest Results <span style="font-weight:400;font-size:12px;color:#8b949e;">(author-compiled from public backtests — not ledger-measured)</span></h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Strategy</th><th>CAGR</th><th>Max DD</th><th>Win Rate</th><th>Notes</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>MACD Histogram</td><td class="positive">77.2%</td><td class="negative">-62%</td><td>—</td><td>Beats buy-hold</td></tr>
+            <tr><td>RSI Momentum</td><td class="positive">122%</td><td class="negative">-39%</td><td>—</td><td>Best risk-adjusted</td></tr>
+            <tr><td>BB Mean Reversion</td><td class="positive">49.7%</td><td>—</td><td>41%</td><td>Only 34% time in market</td></tr>
+            <tr><td>Fear-Based DCA</td><td class="positive">1,145% (total)</td><td>—</td><td>—</td><td>2018–2025 backtest</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="composite-card">
+        <h4>Composite Indicator Scoring System</h4>
+        <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: var(--space-md);">7 indicators combined into a single score (0–100). Aggregate reading determines market regime.</p>
+        <div class="composite-bar">
+          <span class="zone-buy"></span>
+          <span class="zone-neutral"></span>
+          <span class="zone-sell"></span>
+        </div>
+        <div class="composite-labels">
+          <span class="positive">0–20: Buy Zone</span>
+          <span class="neutral">20–80: Neutral</span>
+          <span class="negative">80–100: Sell Zone</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== CH 11: RISK MANAGEMENT ===== -->
+    
+<section class="chapter" id="ch11">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 11</div>
+        <h2 class="chapter-title">Risk Management</h2>
+        <p class="chapter-desc">Position sizing frameworks, Kelly Criterion, and leverage mechanics.</p>
+      </div>
+
+      <h3 style="font-size:16px; margin: 0 0 var(--space-md); color: var(--text-primary);">Position Sizing by Risk Profile</h3>
+      <div class="position-grid">
+        <div class="position-card">
+          <h4 class="positive">Conservative</h4>
+          <div class="position-range">1–5%</div>
+          <div class="metric-sub">of portfolio in BTC</div>
+        </div>
+        <div class="position-card">
+          <h4 class="highlight">Moderate</h4>
+          <div class="position-range">5–15%</div>
+          <div class="metric-sub">of portfolio in BTC</div>
+        </div>
+        <div class="position-card">
+          <h4 class="negative">Aggressive</h4>
+          <div class="position-range">15–30%</div>
+          <div class="metric-sub">of portfolio in BTC</div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <strong>Kelly Criterion for BTC (author estimate):</strong> One published estimate puts Kelly-optimal allocation near 32.8%. In practice, use half-Kelly — <strong>~16%</strong> — to account for estimation error and tail risk. These are illustrative teaching numbers, not a recommendation.
+      </div>
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Leverage Liquidation Table</h3>
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr><th>Leverage</th><th>Liquidation Drop</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2x</td><td class="warning">-50%</td></tr>
+            <tr><td>3x</td><td class="warning">-33%</td></tr>
+            <tr><td>5x</td><td class="negative">-20%</td></tr>
+            <tr><td>10x</td><td class="negative">-10%</td></tr>
+            <tr><td>25x</td><td class="negative">-4%</td></tr>
+            <tr><td>50x</td><td class="negative">-2%</td></tr>
+            <tr><td>100x</td><td class="negative">-1%</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout danger">
+        <strong>Warning:</strong> Leverage above 10x in crypto is effectively gambling. BTC routinely sees 10–20% swings that will liquidate high-leverage positions.
+      </div>
+    </section>
+
+    <!-- ===== CH 12: CURRENT ASSESSMENT ===== -->
+    
+<section class="chapter" id="ch12">
+      <div class="chapter-header">
+        <div class="chapter-number">CHAPTER 12 · <span style="color:#d29922;">ARCHIVED SNAPSHOT — APRIL 2026</span></div>
+        <h2 class="chapter-title">Market Assessment (April 2026, Archived)</h2>
+        <p class="chapter-desc">A point-in-time market assessment written in April 2026 and preserved as a study artifact. Every price, level, and outlook below is <strong>frozen at its writing date</strong> — it is deliberately NOT updated, so readers can judge how a dated assessment aged. For current prices and levels see the <a href="#live-market" style="color:#58a6ff;">Live Market Command Center</a>; for measured forecast performance see the <a href="#scoreboard" style="color:#58a6ff;">Forecast Scoreboard</a>.</p>
+      </div>
+      <div style="background:#1a1206;border:1px solid #3a2a0a;border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:#f0c674;">
+        ⏳ <strong>Archived:</strong> figures below reflect April 2026 conditions and will disagree with the live panels. That disagreement is the lesson.
+      </div>
+      <img src="charts/10-cycle-dashboard.png" alt="Cycle Dashboard" class="chart-img" loading="lazy" decoding="async">
+      <img src="charts/06-volume-analysis.png" alt="Volume Analysis" class="chart-img" loading="lazy" decoding="async">
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md); margin: var(--space-xl) 0;">
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">Current Price</div>
+          <div class="metric-value highlight" style="font-size: 28px;">$67,010</div>
+        </div>
+        <div class="metric-card" style="text-align: left; padding: var(--space-lg);">
+          <div class="metric-label">Market Phase</div>
+          <div class="metric-value negative" style="font-size: 16px; line-height: 1.3;">Distribution / Markdown</div>
+          <div class="metric-sub" style="margin-top: 6px;">5 consecutive red monthly candles</div>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Key Price Levels</h3>
+      <div class="level-map">
+        <div class="level-item">
+          <span class="level-price positive">$126,296</span>
+          <span class="level-line"></span>
+          <span class="level-label">All-Time High</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price neutral">$100,000</span>
+          <span class="level-line"></span>
+          <span class="level-label">Psychological Level</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price blue">$89,365</span>
+          <span class="level-line"></span>
+          <span class="level-label">200-Day MA</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price warning">$76,000</span>
+          <span class="level-line"></span>
+          <span class="level-label">Resistance</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price" style="color: var(--text-secondary);">$68,600</span>
+          <span class="level-line"></span>
+          <span class="level-label">20/50 MA Convergence</span>
+        </div>
+        <div class="level-item current">
+          <span class="level-price">$67,010</span>
+          <span class="level-line" style="background: var(--accent-orange);"></span>
+          <span class="level-label" style="color: var(--accent-orange); font-weight: 700;">◄ CURRENT PRICE</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price warning">$65,000</span>
+          <span class="level-line"></span>
+          <span class="level-label">Near Support</span>
+        </div>
+        <div class="level-item">
+          <span class="level-price negative">$60,001</span>
+          <span class="level-line"></span>
+          <span class="level-label">Cycle Low</span>
+        </div>
+      </div>
+
+      <h3 style="font-size:16px; margin: var(--space-xl) 0 var(--space-md); color: var(--text-primary);">Price Outlook</h3>
+      <div class="outlook-grid">
+        <div class="outlook-card">
+          <div class="outlook-timeframe">Short-Term (1 Week)</div>
+          <div class="outlook-range">$64,500 – $69,500</div>
+          <div class="outlook-base">Range-bound, low conviction</div>
+        </div>
+        <div class="outlook-card">
+          <div class="outlook-timeframe">Medium-Term (1 Month)</div>
+          <div class="outlook-range">$58,000 – $76,000</div>
+          <div class="outlook-base">Base case: $62K–$70K</div>
+        </div>
+        <div class="outlook-card">
+          <div class="outlook-timeframe">Long-Term (1 Year)</div>
+          <div class="outlook-range">$48,000 – $110,000</div>
+          <div class="outlook-base">Base case: $55K–$95K</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== APPENDICES ===== -->
+    
+<section class="chapter" id="ch13">
+  <div class="chapter-header">
+    <div class="chapter-number">CHAPTER 13</div>
+    <h2>Derivatives & Open Interest</h2>
+    <p class="chapter-desc">Perpetual futures, funding rates, open interest dynamics, options market intelligence, and liquidation cascade mechanics — the derivatives layer that amplifies every BTC cycle.</p>
+  </div>
+
+  <!-- DERIVATIVES OVERVIEW CARDS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">OI Peak (Oct 2025)</div>
+      <div style="font-size:24px;font-weight:800;color:#f7931a;font-family:monospace;">$56.6B</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">All-time high leverage</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">OI Collapse</div>
+      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">-58%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">$56.6B &rarr; $23.6B</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Largest Cascade</div>
+      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">$19.35B</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Oct 10, 2025 single day</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">CME Basis Peak</div>
+      <div style="font-size:24px;font-weight:800;color:#3fb950;font-family:monospace;">25%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Annualized, pre-collapse</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Funding at ATH</div>
+      <div style="font-size:24px;font-weight:800;color:#f85149;font-family:monospace;">+0.10%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Per 8h = 109% annualized</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Options Venue</div>
+      <div style="font-size:24px;font-weight:800;color:#d2a8ff;font-family:monospace;">90%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Deribit market share</div>
+    </div>
+  </div>
+
+  <!-- FUNDING RATES -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Perpetual Funding Rate Intelligence</h3>
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:20px;">
+    <p style="font-size:13px;color:#8b949e;line-height:1.7;margin:0 0 16px;">Funding rates settle every 8 hours and represent the cost of holding a leveraged position. Extreme readings are among the most reliable cycle sentiment signals in BTC markets.</p>
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;">
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Rate (8h)</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Annualized</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Signal</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:11px;">Action</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#f85149;font-family:monospace;">+0.1% or higher</td><td style="padding:8px 12px;color:#f85149;font-family:monospace;">109%+</td><td style="padding:8px 12px;color:#f85149;">Extreme greed &mdash; leverage overheated</td><td style="padding:8px 12px;color:#e6edf3;">Reduce longs, watch for cascade</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#d29922;font-family:monospace;">+0.01% to +0.05%</td><td style="padding:8px 12px;color:#d29922;font-family:monospace;">11&ndash;55%</td><td style="padding:8px 12px;color:#d29922;">Elevated but manageable</td><td style="padding:8px 12px;color:#e6edf3;">Monitor, normal bull regime</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-family:monospace;">-0.001% to +0.01%</td><td style="padding:8px 12px;color:#3fb950;font-family:monospace;">-1% to 11%</td><td style="padding:8px 12px;color:#3fb950;">Neutral &mdash; healthy market</td><td style="padding:8px 12px;color:#e6edf3;">No signal, trend-follow</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#58a6ff;font-family:monospace;">-0.01% to -0.05%</td><td style="padding:8px 12px;color:#58a6ff;font-family:monospace;">-11% to -55%</td><td style="padding:8px 12px;color:#58a6ff;">Bearish leverage heavy &mdash; shorts piling in</td><td style="padding:8px 12px;color:#e6edf3;">Watch for short squeeze</td></tr>
+        <tr><td style="padding:8px 12px;color:#3fb950;font-family:monospace;font-weight:700;">Below -0.05%</td><td style="padding:8px 12px;color:#3fb950;font-family:monospace;font-weight:700;">-55%+</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">Extreme fear &mdash; capitulation signal</td><td style="padding:8px 12px;color:#e6edf3;">High-probability accumulation zone</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OPEN INTEREST ANALYSIS -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Open Interest Signal Matrix</h3>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Price</th>
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Open Interest</th>
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal</th>
+        <th style="padding:10px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Interpretation</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">BULLISH</span></td><td style="padding:8px 12px;color:#8b949e;">New long positions entering &mdash; confirmed uptrend</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;"><span style="background:#f8514922;color:#f85149;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">BEARISH</span></td><td style="padding:8px 12px;color:#8b949e;">New shorts being added &mdash; bearish pressure</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#3fb950;font-weight:700;">&#8593; Rising</td><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">SHORTS COVER</span></td><td style="padding:8px 12px;color:#8b949e;">Short squeeze &mdash; longs may not sustain</td></tr>
+        <tr><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;color:#f85149;font-weight:700;">&#8595; Falling</td><td style="padding:8px 12px;"><span style="background:#58a6ff22;color:#58a6ff;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:700;">LONGS FLUSH</span></td><td style="padding:8px 12px;color:#8b949e;">Deleveraging &mdash; possible bottom after flush completes</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LIQUIDATION CASCADE ANATOMY -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Major Liquidation Events</h3>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Event</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Liquidated</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Price Drop</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Trigger</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">COVID Black Thursday (Mar 2020)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$1.2B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-53% in 24h</td><td style="padding:8px 12px;color:#8b949e;">Global risk-off, crypto-native panic</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">May 2021 China ban</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$8.6B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-35% in 72h</td><td style="padding:8px 12px;color:#8b949e;">Hashrate crash + regulatory fear</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">LUNA collapse (May 2022)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$2.1B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-25% in 7 days</td><td style="padding:8px 12px;color:#8b949e;">UST depeg, contagion across DeFi</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;">FTX collapse (Nov 2022)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$5.2B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-28% in 1 week</td><td style="padding:8px 12px;color:#8b949e;">Exchange fraud, trust collapse</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;color:#e6edf3;font-weight:700;">Oct 10, 2025 (largest ever)</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$19.35B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-14% in 24h</td><td style="padding:8px 12px;color:#8b949e;">OI $56.6B &rarr; ETF outflows &rarr; cascade</td></tr>
+        <tr><td style="padding:8px 12px;color:#e6edf3;">Feb 5&ndash;6, 2026</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;font-weight:700;">$6.18B</td><td style="padding:8px 12px;text-align:center;color:#f85149;font-family:monospace;">-8% in 48h</td><td style="padding:8px 12px;color:#8b949e;">7-catalyst convergence, ETF outflows</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- OPTIONS INTELLIGENCE -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Options Market Intelligence</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Put/Call Ratio Signals</div>
+      <div style="font-size:12px;color:#8b949e;line-height:1.8;">
+        <div>PCR <strong style="color:#f85149;">&gt; 1.3</strong> &mdash; Extreme fear, contrarian buy signal</div>
+        <div>PCR <strong style="color:#d29922;">0.8&ndash;1.3</strong> &mdash; Elevated puts, cautious market</div>
+        <div>PCR <strong style="color:#3fb950;">0.5&ndash;0.8</strong> &mdash; Normal, slight call bias</div>
+        <div>PCR <strong style="color:#f85149;">&lt; 0.4</strong> &mdash; Extreme complacency, distribution risk</div>
+        <div style="margin-top:10px;padding:8px;background:#161b22;border-radius:6px;font-size:11px;">At Oct 2025 ATH: $1.17B in $100K calls vs $75K puts. Skew reversed before top.</div>
+      </div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">DVOL (Deribit Vol Index)</div>
+      <div style="font-size:12px;color:#8b949e;line-height:1.8;">
+        <div>DVOL <strong style="color:#f85149;">&gt; 90</strong> &mdash; Panic, options expensive, near-term bottom likely</div>
+        <div>DVOL <strong style="color:#d29922;">60&ndash;90</strong> &mdash; Elevated fear, market stressed</div>
+        <div>DVOL <strong style="color:#3fb950;">40&ndash;60</strong> &mdash; Normal volatility regime</div>
+        <div>DVOL <strong style="color:#58a6ff;">&lt; 40</strong> &mdash; Complacency, potential compression before big move</div>
+        <div style="margin-top:10px;padding:8px;background:#161b22;border-radius:6px;font-size:11px;">Feb 5, 2026: 25&delta; put IV hit 95% &mdash; every historical reading above 80 preceded a 30-day recovery.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DERIVATIVES CYCLE CONNECTION -->
+  <div style="background:linear-gradient(135deg,rgba(210,168,255,0.05),rgba(248,81,73,0.03));border:1px solid #30275a;border-radius:10px;padding:20px;">
+    <div style="font-size:12px;font-weight:700;color:#d2a8ff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;">Derivatives Cycle Connection &mdash; How to Use This</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;font-size:12px;color:#8b949e;">
+      <div><strong style="color:#3fb950;display:block;margin-bottom:4px;">Accumulation Signal</strong>Funding negative sustained 2+ weeks + OI declining + DVOL &gt; 80 + PCR &gt; 1.2 &rarr; Very high probability bottom</div>
+      <div><strong style="color:#d29922;display:block;margin-bottom:4px;">Distribution Warning</strong>Funding &gt; +0.05% + OI near ATH + PCR &lt; 0.5 + DVOL compressing &rarr; Reduce exposure, expect cascade</div>
+      <div><strong style="color:#58a6ff;display:block;margin-bottom:4px;">Squeeze Setup</strong>Funding deeply negative + price holding key support + OI declining &rarr; Short squeeze candidate</div>
+    </div>
+  </div>
+</section>
+
+
+<section class="chapter" id="ch14">
+  <div class="chapter-header">
+    <div class="chapter-number">CHAPTER 14</div>
+    <h2>Lightning Network Intelligence</h2>
+    <p class="chapter-desc">Bitcoin's Layer 2 payment network &mdash; capacity growth, adoption metrics, routing economics, and what LN signals tell us about BTC's long-term network value.</p>
+  </div>
+
+  <!-- LN KEY STATS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin-bottom:28px;">
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Capacity Peak</div>
+      <div style="font-size:22px;font-weight:800;color:#f7931a;font-family:monospace;">5,637 BTC</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Dec 2025 ATH</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Active Nodes</div>
+      <div style="font-size:22px;font-weight:800;color:#58a6ff;font-family:monospace;">~18,000</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Q1 2026 estimate</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Active Channels</div>
+      <div style="font-size:22px;font-weight:800;color:#3fb950;font-family:monospace;">~62,000</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Q1 2026 estimate</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Monthly Volume</div>
+      <div style="font-size:22px;font-weight:800;color:#d2a8ff;font-family:monospace;">$1.17B</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Nov 2025 (River)</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Gini Coefficient</div>
+      <div style="font-size:22px;font-weight:800;color:#d29922;font-family:monospace;">0.97</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">High centralization</div>
+    </div>
+    <div class="card" style="padding:16px;text-align:center;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Launch Date</div>
+      <div style="font-size:22px;font-weight:800;color:#e6edf3;font-family:monospace;">Mar 2018</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Mainnet launch</div>
+    </div>
+  </div>
+
+  <!-- LN CAPACITY GROWTH -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Network Capacity Growth (2018&ndash;2026)</h3>
+  <div style="overflow-x:auto;margin-bottom:20px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Period</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Capacity (BTC)</th>
+        <th style="padding:8px 12px;color:#8b949e;font-size:11px;text-transform:uppercase;">Channels</th>
+        <th style="padding:8px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Context</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Mar 2018</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;10</td><td style="padding:7px 12px;text-align:center;color:#8b949e;font-family:monospace;">&lt;1,000</td><td style="padding:7px 12px;color:#8b949e;">Mainnet launch, experimental</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2019</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">866</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">35,000</td><td style="padding:7px 12px;color:#8b949e;">Early growth phase</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Jan 2021</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">1,060</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">38,000</td><td style="padding:7px 12px;color:#8b949e;">Pre-bull surge</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Oct 2021</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">3,200+</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">80,000+</td><td style="padding:7px 12px;color:#8b949e;">El Salvador legal tender law</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2022</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">5,100</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">82,000</td><td style="padding:7px 12px;color:#8b949e;">Cash App integration, ATH despite bear</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2023</td><td style="padding:7px 12px;text-align:center;color:#f7931a;font-family:monospace;">4,800</td><td style="padding:7px 12px;text-align:center;color:#e6edf3;font-family:monospace;">70,000</td><td style="padding:7px 12px;color:#8b949e;">Binance/OKX integration</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:7px 12px;color:#e6edf3;">Dec 2025</td><td style="padding:7px 12px;text-align:center;color:#3fb950;font-family:monospace;font-weight:700;">5,637</td><td style="padding:7px 12px;text-align:center;color:#3fb950;font-family:monospace;font-weight:700;">~65,000</td><td style="padding:7px 12px;color:#8b949e;">All-time capacity high</td></tr>
+        <tr><td style="padding:7px 12px;color:#e6edf3;font-weight:700;">Q1 2026 (est.)</td><td style="padding:7px 12px;text-align:center;color:#d29922;font-family:monospace;font-weight:700;">~5,200</td><td style="padding:7px 12px;text-align:center;color:#d29922;font-family:monospace;font-weight:700;">~62,000</td><td style="padding:7px 12px;color:#8b949e;">Slight decline with BTC price drop</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- LN AS MARKET SIGNAL -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">LN Metrics as Market Signals</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#3fb950;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Bullish Signals</div>
+      <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:7px;">
+        <li>&#x1F4C8; Capacity growing faster than price &mdash; organic adoption</li>
+        <li>&#x1F4C8; Channel openings accelerating &mdash; new participants entering</li>
+        <li>&#x1F4C8; Volume/capacity ratio rising &mdash; network being actively used</li>
+        <li>&#x1F4C8; New exchange LN integration &mdash; institutional on-ramp expansion</li>
+        <li>&#x1F4C8; AI agent payment adoption &mdash; new autonomous demand</li>
+      </ul>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+      <div style="font-size:11px;font-weight:700;color:#f85149;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Bearish / Warning Signals</div>
+      <ul style="list-style:none;padding:0;margin:0;font-size:12px;color:#8b949e;display:flex;flex-direction:column;gap:7px;">
+        <li>&#x1F4C9; Capacity declining &mdash; channels being closed, funds withdrawn</li>
+        <li>&#x1F4C9; Channel count falling faster than capacity &mdash; large nodes leaving</li>
+        <li>&#x1F4C9; Centralization increasing &mdash; single points of failure risk</li>
+        <li>&#x1F4C9; Volume plateauing despite capacity growth &mdash; adoption stalling</li>
+        <li>&#x1F4C9; Key routing node going offline &mdash; liquidity fragmentation</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- KEY INSIGHT BOX -->
+  <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;">
+    <div style="font-size:11px;font-weight:700;color:#58a6ff;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;">Key Intelligence &mdash; The 2022 Divergence</div>
+    <p style="font-size:12px;color:#8b949e;line-height:1.7;margin:0;">During the 2022 bear market, LN capacity hit an all-time high (5,100 BTC) while BTC price was down 77%. This was a historically bullish signal &mdash; the network was growing independent of price speculation. The Federal Reserve found that LN could have reduced 2017's on-chain congestion by 93%. Long-term, LN capacity growth relative to price represents genuine adoption vs speculation, making it one of the few metrics that improves during bear markets.</p>
+  </div>
+</section>
+
+<!-- =============================================
+     LIVE MARKET TAB
+     ============================================= -->
+<!-- ============================================================
+     3D NEURAL BRAIN — Bitcoin Intelligence Visualization
+     ============================================================ -->
+
+<section class="chapter" id="ch15">
+  <div class="chapter-header">
+    <div class="chapter-number">CHAPTER 15</div>
+    <h2>Advanced Prediction Framework</h2>
+    <p class="chapter-desc">A disciplined methodology for BTC scenario analysis — tiered inputs, multi-timeframe confidence scoring, historical analog matching, scenario probability weighting, and systematic invalidation logic. <strong style="color:#d29922;">Confidence and analog-match figures below are author-set scenario weights, not measured prediction accuracy.</strong> No live ledger of past predictions exists yet.</p>
+  </div>
+
+  <!-- PREDICTION PHILOSOPHY CARDS -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:28px;">
+    <div class="card" style="padding:16px;border-left:3px solid #d2a8ff;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Prediction Philosophy</div>
+      <div style="font-size:13px;color:#e6edf3;font-weight:700;">Probability, Not Certainty</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">BTC forecasting assigns probabilities to scenarios — not predictions of outcomes</div>
+    </div>
+    <div class="card" style="padding:16px;border-left:3px solid #f7931a;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Best Analog (Apr 2026) <span style="color:#d29922;">· Subjective</span></div>
+      <div style="font-size:13px;color:#f7931a;font-weight:700;font-family:monospace;">Mar 2023 — 78%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Author similarity score — qualitative, not statistically measured</div>
+    </div>
+    <div class="card" style="padding:16px;border-left:3px solid #3fb950;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Cycle-Level Confidence <span style="color:#d29922;">· Scenario Weight</span></div>
+      <div style="font-size:13px;color:#3fb950;font-weight:700;font-family:monospace;">78%</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Author-set scenario weight, not a measured hit rate</div>
+    </div>
+    <div class="card" style="padding:16px;border-left:3px solid #f85149;">
+      <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Invalidation Level</div>
+      <div style="font-size:13px;color:#f85149;font-weight:700;font-family:monospace;">$65,000</div>
+      <div style="font-size:11px;color:#8b949e;margin-top:4px;">Daily close below → bear reset, retest $60K</div>
+    </div>
+  </div>
+
+  <!-- TIERED INPUT MATRIX -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">Signal Tier Matrix — What Actually Predicts BTC <span style="font-weight:400;font-size:12px;color:#8b949e;text-transform:none;letter-spacing:0;">(author-set ratings and estimates — not ledger-measured)</span></h3>
+  <div style="overflow-x:auto;margin-bottom:24px;">
+    <table style="width:100%;border-collapse:collapse;font-size:12px;">
+      <thead><tr style="border-bottom:1px solid #21262d;background:#161b22;">
+        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Tier</th>
+        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Input</th>
+        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Type</th>
+        <th style="padding:9px 12px;text-align:center;color:#8b949e;font-size:11px;text-transform:uppercase;">Signal Quality</th>
+        <th style="padding:9px 12px;text-align:left;color:#8b949e;font-size:11px;text-transform:uppercase;">Notes</th>
+      </tr></thead>
+      <tbody>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">Halving Cycle Position</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Leading</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">VERY HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">4/4 cycles followed halving math within 15%</td></tr>
+        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">Funding Rate Extreme</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Contrarian</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">Extremes (&gt;±0.05%) signal reversals 73% of cases</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">MVRV Zone</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Lagging</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">Cycle bottoms always in MVRV &lt;1.0 zone</td></tr>
+        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#3fb95022;color:#3fb950;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 1</span></td><td style="padding:8px 12px;color:#e6edf3;">Volume Confirmation</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Coincident</td><td style="padding:8px 12px;text-align:center;"><span style="color:#3fb950;font-weight:700;">HIGH</span></td><td style="padding:8px 12px;color:#8b949e;">Breakouts with &lt;1.5× avg vol fail 67% of time</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 2</span></td><td style="padding:8px 12px;color:#e6edf3;">Fear & Greed Extreme</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Contrarian</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MEDIUM</span></td><td style="padding:8px 12px;color:#8b949e;">F&lt;20 → 90d median return +42% (2019-2026)</td></tr>
+        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 2</span></td><td style="padding:8px 12px;color:#e6edf3;">ETF Net Flows</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Leading</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MEDIUM</span></td><td style="padding:8px 12px;color:#8b949e;">3-5 day lag from flows to price response</td></tr>
+        <tr style="border-bottom:1px solid #161b22;"><td style="padding:8px 12px;"><span style="background:#d2985022;color:#d29922;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 2</span></td><td style="padding:8px 12px;color:#e6edf3;">OI Direction</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Coincident</td><td style="padding:8px 12px;text-align:center;"><span style="color:#d29922;font-weight:700;">MEDIUM</span></td><td style="padding:8px 12px;color:#8b949e;">OI rising with price = confirmation; against = warning</td></tr>
+        <tr style="border-bottom:1px solid #161b22;background:#0a0d12;"><td style="padding:8px 12px;"><span style="background:#58a6ff22;color:#8b949e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 3</span></td><td style="padding:8px 12px;color:#8b949e;">Social Sentiment</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Lagging</td><td style="padding:8px 12px;text-align:center;"><span style="color:#8b949e;">LOW</span></td><td style="padding:8px 12px;color:#8b949e;">Noisy. Only useful at extreme readings</td></tr>
+        <tr><td style="padding:8px 12px;"><span style="background:#58a6ff22;color:#8b949e;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;">TIER 3</span></td><td style="padding:8px 12px;color:#8b949e;">News Catalysts</td><td style="padding:8px 12px;text-align:center;color:#8b949e;">Coincident</td><td style="padding:8px 12px;text-align:center;"><span style="color:#8b949e;">LOW</span></td><td style="padding:8px 12px;color:#8b949e;">Reaction often fades. Trend remains dominant</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- CURRENT SCENARIO PROBABILITIES -->
+  <h3 style="font-size:14px;font-weight:700;color:#e6edf3;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;">April 2026 Scenario Probability Map</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px;">
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:700;color:#e6edf3;">Bear / Cycle Bottom Formation</span>
+        <span style="font-size:20px;font-weight:800;color:#f85149;font-family:monospace;">45%</span>
+      </div>
+      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#f85149;border-radius:2px;width:45%;"></div></div>
+      <div style="font-size:11px;color:#8b949e;">$60K holds as major support. Consolidation 6-12 months before Cycle 5 accumulation phase begins. MVRV 0.41 supports this.</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:700;color:#e6edf3;">Accumulation Base Building</span>
+        <span style="font-size:20px;font-weight:800;color:#3fb950;font-family:monospace;">30%</span>
+      </div>
+      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#3fb950;border-radius:2px;width:30%;"></div></div>
+      <div style="font-size:11px;color:#8b949e;">Smart money quietly accumulating at $60-70K range. Matches Dec 2018 and Nov 2022 analog structures. LTH supply at 18-month high.</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:700;color:#d29922;font-family:monospace;">Failed Relief / Retest $60K</span>
+        <span style="font-size:20px;font-weight:800;color:#d29922;font-family:monospace;">18%</span>
+      </div>
+      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#d29922;border-radius:2px;width:18%;"></div></div>
+      <div style="font-size:11px;color:#8b949e;">Relief rally to $72-76K then rejection. 5 red monthly candles continue. Break below $60K opens path to $48K 2021 resistance zone.</div>
+    </div>
+    <div style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:700;color:#58a6ff;font-family:monospace;">Early Bull Resumption</span>
+        <span style="font-size:20px;font-weight:800;color:#58a6ff;font-family:monospace;">7%</span>
+      </div>
+      <div style="height:4px;background:#21262d;border-radius:2px;margin-bottom:8px;"><div style="height:4px;background:#58a6ff;border-radius:2px;width:7%;"></div></div>
+      <div style="font-size:11px;color:#8b949e;">Reclaims 200 MA at $89K within 90 days. New ATH before end of 2026. Requires: institutional surge + major catalyst + clean technical breakout.</div>
+    </div>
+  </div>
+</section>
+
 
 <section class="chapter" id="appendices">
       <div class="chapter-header">
@@ -3136,8 +3495,12 @@
 
   <script>
     // ===== Sidebar active section highlighting =====
+    // Selector covers ALL sidebar groups (live intel + chapters + reference),
+    // not just #sidebarNav — the old selector left live links unhighlighted
+    // and unhooked from the mobile auto-close.
     const sections = document.querySelectorAll('.chapter');
-    const sidebarLinks = document.querySelectorAll('#sidebarNav a');
+    const sidebarLinks = document.querySelectorAll('.sidebar-nav a');
+    const chaptersGroup = document.getElementById('chaptersGroup');
 
     const observerOptions = {
       rootMargin: '-80px 0px -70% 0px',
@@ -3149,7 +3512,14 @@
         if (entry.isIntersecting) {
           const id = entry.target.getAttribute('id');
           sidebarLinks.forEach(link => {
-            link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+            const isActive = link.getAttribute('href') === '#' + id;
+            link.classList.toggle('active', isActive);
+            // Auto-open the collapsed chapters group when the reader scrolls
+            // into a chapter (fragment nav into a closed <details> is
+            // inconsistent across browsers).
+            if (isActive && chaptersGroup && chaptersGroup.contains(link)) {
+              chaptersGroup.open = true;
+            }
           });
         }
       });
@@ -3178,6 +3548,12 @@
           overlay.classList.remove('open');
         }
       });
+    });
+
+    // Open the chapters group when the page loads on a chapter hash.
+    if (chaptersGroup && /^#ch\d/.test(location.hash)) { chaptersGroup.open = true; }
+    window.addEventListener('hashchange', () => {
+      if (chaptersGroup && /^#ch\d/.test(location.hash)) { chaptersGroup.open = true; }
     });
 
     // ===== Scroll to top button =====
@@ -3333,12 +3709,12 @@
   async function fetchBinanceData() {
     try {
       const [ticker24, klines1h, klines4h, klines15m, klines5m, klines1m] = await Promise.all([
-        fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT').then(r => { if(!r.ok) throw new Error('Binance unavailable'); return r.json(); }),
-        fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=48').then(r => r.json()),
-        fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=20').then(r => r.json()),
-        fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=16').then(r => r.json()),
-        fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=24').then(r => r.json()).catch(function(){return null;}),
-        fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=30').then(r => r.json()).catch(function(){return null;}),
+        fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT').then(r => { if(!r.ok) throw new Error('Binance unavailable'); return r.json(); }),
+        fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=48').then(r => r.json()),
+        fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=20').then(r => r.json()),
+        fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=16').then(r => r.json()),
+        fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=5m&limit=24').then(r => r.json()).catch(function(){return null;}),
+        fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=30').then(r => r.json()).catch(function(){return null;}),
       ]);
       updateLiveMarket(ticker24, klines1h, klines4h, klines15m, { source: 'binance-live', mode: 'live' }, { m1: Array.isArray(klines1m) ? klines1m : null, m5: Array.isArray(klines5m) ? klines5m : null });
       document.getElementById('live-status').textContent = 'Live (Binance) · ' + new Date().toLocaleTimeString();
@@ -3874,9 +4250,9 @@
     const contextEl = document.getElementById('context-panel');
     if (contextEl) {
       contextEl.innerHTML = '<div style="display:flex;flex-direction:column;gap:10px;font-size:12px;color:#8b949e;">'
-        + '<div>🔗 <strong style="color:#e6edf3;">Macro / cycle context:</strong> See Chapters 1–6 for the halving framework, on-chain regime model, and macro correlation breakdown.</div>'
-        + '<div>🔗 <strong style="color:#e6edf3;">Historical analogs:</strong> Documented in Chapter 7 (Bull/Bear Markets) and Chapter 11 (Black Swans).</div>'
-        + '<div>🔗 <strong style="color:#e6edf3;">Indicator framework:</strong> Chapter 4 (TA &amp; Indicators). Live indicator values come from closed-candle Binance OHLC above.</div>'
+        + '<div>🔗 <strong style="color:#e6edf3;">Macro / cycle context:</strong> See Chapter 3 (halving framework), Chapter 6 (on-chain regime model), and Chapter 8 (macro correlations).</div>'
+        + '<div>🔗 <strong style="color:#e6edf3;">Historical analogs:</strong> Documented in Chapter 4 (Bull &amp; Bear Markets) and Chapter 9 (Black Swans).</div>'
+        + '<div>🔗 <strong style="color:#e6edf3;">Indicator framework:</strong> Chapter 5 (Technical Analysis). Live indicator values come from closed-candle OHLC above.</div>'
         + '<div>🔗 <strong style="color:#e6edf3;">Catalyst tracking:</strong> No live news/catalyst feed is wired into this page; specific catalysts are not printed here.</div>'
         + '<div style="margin-top:8px;padding:8px;background:#161b22;border-radius:6px;color:#d29922;font-size:11px;">⚠️ Educational research only — not financial advice. See the Trust &amp; Transparency section for measured-accuracy gating.</div>'
         + '</div>';
@@ -4116,11 +4492,16 @@
   // ============================================
   async function fetchDerivativesData() {
     try {
+      // r.ok checks matter: a 451/403 error body parsed as JSON would render
+      // "NaN%" instead of triggering the artifact fallback below.
       const [funding, oi, lsr] = await Promise.all([
-        fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT').then(r => r.json()),
-        fetch('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT').then(r => r.json()),
-        fetch('https://fapi.binance.com/fapi/v1/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1').then(r => r.json()),
+        fetch('https://fapi.binance.com/fapi/v1/premiumIndex?symbol=BTCUSDT').then(r => { if(!r.ok) throw new Error('fapi ' + r.status); return r.json(); }),
+        fetch('https://fapi.binance.com/fapi/v1/openInterest?symbol=BTCUSDT').then(r => { if(!r.ok) throw new Error('fapi ' + r.status); return r.json(); }),
+        fetch('https://fapi.binance.com/fapi/v1/globalLongShortAccountRatio?symbol=BTCUSDT&period=5m&limit=1').then(r => { if(!r.ok) throw new Error('fapi ' + r.status); return r.json(); }),
       ]);
+      const fundingRateProbe = parseFloat(funding.lastFundingRate);
+      const oiProbe = parseFloat(oi.openInterest);
+      if (!isFinite(fundingRateProbe) || !isFinite(oiProbe)) throw new Error('fapi shape');
 
       // Funding rate
       const fundingRate = parseFloat(funding.lastFundingRate) * 100;
@@ -4139,16 +4520,26 @@
         fundingSignalEl.textContent = sig;
       }
 
-      // Open Interest
+      // Open Interest. fapi returns OI denominated in BTC (~tens of
+      // thousands), not dollars — the old '$'+(oiVal/1e6)+'M' rendering
+      // printed a literal "$0M" whenever the live path worked.
       const oiVal = parseFloat(oi.openInterest);
       const oiEl = document.getElementById('live-oi');
       const oiSignalEl = document.getElementById('live-oi-signal');
+      const markPx = parseFloat(funding.markPrice);
       if (oiEl) {
-        oiEl.textContent = oiVal > 1e9 ? '$' + (oiVal/1e9).toFixed(2)+'B' : '$' + (oiVal/1e6).toFixed(0)+'M';
+        if (isFinite(markPx) && markPx > 0) {
+          const oiUsd = oiVal * markPx;
+          oiEl.textContent = oiUsd > 1e9 ? '$' + (oiUsd/1e9).toFixed(2)+'B' : '$' + (oiUsd/1e6).toFixed(0)+'M';
+        } else {
+          oiEl.textContent = oiVal.toFixed(0) + ' BTC';
+        }
         oiEl.style.color = '#d2a8ff';
       }
       if (oiSignalEl) {
-        oiSignalEl.textContent = 'BTC open interest live';
+        oiSignalEl.textContent = isFinite(markPx) && markPx > 0
+          ? oiVal.toFixed(0) + ' BTC × mark price · live'
+          : 'BTC open interest live';
       }
 
       // Long/Short Ratio
@@ -4635,8 +5026,9 @@
   }
 
   function updateActiveCount() {
-    var el = document.getElementById('nb-active-paths');
-    if (el) el.textContent = Math.floor(28 + Math.random() * 14);
+    // 2026-08-10: the "ACTIVE PATHWAYS" overlay printed Math.floor(28 +
+    // Math.random()*14) every 2.5s — pure fabrication on a section labeled
+    // decorative. The overlay span was removed; this stays inert.
   }
 
   // ── Global controls ───────────────────────────────────────
@@ -4717,13 +5109,13 @@
   var EVENTS = [
     { type:'live',    msg:'Polling BTC/USDT spot for live ticker + closed-candle OHLC.',            delay:0 },
     { type:'pattern', msg:'Re-running 15m / 1h / 4h candlestick pattern scan on closed candles.',  delay:4000 },
-    { type:'onchain', msg:'Re-reading on-chain regime indicators (see Chapter 3 for definitions).', delay:8000 },
-    { type:'macro',   msg:'Cross-checking macro/DXY/M2 correlation framework (Chapter 6).',         delay:12000 },
+    { type:'onchain', msg:'Re-reading on-chain regime indicators (see Chapter 6 for definitions).', delay:8000 },
+    { type:'macro',   msg:'Cross-checking macro/DXY/M2 correlation framework (Chapter 8).',         delay:12000 },
     { type:'signal',  msg:'Refreshing source freshness budgets from data/public/source_health.json.', delay:16000 },
-    { type:'learn',   msg:'Reviewing historical analog catalogue (Chapters 7, 11) for reference setups.', delay:20000 },
+    { type:'learn',   msg:'Reviewing historical analog catalogue (Chapters 4, 9) for reference setups.', delay:20000 },
     { type:'predict', msg:'Forecasts (when issued) are written to ledger/data/forecasts.jsonl — see Trust panel.', delay:24000 },
-    { type:'cycle',   msg:'Re-aligning current price with halving-cycle phase model (Chapter 1).',  delay:28000 },
-    { type:'risk',    msg:'Risk framework (Kelly sizing, drawdown, vol regime) in Chapter 12.',     delay:32000 },
+    { type:'cycle',   msg:'Re-aligning current price with halving-cycle phase model (Chapter 3).',  delay:28000 },
+    { type:'risk',    msg:'Risk framework (Kelly sizing, drawdown, vol regime) in Chapter 11.',     delay:32000 },
     { type:'pattern', msg:'Inside-bar / compression check on closed 1h bars.',                       delay:36000 },
     { type:'signal',  msg:'Cross-timeframe alignment score recomputed from live closed candles.',   delay:40000 },
     { type:'cycle',   msg:'Pi-cycle / 200-week trigger evaluation against current closed daily.',   delay:44000 },
@@ -4876,7 +5268,7 @@
   }
 
   function updateAwarenessScore() {
-    fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT', { cache: 'no-store' })
+    fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT', { cache: 'no-store' })
       .then(function(r){ if (!r.ok) throw new Error('ticker unavailable'); return r.json(); })
       .then(function(ticker) {
         renderAwareness(computeAwareness(ticker), ticker);
@@ -5267,21 +5659,12 @@
     }
   }
 
-  // ── IQ Milestone Tracking ─────────────────────────────────────
-  var IQ_THRESHOLDS = [190,192,195,198,200,203,206,210,215,220,225,230,240,250,260,275,300];
-
-  function checkMilestones(iq) {
-    IQ_THRESHOLDS.forEach(function(t) {
-      if (iq >= t && (MEM.milestones || []).indexOf(t) === -1) {
-        MEM.milestones = MEM.milestones || [];
-        MEM.milestones.push(t);
-        MEM.iq_log = MEM.iq_log || [];
-        MEM.iq_log.push({ time: Date.now(), iq: t, event: 'milestone' });
-        feedPush('learning', '🧠 IQ MILESTONE REACHED: ' + t + ' — new cognitive threshold unlocked — strengthening all neural pathways');
-        setTimeout(function() { if (window.pulseAll) window.pulseAll(); }, 700);
-      }
-    });
-  }
+  // ── IQ Milestone Tracking: REMOVED 2026-08-10 ─────────────────
+  // The old checkMilestones() pushed "IQ MILESTONE REACHED" feed events as
+  // the browser-local score drifted upward — gamified per-browser state
+  // masquerading as measured growth. The coverage score is author-set and
+  // static; nothing here may inflate it.
+  function checkMilestones() { /* intentionally inert */ }
 
   // ── Activity Feed Integration ─────────────────────────────────
   var F_COLORS = {
@@ -5375,18 +5758,11 @@
     var iq = computeIQ();
     MEM.iq_score = iq;
 
-    // IQ hero score
-    var hero = document.getElementById('iq-hero-score');
-    if (hero) hero.textContent = Math.round(iq);
-
-    // Neural Brain IQ badge
-    var nbIQ = document.getElementById('nb-iq-live');
-    if (nbIQ) nbIQ.textContent = Math.round(iq);
-
-    // All animated score elements
-    document.querySelectorAll('.iq-animated-score').forEach(function(el) {
-      el.textContent = Math.round(iq);
-    });
+    // 2026-08-10: SIIE must NOT overwrite the static author-set coverage
+    // score (#iq-hero-score) or any coverage badge. Visitors were seeing
+    // the labeled "author-defined 189" silently morph into a rising ~207+
+    // computed from browser-local counters — neither author-set nor
+    // measured. The hero stays exactly what the HTML says it is.
 
     // SIIE panel live stats
     setVal('siie-data-points', (MEM.data_ingested || 0).toLocaleString());
@@ -5535,10 +5911,10 @@
   // ── Standalone fallback loop (runs if hook hasn't fired) ──────
   function standaloneTick() {
     if (Date.now() - lastFetch < 22000) return; // skip if hook fired recently
-    fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=50')
+    fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=50')
       .then(function(r){ return r.json(); })
       .then(function(klines) {
-        fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT')
+        fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT')
           .then(function(r){ return r.json(); })
           .then(function(ticker){ learningTick(analyzeTrend(_closedOnly(klines)), ticker); });
       })
@@ -6101,10 +6477,10 @@
   function fetchAll() {
     if (Date.now()-lastV2Tick < 28000) return;
     var fg  = fetchFG();
-    var p15 = fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=40').then(function(r){return r.json();}).catch(function(){return null;});
-    var p1h = fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=60').then(function(r){return r.json();}).catch(function(){return null;});
-    var p4h = fetch('https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=30').then(function(r){return r.json();}).catch(function(){return null;});
-    var ptk = fetch('https://api.binance.com/api/v3/ticker/24hr?symbol=BTCUSDT').then(function(r){return r.json();}).catch(function(){return null;});
+    var p15 = fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=15m&limit=40').then(function(r){return r.json();}).catch(function(){return null;});
+    var p1h = fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=1h&limit=60').then(function(r){return r.json();}).catch(function(){return null;});
+    var p4h = fetch('https://data-api.binance.vision/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=30').then(function(r){return r.json();}).catch(function(){return null;});
+    var ptk = fetch('https://data-api.binance.vision/api/v3/ticker/24hr?symbol=BTCUSDT').then(function(r){return r.json();}).catch(function(){return null;});
     Promise.all([p15,p1h,p4h,ptk,fg]).then(function(r){ v2Tick(r[0],r[1],r[2],r[3],r[4]); }).catch(function(){ v2Tick(null,null,null,null,null); });
   }
 

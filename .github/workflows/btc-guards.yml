@@ -1,0 +1,54 @@
+name: BTC Brain Guards
+
+# Honesty-guard + ledger test gate. The invariants in tests/ (truth
+# scans, closed-candle behaviour, secret scan, trust scan, …) only
+# protect the site if something actually runs them on every change —
+# until this workflow existed they ran solely on whichever laptop
+# remembered to. Runs on any change touching btc-brain/ or the test
+# suite itself.
+
+on:
+  pull_request:
+    paths:
+      - 'btc-brain/**'
+      - 'tests/**'
+  push:
+    branches: [main]
+    paths:
+      - 'btc-brain/**'
+      - 'tests/**'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: btc-guards-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  guards:
+    name: Honesty guards + ledger tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # tests/run-all.sh drives everything: truth/trust/secret/SEO scans
+      # (bash), closed-candle + army-link + agora behaviour specs (node,
+      # preinstalled on ubuntu-latest), and the phase 1-4 python suites.
+      - name: Run full honesty-guard suite
+        run: bash tests/run-all.sh
+
+      # Explicit ledger gate as well — run-all.sh includes it, but this
+      # keeps the ledger tests visible as their own failure line and
+      # guards against run-all.sh ever dropping them.
+      - name: Run ledger tests
+        run: |
+          cd btc-brain/ledger
+          python3 tests/test_ledger.py

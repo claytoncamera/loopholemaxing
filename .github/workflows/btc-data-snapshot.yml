@@ -53,6 +53,16 @@ jobs:
           python btc-brain/data/scripts/snapshot.py \
             --out btc-brain/data/public
 
+      - name: Archive history (append-only retention for Phase 3 ML)
+        # archive.py is defensive by design: a missing/corrupt snapshot is
+        # logged and skipped and the script exits 0, so this step cannot
+        # fail the snapshot workflow. We deliberately keep
+        # continue-on-error at false — if archive.py ever crashes hard,
+        # that is a real bug we want to see red.
+        continue-on-error: false
+        run: |
+          python btc-brain/data/scripts/archive.py
+
       - name: Show artifact summary
         run: |
           for f in btc-brain/data/public/*.json; do
@@ -71,6 +81,7 @@ jobs:
           git config user.name  "btc-brain-bot"
           git config user.email "btc-brain-bot@users.noreply.github.com"
           git add btc-brain/data/public/*.json
+          git add btc-brain/data/history/
           .github/scripts/safe_push.sh \
             "chore(data): refresh BTC Brain Phase 2 snapshots"
 

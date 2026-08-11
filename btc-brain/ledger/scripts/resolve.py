@@ -39,13 +39,56 @@ from price_source import (  # noqa: E402
     fetch_closes_for_targets,
     PRICE_SOURCE_VERSION,
     SOURCE_BINANCE,
+    SOURCE_COINBASE,
     SOURCE_COINGECKO,
     SOURCE_KRAKEN,
+    VENUE_TAGS,
+    default_venue_sources,
 )
 
 _ps_binance_range_map = _ps._binance_range_map
 
-RESOLVER_VERSION = "resolver-v0.1.0"
+RESOLVER_VERSION = "resolver-v0.2.0"
+
+
+def _normalize_source_tag(candle_source: str) -> str:
+    """Plain venue tag for a Candle.source value.
+
+    Binance candles historically carry PRICE_SOURCE_VERSION
+    ("binance:BTCUSDT:1h"); other sources carry plain tags. The additive
+    `resolution_source` field always gets the plain tag so entry/resolution
+    venue matching is analyzable with a string compare.
+    """
+    return candle_source.split(":", 1)[0]
+
+
+def _entry_venue(forecast: dict) -> str | None:
+    """The venue this forecast's entry price came from, if resolvable.
+
+    Only rows that carry entry_source naming a known venue get venue-matched
+    resolution; everything else (all pre-v0.3 rows, "unknown", coingecko)
+    resolves through the existing default chain exactly as before.
+    """
+    v = str(forecast.get("entry_source") or "").strip().lower()
+    return v if v in VENUE_TAGS else None
+
+
+def _chain_for_venue(venue: str, base_sources: list, venue_sources: dict) -> list:
+    """Source chain that tries `venue` FIRST, then the existing chain.
+
+    If the base chain already contains the venue (e.g. binance), it is moved
+    to the front rather than duplicated — this keeps test-injected fetchers
+    authoritative. If the venue has no available range fn, the base chain is
+    returned unchanged (graceful fallback, never an error).
+    """
+    base = list(base_sources)
+    for i, (tag, fn) in enumerate(base):
+        if tag == venue:
+            return [base[i]] + base[:i] + base[i + 1:]
+    vfn = (venue_sources or {}).get(venue)
+    if vfn is None:
+        return base
+    return [(venue, vfn)] + base
 
 
 def _outcome(direction: str, entry_price: float, actual_close: float) -> int:
@@ -82,6 +125,10 @@ def resolve_one(forecast: dict, candle: Candle) -> dict:
         "candle_open_time": candle.open_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "candle_close_time": candle.close_time.strftime("%Y-%m-%dT%H:%M:%SZ"),
         "price_source": candle.source,
+        # Additive v0.2 field: plain venue tag ("binance", "coinbase", ...)
+        # so entry/resolution venue matching is auditable without parsing
+        # the richer price_source string.
+        "resolution_source": _normalize_source_tag(candle.source),
     }
 
 
@@ -120,16 +167,26 @@ def _instrumented_default_sources():
         _bump()
         return _ps._kraken_fetch(since_s)
 
+    def _coinbase_fetch(start_iso, end_iso):
+        _bump()
+        return _ps._coinbase_fetch(start_iso, end_iso)
+
     sources = [
         (SOURCE_BINANCE, lambda s, e: _ps._binance_range_map(s, e, _binance_fetch)),
         (SOURCE_COINGECKO, lambda s, e: _ps._coingecko_range_map(s, e, _coingecko_fetch)),
         (SOURCE_KRAKEN, lambda s, e: _ps._kraken_range_map(s, e, _kraken_fetch)),
     ]
-    return sources, counter
+    # Venue map for entry-source-matched resolution, same request counter.
+    venue_sources = {
+        SOURCE_BINANCE: lambda s, e: _ps._binance_range_map(s, e, _binance_fetch),
+        SOURCE_COINBASE: lambda s, e: _ps._coinbase_range_map(s, e, _coinbase_fetch),
+        SOURCE_KRAKEN: lambda s, e: _ps._kraken_range_map(s, e, _kraken_fetch),
+    }
+    return sources, counter, venue_sources
 
 
 def run(root: Path, dry_run: bool = False, fetcher=None, now=None,
-        sources=None) -> dict:
+        sources=None, venue_sources=None) -> dict:
     """Resolve every due forecast from a single batched fetch.
 
     All due forecasts are collected first; their closing candles are fetched
@@ -137,6 +194,15 @@ def run(root: Path, dry_run: bool = False, fetcher=None, now=None,
     Binance source, then CoinGecko/Kraken only for stragglers) and resolved by
     in-memory lookup. A target with no candle in any source is left open
     (skipped_not_yet) — never fabricated.
+
+    Venue unification (v0.2): a forecast that carries `entry_source` naming a
+    known venue (binance/coinbase/kraken) is resolved against a chain that
+    tries THAT venue first, falling back to the existing chain when it cannot
+    answer — entry and resolution then come from the same exchange, killing
+    the 5-10bps cross-exchange basis that decided ~90 near-tie resolutions.
+    Rows without entry_source resolve exactly as before. `venue_sources`
+    ({tag: range_map_fn}) may be injected for tests; the comparison rule
+    (close vs entry_price) is unchanged in all paths.
 
     `fetcher` (a Binance-shaped page fetcher) is honored for backward
     compatibility: when provided it becomes the Binance source so existing
@@ -166,18 +232,51 @@ def run(root: Path, dry_run: bool = False, fetcher=None, now=None,
             )]
             _request_counter = counted
         else:
-            sources, _request_counter = _instrumented_default_sources()
+            sources, _request_counter, default_venues = \
+                _instrumented_default_sources()
+            if venue_sources is None:
+                venue_sources = default_venues
     else:
         _request_counter = None
+    if venue_sources is None:
+        venue_sources = default_venue_sources()
+
+    # Partition: rows naming a known entry venue get a venue-first chain;
+    # everything else takes the default chain (bit-identical to pre-v0.2).
+    default_group: list[dict] = []
+    venue_groups: dict[str, list[dict]] = {}
+    for fc in open_forecasts:
+        venue = _entry_venue(fc)
+        if venue is None:
+            default_group.append(fc)
+        else:
+            venue_groups.setdefault(venue, []).append(fc)
 
     stats: dict = {}
-    targets = [fc["target_time"] for fc in open_forecasts]
-    candle_map = fetch_closes_for_targets(
-        targets, now=now, sources=sources, stats=stats
-    )
+    candle_by_forecast: dict[str, Candle] = {}
+    if default_group:
+        cmap = fetch_closes_for_targets(
+            [fc["target_time"] for fc in default_group],
+            now=now, sources=sources, stats=stats,
+        )
+        for fc in default_group:
+            c = cmap.get(fc["target_time"])
+            if c is not None:
+                candle_by_forecast[fc["forecast_id"]] = c
+    for venue in sorted(venue_groups):
+        group = venue_groups[venue]
+        chain = _chain_for_venue(venue, sources, venue_sources)
+        cmap = fetch_closes_for_targets(
+            [fc["target_time"] for fc in group],
+            now=now, sources=chain, stats=stats,
+        )
+        for fc in group:
+            c = cmap.get(fc["target_time"])
+            if c is not None:
+                candle_by_forecast[fc["forecast_id"]] = c
 
     for fc in open_forecasts:
-        candle = candle_map.get(fc["target_time"])
+        candle = candle_by_forecast.get(fc["forecast_id"])
         if candle is None:
             summary["skipped_not_yet"].append(
                 {"forecast_id": fc["forecast_id"],

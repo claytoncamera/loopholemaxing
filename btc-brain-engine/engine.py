@@ -77,8 +77,16 @@ log = setup_logging()
 
 # ── HTTP helpers with retry ──────────────────────────────────────────
 def fetch_json(url: str, retries: int = 3, backoff: float = 2.0) -> dict | None:
-    """Fetch JSON from URL with exponential backoff retries."""
-    for attempt in range(1, retries + 1):
+    """Fetch JSON from URL with exponential backoff retries.
+
+    429s get special treatment (2026-08-05: CoinGecko 429'd all 3 attempts at
+    2s/4s spacing and the run died) — honor Retry-After when present, floor the
+    wait at 30s otherwise, and take an extra attempt. This is a daily batch
+    job; waiting minutes beats failing for a day.
+    """
+    attempt, max_attempts = 0, retries
+    while attempt < max_attempts:
+        attempt += 1
         try:
             req = urllib.request.Request(
                 url,
@@ -89,14 +97,25 @@ def fetch_json(url: str, retries: int = 3, backoff: float = 2.0) -> dict | None:
                 log.debug(f"  ✓ Fetched {url.split('?')[0].split('/')[-1]}")
                 return data
         except urllib.error.HTTPError as e:
-            log.warning(f"  HTTP {e.code} on attempt {attempt}/{retries}: {url[:60]}")
+            log.warning(f"  HTTP {e.code} on attempt {attempt}/{max_attempts}: {url[:60]}")
+            if e.code == 429 and attempt < max_attempts + 1:
+                if max_attempts == retries:      # grant one extra try, once
+                    max_attempts = retries + 1
+                try:
+                    retry_after = int((e.headers or {}).get("Retry-After", 0))
+                except (TypeError, ValueError):
+                    retry_after = 0
+                wait = max(retry_after, 30 * attempt)
+                log.info(f"  Rate limited — waiting {wait}s (Retry-After: {retry_after or 'n/a'})...")
+                time.sleep(wait)
+                continue
         except Exception as e:
-            log.warning(f"  Attempt {attempt}/{retries} failed: {e}")
-        if attempt < retries:
+            log.warning(f"  Attempt {attempt}/{max_attempts} failed: {e}")
+        if attempt < max_attempts:
             wait = backoff ** attempt
             log.info(f"  Retrying in {wait:.0f}s...")
             time.sleep(wait)
-    log.error(f"  ✗ All {retries} attempts failed for: {url[:80]}")
+    log.error(f"  ✗ All {max_attempts} attempts failed for: {url[:80]}")
     return None
 
 
@@ -494,6 +513,10 @@ def send_email(data: dict, analysis: dict, pdf_path: str | None) -> bool:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type":  "application/json",
+                # No UA = python-urllib default = Cloudflare 1010 bot block.
+                # Every "Resend HTTP 403: error code: 1010" since 2026-07-21
+                # was this — the alert mail path was dead, not the key.
+                "User-Agent":    "BTC-Brain-Engine/2.0 (+https://loopholemaxing.com/btc-brain)",
             },
             method="POST",
         )
@@ -555,7 +578,10 @@ def main():
     # Generate PDF
     pdf_path = generate_pdf(data, analysis)
 
-    # Send email
+    # Send email. A send is only *attempted* when the API key is present —
+    # locally / in dry-runs without RESEND_API_KEY the send path is skipped
+    # and that is not a failure.
+    send_attempted = bool(CONFIG["RESEND_API_KEY"])
     email_sent = send_email(data, analysis, pdf_path)
 
     # Cleanup temp PDF
@@ -569,6 +595,13 @@ def main():
     log.info("=" * 55)
     log.info(f"  Done. Email sent: {email_sent}")
     log.info("=" * 55)
+
+    # An attempted-but-failed send must turn the workflow red. From
+    # 2026-07-21 to 2026-08-10 the Resend POST 403'd every day and this
+    # engine still exited 0 — a green check on top of a dead briefing.
+    if send_attempted and not email_sent:
+        log.error("Email send was attempted and FAILED — exiting non-zero.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

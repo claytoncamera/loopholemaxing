@@ -48,6 +48,7 @@ PRICE_SOURCE_VERSION = "binance:BTCUSDT:1h"
 SOURCE_BINANCE = "binance"
 SOURCE_COINGECKO = "coingecko"
 SOURCE_KRAKEN = "kraken"
+SOURCE_COINBASE = "coinbase"
 
 _HOUR = timedelta(hours=1)
 _HOUR_MS = 3_600_000
@@ -265,6 +266,60 @@ def _kraken_range_map(
     return out
 
 
+# ── Coinbase (entry-venue source) ─────────────────────────────────────────────
+# The CI data snapshot's entry price frequently comes from Coinbase (Binance
+# returns HTTP 451 from GitHub runners), so v0.3 forecasts carry
+# entry_source="coinbase" and must RESOLVE against Coinbase too — a 5-10bps
+# cross-exchange basis decided ~90 near-tie resolutions pre-v0.3.
+# Coinbase Exchange public API: /products/BTC-USD/candles?granularity=3600
+# returns up to 300 rows [[time, low, high, open, close, volume], ...] newest
+# first, where `time` is the bar's OPEN in seconds, hour-aligned. The bar that
+# CLOSES at hour H opens at H-3600; its close (index 4) is the hourly-boundary
+# close, matching the quantity every other source resolves.
+_COINBASE_URL = (
+    "https://api.exchange.coinbase.com/products/BTC-USD/candles"
+    "?granularity=3600&start={start}&end={end}"
+)
+_COINBASE_PAGE_LIMIT = 300  # max candles per Coinbase candles request.
+
+
+def _coinbase_fetch(start_iso: str, end_iso: str):
+    return _http_get_json(_COINBASE_URL.format(start=start_iso, end=end_iso),
+                          timeout=20)
+
+
+def _coinbase_range_map(
+    start_ms: int, end_ms: int, fetcher=_coinbase_fetch
+) -> dict[int, Candle]:
+    """Map {close_time_epoch_s: Candle} from Coinbase 1h candles, paging by 300."""
+    out: dict[int, Candle] = {}
+    # The first bar we need OPENS one hour before start (it closes at start).
+    cur_s = start_ms // 1000 - 3600
+    end_s = end_ms // 1000
+    guard = 0
+    while cur_s <= end_s and guard < 200:
+        guard += 1
+        chunk_end_s = min(cur_s + (_COINBASE_PAGE_LIMIT - 1) * 3600, end_s)
+        start_iso = datetime.fromtimestamp(cur_s, tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ")
+        end_iso = datetime.fromtimestamp(chunk_end_s, tz=timezone.utc).strftime(
+            "%Y-%m-%dT%H:%M:%SZ")
+        rows = fetcher(start_iso, end_iso)
+        if isinstance(rows, dict):  # error payload, e.g. {"message": ...}
+            raise PriceFetchError(f"coinbase error: {rows}")
+        for row in rows or []:
+            open_s = int(row[0])
+            close_s = open_s + 3600
+            out[close_s] = Candle(
+                open_time=datetime.fromtimestamp(open_s, tz=timezone.utc),
+                close_time=datetime.fromtimestamp(close_s, tz=timezone.utc),
+                close_price=float(row[4]),
+                source=SOURCE_COINBASE,
+            )
+        cur_s = chunk_end_s + 3600
+    return out
+
+
 # ── Source registry (Binance -> CoinGecko -> Kraken) ──────────────────────────
 def _default_sources():
     """(tag, range_map_fn) in fallback order. Each fn: (start_ms,end_ms)->map."""
@@ -273,6 +328,20 @@ def _default_sources():
         (SOURCE_COINGECKO, lambda s, e: _coingecko_range_map(s, e)),
         (SOURCE_KRAKEN, lambda s, e: _kraken_range_map(s, e)),
     ]
+
+
+# Venues a forecast's entry_source can name; the resolver prefers the matching
+# venue so entry and resolution prices come from the SAME exchange.
+VENUE_TAGS = (SOURCE_BINANCE, SOURCE_COINBASE, SOURCE_KRAKEN)
+
+
+def default_venue_sources() -> dict:
+    """{venue_tag: range_map_fn} for entry-venue-matched resolution."""
+    return {
+        SOURCE_BINANCE: lambda s, e: _binance_range_map(s, e, _binance_klines),
+        SOURCE_COINBASE: lambda s, e: _coinbase_range_map(s, e),
+        SOURCE_KRAKEN: lambda s, e: _kraken_range_map(s, e),
+    }
 
 
 def _lookup(cmap: dict[int, Candle], target: datetime) -> Optional[Candle]:

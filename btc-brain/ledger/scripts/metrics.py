@@ -1,11 +1,11 @@
 """
 Compute public accuracy metrics from the ledger and write accuracy.json.
 
-Buckets: by horizon, by model_version, by direction, by regime, plus rolling
-7d / 30d / 90d windows.
+Buckets: by horizon, by model_version, by (model_version × horizon), by
+direction, by regime, plus rolling 7d / 30d / 90d windows.
 
 For every bucket we report:
-  - n, hit_rate, brier, logloss, ece
+  - n, hit_rate, brier, logloss, ece, wilson_lb_95
   - baseline_brier / baseline_hit_rate / base_rate  (legacy majority-of-outcome)
   - vs_majority_pp  (hit_rate − max(always_up, always_down) on realized moves)
   - expectancy_bps / expectancy_maker_2bps / expectancy_taker_10bps
@@ -15,11 +15,25 @@ For every bucket we report:
 
 A `display_ready` flag tells the frontend whether the bucket meets the
 minimum sample size for public display (default min_n_display=20).
+
+v0.3.0 additions (all additive — every v0.2.0 field is preserved):
+  - wilson_lb_95 in every bucket (95% Wilson lower bound on hit_rate)
+  - top-level `by_model_horizon` all-time buckets keyed "model|horizon"
+  - `rolling.by_horizon` and `rolling.by_model_horizon`: per-slice 7d/30d/90d
+    compact windows keyed on **issued_at** (the legacy rolling.7d/30d/90d
+    global windows stay keyed on resolved_at, unchanged)
+  - ECE fixed: 5 quantile bins over predicted probability, n>=50 (the old
+    fixed-decile binning was structurally always null on our narrow
+    ~[0.50, 0.55] probability range)
+  - side artifacts `recent.json` (last 50 joined rows) and `trades.json`
+    (the paper trade tape, one group per model|horizon), written next to
+    accuracy.json.
 """
 from __future__ import annotations
 
 import argparse
 import json
+import math
 import statistics
 import sys
 from collections import defaultdict
@@ -29,11 +43,37 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from ledger import Ledger, parse_iso_utc, utc_now_iso  # noqa: E402
 
-METRICS_VERSION = "metrics-v0.2.0"
+METRICS_VERSION = "metrics-v0.3.0"
 DEFAULT_MIN_N_DISPLAY = 20
-ECE_BINS = 10
+ECE_QUANTILE_BINS = 5
+ECE_MIN_N = 50
 MAKER_RT = 0.0002   # 2 bps round-trip
 TAKER_RT = 0.0010   # 10 bps round-trip
+MAKER_RT_BPS = MAKER_RT * 10000.0
+RECENT_SCHEMA_VERSION = "recent-v0.1.0"
+TRADES_SCHEMA_VERSION = "trades-v0.1.0"
+RECENT_ROWS = 50
+TRADES_MIN_N = 5
+TRADES_LAST_N = 30
+ROLLING_WINDOWS_DAYS = (7, 30, 90)
+
+
+def wilson_lb(p: float, n: int, z: float = 1.96) -> float:
+    """95% Wilson score lower bound for a binomial proportion.
+
+    Same math as edge_hunter._wilson_lower — kept here so the metrics module
+    has no import edge on the hunter.
+    """
+    if n <= 0:
+        return 0.0
+    den = 1 + z * z / n
+    centre = p + z * z / (2 * n)
+    margin = z * math.sqrt(p * (1 - p) / n + z * z / (4 * n * n))
+    return max(0.0, (centre - margin) / den)
+
+
+def model_horizon_key(model_version: str, horizon: str) -> str:
+    return f"{model_version}|{horizon}"
 
 
 def _outcome_for(forecast: dict, resolution: dict) -> int:
@@ -52,22 +92,38 @@ def _signed_return(forecast: dict, resolution: dict) -> float:
     return -ret
 
 
-def _ece(pairs: list[tuple[float, int]], bins: int = ECE_BINS) -> float | None:
-    if len(pairs) < 20:
-        return None
-    buckets: list[list[tuple[float, int]]] = [[] for _ in range(bins)]
-    for p, o in pairs:
-        idx = min(int(p * bins), bins - 1)
-        buckets[idx].append((p, o))
-    nonempty = [b for b in buckets if b]
-    if len(nonempty) < 3:
-        return None
+def _ece(pairs: list[tuple[float, int]],
+         bins: int = ECE_QUANTILE_BINS,
+         min_n: int = ECE_MIN_N) -> float | None:
+    """Expected calibration error over QUANTILE bins of predicted probability.
+
+    Our issued probabilities live in a narrow band (~[0.50, 0.55]), so fixed
+    decile bins collapse into a single bucket and ECE was structurally null.
+    Quantile bins split the sorted probabilities into `bins` equal-count
+    chunks, which is always computable once n >= min_n.
+    """
     n = len(pairs)
+    if n < min_n:
+        return None
+    # Group identical probabilities so a tie never straddles two bins —
+    # otherwise ECE would depend on the arbitrary order of tied rows.
+    groups: dict[float, list[int]] = defaultdict(list)
+    for p, o in pairs:
+        groups[p].append(o)
+    buckets: list[list[tuple[float, int]]] = [[] for _ in range(bins)]
+    cum = 0
+    for p in sorted(groups):
+        outcomes = groups[p]
+        idx = min(bins - 1, (cum * bins) // n)
+        buckets[idx].extend((p, o) for o in outcomes)
+        cum += len(outcomes)
     ece = 0.0
-    for b in nonempty:
-        avg_p = sum(p for p, _ in b) / len(b)
-        avg_o = sum(o for _, o in b) / len(b)
-        ece += (len(b) / n) * abs(avg_p - avg_o)
+    for chunk in buckets:
+        if not chunk:
+            continue
+        avg_p = sum(p for p, _ in chunk) / len(chunk)
+        avg_o = sum(o for _, o in chunk) / len(chunk)
+        ece += (len(chunk) / n) * abs(avg_p - avg_o)
     return ece
 
 
@@ -137,6 +193,7 @@ def _bucket_metrics(rows: list[dict], min_n_display: int) -> dict:
         "brier": (statistics.fmean(briers) if briers else None),
         "logloss": (statistics.fmean(losses) if losses else None),
         "ece": _ece(pairs),
+        "wilson_lb_95": (wilson_lb(hit_rate, n) if hit_rate is not None else None),
         **base,
         "always_up_rate": always_up,
         "always_down_rate": always_down,
@@ -170,6 +227,48 @@ def _within(window_days: int, now: datetime, joined: list[dict]) -> list[dict]:
     return out
 
 
+def _within_issued(window_days: int, now: datetime, joined: list[dict]) -> list[dict]:
+    """Rows whose forecast was ISSUED inside the window (resolved rows only)."""
+    cutoff = now - timedelta(days=window_days)
+    return [r for r in joined
+            if parse_iso_utc(r["forecast"]["issued_at"]) >= cutoff]
+
+
+def _compact_bucket(rows: list[dict]) -> dict:
+    """Small rolling-window bucket: n, hit_rate, brier, expectancy, wilson."""
+    n = len(rows)
+    if not n:
+        return {"n": 0, "hit_rate": None, "brier": None,
+                "expectancy_bps": None, "expectancy_maker_2bps": None,
+                "wilson_lb_95": None}
+    hits = 0
+    briers: list[float] = []
+    signed: list[float] = []
+    for r in rows:
+        f, res = r["forecast"], r["resolution"]
+        hits += _outcome_for(f, res)
+        briers.append(float(res["brier_component"]))
+        signed.append(_signed_return(f, res))
+    hit_rate = hits / n
+    exp = statistics.fmean(signed)
+    return {
+        "n": n,
+        "hit_rate": hit_rate,
+        "brier": statistics.fmean(briers),
+        "expectancy_bps": exp * 10000.0,
+        "expectancy_maker_2bps": (exp - MAKER_RT) * 10000.0,
+        "wilson_lb_95": wilson_lb(hit_rate, n),
+    }
+
+
+def _rolling_windows_issued(rows: list[dict], now: datetime) -> dict:
+    """{"7d": compact, "30d": compact, "90d": compact} keyed on issued_at."""
+    return {
+        f"{d}d": _compact_bucket(_within_issued(d, now, rows))
+        for d in ROLLING_WINDOWS_DAYS
+    }
+
+
 def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
     ledger = Ledger.at(root)
     joined_all = ledger.joined()
@@ -178,12 +277,14 @@ def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
 
     by_horizon: dict[str, list] = defaultdict(list)
     by_model: dict[str, list] = defaultdict(list)
+    by_model_horizon: dict[str, list] = defaultdict(list)
     by_direction: dict[str, list] = defaultdict(list)
     by_regime: dict[str, list] = defaultdict(list)
     for r in resolved:
         f = r["forecast"]
         by_horizon[f["horizon"]].append(r)
         by_model[f["model_version"]].append(r)
+        by_model_horizon[model_horizon_key(f["model_version"], f["horizon"])].append(r)
         by_direction[f.get("direction", "unknown")].append(r)
         by_regime[f.get("regime_at_issue") or "unknown"].append(r)
 
@@ -224,6 +325,12 @@ def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
             m: _bucket_metrics(rows, min_n_display)
             for m, rows in sorted(by_model.items())
         },
+        # All-time (model_version × horizon) buckets, keyed "model|horizon".
+        # This is the bucket the signal gate evaluates.
+        "by_model_horizon": {
+            k: _bucket_metrics(rows, min_n_display)
+            for k, rows in sorted(by_model_horizon.items())
+        },
         "by_direction": {
             d: _bucket_metrics(rows, min_n_display)
             for d, rows in sorted(by_direction.items())
@@ -234,13 +341,150 @@ def build(root: Path, min_n_display: int = DEFAULT_MIN_N_DISPLAY) -> dict:
         },
         "edge_scoreboard": scoreboard,
         "rolling": {
+            # Legacy global windows — keyed on resolved_at, unchanged.
             "7d": _bucket_metrics(_within(7, now, resolved), min_n_display),
             "30d": _bucket_metrics(_within(30, now, resolved), min_n_display),
             "90d": _bucket_metrics(_within(90, now, resolved), min_n_display),
+            # v0.3.0: per-slice windows keyed on issued_at (a per-horizon
+            # rolling gate must not mix horizons or leak on resolve lag).
+            "window_basis": {
+                "7d": "resolved_at", "30d": "resolved_at", "90d": "resolved_at",
+                "by_horizon": "issued_at", "by_model_horizon": "issued_at",
+            },
+            "by_horizon": {
+                h: _rolling_windows_issued(rows, now)
+                for h, rows in sorted(by_horizon.items())
+            },
+            "by_model_horizon": {
+                k: _rolling_windows_issued(rows, now)
+                for k, rows in sorted(by_model_horizon.items())
+            },
         },
         "global": _bucket_metrics(resolved, min_n_display),
     }
     return out
+
+
+def build_recent(root: Path, limit: int = RECENT_ROWS) -> dict:
+    """Small joined tape for the site: last `limit` forecasts, newest first.
+
+    Replaces the site's 2MB raw-JSONL download for its 25-row table.
+    """
+    ledger = Ledger.at(root)
+    joined = ledger.joined()
+    total_issued = len(joined)
+    total_resolved = sum(
+        1 for r in joined
+        if r["resolution"] and r["resolution"].get("status") == "resolved")
+    joined.sort(key=lambda r: (r["forecast"].get("issued_at", ""),
+                               r["forecast"].get("forecast_id", "")),
+                reverse=True)
+    rows = []
+    for r in joined[:limit]:
+        f, res = r["forecast"], r["resolution"]
+        resolved = bool(res and res.get("status") == "resolved")
+        rows.append({
+            "forecast_id": f["forecast_id"],
+            "issued_at": f["issued_at"],
+            "model_version": f["model_version"],
+            "horizon": f["horizon"],
+            "direction": f["direction"],
+            "probability": f["probability"],
+            "entry_price": f["entry_price"],
+            "target_time": f["target_time"],
+            "resolved": resolved,
+            "actual_close": (res["actual_close"] if resolved else None),
+            "actual_return_bps": (float(res["actual_return"]) * 10000.0
+                                  if resolved else None),
+            "direction_correct": (res["direction_correct"] if resolved else None),
+            "resolved_at": (res["resolved_at"] if resolved else None),
+        })
+    return {
+        "schema_version": RECENT_SCHEMA_VERSION,
+        "generated_at": utc_now_iso(),
+        "total_issued": total_issued,
+        "total_resolved": total_resolved,
+        "rows": rows,
+    }
+
+
+def build_trades(root: Path,
+                 min_n: int = TRADES_MIN_N,
+                 last_n: int = TRADES_LAST_N) -> dict:
+    """Paper trade tape: every resolved forecast is one 1-unit paper trade.
+
+    ret_bps_gross = signed return in the forecasted direction (bps);
+    ret_bps_maker = ret_bps_gross − 2 bps maker round-trip.
+    One group per (model_version × horizon) with n >= min_n, trades in
+    issued_at order, cumulative maker curve + drawdown per group.
+    """
+    ledger = Ledger.at(root)
+    resolved = _filter_resolved(ledger.joined())
+
+    grouped: dict[tuple[str, str], list[dict]] = defaultdict(list)
+    for r in resolved:
+        f = r["forecast"]
+        grouped[(f["model_version"], f["horizon"])].append(r)
+
+    groups = []
+    for (model, horizon), rows in sorted(grouped.items()):
+        if len(rows) < min_n:
+            continue
+        rows.sort(key=lambda r: (r["forecast"].get("issued_at", ""),
+                                 r["forecast"].get("forecast_id", "")))
+        trades = []
+        curve = []
+        cum = 0.0
+        peak = 0.0
+        max_dd = 0.0
+        wins = 0
+        for r in rows:
+            f, res = r["forecast"], r["resolution"]
+            gross = _signed_return(f, res) * 10000.0
+            maker = gross - MAKER_RT_BPS
+            win = bool(res["direction_correct"])
+            wins += 1 if win else 0
+            cum += maker
+            peak = max(peak, cum)
+            max_dd = max(max_dd, peak - cum)
+            curve.append([int(parse_iso_utc(f["issued_at"]).timestamp()),
+                          round(cum, 4)])
+            trades.append({
+                "issued_at": f["issued_at"],
+                "direction": f["direction"],
+                "probability": f["probability"],
+                "entry_price": f["entry_price"],
+                "exit_price": res["actual_close"],
+                "ret_bps_gross": round(gross, 4),
+                "ret_bps_maker": round(maker, 4),
+                "win": win,
+            })
+        n = len(rows)
+        groups.append({
+            "model_version": model,
+            "horizon": horizon,
+            "n": n,
+            "wins": wins,
+            "hit_rate": wins / n,
+            "sum_bps_maker": round(cum, 4),
+            "avg_bps_maker": round(cum / n, 4),
+            "max_drawdown_bps_maker": round(max_dd, 4),
+            "curve": curve,
+            "last_trades": trades[-last_n:],
+        })
+
+    return {
+        "schema_version": TRADES_SCHEMA_VERSION,
+        "generated_at": utc_now_iso(),
+        "fee_bps": {"maker_rt": 2, "taker_rt": 10},
+        "groups": groups,
+    }
+
+
+def _write_json(path: Path, doc: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(doc, indent=2, sort_keys=True) + "\n",
+                    encoding="utf-8")
 
 
 def main(argv: list[str]) -> int:
@@ -248,14 +492,29 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--root", required=True, help="ledger data dir")
     ap.add_argument("--out", required=True, help="output accuracy.json path")
     ap.add_argument("--min-n-display", type=int, default=DEFAULT_MIN_N_DISPLAY)
+    ap.add_argument("--recent-out", default=None,
+                    help="recent.json path (default: recent.json next to --out)")
+    ap.add_argument("--trades-out", default=None,
+                    help="trades.json path (default: trades.json next to --out)")
     args = ap.parse_args(argv)
-    metrics = build(Path(args.root), min_n_display=args.min_n_display)
+    root = Path(args.root)
+    metrics = build(root, min_n_display=args.min_n_display)
     out_path = Path(args.out)
-    out_path.parent.mkdir(parents=True, exist_ok=True)
-    out_path.write_text(json.dumps(metrics, indent=2, sort_keys=True) + "\n",
-                        encoding="utf-8")
+    _write_json(out_path, metrics)
     print(f"wrote {out_path} (resolved={metrics['total_resolved']}, "
           f"forecasts={metrics['total_forecasts']}, version={METRICS_VERSION})")
+
+    recent_path = Path(args.recent_out) if args.recent_out \
+        else out_path.parent / "recent.json"
+    recent = build_recent(root)
+    _write_json(recent_path, recent)
+    print(f"wrote {recent_path} (rows={len(recent['rows'])})")
+
+    trades_path = Path(args.trades_out) if args.trades_out \
+        else out_path.parent / "trades.json"
+    trades = build_trades(root)
+    _write_json(trades_path, trades)
+    print(f"wrote {trades_path} (groups={len(trades['groups'])})")
     return 0
 
 

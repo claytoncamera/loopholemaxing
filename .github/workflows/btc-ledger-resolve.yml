@@ -9,6 +9,12 @@ on:
 permissions:
   contents: write
 
+# Shared group with btc-ledger-issue.yml: the two hourly ledger writers
+# serialize instead of racing each other through safe_push rebases.
+concurrency:
+  group: btc-ledger
+  cancel-in-progress: false
+
 jobs:
   resolve:
     name: Resolve open forecasts and refresh accuracy.json
@@ -39,6 +45,7 @@ jobs:
           python tests/test_ledger.py
           python tests/test_schedule_forecasts.py
           python tests/test_edge_upgrade.py
+          python tests/test_issuer_v03.py
 
       - name: Resolve due forecasts
         run: |
@@ -76,7 +83,9 @@ jobs:
           git add btc-brain/ledger/data/resolutions.jsonl \
                   btc-brain/ledger/public/accuracy.json \
                   btc-brain/ledger/public/edge_report.json \
-                  btc-brain/ledger/public/signal.json
+                  btc-brain/ledger/public/signal.json \
+                  btc-brain/ledger/public/recent.json \
+                  btc-brain/ledger/public/trades.json
           .github/scripts/safe_push.sh \
             "chore(ledger): resolve + edge hunt + signal refresh"
 

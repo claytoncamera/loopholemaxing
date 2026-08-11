@@ -23,6 +23,7 @@ sys.path.insert(0, str(HERE.parent / "scripts"))
 
 import ledger as ledger_mod  # noqa: E402
 from ledger import Ledger, LedgerError, brier, logloss, parse_iso_utc, utc_now_iso  # noqa: E402
+import emit_signal as emit_mod  # noqa: E402
 import metrics as metrics_mod  # noqa: E402
 import price_source as ps  # noqa: E402
 import resolve as resolve_mod  # noqa: E402
@@ -605,10 +606,6 @@ class TestOffByOneRegressionLock(unittest.TestCase):
         self.assertEqual(single.close_time, batched[target].close_time)
 
 
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
-
-
 # ── Metrics v0.2 edge fields ─────────────────────────────────────────────────
 class TestMetricsV2(unittest.TestCase):
     def setUp(self):
@@ -720,7 +717,7 @@ class TestMetricsV2(unittest.TestCase):
     def test_expectancy_and_direction_fields(self):
         self._seed_resolved()
         m = metrics_mod.build(self.root, min_n_display=5)
-        self.assertEqual(m["metrics_version"], "metrics-v0.2.0")
+        self.assertEqual(m["metrics_version"], "metrics-v0.3.0")
         h = m["by_horizon"]["24h"]
         self.assertIn("expectancy_bps", h)
         self.assertIn("expectancy_maker_2bps", h)
@@ -733,3 +730,503 @@ class TestMetricsV2(unittest.TestCase):
         self.assertGreater(h["hit_rate"], 0.6)
         # positive expectancy expected
         self.assertGreater(h["expectancy_bps"], 0)
+
+
+# ── Shared seeding helper for the v0.3 suites ────────────────────────────────
+def _iso(dt: datetime) -> str:
+    return dt.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _seed_pair(root: Path, *, issued_at: str, target_time: str,
+               horizon: str = "24h", model: str = "v9.9.9-test",
+               direction: str = "up", probability: float = 0.52,
+               correct: bool = True, ret: float = 0.01,
+               entry: float = 100.0, resolved_at: str | None = None,
+               resolve_row: bool = True) -> dict:
+    """Append one forecast (and optionally its resolution) with full control.
+
+    `ret` is the RAW market return (positive = price went up), independent of
+    `direction`; `correct` is written verbatim as direction_correct.
+    """
+    import uuid as _uuid
+    L = Ledger.at(root)
+    f = _good_forecast(
+        forecast_id=str(_uuid.uuid4()),
+        issued_at=issued_at,
+        target_time=target_time,
+        horizon=horizon,
+        model_version=model,
+        direction=direction,
+        probability=probability,
+        entry_price=entry,
+        target_rule=("close_above_entry" if direction == "up"
+                     else "close_below_entry"),
+    )
+    L.append_forecast(f)
+    if resolve_row:
+        o = 1 if correct else 0
+        L.append_resolution({
+            "forecast_id": f["forecast_id"],
+            "resolved_at": resolved_at or target_time,
+            "actual_close": entry * (1 + ret),
+            "actual_return": ret,
+            "direction_correct": correct,
+            "brier_component": brier(probability, o),
+            "logloss_component": logloss(probability, o),
+            "status": "resolved",
+            "resolver_version": "test",
+            "candle_open_time": issued_at,
+            "candle_close_time": target_time,
+            "price_source": "test",
+        })
+    return f
+
+
+# ── J: Wilson lower bound ────────────────────────────────────────────────────
+class TestWilsonLB(unittest.TestCase):
+    def test_zero_n(self):
+        self.assertEqual(metrics_mod.wilson_lb(0.6, 0), 0.0)
+
+    def test_known_value(self):
+        # Hand-checked: p=0.6, n=105, z=1.96 → ≈ 0.5044.
+        self.assertAlmostEqual(metrics_mod.wilson_lb(0.6, 105), 0.5044, places=3)
+
+    def test_matches_edge_hunter_formula(self):
+        import edge_hunter as eh
+        for p, n in [(0.5, 10), (0.52, 62), (0.7, 45), (0.435, 62)]:
+            self.assertAlmostEqual(metrics_mod.wilson_lb(p, n),
+                                   eh._wilson_lower(p, n), places=12)
+
+    def test_monotone_in_n(self):
+        # More evidence at the same rate → tighter (higher) lower bound.
+        self.assertLess(metrics_mod.wilson_lb(0.6, 20),
+                        metrics_mod.wilson_lb(0.6, 200))
+
+    def test_always_below_p_and_nonnegative(self):
+        for p, n in [(0.05, 8), (0.5, 30), (0.95, 30)]:
+            lb = metrics_mod.wilson_lb(p, n)
+            self.assertGreaterEqual(lb, 0.0)
+            self.assertLess(lb, p)
+
+    def test_in_buckets(self):
+        # by_horizon / by_model_horizon buckets carry wilson_lb_95.
+        tmp = tempfile.TemporaryDirectory()
+        try:
+            root = Path(tmp.name)
+            now = datetime.now(timezone.utc)
+            for i in range(10):
+                t0 = now - timedelta(days=2, hours=i + 1)
+                _seed_pair(root, issued_at=_iso(t0),
+                           target_time=_iso(t0 + timedelta(hours=24)),
+                           model="vA", correct=(i % 2 == 0),
+                           ret=(0.01 if i % 2 == 0 else -0.01))
+            m = metrics_mod.build(root)
+            h = m["by_horizon"]["24h"]
+            self.assertAlmostEqual(h["wilson_lb_95"],
+                                   metrics_mod.wilson_lb(h["hit_rate"], h["n"]),
+                                   places=12)
+            mh = m["by_model_horizon"]["vA|24h"]
+            self.assertEqual(mh["n"], 10)
+            self.assertIn("wilson_lb_95", mh)
+        finally:
+            tmp.cleanup()
+
+
+# ── K: per-horizon rolling windows keyed on issued_at ────────────────────────
+class TestRollingIssuedAt(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.now = datetime.now(timezone.utc)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_issued_at_keying_excludes_old_issue_recent_resolve(self):
+        # Row A: issued 40d ago, resolved yesterday. resolved_at-keyed legacy
+        # window counts it; the new issued_at-keyed window must NOT.
+        a_issue = self.now - timedelta(days=40)
+        _seed_pair(self.root, issued_at=_iso(a_issue),
+                   target_time=_iso(a_issue + timedelta(hours=24)),
+                   model="vM", correct=True, ret=0.01,
+                   resolved_at=_iso(self.now - timedelta(days=1)))
+        # Row B: issued 5d ago, resolved 4d ago — inside both windows.
+        b_issue = self.now - timedelta(days=5)
+        _seed_pair(self.root, issued_at=_iso(b_issue),
+                   target_time=_iso(b_issue + timedelta(hours=24)),
+                   model="vM", correct=False, ret=-0.01)
+        m = metrics_mod.build(self.root)
+        self.assertEqual(m["rolling"]["30d"]["n"], 2,
+                         "legacy global window stays resolved_at-keyed")
+        r_h = m["rolling"]["by_horizon"]["24h"]["30d"]
+        self.assertEqual(r_h["n"], 1,
+                         "issued_at-keyed window must drop the 40d-old issue")
+        self.assertAlmostEqual(r_h["hit_rate"], 0.0)
+        r_mh = m["rolling"]["by_model_horizon"]["vM|24h"]["30d"]
+        self.assertEqual(r_mh["n"], 1)
+        # 90d window catches both.
+        self.assertEqual(m["rolling"]["by_horizon"]["24h"]["90d"]["n"], 2)
+
+    def test_windows_do_not_mix_horizons(self):
+        t0 = self.now - timedelta(days=3)
+        _seed_pair(self.root, issued_at=_iso(t0),
+                   target_time=_iso(t0 + timedelta(hours=24)),
+                   horizon="24h", model="vM", correct=True, ret=0.01)
+        _seed_pair(self.root, issued_at=_iso(t0 + timedelta(hours=1)),
+                   target_time=_iso(t0 + timedelta(hours=13)),
+                   horizon="12h", model="vM", correct=False, ret=-0.01)
+        m = metrics_mod.build(self.root)
+        self.assertEqual(m["rolling"]["by_horizon"]["24h"]["30d"]["n"], 1)
+        self.assertEqual(m["rolling"]["by_horizon"]["12h"]["30d"]["n"], 1)
+        self.assertEqual(m["rolling"]["by_model_horizon"]["vM|24h"]["30d"]["n"], 1)
+        self.assertAlmostEqual(
+            m["rolling"]["by_model_horizon"]["vM|24h"]["30d"]["hit_rate"], 1.0)
+
+    def test_compact_bucket_fields_and_maker_fee(self):
+        t0 = self.now - timedelta(days=2)
+        for i, (c, ret) in enumerate([(True, 0.01), (True, 0.02), (False, -0.01)]):
+            _seed_pair(self.root, issued_at=_iso(t0 + timedelta(hours=i)),
+                       target_time=_iso(t0 + timedelta(hours=24 + i)),
+                       model="vM", correct=c, ret=ret)
+        m = metrics_mod.build(self.root)
+        b = m["rolling"]["by_model_horizon"]["vM|24h"]["7d"]
+        for k in ("n", "hit_rate", "brier", "expectancy_bps",
+                  "expectancy_maker_2bps", "wilson_lb_95"):
+            self.assertIn(k, b)
+        # expectancy: mean(0.01, 0.02, -0.01) = 0.006667 → 66.67 bps gross
+        self.assertAlmostEqual(b["expectancy_bps"], 200.0 / 3.0, places=6)
+        self.assertAlmostEqual(b["expectancy_maker_2bps"],
+                               200.0 / 3.0 - 2.0, places=6)
+        self.assertEqual(
+            m["rolling"]["window_basis"]["by_model_horizon"], "issued_at")
+
+
+# ── L: ECE with quantile bins ────────────────────────────────────────────────
+class TestECEQuantile(unittest.TestCase):
+    def test_below_min_n_is_null(self):
+        pairs = [(0.52, 1)] * 49
+        self.assertIsNone(metrics_mod._ece(pairs))
+
+    def test_uniform_prob_all_hits(self):
+        # All p=0.52, all outcome 1 → every quantile bin |0.52-1| → ECE 0.48.
+        pairs = [(0.52, 1)] * 50
+        self.assertAlmostEqual(metrics_mod._ece(pairs), 0.48, places=9)
+
+    def test_perfectly_calibrated_narrow_band(self):
+        # 100 pairs at p=0.50 (half hit) + 100 at p=0.55 (55 hit) → tiny ECE.
+        pairs = ([(0.50, 1)] * 50 + [(0.50, 0)] * 50
+                 + [(0.55, 1)] * 55 + [(0.55, 0)] * 45)
+        e = metrics_mod._ece(pairs)
+        self.assertIsNotNone(e)
+        self.assertLess(e, 0.03)
+
+    def test_computable_on_narrow_prob_range(self):
+        # The old fixed-decile ECE was ALWAYS null on [0.50, 0.55]. Quantile
+        # bins must produce a number once n >= 50.
+        import random
+        rng = random.Random(7)
+        pairs = [(0.50 + 0.05 * rng.random(), rng.randint(0, 1))
+                 for _ in range(60)]
+        self.assertIsNotNone(metrics_mod._ece(pairs))
+
+    def test_emitted_per_horizon_and_global(self):
+        tmp = tempfile.TemporaryDirectory()
+        try:
+            root = Path(tmp.name)
+            now = datetime.now(timezone.utc)
+            for i in range(50):
+                t0 = now - timedelta(days=10) + timedelta(hours=i)
+                _seed_pair(root, issued_at=_iso(t0),
+                           target_time=_iso(t0 + timedelta(hours=24)),
+                           model="vE", probability=0.50 + 0.001 * (i % 50),
+                           correct=(i % 2 == 0),
+                           ret=(0.01 if i % 2 == 0 else -0.01))
+            m = metrics_mod.build(root)
+            self.assertIsNotNone(m["global"]["ece"])
+            self.assertIsNotNone(m["by_horizon"]["24h"]["ece"])
+            # n < 50 buckets stay null (honesty on thin slices).
+            self.assertEqual(m["by_horizon"]["24h"]["n"], 50)
+        finally:
+            tmp.cleanup()
+
+
+# ── M: trades.json — paper tape fee math + curve ─────────────────────────────
+class TestTradesJson(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.now = datetime.now(timezone.utc)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _seed_up_seq(self, model, rets, start_days_ago=20):
+        t0 = self.now - timedelta(days=start_days_ago)
+        for i, ret in enumerate(rets):
+            _seed_pair(self.root, issued_at=_iso(t0 + timedelta(hours=i)),
+                       target_time=_iso(t0 + timedelta(hours=24 + i)),
+                       model=model, direction="up", correct=(ret > 0), ret=ret)
+
+    def test_fee_math_curve_and_drawdown(self):
+        rets = [0.01, -0.02, 0.005, 0.01, -0.01, 0.02]
+        self._seed_up_seq("vT", rets)
+        doc = metrics_mod.build_trades(self.root)
+        self.assertEqual(doc["schema_version"], "trades-v0.1.0")
+        self.assertEqual(doc["fee_bps"], {"maker_rt": 2, "taker_rt": 10})
+        self.assertEqual(len(doc["groups"]), 1)
+        g = doc["groups"][0]
+        self.assertEqual((g["model_version"], g["horizon"]), ("vT", "24h"))
+        self.assertEqual(g["n"], 6)
+        self.assertEqual(g["wins"], 4)
+        self.assertAlmostEqual(g["hit_rate"], 4 / 6)
+        # makers: 98, -202, 48, 98, -102, 198 → cum 98,-104,-56,42,-60,138
+        makers = [r * 10000.0 - 2.0 for r in rets]
+        self.assertAlmostEqual(g["sum_bps_maker"], sum(makers), places=3)
+        self.assertAlmostEqual(g["avg_bps_maker"], sum(makers) / 6, places=3)
+        self.assertAlmostEqual(g["max_drawdown_bps_maker"], 202.0, places=3)
+        cums = []
+        c = 0.0
+        for mk in makers:
+            c += mk
+            cums.append(c)
+        self.assertEqual(len(g["curve"]), 6)
+        for (ts, cum), want in zip(g["curve"], cums):
+            self.assertIsInstance(ts, int)
+            self.assertAlmostEqual(cum, want, places=3)
+        # curve timestamps are issued_at epoch-seconds, ascending
+        self.assertEqual([p[0] for p in g["curve"]],
+                         sorted(p[0] for p in g["curve"]))
+        t = g["last_trades"][0]
+        for k in ("issued_at", "direction", "probability", "entry_price",
+                  "exit_price", "ret_bps_gross", "ret_bps_maker", "win"):
+            self.assertIn(k, t)
+        self.assertAlmostEqual(t["ret_bps_gross"], 100.0, places=3)
+        self.assertAlmostEqual(t["ret_bps_maker"], 98.0, places=3)
+        self.assertTrue(t["win"])
+
+    def test_down_direction_sign(self):
+        # 5 correct "down" calls on -1% moves → gross +100 each, maker +98.
+        t0 = self.now - timedelta(days=6)
+        for i in range(5):
+            _seed_pair(self.root, issued_at=_iso(t0 + timedelta(hours=i)),
+                       target_time=_iso(t0 + timedelta(hours=24 + i)),
+                       model="vD", direction="down", correct=True, ret=-0.01)
+        g = metrics_mod.build_trades(self.root)["groups"][0]
+        self.assertAlmostEqual(g["sum_bps_maker"], 5 * 98.0, places=3)
+        self.assertEqual(g["wins"], 5)
+
+    def test_min_n_group_filter(self):
+        self._seed_up_seq("vBig", [0.01] * 5)
+        self._seed_up_seq("vTiny", [0.01] * 4, start_days_ago=10)
+        doc = metrics_mod.build_trades(self.root)
+        models = {g["model_version"] for g in doc["groups"]}
+        self.assertEqual(models, {"vBig"}, "groups need n >= 5")
+
+    def test_last_trades_capped_at_30(self):
+        self._seed_up_seq("vMany", [0.01] * 35)
+        g = metrics_mod.build_trades(self.root)["groups"][0]
+        self.assertEqual(g["n"], 35)
+        self.assertEqual(len(g["last_trades"]), 30)
+        self.assertEqual(len(g["curve"]), 35)
+
+
+# ── N: recent.json shape ─────────────────────────────────────────────────────
+class TestRecentJson(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.now = datetime.now(timezone.utc)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_shape_ordering_and_nulls(self):
+        t0 = self.now - timedelta(days=3)
+        _seed_pair(self.root, issued_at=_iso(t0),
+                   target_time=_iso(t0 + timedelta(hours=24)),
+                   model="vR", correct=True, ret=0.0123)
+        _seed_pair(self.root, issued_at=_iso(t0 + timedelta(hours=1)),
+                   target_time=_iso(t0 + timedelta(hours=25)),
+                   model="vR", correct=False, ret=-0.004)
+        # open forecast, newest
+        _seed_pair(self.root, issued_at=_iso(self.now - timedelta(hours=1)),
+                   target_time=_iso(self.now + timedelta(hours=23)),
+                   model="vR", resolve_row=False)
+        doc = metrics_mod.build_recent(self.root)
+        self.assertEqual(doc["schema_version"], "recent-v0.1.0")
+        self.assertIn("generated_at", doc)
+        self.assertEqual(doc["total_issued"], 3)
+        self.assertEqual(doc["total_resolved"], 2)
+        rows = doc["rows"]
+        self.assertEqual(len(rows), 3)
+        # newest-first
+        issued = [r["issued_at"] for r in rows]
+        self.assertEqual(issued, sorted(issued, reverse=True))
+        top = rows[0]
+        for k in ("forecast_id", "issued_at", "model_version", "horizon",
+                  "direction", "probability", "entry_price", "target_time",
+                  "resolved", "actual_close", "actual_return_bps",
+                  "direction_correct", "resolved_at"):
+            self.assertIn(k, top)
+        self.assertFalse(top["resolved"])
+        self.assertIsNone(top["actual_close"])
+        self.assertIsNone(top["actual_return_bps"])
+        self.assertIsNone(top["direction_correct"])
+        self.assertIsNone(top["resolved_at"])
+        resolved_row = rows[2]
+        self.assertTrue(resolved_row["resolved"])
+        self.assertAlmostEqual(resolved_row["actual_return_bps"], 123.0)
+        self.assertTrue(resolved_row["direction_correct"])
+
+    def test_limit_50(self):
+        t0 = self.now - timedelta(days=5)
+        for i in range(55):
+            _seed_pair(self.root,
+                       issued_at=_iso(t0 + timedelta(minutes=i)),
+                       target_time=_iso(t0 + timedelta(hours=24, minutes=i)),
+                       model="vR", correct=True, ret=0.01)
+        doc = metrics_mod.build_recent(self.root)
+        self.assertEqual(doc["total_issued"], 55)
+        self.assertEqual(len(doc["rows"]), 50)
+        # the 5 oldest fell off
+        oldest_kept = min(r["issued_at"] for r in doc["rows"])
+        self.assertGreater(oldest_kept, _iso(t0 + timedelta(minutes=4)))
+
+
+# ── O: signal gates — per-model bucket, pass and fail paths ──────────────────
+class TestSignalGates(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name)
+        self.now = datetime.now(timezone.utc)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _seed_record(self, model, n, hits, days_back=10, horizon="24h"):
+        """n resolved rows, `hits` correct, all issued inside `days_back`."""
+        t0 = self.now - timedelta(days=days_back)
+        step = (days_back * 24 - 30) / max(n, 1)  # keep targets in the past
+        for i in range(n):
+            correct = i < hits
+            _seed_pair(self.root,
+                       issued_at=_iso(t0 + timedelta(hours=i * step)),
+                       target_time=_iso(t0 + timedelta(hours=i * step + 0.5)),
+                       horizon=horizon, model=model,
+                       correct=correct, ret=(0.01 if correct else -0.01))
+
+    def _seed_open(self, model, horizon="24h"):
+        _seed_pair(self.root, issued_at=_iso(self.now - timedelta(hours=1)),
+                   target_time=_iso(self.now + timedelta(hours=23)),
+                   horizon=horizon, model=model, resolve_row=False)
+
+    def test_pass_path_actionable_paper(self):
+        # 45 resolved, 32 hits (0.711): n>=40 ✓, wilson_lb≈0.566>0.50 ✓,
+        # rolling-30d n=45>=20 hit 0.711>=0.52 maker>0 ✓, forecast alive ✓.
+        self._seed_record("vGood", 45, 32)
+        self._seed_open("vGood")
+        doc = emit_mod.build_signal(self.root)
+        self.assertEqual(doc["schema_version"], "signal-v0.2.0")
+        self.assertEqual(doc["status"], "actionable_paper")
+        g = doc["gates"]
+        self.assertTrue(g["ok"])
+        self.assertEqual(g["reasons"], [])
+        self.assertEqual(g["model_version"], "vGood")
+        self.assertEqual(g["n"], 45)
+        self.assertGreater(g["wilson_lb_95"], 0.50)
+        self.assertGreaterEqual(g["rolling_30d"]["n"], 20)
+        self.assertGreater(g["rolling_30d"]["expectancy_maker_2bps"], 0)
+        self.assertEqual(doc["signal"]["model_version"], "vGood")
+
+    def test_policy24_like_failure_emits_shadow_with_reasons(self):
+        # The live bug's shape: model's own 24h record n=21, hit 10/21≈0.476,
+        # negative maker expectancy — while a pooled bucket could look great.
+        # Gate must judge the model's own bucket → shadow.
+        self._seed_record("vPolicy", 21, 10, days_back=20)
+        # A pooled-flattering sibling model with a strong record — the gate
+        # must NOT be fooled by it (this is the old failure mode).
+        self._seed_record("vStrongSibling", 60, 40, days_back=25)
+        self._seed_open("vPolicy")
+        # vPolicy's open forecast is newest, but _pick_forecast tiers by
+        # PREFERRED_MODELS membership; both are unlisted (tier 99) so the
+        # earliest-issued model wins the tier. Make vPolicy the pick
+        # explicitly by checking what was emitted, then assert its gates.
+        doc = emit_mod.build_signal(self.root)
+        self.assertEqual(doc["status"], "shadow")
+        g = doc["gates"]
+        self.assertFalse(g["ok"])
+        emitted_model = doc["signal"]["model_version"]
+        self.assertEqual(g["model_version"], emitted_model,
+                         "gates must describe the EMITTING model's bucket")
+        self.assertEqual(g["bucket"], f"{emitted_model}|24h")
+        # The forecast is still published (honest state), just not actionable.
+        self.assertIsNotNone(doc["signal"])
+        reasons = " | ".join(g["reasons"])
+        if emitted_model == "vPolicy":
+            self.assertIn("n_resolved 21 < 40", reasons)
+            self.assertIn("wilson_lb_95", reasons)
+            self.assertIn("hit_rate", reasons)
+            self.assertIn("not > 0", reasons)
+
+    def test_policy24_bucket_directly(self):
+        # Deterministic version of the above: gate the vPolicy bucket itself.
+        self._seed_record("vPolicy", 21, 10, days_back=20)
+        acc = metrics_mod.build(self.root)
+        fake_forecast = {"model_version": "vPolicy", "horizon": "24h",
+                         "target_time": _iso(self.now + timedelta(hours=5))}
+        g = emit_mod._gates(acc, fake_forecast, now=self.now)
+        self.assertFalse(g["ok"])
+        reasons = " | ".join(g["reasons"])
+        self.assertIn("n_resolved 21 < 40", reasons)
+        self.assertIn("wilson_lb_95", reasons)          # 0.283 ≤ 0.50
+        self.assertIn("rolling-30d hit_rate", reasons)  # 0.476 < 0.52
+        self.assertIn("expectancy_maker_2bps", reasons)  # negative
+        # rolling n=21 >= 20 → that gate alone passes; not in reasons.
+        self.assertNotIn("rolling-30d n", reasons)
+
+    def test_expired_forecast_is_shadow_even_with_good_record(self):
+        # Metrics all pass, but the newest forecast's target is in the past.
+        self._seed_record("vGood", 45, 32)
+        doc = emit_mod.build_signal(self.root)
+        self.assertEqual(doc["status"], "shadow")
+        g = doc["gates"]
+        self.assertEqual(len(g["reasons"]), 1)
+        self.assertIn("expired", g["reasons"][0])
+
+    def test_legacy_fields_still_present(self):
+        # The site parses signal-v0.1.0 fields — v0.2.0 must keep them all.
+        self._seed_record("vGood", 45, 32)
+        self._seed_open("vGood")
+        doc = emit_mod.build_signal(self.root)
+        for k in ("schema_version", "generated_at", "status", "gates",
+                  "not_financial_advice", "disclaimer", "economics", "signal"):
+            self.assertIn(k, doc)
+        g = doc["gates"]
+        for k in ("ok", "n", "hit_rate", "expectancy_maker_2bps",
+                  "vs_majority_pp", "rolling_30d_hit", "reason"):
+            self.assertIn(k, g)
+        for k in ("fee_assumption", "horizon_primary", "expectancy_maker_2bps",
+                  "hit_rate", "vs_majority_pp", "n"):
+            self.assertIn(k, doc["economics"])
+        for k in ("signal_id", "forecast_id", "issued_at", "expires_at",
+                  "asset", "horizon", "direction", "probability", "entry_ref",
+                  "model_version"):
+            self.assertIn(k, doc["signal"])
+
+    def test_stale_accuracy_without_model_buckets_fails_closed(self):
+        # An old (pre-v0.3.0) accuracy.json has no by_model_horizon — the
+        # gate must fail closed (shadow), never crash or pass.
+        self._seed_record("vGood", 45, 32)
+        self._seed_open("vGood")
+        acc = metrics_mod.build(self.root)
+        acc.pop("by_model_horizon", None)
+        acc["rolling"].pop("by_model_horizon", None)
+        fake_forecast = {"model_version": "vGood", "horizon": "24h",
+                         "target_time": _iso(self.now + timedelta(hours=5))}
+        g = emit_mod._gates(acc, fake_forecast, now=self.now)
+        self.assertFalse(g["ok"])
+        self.assertIn("metrics-v0.3.0", " | ".join(g["reasons"]))
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)

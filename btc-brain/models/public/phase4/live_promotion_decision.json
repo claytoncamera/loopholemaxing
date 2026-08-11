@@ -1,0 +1,176 @@
+{
+  "schema_version": "live-promotion-decision-v0.1.0",
+  "generated_at": "2026-08-11T03:15:16Z",
+  "evaluated_on": "2026-08-10",
+  "phase": "phase6-promotion-kill",
+  "plan_ref": "research/upgrade_master_plan_2026-07-21.md (Phase 6)",
+  "human_note": "research/promotion_decision_20260810.md",
+  "metrics_source": "ledger/public/accuracy.json (metrics-v0.3.0), recomputed live 2026-08-10",
+  "candidate": {
+    "model_version": "v0.2.0-shadow-policy24",
+    "first_issued_at": "2026-07-21T00:00:00Z",
+    "last_issued_at": "2026-08-11T00:00:00Z",
+    "shadow_days": 21,
+    "horizons_issued": [
+      "12h",
+      "24h"
+    ]
+  },
+  "baseline": {
+    "model_version": "v0.1.0-baseline-shadow"
+  },
+  "decision": "kill",
+  "successor": {
+    "model_version": "v0.3.0-shadow-guard24",
+    "status": "in_build",
+    "note": "Being built in parallel (separate agent) \u2014 reference only; not yet issuing."
+  },
+  "decision_rationale": "Candidate fails every Phase 6 promotion gate on its own 24h bucket and shows negative fee-adjusted expectancy on every slice and window it has (24h, 12h, pooled, rolling-30d). The letter of the plan's kill rule (24h maker < 0 over 60d rolling with n>=40) is not yet reachable at n=21, but the model-level record (n=62, maker -21.78 bps) already clears the n bar with negative expectancy, and no gate trends toward passing. Continuing issuance would only extend a failing record while the successor is already in build. Kill = stop candidate issuance; ledger history is append-only and retained.",
+  "promotion_gates": {
+    "min_resolved_30_on_24h": {
+      "value": 21,
+      "threshold": 30,
+      "pass": false
+    },
+    "wilson_lb_95_gt_0.52_at_n_100_on_24h": {
+      "wilson_lb_95": 0.283437,
+      "n": 21,
+      "threshold": {
+        "wilson_lb_95": 0.52,
+        "n": 100
+      },
+      "pass": false
+    },
+    "maker_expectancy_gt_20bps_on_24h": {
+      "value_bps": -29.9028,
+      "threshold_bps": 20,
+      "pass": false
+    },
+    "max_brier_0.245_on_24h": {
+      "value": 0.249011,
+      "threshold": 0.245,
+      "pass": false
+    },
+    "beat_baseline_on_24h": {
+      "candidate_hit": 0.47619,
+      "baseline_hit": 0.6,
+      "candidate_maker_bps": -29.9028,
+      "baseline_maker_bps": 38.2983,
+      "pass": false
+    },
+    "ece_lte_0.08_on_24h": {
+      "value": null,
+      "threshold": 0.08,
+      "pass": null,
+      "note": "not computable at n=21 (< 50 required by metrics-v0.3.0 quantile ECE)"
+    },
+    "manual_approval": {
+      "required": true,
+      "granted": false
+    }
+  },
+  "kill_rule": {
+    "rule": "24h maker expectancy < 0 over 60d rolling with n >= 40 -> stop candidate issuance",
+    "candidate_24h_rolling_60d": {
+      "n": 21,
+      "hit_rate": 0.47619,
+      "brier": 0.249011,
+      "expectancy_bps": -27.9028,
+      "expectancy_maker_2bps": -29.9028,
+      "wilson_lb_95": 0.283437
+    },
+    "letter_of_rule_triggered": false,
+    "letter_of_rule_note": "n=21 < 40 on the 24h-only 60d window; rule strictly untriggerable this early",
+    "model_level_record": {
+      "n": 62,
+      "hit_rate": 0.435484,
+      "brier": 0.250879,
+      "expectancy_bps": -19.7808,
+      "expectancy_maker_2bps": -21.7808,
+      "wilson_lb_95": 0.319424
+    },
+    "model_level_note": "pooled 12h+24h clears n>=40 with maker -21.78 bps < 0"
+  },
+  "evidence": {
+    "candidate_24h_all_time": {
+      "n": 21,
+      "hit_rate": 0.47619,
+      "brier": 0.249011,
+      "ece": null,
+      "expectancy_bps": -27.902788,
+      "expectancy_maker_2bps": -29.902788,
+      "wilson_lb_95": 0.283437,
+      "vs_majority_pp": -0.142857
+    },
+    "candidate_12h_all_time": {
+      "n": 41,
+      "hit_rate": 0.414634,
+      "brier": 0.251835,
+      "ece": null,
+      "expectancy_bps": -15.620771,
+      "expectancy_maker_2bps": -17.620771,
+      "wilson_lb_95": 0.277563,
+      "vs_majority_pp": -0.195122
+    },
+    "candidate_pooled_all_horizons": {
+      "n": 62,
+      "hit_rate": 0.435484,
+      "brier": 0.250879,
+      "expectancy_bps": -19.7808,
+      "expectancy_maker_2bps": -21.7808,
+      "wilson_lb_95": 0.319424
+    },
+    "candidate_24h_rolling_30d_issued_at": {
+      "brier": 0.249011,
+      "expectancy_bps": -27.902788,
+      "expectancy_maker_2bps": -29.902788,
+      "hit_rate": 0.47619,
+      "n": 21,
+      "wilson_lb_95": 0.283437
+    },
+    "baseline_24h_all_time": {
+      "n": 105,
+      "hit_rate": 0.6,
+      "brier": 0.249518,
+      "ece": 0.125078,
+      "expectancy_bps": 40.298264,
+      "expectancy_maker_2bps": 38.298264,
+      "wilson_lb_95": 0.504365,
+      "vs_majority_pp": 0.07619
+    },
+    "baseline_24h_rolling_30d_issued_at": {
+      "brier": 0.252731,
+      "expectancy_bps": -13.352739,
+      "expectancy_maker_2bps": -15.352739,
+      "hit_rate": 0.482759,
+      "n": 29,
+      "wilson_lb_95": 0.313858
+    },
+    "pooled_24h_all_time": {
+      "n": 126,
+      "hit_rate": 0.579365,
+      "brier": 0.249434,
+      "expectancy_bps": 28.9314,
+      "expectancy_maker_2bps": 26.9314,
+      "wilson_lb_95": 0.492071
+    },
+    "pooled_24h_rolling_30d_issued_at": {
+      "n": 50,
+      "hit_rate": 0.48,
+      "brier": 0.251169,
+      "expectancy_bps": -19.4638,
+      "expectancy_maker_2bps": -21.4638,
+      "wilson_lb_95": 0.347969
+    }
+  },
+  "notes": [
+    "Figure correction vs the 2026-08-10 audit brief: the brief cited the candidate's '24h record' as n=62, hit 0.435, maker -21.8 bps. Recomputed from the live ledger, those are the candidate's POOLED 12h+24h numbers (n=62 = 41 + 21). The true 24h-only bucket is n=21, hit 0.4762, maker -29.90 bps, wilson_lb_95 0.2834 \u2014 worse per-trade than the pooled figure. Both fail every gate; the decision is unchanged.",
+    "The brief's 'pooled 24h rolling-30d hit 0.481' is the GLOBAL all-horizon resolved_at-keyed rolling window; the pooled 24h issued_at-keyed 30d window is hit 0.48 at n=50. Materially identical.",
+    "The old signal gate read the pooled by_horizon 24h bucket (n=126, hit 0.579) while emitting this failing model, publishing actionable_paper on a negative-expectancy model. Fixed in signal-v0.2.0: gates evaluate the emitting model's own model x horizon bucket; current live status is shadow."
+  ],
+  "approval": {
+    "requires_manual_approval": true,
+    "promoted_at": null,
+    "approved_by": null
+  }
+}

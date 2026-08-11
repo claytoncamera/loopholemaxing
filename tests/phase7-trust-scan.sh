@@ -31,8 +31,11 @@ if [ ! -f "$F" ]; then
 fi
 
 # Extract the Phase 7 block once for sub-checks.
-# Anchor on the trust-layer section start through to the appendices section.
-P7=$(awk '/<section class="chapter" id="trust-layer">/,/<section class="chapter" id="appendices">/' "$F")
+# Anchor on the trust-layer section start through to the explicit P7-END
+# marker. (Was: through the appendices section — but the 2026-08-10 live-first
+# restructure moved the research chapters between trust-layer and appendices,
+# and their editorial percentages must not be scanned as Phase 7 claims.)
+P7=$(awk '/<section class="chapter" id="trust-layer">/,/P7-END/' "$F")
 if [ -z "$P7" ]; then
   echo "FAIL [boundary] could not isolate Phase 7 block"
   exit 1

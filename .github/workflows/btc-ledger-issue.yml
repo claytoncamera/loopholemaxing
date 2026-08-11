@@ -8,10 +8,14 @@ name: BTC Ledger Issue Forecasts
 
 on:
   schedule:
-    # Hourly at :17 — offset from the data snapshot (:13/:43) so the latest
-    # closed candle is on disk, and offset from the resolver (:07) so the
-    # two ledger workflows don't push commits at the same minute.
-    - cron: '17 * * * *'
+    # Three fires per hour: GHA cron throttling meant a single hourly fire
+    # achieved 1h spacing only ~21% of the time (worst observed gap 13h).
+    # The issuer's (model, horizon, bucket) dedupe + the no-backdating guard
+    # make extra fires free: whichever fire lands within 15 min of the hour
+    # fills the bucket, the rest no-op. Offset from the data snapshot
+    # (:13/:43) so the latest closed candle is on disk; the shared
+    # `btc-ledger` concurrency group serializes us against the resolver.
+    - cron: '7,27,47 * * * *'
   workflow_dispatch:
     inputs:
       horizons:
@@ -28,8 +32,10 @@ on:
 permissions:
   contents: write
 
+# Shared group with btc-ledger-resolve.yml: the two hourly ledger writers
+# serialize instead of racing each other through safe_push rebases.
 concurrency:
-  group: btc-brain-ledger-issue
+  group: btc-ledger
   cancel-in-progress: false
 
 jobs:
@@ -62,8 +68,9 @@ jobs:
           python tests/test_ledger.py
           python tests/test_schedule_forecasts.py
           python tests/test_edge_upgrade.py
+          python tests/test_issuer_v03.py
 
-      - name: Issue scheduled forecasts (baseline + policy24 dual shadow)
+      - name: Issue scheduled forecasts (baseline + guard24 dual shadow)
         run: |
           DRY="${{ github.event.inputs.dry_run || 'false' }}"
           HORIZONS="${{ github.event.inputs.horizons || '1h,4h,12h,24h' }}"
@@ -116,7 +123,9 @@ jobs:
                   btc-brain/ledger/data/resolutions.jsonl \
                   btc-brain/ledger/public/accuracy.json \
                   btc-brain/ledger/public/edge_report.json \
-                  btc-brain/ledger/public/signal.json
+                  btc-brain/ledger/public/signal.json \
+                  btc-brain/ledger/public/recent.json \
+                  btc-brain/ledger/public/trades.json
           .github/scripts/safe_push.sh \
             "chore(ledger): dual-issue + resolve + edge hunt + signal"
 

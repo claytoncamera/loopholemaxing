@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Trading Cockpit — The Window</title>
+  <meta name="description" content="Owner-only MMS and trading-system cockpit.">
+  <style>
+    :root {
+      --bg:#06090e; --panel:#0d131d; --panel2:#111a27; --line:#202d3e; --text:#edf4ff;
+      --muted:#8f9db1; --dim:#58677c; --blue:#70adff; --cyan:#57dfda; --green:#59da89;
+      --amber:#f0bc5b; --red:#ff707a; --mono:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+      --sans:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth} body{margin:0;background:
+      radial-gradient(circle at 74% -15%,rgba(87,223,218,.11),transparent 34rem),
+      radial-gradient(circle at 4% 15%,rgba(112,173,255,.1),transparent 30rem),var(--bg);
+      color:var(--text);font-family:var(--sans);line-height:1.5}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+      background-size:38px 38px;mask-image:linear-gradient(#000,transparent 85%)}
+    a{color:inherit}.shell{width:min(1320px,calc(100% - 34px));margin:auto}.mono{font-family:var(--mono)}
+    #gate{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:20px;background:rgba(4,7,11,.97)}
+    .gate-card{width:min(430px,100%);padding:32px;border:1px solid var(--line);border-radius:16px;background:var(--panel);box-shadow:0 28px 90px #0008}
+    .gate-card .mark{display:grid;place-items:center;width:42px;height:42px;margin-bottom:20px;border:1px solid #57dfda55;border-radius:10px;color:var(--cyan);font:800 10px var(--mono)}
+    .gate-card h1{margin:0 0 8px;font-size:29px;letter-spacing:-.04em}.gate-card p{margin:0 0 20px;color:var(--muted);font-size:14px}
+    .gate-card form{display:flex;gap:9px}.gate-card input{min-width:0;flex:1;padding:12px 13px;border:1px solid var(--line);border-radius:9px;background:#070b11;color:var(--text);font:14px var(--mono)}
+    .gate-card button,.btn{border:1px solid var(--line);border-radius:9px;background:#172233;color:var(--text);font-weight:700;cursor:pointer}
+    .gate-card button{padding:0 16px}.gate-err{height:20px;margin-top:10px;color:var(--red);font-size:12px}
+    #cockpit{display:none}header{position:sticky;top:0;z-index:20;border-bottom:1px solid #ffffff10;background:#06090ed9;backdrop-filter:blur(18px)}
+    .nav{min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font-weight:780}
+    .brand span{display:grid;place-items:center;width:32px;height:32px;border:1px solid #70adff4a;border-radius:8px;color:var(--blue);font:800 9px var(--mono)}
+    .nav-actions{display:flex;align-items:center;gap:9px}.btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:0 12px;text-decoration:none;font-size:12px}
+    .btn:hover{border-color:#70adff66}.btn.ghost{background:transparent;color:var(--muted)}
+    .hero{padding:54px 0 28px}.eyebrow{color:var(--cyan);font:700 10px var(--mono);letter-spacing:.14em;text-transform:uppercase}
+    h1{margin:12px 0 10px;font-size:clamp(38px,6vw,70px);line-height:1;letter-spacing:-.055em}.sub{max-width:790px;color:var(--muted);font-size:16px}
+    .fresh{display:inline-flex;align-items:center;gap:8px;margin-top:18px;padding:7px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font:10px var(--mono)}
+    .fresh i{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 0 4px #f0bc5b13}
+    .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:9px;margin:26px 0 42px}.stat{padding:18px;border:1px solid var(--line);border-radius:12px;background:#0d131dd9}
+    .stat .k{color:var(--dim);font:700 9px var(--mono);letter-spacing:.12em;text-transform:uppercase}.stat b{display:block;margin:10px 0 5px;font:780 clamp(22px,3vw,31px)/1 var(--mono)}
+    .stat small{color:var(--muted);font-size:11px}.green{color:var(--green)}.amber{color:var(--amber)}.red{color:var(--red)}.blue{color:var(--blue)}
+    section{padding:34px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:25px;margin-bottom:18px;border-bottom:1px solid var(--line);padding-bottom:14px}
+    h2{margin:0;font-size:24px;letter-spacing:-.03em}.section-head p{margin:0;color:var(--muted);font-size:12px}
+    .architecture{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.node{position:relative;min-height:142px;padding:15px;border:1px solid var(--line);border-radius:11px;background:linear-gradient(155deg,#111a27e8,#0c121be8)}
+    .node:not(:last-child)::after{content:"→";position:absolute;right:-13px;top:50%;z-index:2;color:var(--dim);font:700 13px var(--mono)}
+    .node .n{color:var(--blue);font:700 9px var(--mono)}.node h3{margin:24px 0 6px;font-size:14px}.node p{margin:0;color:var(--muted);font-size:11.5px}
+    .grid{display:grid;grid-template-columns:1.5fr .8fr;gap:10px}.panel{border:1px solid var(--line);border-radius:12px;background:#0d131dd9;overflow:hidden}.panel-pad{padding:19px}
+    table{width:100%;border-collapse:collapse;font-size:12px}th{text-align:left;padding:11px 13px;color:var(--dim);font:700 9px var(--mono);letter-spacing:.1em;text-transform:uppercase;border-bottom:1px solid var(--line)}
+    td{padding:13px;border-bottom:1px solid #ffffff0a;vertical-align:top}tr:last-child td{border-bottom:0}.system{font-weight:720}.evidence{color:var(--muted);max-width:370px}.chip{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;padding:4px 7px;border-radius:999px;background:#ffffff0a;font:700 9px var(--mono);text-transform:uppercase}
+    .chip::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor}.chip.paper{color:var(--amber)}.chip.live{color:var(--green)}.chip.blocked{color:var(--red)}.chip.bench{color:var(--muted)}
+    .gate-list{display:grid;gap:8px}.gate-row{display:grid;grid-template-columns:25px 1fr auto;gap:10px;align-items:center;padding:11px;border:1px solid var(--line);border-radius:9px}
+    .gate-row .icon{display:grid;place-items:center;width:25px;height:25px;border-radius:7px;background:#ff707a12;color:var(--red);font:800 10px var(--mono)}.gate-row b{display:block;font-size:12px}.gate-row span{display:block;color:var(--muted);font-size:10px}.gate-row em{color:var(--red);font:700 9px var(--mono);font-style:normal}
+    .sources{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.source{padding:16px;border:1px solid var(--line);border-radius:11px;background:#0d131dbf}.source .label{color:var(--dim);font:700 9px var(--mono);text-transform:uppercase;letter-spacing:.1em}.source b{display:block;margin:9px 0 4px;font-size:13px}.source p{margin:0;color:var(--muted);font-size:11px}
+    .roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.phase{padding:18px;border:1px solid var(--line);border-radius:11px;background:#0d131dbf}.phase .p{color:var(--cyan);font:700 9px var(--mono)}.phase h3{margin:18px 0 7px;font-size:15px}.phase p{margin:0;color:var(--muted);font-size:11.5px}.phase.current{border-color:#70adff55;background:#101b2a}
+    .quick{display:flex;flex-wrap:wrap;gap:9px}.quick a{padding:12px 14px;border:1px solid var(--line);border-radius:9px;text-decoration:none;color:var(--muted);font-size:12px}.quick a:hover{color:var(--text);border-color:#70adff66}
+    footer{margin-top:42px;padding:28px 0 42px;border-top:1px solid var(--line);color:var(--dim);font-size:11px}.foot{display:flex;justify-content:space-between;gap:20px}
+    @media(max-width:1050px){.stats{grid-template-columns:repeat(3,1fr)}.architecture{grid-template-columns:repeat(3,1fr)}.node::after{display:none}.roadmap{grid-template-columns:1fr 1fr}}
+    @media(max-width:760px){.stats{grid-template-columns:1fr 1fr}.grid,.sources{grid-template-columns:1fr}.architecture{grid-template-columns:1fr 1fr}.panel{overflow-x:auto}.section-head{align-items:flex-start;flex-direction:column}.nav-actions .hide-sm{display:none}.roadmap{grid-template-columns:1fr}.foot{flex-direction:column}}
+    @media(max-width:480px){.stats,.architecture{grid-template-columns:1fr}.gate-card form{flex-direction:column}.gate-card button{min-height:42px}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  </style>
+</head>
+<body>
+  <div id="gate">
+    <div class="gate-card" id="gate-card">
+      <div class="mark">MMS</div><h1>Trading Cockpit</h1><p>Use the same access code as The Window.</p>
+      <form id="gate-form"><input id="pass" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Access code" autofocus><button type="submit">Open</button></form>
+      <div class="gate-err" id="gate-err"></div>
+    </div>
+  </div>
+
+  <div id="cockpit">
+    <header><div class="nav shell"><a class="brand" href="/window/"><span>WIN</span> The Window / Trading</a><div class="nav-actions"><a class="btn ghost hide-sm" href="/mms-hub/">Public preview</a><a class="btn hide-sm" href="https://hub.loopholemaxing.com/" rel="nofollow noopener">Cloud HUB ↗</a><button class="btn" id="lock">Lock</button></div></div></header>
+    <main class="shell">
+      <div class="hero">
+        <div class="eyebrow">Owner cockpit · research and paper execution</div>
+        <h1>MMS + Trading Systems</h1>
+        <p class="sub">The complete operating map: live research, strategy evidence, execution surfaces, risk gaps, source-of-truth hierarchy, and the shortest honest route toward a promotable multi-algorithm system.</p>
+        <div class="fresh"><i></i><span id="freshness">BTC ledger loading · MMS runtime last independently verified 2026-08-09</span></div>
+      </div>
+
+      <div class="stats">
+        <article class="stat"><div class="k">MMS audit</div><b class="red">0 / 9</b><small>investor-ready strategies</small></article>
+        <article class="stat"><div class="k">Best existing sample</div><b class="amber">60.5%</b><small>Hybrid V6 Binance.US win rate</small></article>
+        <article class="stat"><div class="k">Paper fleet snapshot</div><b>$28,292</b><small>of $30,000 · 2026-08-09 authority file</small></article>
+        <article class="stat"><div class="k">BTC resolved</div><b class="blue" id="btc-n">2,234</b><small id="btc-global">loading current ledger</small></article>
+        <article class="stat"><div class="k">Promotion state</div><b class="green" id="signal-state">SHADOW</b><small id="signal-gate">fail-closed · not tradeable</small></article>
+      </div>
+
+      <section>
+        <div class="section-head"><h2>System architecture</h2><p>Research and execution stay separate until every gate passes.</p></div>
+        <div class="architecture">
+          <article class="node"><span class="n">01 / INPUT</span><h3>Market data</h3><p>Binance.US, Gemini, OKX, BTC feeds, equity/news data.</p></article>
+          <article class="node"><span class="n">02 / FEATURES</span><h3>Strategy engines</h3><p>Regime, momentum, catalyst, arb, mean reversion, forecasts.</p></article>
+          <article class="node"><span class="n">03 / PORTFOLIO</span><h3>Allocator</h3><p>Correlation, exposure, fractional sizing, capital budgets.</p></article>
+          <article class="node"><span class="n">04 / SAFETY</span><h3>Risk gate</h3><p>Per-trade stop, daily loss, drawdown, freshness, kill switch.</p></article>
+          <article class="node"><span class="n">05 / EXECUTION</span><h3>Paper adapters</h3><p>Venue-aware orders, maker rules, fills, fees, slippage.</p></article>
+          <article class="node"><span class="n">06 / EVIDENCE</span><h3>Truth ledger</h3><p>Forward metrics, confidence bounds, promotion or kill.</p></article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>Bot and system roster</h2><p>Nine audited systems plus the next execution layer.</p></div>
+        <div class="grid">
+          <div class="panel">
+            <table>
+              <thead><tr><th>System</th><th>State</th><th>Evidence</th><th>Decision</th></tr></thead>
+              <tbody>
+                <tr><td class="system">Hybrid V6 · Binance.US</td><td><span class="chip paper">paper</span></td><td class="evidence">43-trade venue slice · 60.5% WR; blended system 56.25% over 80 trades.</td><td class="amber">instrument, do not scale</td></tr>
+                <tr><td class="system">Hybrid V6 · Crypto.com</td><td><span class="chip paper">paper</span></td><td class="evidence">37 trades · 51.4% WR; correlated with the first venue.</td><td class="amber">A/B only</td></tr>
+                <tr><td class="system">Rapid Increase</td><td><span class="chip blocked">blocked</span></td><td class="evidence">Pre-fix record void. At audit: 0 valid trades; stale-candle and trade-update defects open.</td><td class="red">repair before research</td></tr>
+                <tr><td class="system">Crypto arb cluster</td><td><span class="chip blocked">rejected</span></td><td class="evidence">36 real trades · 47.4% before full fee/slippage accounting.</td><td class="red">edge negative</td></tr>
+                <tr><td class="system">Gemini RSI</td><td><span class="chip blocked">blocked</span></td><td class="evidence">12 real trades; live orders rejected; backtest lacks fee model.</td><td class="red">do not promote</td></tr>
+                <tr><td class="system">Leveraged ETF</td><td><span class="chip bench">bench</span></td><td class="evidence">102 trades · 56.9% full-history, 44.8% current config; losses exceed cap.</td><td class="red">parked</td></tr>
+                <tr><td class="system">Rumor Mill / catalyst</td><td><span class="chip bench">dormant</span></td><td class="evidence">Best overfit grid: 73 trades · 47.95% WR · low frequency.</td><td class="red">not an edge</td></tr>
+                <tr><td class="system">Overnight arb</td><td><span class="chip bench">research</span></td><td class="evidence">Net Sharpe 0.37 · CAGR 5.6% vs SPY 12.1% after costs.</td><td class="red">negative result</td></tr>
+                <tr><td class="system">BTC Brain / guard24</td><td><span class="chip live">live research</span></td><td class="evidence" id="guard-evidence">Loading current model × horizon record…</td><td class="amber" id="guard-decision">shadow</td></tr>
+                <tr><td class="system">OpenClaw</td><td><span class="chip bench">designed</span></td><td class="evidence">Maker-only, spot, long/flat consumer of signal.json.</td><td class="amber">build after proof</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <aside class="panel panel-pad">
+            <div class="eyebrow" style="margin-bottom:15px">Fail-closed promotion gate</div>
+            <div class="gate-list">
+              <div class="gate-row"><div class="icon">01</div><div><b>Real data only</b><span>No unlabeled synthetic fallback.</span></div><em>OPEN</em></div>
+              <div class="gate-row"><div class="icon">02</div><div><b>True fill quality</b><span>Expected and actual prices differ.</span></div><em>OPEN</em></div>
+              <div class="gate-row"><div class="icon">03</div><div><b>Hard per-trade stop</b><span>Enforced centrally, not optional.</span></div><em>OPEN</em></div>
+              <div class="gate-row"><div class="icon">04</div><div><b>Sample + confidence</b><span>Independent trades across regimes.</span></div><em id="confidence-state">OPEN</em></div>
+              <div class="gate-row"><div class="icon">05</div><div><b>Positive net expectancy</b><span>Fees, spread, and slippage included.</span></div><em id="expectancy-state">OPEN</em></div>
+              <div class="gate-row"><div class="icon">06</div><div><b>Manual promotion</b><span>Owner approval after evidence passes.</span></div><em>LOCKED</em></div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>Source-of-truth hierarchy</h2><p>If two surfaces disagree, the higher source wins.</p></div>
+        <div class="sources">
+          <article class="source"><div class="label">1 · MMS execution truth</div><b>Mac mini authority ledger</b><p><span class="mono">~/MMS-Deploy/logs/paper/equity_history.csv</span> plus trade/fill ledgers. The old :8080 v44 random-walk equity is explicitly non-authoritative.</p></article>
+          <article class="source"><div class="label">2 · BTC research truth</div><b>Append-only public ledger</b><p><span class="mono">accuracy.json</span>, <span class="mono">signal.json</span>, model × horizon buckets, edge report, and promotion decisions.</p></article>
+          <article class="source"><div class="label">3 · Presentation layer</div><b>Window + public preview</b><p>Repeaters only. They may summarize the ledgers but never override them. Stale or unavailable data fails closed.</p></article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>Honest rebuild order</h2><p>The shortest credible route—not the fastest route to a claim.</p></div>
+        <div class="roadmap">
+          <article class="phase current"><span class="p">PHASE 0 · NOW</span><h3>Reconcile the source</h3><p>Resolve Mac mini vs GitHub branch truth. Retire dead surfaces. Keep all trading paper-only.</p></article>
+          <article class="phase"><span class="p">PHASE 1</span><h3>Make evidence real</h3><p>Central stop enforcement, accurate fill ledger, fees/slippage, freshness, comparable paper metrics.</p></article>
+          <article class="phase"><span class="p">PHASE 2</span><h3>Research the right archetype</h3><p>New short-timeframe strategy with frozen train, validation, and held-out sets. No target-fitting.</p></article>
+          <article class="phase"><span class="p">PHASE 3</span><h3>Forward-prove or kill</h3><p>Minimum 6–8 weeks and roughly 400–500 independent trades before any performance claim.</p></article>
+        </div>
+      </section>
+
+      <section>
+        <div class="section-head"><h2>Open the parts</h2><p>Owner and public surfaces.</p></div>
+        <div class="quick">
+          <a href="/btc-brain/">BTC Brain ↗</a><a href="/btc-brain/research/">Research library ↗</a><a href="/mms-hub/">Public MMS preview ↗</a>
+          <a href="https://hub.loopholemaxing.com/" rel="nofollow noopener">Cloud HUB ↗</a><a href="http://10.0.0.224:8000" rel="nofollow">Mac mini HUB · LAN ↗</a>
+          <a href="http://10.0.0.224:8001" rel="nofollow">MMS AI · LAN ↗</a><a href="/window/">Back to The Window</a>
+        </div>
+      </section>
+    </main>
+    <footer><div class="shell foot"><span>Owner cockpit · no secrets or credentials stored here</span><span>Trading state verified from repository evidence 2026-08-13 · runtime snapshot 2026-08-09</span></div></footer>
+  </div>
+
+  <script>
+  'use strict';
+  const EXPECTED_DIGEST='ec07c9c3e1fc3114ab35cdacc62bab0cc9b99da9f1c96aa6b25aa0c175c77c1f';
+  const SESSION_KEY='window_unlocked_v1';
+  const $=id=>document.getElementById(id);
+  async function sha256Hex(value){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value));return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')}
+  function equal(a,b){if(a.length!==b.length)return false;let d=0;for(let i=0;i<a.length;i++)d|=a.charCodeAt(i)^b.charCodeAt(i);return d===0}
+  function unlock(){try{sessionStorage.setItem(SESSION_KEY,'1')}catch(e){}$('gate').style.display='none';$('cockpit').style.display='block';loadLive()}
+  $('gate-form').onsubmit=async e=>{e.preventDefault();const value=$('pass').value;$('gate-err').textContent='';if(!value)return $('gate-err').textContent='Enter your access code.';if(!(window.crypto&&crypto.subtle))return $('gate-err').textContent='HTTPS is required.';if(equal(await sha256Hex(value),EXPECTED_DIGEST))unlock();else{$('gate-err').textContent='Wrong code.';$('pass').value='';$('pass').focus()}};
+  $('lock').onclick=()=>{sessionStorage.removeItem(SESSION_KEY);location.reload()};
+  const pct=v=>`${(Number(v||0)*100).toFixed(1)}%`, bps=v=>`${Number(v||0).toFixed(1)} bps`;
+  async function loadLive(){
+    try{
+      const [a,s]=await Promise.all([
+        fetch('/btc-brain/ledger/public/accuracy.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json()}),
+        fetch('/btc-brain/ledger/public/signal.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error();return r.json()})
+      ]);
+      const g=a.global||{},gate=s.gates||{},n=g.n||a.total_resolved||0;
+      $('btc-n').textContent=Number(n).toLocaleString();
+      $('btc-global').textContent=`${pct(g.hit_rate)} hit · ${pct(g.vs_majority_pp)} vs majority`;
+      $('signal-state').textContent=String(s.status||'shadow').toUpperCase();
+      $('signal-gate').textContent=gate.ok?'evidence gate passed · approval required':'fail-closed · not tradeable';
+      $('guard-evidence').textContent=`${gate.model_version||'candidate'} × ${gate.horizon||'24h'} · n=${gate.n||0} · ${pct(gate.hit_rate)} WR · Wilson LB ${pct(gate.wilson_lb_95)} · maker ${bps(gate.expectancy_maker_2bps)}`;
+      $('guard-decision').textContent=gate.ok?'manual review':'remain shadow';
+      $('confidence-state').textContent=gate.wilson_lb_95>0.5?'PASS':'OPEN';
+      $('confidence-state').className=gate.wilson_lb_95>0.5?'green':'';
+      $('expectancy-state').textContent=gate.expectancy_maker_2bps>0?'CANDIDATE':'OPEN';
+      $('freshness').textContent=`BTC ledger ${a.generated_at||'current'} · MMS runtime last independently verified 2026-08-09`;
+    }catch(e){
+      $('freshness').textContent='BTC live refresh unavailable · displaying committed fallback · promotion remains locked';
+      $('guard-evidence').textContent='Live ledger unavailable. Fail-closed; no promotion inference.';
+    }
+  }
+  if(sessionStorage.getItem(SESSION_KEY)==='1')unlock();
+  </script>
+</body>
+</html>

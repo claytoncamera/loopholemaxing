@@ -177,7 +177,7 @@
       Owner deck — <code>noindex</code> + robots-blocked, code-gated on every device.<br>
       The gate is a privacy curtain, not a cryptographic vault (static GitHub Pages) — no tokens or secrets live on this page.<br>
       <b>LAN</b> links only resolve on the home network. To add a creation edit <code>DECK</code>; to change the code replace <code>EXPECTED_DIGEST</code> — both in <code>window/index.html</code>.<br>
-      Deck facts verified <b>2026-08-09</b>. A <code>need</code> field is what the item is waiting on <i>you</i> for — clear it when you clear the blocker.
+      Deck facts verified <b>2026-08-09</b>; trading cockpit refreshed <b>2026-08-13</b>. A <code>need</code> field is what the item is waiting on <i>you</i> for — clear it when you clear the blocker.
     </div>
   </div>
 
@@ -255,10 +255,10 @@ const DECK = [
     { name: 'MMS Hub', status: 'paper', tag: 'paper only · NOT ready',
       desc: '<b>The trading ecosystem — honestly, not there yet.</b> Paper fleet sits at <b>$28,292 of $30,000 (−5.69%)</b> and the 08-05 investor audit found <b>0 of 9 bots</b> meet the 10–100 trades/day · 70% WR · 0.5% max-loss bar. Two traps worth remembering: <code>rapid-increase</code> <b>can never trade</b> under its config (it scans the 12 least volatile coins for a +4%/80min spike), and the <b>:8080 v44 API\'s fleet numbers are fabricated</b> — a random walk with hard-coded equity. The authority file is <code>logs/paper/equity_history.csv</code>. No live funds.',
       note: '<b>Credentials: dispositioned, closed.</b> The Schwab / Polygon / Binance keys are <b>not</b> an open item — Clayton\'s call, made 2026-06-07 and re-confirmed twice on 2026-08-09: those systems are unused. <code>mms-hub</code> is private, sole collaborator, 0 forks, so there is no third-party read path; the Schwab refresh tokens expired in March and the exchange keys sit in a gitignored <code>.env</code> that never left the mini. <b>No rotation, no history purge.</b> Brain: decision D29 + the 🛑 block at the top of SECURITY_FINDINGS.md. Do not re-raise it here.',
-      links: [ {t:'Cloud portal', u:'https://moneymakingsolutionsai.com'}, {t:'Hub :8000', u:'http://10.0.0.224:8000', cls:'lan'}, {t:'AI :8001', u:'http://10.0.0.224:8001', cls:'lan'}, {t:'API :8080', u:'http://10.0.0.224:8080', cls:'lan'} ] },
-    { name: 'BTC Brain', status: 'live', tag: 'forecast-only · no edge yet',
-      desc: '<b>Daily BTC forecast engine</b> (6:05am launchd, pure-stdlib) — issues forecasts, resolves them, publishes a public ledger and emails the accuracy report. Over 1,571 resolved forecasts it <b>still shows no edge vs baseline</b>, and the public page says exactly that. Feeds the future OpenClaw maker-only agent. No trades, no funds.',
-      links: [ {t:'Ledger (repo)', u:'https://github.com/claytoncamera/loopholemaxing/tree/main/btc-brain', cls:'repo'} ] },
+      links: [ {t:'Trading cockpit', u:'/window/trading/'}, {t:'Public preview', u:'/mms-hub/'}, {t:'Cloud portal', u:'https://moneymakingsolutionsai.com'}, {t:'Hub :8000', u:'http://10.0.0.224:8000', cls:'lan'}, {t:'AI :8001', u:'http://10.0.0.224:8001', cls:'lan'}, {t:'API :8080', u:'http://10.0.0.224:8080', cls:'lan'} ] },
+    { name: 'BTC Brain', status: 'live', tag: 'forecast-only · candidate shadow',
+      desc: '<b>Live BTC forecast and model-selection engine</b> — issues forecasts, resolves them, publishes an append-only public ledger, runs edge searches, and emits a versioned signal contract. At the 2026-08-13 snapshot: <b>2,234 resolved</b>, 51.0% global hit rate, <b>6.6 points behind the majority baseline</b>. The current <code>guard24</code> candidate is 24/7 shadow-only: 38 resolved, 63.2% hit, but its 95% Wilson lower bound is 47.3%, so the promotion gate correctly says no. No trades, no funds.',
+      links: [ {t:'Open BTC Brain', u:'/btc-brain/'}, {t:'Trading cockpit', u:'/window/trading/'}, {t:'Ledger (repo)', u:'https://github.com/claytoncamera/loopholemaxing/tree/main/btc-brain', cls:'repo'} ] },
     { name: 'Universal Analyst Engine', status: 'live', tag: 'FastAPI + Celery',
       desc: '<b>Multi-domain intelligence platform</b> — sports, politics, macro, climate, entertainment scorecards on Postgres/Redis/Celery. Biggest idle burn on Railway (~1.46GB RAM at 0% CPU) and a scale-to-zero candidate.',
       need: 'PR #3 (scorecards unique-constraint migration) is a schema change — it waits on your review before touching the live DB, per the rules.',

@@ -45,7 +45,7 @@ fi
 # ── 2. every indexable top-level page is in the sitemap ──────────────────
 # A public page absent from the sitemap is a page Google may never crawl.
 echo "-- sitemap coverage --"
-for p in "/" "/btc-brain/" "/uae/" "/vault/" "/ultron/" "/nba-brain/" "/agora/" "/formix/"; do
+for p in "/" "/btc-brain/" "/mms-hub/" "/uae/" "/vault/" "/ultron/" "/nba-brain/" "/agora/" "/formix/"; do
   if grep -q "<loc>https://loopholemaxing.com${p}</loc>" sitemap.xml 2>/dev/null; then
     ok "sitemap lists ${p}"
   else
@@ -57,7 +57,7 @@ done
 # These are robots-disallowed + noindex. Listing them in a sitemap
 # contradicts that and invites crawling of internal ops surfaces.
 echo "-- sitemap excludes private surfaces --"
-for p in "analytics-hub" "army-link" "mms-hub" "studio" "window" "work-with-clayton" "clayton-camera"; do
+for p in "analytics-hub" "army-link" "studio" "window" "work-with-clayton" "clayton-camera"; do
   if grep -q "loopholemaxing.com/${p}/" sitemap.xml 2>/dev/null; then
     fail "sitemap leaks private/noindex path /${p}/"
   else
@@ -95,7 +95,7 @@ fi
 # and any tracking/UTM variant of their URL was a duplicate with no
 # preferred version declared.
 echo "-- sub-page canonicals + entity wiring --"
-for p in btc-brain uae vault ultron nba-brain agora formix; do
+for p in btc-brain mms-hub uae vault ultron nba-brain agora formix; do
   f="${p}/index.html"
   [ -f "$f" ] || { fail "${p}/ is listed in the sitemap but missing on disk"; continue; }
   grep -q "<link rel=\"canonical\" href=\"https://loopholemaxing.com/${p}/\">" "$f" \

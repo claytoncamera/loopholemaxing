@@ -314,6 +314,7 @@
 
     .card-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border-radius: 5px; margin-bottom: var(--space-md); width: fit-content; }
     .tag-live { background: rgba(52,211,153,.14); color: var(--green); }
+    .tag-paper { background: rgba(242,189,90,.14); color: #f2bd5a; }
     .tag-rev  { background: rgba(52,211,153,.20); color: #5eead4; }
     .tag-dev  { background: rgba(251,191,36,.12); color: #fbbf24; }
     .tag-concept { background: rgba(167,139,250,.14); color: #c4b5fd; }
@@ -481,7 +482,7 @@
     <div class="hero-stats">
       <div class="hero-stat"><div class="hero-stat-val">15</div><div class="hero-stat-lbl">Live Creations</div></div>
       <div class="hero-stat"><div class="hero-stat-val">9</div><div class="hero-stat-lbl">Domains Shipped</div></div>
-      <div class="hero-stat"><div class="hero-stat-val">1,935</div><div class="hero-stat-lbl">Forecasts Scored</div></div>
+      <div class="hero-stat"><div class="hero-stat-val">2,234</div><div class="hero-stat-lbl">Forecasts Scored</div></div>
       <div class="hero-stat"><div class="hero-stat-val" id="homepage-btc-iq">189</div><div class="hero-stat-lbl">Coverage Score*</div></div>
       <div class="hero-stat"><div class="hero-stat-val">AES-256</div><div class="hero-stat-lbl">Vault Crypto</div></div>
       <div class="hero-stat"><div class="hero-stat-val">48h</div><div class="hero-stat-lbl">Audit Turnaround</div></div>
@@ -515,9 +516,9 @@
     <div class="feature-track" id="featureTrack">
       <div class="feature-item"><span class="fdot"></span> <strong>OrbitRoute</strong> — Orbital-vs-terrestrial compute routing; 5 USPTO filings</div>
       <div class="feature-item"><span class="fdot"></span> <strong>Practically Natty</strong> — Live peptide brand; CTO &amp; managing partner</div>
-      <div class="feature-item"><span class="fdot"></span> <strong>MMS HUB</strong> — Private trading control center; audited, not investor-ready</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>MMS HUB</strong> — Paper-first multi-algorithm research; public system preview</div>
       <div class="feature-item"><span class="fdot"></span> <strong>Universal Analyst</strong> — 90 entities, 5 domains, AI scoring</div>
-      <div class="feature-item"><span class="fdot"></span> <strong>BTC Brain</strong> — 15 chapters + 1,935 publicly scored forecasts</div>
+      <div class="feature-item"><span class="fdot"></span> <strong>BTC Brain</strong> — 15 chapters + 2,234 publicly scored forecasts</div>
       <div class="feature-item"><span class="fdot"></span> <strong>PersonalVault</strong> — Zero-knowledge AES-256-GCM encryption</div>
       <div class="feature-item"><span class="fdot"></span> <strong>ULTRON</strong> — Local-first agent, 30/30 attack tests, human-gated</div>
       <div class="feature-item"><span class="fdot"></span> <strong>PeptiDex</strong> — 79 peptides, 119 comparisons, 264 URLs</div>
@@ -579,10 +580,10 @@
 
       <!-- 3 · MMS HUB -->
       <div class="card creation-card" data-cats="trading">
-        <span class="card-tag tag-private">Private — Showcase</span>
+        <span class="card-tag tag-paper">Research — Public Preview</span>
         <h3><span class="icon icon-mms">⚙</span> MMS HUB</h3>
-        <p class="card-lead">A private control center for autonomous trading.</p>
-        <p>A Money Making Solutions control center: a multi-strategy trading ecosystem with finance intake, provider readiness, bot orchestration, brokerage-upgrade gates, and system-health monitoring. Brokerage execution is locked by default behind hard caps. In August 2026 all nine strategies were put through a 22-agent audit where every claim had to survive a second, adversarial reviewer. <strong>The verdict was that none of them are investor-ready</strong> — the best genuine win rate on the whole board is ~60.5%, and the honest sustained throughput is about two trades a day. That result is recorded rather than buried. <strong>Private system — shown here as portfolio engineering only.</strong></p>
+        <p class="card-lead">A paper-first control plane for multi-algorithm trading research.</p>
+        <p>A Money Making Solutions research stack: real-data ingestion, strategy experiments, bot orchestration, risk gates, paper ledgers, and explicit promote-or-kill decisions. Brokerage execution is locked by default behind hard caps. In August 2026 all nine strategies were put through a 22-agent audit where every claim had to survive a second, adversarial reviewer. <strong>The verdict was that none of them are investor-ready</strong> — the best genuine win rate on the board is ~60.5%, and the honest sustained throughput is about two trades a day. The public preview shows the architecture and evidence without exposing the owner controls.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a solo operator running many strategies → one orchestration layer with hard risk caps, so nothing trades live without explicit gates.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">9 strategies</span>
@@ -590,7 +591,7 @@
           <span class="card-meta-item">adversarially audited</span>
           <span class="card-meta-item">not investor-ready</span>
         </div>
-        <span class="card-action muted">Private system — access restricted</span>
+        <a href="/mms-hub/" class="card-action">View the MMS system preview →</a>
       </div>
 
       <!-- 4 · Universal Analyst Engine -->
@@ -614,11 +615,11 @@
         <span class="card-tag tag-live">Live — v5.0</span>
         <h3><span class="icon icon-btc">₿</span> BTC Intelligence Brain</h3>
         <p class="card-lead">A 15-chapter Bitcoin research workspace.</p>
-        <p>Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, and risk management — with live market data, a 3D diagram of the system, and a research activity feed. It also keeps a <strong>public forecast ledger</strong>: every prediction is timestamped, resolved on schedule, and scored against a dumb baseline. <strong>1,935 resolved forecasts in, the model is still 8.2 points behind always-guessing-up — and the page says so.</strong> One horizon out of four (24h, 122 resolved) currently shows positive expectancy after maker fees; the other three don't. Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated breadth index, not an accuracy score). Educational research only — not financial advice.</p>
+        <p>Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, and risk management — with live market data, a 3D diagram of the system, and a research activity feed. It also keeps a <strong>public forecast ledger</strong>: every prediction is timestamped, resolved on schedule, and scored against a dumb baseline. <strong>2,234 resolved forecasts in, the global record is still 6.6 points behind always-guessing-up — and the page says so.</strong> The pooled 24h slice is positive after the maker-fee assumption, but the current guard24 candidate remains shadow-only because its sample and lower confidence bound do not pass the promotion gate. Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated breadth index, not an accuracy score). Educational research only — not financial advice.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> serious BTC learners &amp; researchers → scattered market intelligence in one live workspace, with a scorecard honest enough to report no edge.</span></div>
         <div class="card-meta">
           <span class="card-meta-item">15 chapters</span>
-          <span class="card-meta-item">1,935 resolved</span>
+          <span class="card-meta-item">2,234 resolved</span>
           <span class="card-meta-item" id="homepage-btc-iq-badge">Coverage 189*</span>
           <span class="card-meta-item">scored vs baseline</span>
         </div>
@@ -798,6 +799,13 @@
     </div>
 
     <ol class="shiplog-list">
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Aug 13, 2026</span>
+          <a class="ship-tag" href="/mms-hub/">MMS HUB</a>
+        </div>
+        <p>Turned the trading estate into two honest, connected surfaces: a public MMS research preview and a full owner Trading Cockpit inside The Window. The public page shows the architecture, all promotion gates, the adverse audit result, and a live pull from the BTC ledger; the owner view maps the complete bot roster, source-of-truth hierarchy, open risk gaps, and rebuild order. <strong>Nothing was promoted or enabled.</strong> The live candidate remains shadow-only, and every unavailable feed fails closed instead of manufacturing a green dashboard.</p>
+      </li>
       <li class="ship">
         <div class="ship-head">
           <span class="ship-date">Aug 9, 2026</span>

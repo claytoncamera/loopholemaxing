@@ -3,123 +3,267 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex,nofollow">
-  <title>MMS HUB — Private Control Center</title>
-  <meta name="description" content="Restricted MMS HUB entry point. Server-side login required.">
-  <link rel="stylesheet" href="../styles.css">
+  <meta name="robots" content="index,follow">
+  <title>MMS HUB — Multi-Algorithm Trading Research</title>
+  <meta name="description" content="A public preview of MMS HUB: a paper-first, multi-algorithm trading research system with measured evidence, hard promotion gates, and an honest public ledger.">
+  <link rel="canonical" href="https://loopholemaxing.com/mms-hub/">
+  <meta property="og:title" content="MMS HUB — Multi-Algorithm Trading Research">
+  <meta property="og:description" content="Nine strategies audited. Zero promoted early. See the architecture, evidence, and risk gates behind the research stack.">
+  <meta property="og:url" content="https://loopholemaxing.com/mms-hub/">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#070a0f">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "name": "MMS HUB — Multi-Algorithm Trading Research",
+    "url": "https://loopholemaxing.com/mms-hub/",
+    "description": "A paper-first trading research system with measured evidence and hard promotion gates.",
+    "author": { "@id": "https://claytoncamera.com/#person" },
+    "isPartOf": { "@type": "WebSite", "url": "https://loopholemaxing.com/" }
+  }
+  </script>
   <style>
-    body {
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      background:
-        radial-gradient(circle at top, rgba(88,166,255,.1), transparent 34rem),
-        var(--bg-primary);
+    :root {
+      --bg: #070a0f; --panel: #0d121b; --panel-2: #111824; --line: #202b3b;
+      --text: #edf4ff; --muted: #91a0b6; --dim: #5f6f85; --blue: #69a9ff;
+      --cyan: #58e0da; --green: #59d987; --amber: #f2bd5a; --red: #ff7078;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --sans: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-
-    .gateway {
-      width: min(100%, 760px);
-      margin: 0 auto;
-      padding: 128px var(--space-lg) var(--space-4xl);
-      display: grid;
-      align-content: center;
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; color: var(--text); background:
+      radial-gradient(circle at 82% -10%, rgba(88,224,218,.12), transparent 30rem),
+      radial-gradient(circle at 8% 16%, rgba(105,169,255,.11), transparent 34rem), var(--bg);
+      font-family: var(--sans); line-height: 1.55; }
+    body::before { content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .22;
+      background-image: linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 42px 42px; mask-image: linear-gradient(to bottom, #000, transparent 75%); }
+    a { color: inherit; }
+    .shell { width: min(1160px, calc(100% - 36px)); margin: 0 auto; }
+    header { position: sticky; top: 0; z-index: 10; border-bottom: 1px solid rgba(255,255,255,.07);
+      background: rgba(7,10,15,.82); backdrop-filter: blur(18px); }
+    .nav { height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; font-weight: 780; letter-spacing: -.02em; }
+    .brand-mark { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgba(88,224,218,.3);
+      border-radius: 9px; color: var(--cyan); background: rgba(88,224,218,.08); font: 800 9px/1 var(--mono); }
+    .nav-links { display: flex; align-items: center; gap: 20px; font-size: 13px; color: var(--muted); }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { color: var(--text); }
+    .owner { padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; color: var(--text) !important; }
+    .hero { padding: 94px 0 68px; }
+    .eyebrow, .label { color: var(--cyan); font: 700 11px/1.4 var(--mono); letter-spacing: .15em; text-transform: uppercase; }
+    .eyebrow { display: flex; align-items: center; gap: 9px; }
+    .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--amber); box-shadow: 0 0 0 6px rgba(242,189,90,.09); }
+    h1 { max-width: 900px; margin: 24px 0 22px; font-size: clamp(48px, 8vw, 88px); line-height: .97;
+      letter-spacing: -.062em; font-weight: 790; }
+    h1 span { color: transparent; background: linear-gradient(105deg, var(--blue), var(--cyan)); background-clip: text; }
+    .lede { max-width: 740px; color: #b5c2d3; font-size: clamp(17px, 2.1vw, 21px); }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin: 30px 0 40px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 17px;
+      border: 1px solid var(--line); border-radius: 9px; text-decoration: none; font-size: 14px; font-weight: 700; }
+    .btn.primary { border-color: rgba(88,224,218,.35); background: var(--cyan); color: #04100f; }
+    .btn:hover { transform: translateY(-1px); }
+    .truth-grid { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line);
+      border-radius: 14px; overflow: hidden; background: rgba(13,18,27,.72); }
+    .truth { padding: 20px; border-right: 1px solid var(--line); }
+    .truth:last-child { border-right: 0; }
+    .truth b { display: block; margin-bottom: 4px; font: 760 clamp(22px, 3vw, 32px)/1 var(--mono); }
+    .truth span { color: var(--muted); font-size: 12px; }
+    .truth.good b { color: var(--green); } .truth.warn b { color: var(--amber); }
+    section { padding: 74px 0; border-top: 1px solid rgba(255,255,255,.055); }
+    .section-head { display: grid; grid-template-columns: .7fr 1.3fr; gap: 40px; margin-bottom: 30px; }
+    h2 { margin: 8px 0 0; font-size: clamp(30px, 5vw, 50px); letter-spacing: -.04em; line-height: 1.04; }
+    .section-copy { color: var(--muted); max-width: 680px; }
+    .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .flow-card, .strategy, .gate, .live-card { border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(155deg, rgba(17,24,36,.94), rgba(11,16,24,.94)); }
+    .flow-card { position: relative; min-height: 174px; padding: 18px; }
+    .flow-card:not(:last-child)::after { content: "→"; position: absolute; right: -15px; top: 50%; z-index: 2;
+      color: var(--dim); font: 700 15px var(--mono); }
+    .num { color: var(--blue); font: 700 11px var(--mono); }
+    .flow-card h3, .strategy h3, .live-card h3 { margin: 24px 0 7px; font-size: 16px; }
+    .flow-card p, .strategy p, .gate p, .live-card p { margin: 0; color: var(--muted); font-size: 13px; }
+    .strategy-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .strategy { padding: 20px; }
+    .status { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border-radius: 999px;
+      background: rgba(255,255,255,.045); color: var(--muted); font: 700 10px var(--mono); text-transform: uppercase; }
+    .status::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .status.paper { color: var(--amber); } .status.live { color: var(--green); } .status.blocked { color: var(--red); }
+    .strategy h3 { margin-top: 15px; }
+    .metric { margin-top: 18px; padding-top: 13px; border-top: 1px solid var(--line); color: #c8d3e2; font: 12px/1.5 var(--mono); }
+    .live-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 12px; }
+    .live-card { padding: 24px; }
+    .live-card h3 { margin: 7px 0 4px; font-size: 24px; }
+    .live-number { margin: 18px 0 4px; font: 780 clamp(36px, 7vw, 62px)/1 var(--mono); letter-spacing: -.05em; }
+    .live-meta { color: var(--muted); font-size: 13px; }
+    .meter { height: 6px; margin-top: 18px; overflow: hidden; border-radius: 10px; background: #1a2330; }
+    .meter span { display: block; width: 0; height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); transition: width .5s ease; }
+    .gates { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .gate { padding: 17px; }
+    .gate b { display: block; margin-bottom: 8px; font: 700 12px var(--mono); color: #dce7f6; }
+    .gate i { display: block; width: 22px; height: 2px; margin-bottom: 14px; background: var(--red); }
+    .honesty { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .honesty > div { padding: 25px; border: 1px solid var(--line); border-radius: 12px; }
+    .honesty h3 { margin: 0 0 12px; font-size: 20px; }
+    .honesty ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+    .honesty li + li { margin-top: 9px; }
+    footer { padding: 34px 0 50px; border-top: 1px solid var(--line); color: var(--dim); font-size: 12px; }
+    .footer-row { display: flex; justify-content: space-between; gap: 30px; }
+    .mono { font-family: var(--mono); }
+    @media (max-width: 900px) {
+      .truth-grid { grid-template-columns: repeat(2, 1fr); } .truth:nth-child(2) { border-right: 0; }
+      .truth:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .flow { grid-template-columns: 1fr 1fr; } .flow-card::after { display: none; }
+      .strategy-grid, .gates { grid-template-columns: 1fr 1fr; }
     }
-
-    .gateway-card {
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: clamp(24px, 6vw, 48px);
-      background: rgba(22, 27, 34, .92);
-      box-shadow: 0 24px 80px rgba(0, 0, 0, .32);
-    }
-
-    .gateway-mark {
-      display: inline-grid;
-      place-items: center;
-      width: 48px;
-      height: 48px;
-      margin-bottom: var(--space-lg);
-      border: 1px solid rgba(88,166,255,.26);
-      border-radius: 8px;
-      background: rgba(88,166,255,.12);
-      color: var(--accent-cyan);
-      font: 800 12px/1 var(--font-mono);
-    }
-
-    .gateway-card h1 {
-      font-size: clamp(34px, 7vw, 58px);
-      line-height: 1.04;
-      margin-bottom: var(--space-md);
-    }
-
-    .gateway-card p {
-      color: var(--text-secondary);
-      font-size: 16px;
-      max-width: 620px;
-      margin-bottom: var(--space-lg);
-    }
-
-    .gate-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-xl);
-    }
-
-    .gate-pill {
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      padding: 5px 9px;
-      background: rgba(255,255,255,.04);
-      color: var(--text-muted);
-      font: 700 11px/1 var(--font-mono);
-    }
-
-    .gateway-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-sm);
-    }
-
     @media (max-width: 640px) {
-      .gateway {
-        padding-top: 96px;
-      }
+      .nav-links a:not(.owner) { display: none; } .hero { padding-top: 68px; }
+      .section-head, .live-grid, .honesty { grid-template-columns: 1fr; gap: 18px; }
+      .flow, .strategy-grid, .gates { grid-template-columns: 1fr; }
+      .truth b { font-size: 22px; } .footer-row { flex-direction: column; }
     }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn:hover { transform: none; } }
   </style>
 </head>
 <body>
-  <header class="top-header">
-    <a href="/" class="logo">Loopholemaxing</a>
-    <nav><ul class="nav-links">
-      <li><a href="/#creations">Creations</a></li>
-      <li><a href="/" rel="nofollow">Home</a></li>
-    </ul></nav>
+  <header>
+    <div class="nav shell">
+      <a class="brand" href="/"><span class="brand-mark">MMS</span> Loopholemaxing</a>
+      <nav class="nav-links" aria-label="Primary">
+        <a href="#system">System</a><a href="#strategies">Strategies</a><a href="#evidence">Evidence</a>
+        <a class="owner" href="https://hub.loopholemaxing.com/" rel="nofollow noopener">Owner login ↗</a>
+      </nav>
+    </div>
   </header>
 
-  <main class="gateway">
-    <section class="gateway-card">
-      <div class="gateway-mark">MMS</div>
-      <p class="section-label">Restricted Creation</p>
-      <h1>MMS HUB</h1>
-      <p>Private Money Making Solutions control center. The public site only links to the entry point; the actual HUB requires server-side login before any dashboard or API route opens.</p>
-      <div class="gate-list">
-        <span class="gate-pill">server-side auth</span>
-        <span class="gate-pill">no indexing</span>
-        <span class="gate-pill">no public API</span>
-        <span class="gate-pill">live trading locked</span>
+  <main>
+    <section class="hero shell">
+      <div class="eyebrow"><span class="pulse"></span> Public research preview · paper only</div>
+      <h1>Multi-algorithm trading, with an <span>evidence gate.</span></h1>
+      <p class="lede">MMS HUB is a trading research stack built to test many strategies without confusing a good-looking backtest for a deployable edge. Every candidate moves through the same path: real data, cost-aware simulation, paper evidence, risk review, then a deliberate promotion—or a documented kill.</p>
+      <div class="hero-actions">
+        <a class="btn primary" href="/btc-brain/">Open the live BTC ledger →</a>
+        <a class="btn" href="#system">See how the system works</a>
       </div>
-      <div class="gateway-actions">
-        <a class="btn-primary" href="https://hub.loopholemaxing.com/" rel="nofollow noopener">Open Secure HUB &rarr;</a>
-        <a class="btn-secondary" href="/">Back to Creations</a>
+      <div class="truth-grid" aria-label="Audited MMS snapshot">
+        <div class="truth"><b>9</b><span>strategies adversarially audited</span></div>
+        <div class="truth warn"><b>0</b><span>investor-ready as of Aug 5, 2026</span></div>
+        <div class="truth"><b>60.5%</b><span>best verified existing win rate</span></div>
+        <div class="truth good"><b>Locked</b><span>live execution by default</span></div>
+      </div>
+    </section>
+
+    <section id="system">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="label">The system</div><h2>One path from idea to capital.</h2></div>
+          <p class="section-copy">The product is not a pile of bots. It is the promotion pipeline around them. Strategies share evidence rules, cost assumptions, hard caps, and one source-of-truth ledger so weak results cannot hide behind a different dashboard.</p>
+        </div>
+        <div class="flow">
+          <article class="flow-card"><span class="num">01</span><h3>Market data</h3><p>Real exchange candles and venue data. Synthetic fallback is fail-closed and visibly labeled.</p></article>
+          <article class="flow-card"><span class="num">02</span><h3>Strategy lab</h3><p>Regime, momentum, arbitrage, catalyst, mean-reversion, and forecast candidates.</p></article>
+          <article class="flow-card"><span class="num">03</span><h3>Risk gate</h3><p>Capital limits, position caps, daily-loss stops, drawdown breakers, and kill switches.</p></article>
+          <article class="flow-card"><span class="num">04</span><h3>Paper ledger</h3><p>Timestamped trades, fees, slippage, fills, equity, and comparable forward evidence.</p></article>
+          <article class="flow-card"><span class="num">05</span><h3>Promote or kill</h3><p>No live path until sample size, confidence, net expectancy, and manual approval all pass.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="strategies">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="label">Strategy roster</div><h2>Different ideas. Same burden of proof.</h2></div>
+          <p class="section-copy">The August audit rejected the “combine everything” shortcut. A portfolio of correlated, sub-threshold systems cannot mathematically manufacture a 70% win rate. The rebuild focuses first on instrumentation and risk truth, then on new strategy research.</p>
+        </div>
+        <div class="strategy-grid">
+          <article class="strategy"><span class="status paper">paper evidence</span><h3>Hybrid V6</h3><p>Regime-aware crypto system and the strongest existing real sample. Still far below the target profile.</p><div class="metric">80 closed · 39 days · 56.25% blended WR</div></article>
+          <article class="strategy"><span class="status blocked">blocked</span><h3>Rapid Increase</h3><p>Momentum scanner. Prior results were invalidated by fabricated fallback data; structural trade-management work remains.</p><div class="metric">0 valid post-fix trades at audit</div></article>
+          <article class="strategy"><span class="status blocked">rejected</span><h3>Arbitrage cluster</h3><p>Cross-venue and super-bot variants. Observed spreads did not survive realistic fees and execution costs.</p><div class="metric">36 real trades · 47.4% fee-exclusive WR</div></article>
+          <article class="strategy"><span class="status blocked">dormant</span><h3>Equity catalyst stack</h3><p>Schwab rumor, news, and leveraged-ETF research. Low frequency, weak win rate, and stale execution plumbing.</p><div class="metric">best grid run: 47.95% WR</div></article>
+          <article class="strategy"><span class="status live">research live</span><h3>BTC Brain</h3><p>Append-only public forecast ledger with model × horizon scoring, baseline comparisons, and shadow promotion gates.</p><div class="metric" id="btc-strategy-metric">Loading current ledger…</div></article>
+          <article class="strategy"><span class="status paper">designed</span><h3>OpenClaw</h3><p>Maker-only, spot, long/flat execution design. It stays unbuilt until its signal contract proves a real edge.</p><div class="metric">fail-closed · no leverage · no live capital</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="evidence">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="label">Live evidence</div><h2>The ledger is allowed to say no.</h2></div>
+          <p class="section-copy">These figures load from the same public files the BTC Brain uses. A promising hit rate is not promoted on its headline alone: the lower confidence bound, sample size, baseline, and fee-adjusted expectancy all have to agree.</p>
+        </div>
+        <div class="live-grid">
+          <article class="live-card">
+            <div class="label">All resolved forecasts</div>
+            <div class="live-number" id="resolved">2,234</div>
+            <div class="live-meta" id="global-meta">Loading current scorecard…</div>
+            <div class="meter" aria-hidden="true"><span id="global-meter"></span></div>
+          </article>
+          <article class="live-card">
+            <div class="label">Current candidate</div>
+            <h3 id="candidate-status">Shadow — not tradeable</h3>
+            <p id="candidate-copy">The candidate remains behind the promotion gate while the live ledger accumulates evidence.</p>
+            <div class="metric" id="candidate-metric">Loading current gate…</div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="label">Promotion gate</div><h2>Every condition must pass.</h2></div>
+          <p class="section-copy">This is the line between research and capital. A red gate stops the whole chain; no strategy gets to substitute a backtest, a different period, or a friendlier dashboard.</p>
+        </div>
+        <div class="gates">
+          <article class="gate"><i></i><b>Real data</b><p>No silent synthetic candles or unlabeled fallback.</p></article>
+          <article class="gate"><i></i><b>Costs included</b><p>Fees, spread, slippage, and real fill quality.</p></article>
+          <article class="gate"><i></i><b>Sample credible</b><p>Enough independent trades and regimes for confidence.</p></article>
+          <article class="gate"><i></i><b>Risk enforced</b><p>Per-trade stop, daily loss, drawdown, and kill switch.</p></article>
+          <article class="gate"><i></i><b>Human approval</b><p>Promotion remains a deliberate owner decision.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="shell honesty">
+        <div><h3>What this preview proves</h3><ul><li>The system records negative findings instead of deleting them.</li><li>The live BTC ledger can be independently inspected.</li><li>Execution is separated from research and locked by default.</li></ul></div>
+        <div><h3>What it does not claim</h3><ul><li>No strategy is represented as profitable or investor-ready.</li><li>Backtests are not presented as live returns.</li><li>No return, win rate, or trade frequency is guaranteed.</li></ul></div>
       </div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div>Loopholemaxing.com &mdash; Clayton Camera &mdash; 2026</div>
-    <div class="footer-tagline">Private systems stay private.</div>
+  <footer>
+    <div class="shell footer-row"><span>MMS HUB · Loopholemaxing · Research preview</span><span>Educational and paper-trading research only. Not financial advice.</span></div>
   </footer>
+
+  <script>
+  'use strict';
+  const pct = value => `${(Number(value || 0) * 100).toFixed(1)}%`;
+  const bps = value => `${Number(value || 0).toFixed(1)} bps`;
+  Promise.all([
+    fetch('/btc-brain/ledger/public/accuracy.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('accuracy unavailable'); return r.json(); }),
+    fetch('/btc-brain/ledger/public/signal.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('signal unavailable'); return r.json(); })
+  ]).then(([accuracy, signal]) => {
+    const global = accuracy.global || {};
+    const n = global.n || accuracy.total_resolved || 0;
+    document.getElementById('resolved').textContent = Number(n).toLocaleString();
+    document.getElementById('global-meta').textContent = `${pct(global.hit_rate)} hit rate · ${pct(global.vs_majority_pp)} vs majority · maker ${bps(global.expectancy_maker_2bps)}`;
+    document.getElementById('global-meter').style.width = `${Math.max(0, Math.min(100, Number(global.hit_rate || 0) * 100))}%`;
+    document.getElementById('btc-strategy-metric').textContent = `${Number(n).toLocaleString()} resolved · ${pct(global.hit_rate)} global hit rate`;
+    const gates = signal.gates || {};
+    const status = String(signal.status || 'shadow');
+    document.getElementById('candidate-status').textContent = `${status[0].toUpperCase() + status.slice(1)} — ${gates.ok ? 'gate passed' : 'not tradeable'}`;
+    document.getElementById('candidate-copy').textContent = gates.ok ? 'The evidence gate currently passes; live promotion still requires explicit owner approval.' : (gates.reason || 'The candidate remains behind the evidence gate.');
+    document.getElementById('candidate-metric').textContent = `${gates.model_version || 'candidate'} · n=${gates.n || 0} · ${pct(gates.hit_rate)} hit · Wilson LB ${pct(gates.wilson_lb_95)}`;
+  }).catch(() => {
+    document.getElementById('global-meta').textContent = 'Latest committed snapshot · live refresh temporarily unavailable';
+    document.getElementById('candidate-metric').textContent = 'Fail-closed: no live data means no promotion signal.';
+  });
+  </script>
   <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js?v=20260616a" data-site="loopholemaxing"></script>
 </body>
 </html>

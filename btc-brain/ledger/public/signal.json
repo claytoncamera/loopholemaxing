@@ -1,34 +1,34 @@
 {
   "disclaimer": "Educational / paper-trading signal for OpenClaw. Not financial advice. No buy/sell instruction is implied.",
   "economics": {
-    "expectancy_maker_2bps": -3.8570463407042426,
+    "expectancy_maker_2bps": -3.8385137753234164,
     "fee_assumption": "maker_rt_2bps",
-    "hit_rate": 0.6,
+    "hit_rate": 0.5921052631578947,
     "horizon_primary": "24h",
-    "n": 75,
-    "vs_majority_pp": -0.2666666666666667
+    "n": 76,
+    "vs_majority_pp": -0.26315789473684215
   },
   "gates": {
     "bucket": "v0.3.0-shadow-guard24|24h",
-    "expectancy_maker_2bps": -3.8570463407042426,
-    "hit_rate": 0.6,
+    "expectancy_maker_2bps": -3.8385137753234164,
+    "hit_rate": 0.5921052631578947,
     "horizon": "24h",
     "model_version": "v0.3.0-shadow-guard24",
-    "n": 75,
+    "n": 76,
     "ok": false,
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
-      "all-time wilson_lb_95 0.4869 not > 0.5 (hit_rate 0.6000 at n=75)",
-      "rolling-30d expectancy_maker_2bps -3.86 not > 0"
+      "all-time wilson_lb_95 0.4798 not > 0.5 (hit_rate 0.5921 at n=76)",
+      "rolling-30d expectancy_maker_2bps -3.84 not > 0"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": -3.8570463407042426,
-      "hit_rate": 0.6,
-      "n": 75,
-      "wilson_lb_95": 0.4868783216007659,
+      "expectancy_maker_2bps": -3.8385137753234164,
+      "hit_rate": 0.5921052631578947,
+      "n": 76,
+      "wilson_lb_95": 0.47978347984220315,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.4629451395572666,
+    "rolling_30d_hit": 0.460727969348659,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -36,10 +36,10 @@
       "rolling_30d_min_n": 20,
       "wilson_lb_95_gt": 0.5
     },
-    "vs_majority_pp": -0.2666666666666667,
-    "wilson_lb_95": 0.4868783216007659
+    "vs_majority_pp": -0.26315789473684215,
+    "wilson_lb_95": 0.47978347984220315
   },
-  "generated_at": "2026-08-15T08:42:45Z",
+  "generated_at": "2026-08-15T09:01:10Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {

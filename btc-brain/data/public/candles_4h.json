@@ -2,16 +2,16 @@
   "attempts": [
     {
       "error": "GET https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=200 failed: HTTP Error 451: ",
-      "fetched_at": "2026-08-15T11:56:34Z",
+      "fetched_at": "2026-08-15T12:01:05Z",
       "kind": "candles_4h",
-      "latency_ms": 30,
+      "latency_ms": 64,
       "notes": [],
       "source": "binance",
       "status": "failed"
     },
     {
       "error": "coinbase has no 4h candle granularity",
-      "fetched_at": "2026-08-15T11:56:34Z",
+      "fetched_at": "2026-08-15T12:01:05Z",
       "kind": "candles_4h",
       "latency_ms": 0,
       "notes": [],
@@ -20,9 +20,9 @@
     },
     {
       "error": null,
-      "fetched_at": "2026-08-15T11:56:34Z",
+      "fetched_at": "2026-08-15T12:01:05Z",
       "kind": "candles_4h",
-      "latency_ms": 246,
+      "latency_ms": 187,
       "notes": [],
       "source": "kraken",
       "status": "ok"
@@ -30,15 +30,6 @@
   ],
   "data": {
     "candles": [
-      {
-        "close": 62937.4,
-        "close_time_ms": 1783929600000,
-        "high": 63005.0,
-        "low": 62442.8,
-        "open": 62766.3,
-        "open_time_ms": 1783915200000,
-        "volume": 236.13914506
-      },
       {
         "close": 62844.1,
         "close_time_ms": 1783944000000,
@@ -1822,19 +1813,28 @@
         "volume": 73.67902547
       },
       {
-        "close": 62955.4,
+        "close": 62954.9,
         "close_time_ms": 1786795200000,
         "high": 63020.3,
         "low": 62855.8,
         "open": 62987.1,
         "open_time_ms": 1786780800000,
-        "volume": 46.36731558
+        "volume": 46.45005348
+      },
+      {
+        "close": 62953.0,
+        "close_time_ms": 1786809600000,
+        "high": 62954.6,
+        "low": 62952.9,
+        "open": 62954.6,
+        "open_time_ms": 1786795200000,
+        "volume": 0.09148874
       }
     ],
     "interval": "4h"
   },
   "error": null,
-  "fetched_at": "2026-08-15T11:56:34Z",
+  "fetched_at": "2026-08-15T12:01:05Z",
   "kind": "candles_4h",
   "notes": [],
   "schema_version": "phase2-data-v1",

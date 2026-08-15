@@ -1,34 +1,34 @@
 {
   "disclaimer": "Educational / paper-trading signal for OpenClaw. Not financial advice. No buy/sell instruction is implied.",
   "economics": {
-    "expectancy_maker_2bps": -4.745410477034254,
+    "expectancy_maker_2bps": -5.024970782517226,
     "fee_assumption": "maker_rt_2bps",
-    "hit_rate": 0.5769230769230769,
+    "hit_rate": 0.569620253164557,
     "horizon_primary": "24h",
-    "n": 78,
-    "vs_majority_pp": -0.2564102564102565
+    "n": 79,
+    "vs_majority_pp": -0.2531645569620252
   },
   "gates": {
     "bucket": "v0.3.0-shadow-guard24|24h",
-    "expectancy_maker_2bps": -4.745410477034254,
-    "hit_rate": 0.5769230769230769,
+    "expectancy_maker_2bps": -5.024970782517226,
+    "hit_rate": 0.569620253164557,
     "horizon": "24h",
     "model_version": "v0.3.0-shadow-guard24",
-    "n": 78,
+    "n": 79,
     "ok": false,
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
-      "all-time wilson_lb_95 0.4662 not > 0.5 (hit_rate 0.5769 at n=78)",
-      "rolling-30d expectancy_maker_2bps -4.75 not > 0"
+      "all-time wilson_lb_95 0.4597 not > 0.5 (hit_rate 0.5696 at n=79)",
+      "rolling-30d expectancy_maker_2bps -5.02 not > 0"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": -4.745410477034254,
-      "hit_rate": 0.5769230769230769,
-      "n": 78,
-      "wilson_lb_95": 0.46621355164287304,
+      "expectancy_maker_2bps": -5.024970782517226,
+      "hit_rate": 0.569620253164557,
+      "n": 79,
+      "wilson_lb_95": 0.4597200056030372,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.4576593720266413,
+    "rolling_30d_hit": 0.4564393939393939,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -36,26 +36,26 @@
       "rolling_30d_min_n": 20,
       "wilson_lb_95_gt": 0.5
     },
-    "vs_majority_pp": -0.2564102564102565,
-    "wilson_lb_95": 0.46621355164287304
+    "vs_majority_pp": -0.2531645569620252,
+    "wilson_lb_95": 0.4597200056030372
   },
-  "generated_at": "2026-08-15T11:59:11Z",
+  "generated_at": "2026-08-15T12:01:09Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0013|sma24=62893.14|sma72=63267.70|band=high",
+    "confidence_reason": "guard24:rel=0.0007|sma24=62902.72|sma72=63252.36|band=high",
     "direction": "up",
-    "entry_ref": 62976.03,
-    "expires_at": "2026-08-16T11:00:00Z",
-    "forecast_id": "239b3e01-0c1a-4239-a280-01e60fb97f58",
+    "entry_ref": 62949.22,
+    "expires_at": "2026-08-16T12:00:00Z",
+    "forecast_id": "9588549d-4707-4ac9-b555-a32b0ccc477d",
     "horizon": "24h",
-    "invalidation": "BTC < 59827.23 before target",
-    "issued_at": "2026-08-15T11:00:00Z",
+    "invalidation": "BTC < 59801.76 before target",
+    "issued_at": "2026-08-15T12:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.55,
     "regime": "chop",
-    "signal_id": "sig-239b3e01",
+    "signal_id": "sig-9588549d",
     "signal_version": "shadow-guard24-v0.1.0",
     "target_rule": "close_above_entry"
   },

@@ -1,35 +1,35 @@
 {
   "disclaimer": "Educational / paper-trading signal for OpenClaw. Not financial advice. No buy/sell instruction is implied.",
   "economics": {
-    "expectancy_maker_2bps": -5.239058153758871,
+    "expectancy_maker_2bps": -3.7570822986202557,
     "fee_assumption": "maker_rt_2bps",
-    "hit_rate": 0.49572649572649574,
+    "hit_rate": 0.5,
     "horizon_primary": "24h",
-    "n": 117,
-    "vs_majority_pp": -0.19658119658119655
+    "n": 118,
+    "vs_majority_pp": -0.18644067796610164
   },
   "gates": {
     "bucket": "v0.3.0-shadow-guard24|24h",
-    "expectancy_maker_2bps": -5.239058153758871,
-    "hit_rate": 0.49572649572649574,
+    "expectancy_maker_2bps": -3.7570822986202557,
+    "hit_rate": 0.5,
     "horizon": "24h",
     "model_version": "v0.3.0-shadow-guard24",
-    "n": 117,
+    "n": 118,
     "ok": false,
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
-      "all-time wilson_lb_95 0.4067 not > 0.5 (hit_rate 0.4957 at n=117)",
-      "rolling-30d hit_rate 0.4957 < 0.52",
-      "rolling-30d expectancy_maker_2bps -5.24 not > 0"
+      "all-time wilson_lb_95 0.4112 not > 0.5 (hit_rate 0.5000 at n=118)",
+      "rolling-30d hit_rate 0.5000 < 0.52",
+      "rolling-30d expectancy_maker_2bps -3.76 not > 0"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": -5.239058153758871,
-      "hit_rate": 0.49572649572649574,
-      "n": 117,
-      "wilson_lb_95": 0.40671622435748067,
+      "expectancy_maker_2bps": -3.7570822986202557,
+      "hit_rate": 0.5,
+      "n": 118,
+      "wilson_lb_95": 0.41121731418502067,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.44275420336269017,
+    "rolling_30d_hit": 0.4454183266932271,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -37,10 +37,10 @@
       "rolling_30d_min_n": 20,
       "wilson_lb_95_gt": 0.5
     },
-    "vs_majority_pp": -0.19658119658119655,
-    "wilson_lb_95": 0.40671622435748067
+    "vs_majority_pp": -0.18644067796610164,
+    "wilson_lb_95": 0.41121731418502067
   },
-  "generated_at": "2026-08-17T15:48:59Z",
+  "generated_at": "2026-08-17T16:01:06Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {

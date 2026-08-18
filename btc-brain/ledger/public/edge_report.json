@@ -11,10 +11,10 @@
     "wilson_lb_95": 0.5291793557946364
   },
   "edge_hunter_version": "edge-hunter-v0.1.0",
-  "generated_at": "2026-08-18T10:55:14Z",
+  "generated_at": "2026-08-18T11:01:09Z",
   "improvement_target": {
-    "current": 0.5328467153284672,
-    "current_n": 411,
+    "current": 0.5351089588377724,
+    "current_n": 413,
     "hard_goal": 0.7,
     "metric": "horizon=24h hit_rate",
     "note": "Continuous improvement target \u2014 do not claim until n>=100 and wilson_lb clears 0.55",
@@ -62,7 +62,7 @@
         "wilson_lb_95": 0.5291793557946364
       },
       "hypothesis": "Slice `horizon=24h|regime=unknown` shows maker=55.2bps hit=0.635 n=85",
-      "id": "auto-7146350",
+      "id": "auto-1223316",
       "priority": 10
     },
     {
@@ -75,7 +75,7 @@
         "wilson_lb_95": 0.5013082766233525
       },
       "hypothesis": "Slice `horizon=12h|regime=unknown` shows maker=23.8bps hit=0.576 n=170",
-      "id": "auto-1703301",
+      "id": "auto-7689732",
       "priority": 10
     },
     {
@@ -88,7 +88,7 @@
         "wilson_lb_95": 0.4852589413330081
       },
       "hypothesis": "Slice `horizon=24h|hour_utc=00` shows maker=21.9bps hit=0.568 n=139",
-      "id": "auto-9697579",
+      "id": "auto-1502641",
       "priority": 10
     },
     {
@@ -101,7 +101,7 @@
         "wilson_lb_95": 0.4915164687273671
       },
       "hypothesis": "Slice `horizon=1h|hour_utc=13` shows maker=12.3bps hit=0.657 n=35",
-      "id": "auto-7333271",
+      "id": "auto-8326535",
       "priority": 10
     },
     {
@@ -114,20 +114,20 @@
         "wilson_lb_95": 0.5221948964164917
       },
       "hypothesis": "Slice `horizon=12h|regime=chop` shows maker=15.6bps hit=0.606 n=137",
-      "id": "auto-5915294",
+      "id": "auto-7197299",
       "priority": 10
     },
     {
       "action": "Validate OOS next 14d before encoding into issuer policy",
       "evidence": {
-        "expectancy_maker_2bps": 13.35460926544407,
-        "hit_rate": 0.53125,
-        "n": 256,
-        "vs_majority_pp": 0.015625,
-        "wilson_lb_95": 0.47010954427831475
+        "expectancy_maker_2bps": 13.626597157767778,
+        "hit_rate": 0.5330739299610895,
+        "n": 257,
+        "vs_majority_pp": 0.01945525291828798,
+        "wilson_lb_95": 0.4720388713942908
       },
-      "hypothesis": "Slice `model=v0.1.0-baseline-shadow|horizon=24h` shows maker=13.4bps hit=0.531 n=256",
-      "id": "auto-0936992",
+      "hypothesis": "Slice `model=v0.1.0-baseline-shadow|horizon=24h` shows maker=13.6bps hit=0.533 n=257",
+      "id": "auto-8494330",
       "priority": 10
     },
     {
@@ -140,7 +140,7 @@
         "wilson_lb_95": 0.489362574712238
       },
       "hypothesis": "Slice `hour_utc=06` shows maker=6.4bps hit=0.598 n=82",
-      "id": "auto-4415322",
+      "id": "auto-9058600",
       "priority": 10
     },
     {
@@ -153,7 +153,7 @@
         "wilson_lb_95": 0.49070683756670713
       },
       "hypothesis": "Slice `regime=chop` shows maker=9.3bps hit=0.539 n=408",
-      "id": "auto-9756462",
+      "id": "auto-4427115",
       "priority": 10
     }
   ],
@@ -253,6 +253,17 @@
       "wilson_lb_95": 0.3906175873976139
     },
     {
+      "expectancy_bps": 35.35870705711202,
+      "expectancy_maker_2bps": 33.35870705711202,
+      "hit_rate": 0.7380952380952381,
+      "majority_rate": 0.7857142857142857,
+      "n": 42,
+      "score": 36.870852677662086,
+      "slice": "horizon=24h|dow=0",
+      "vs_majority_pp": -0.04761904761904756,
+      "wilson_lb_95": 0.5893098001502446
+    },
+    {
       "expectancy_bps": 28.936769689295087,
       "expectancy_maker_2bps": 26.936769689295087,
       "hit_rate": 0.6153846153846154,
@@ -262,17 +273,6 @@
       "slice": "horizon=12h|hour_utc=08",
       "vs_majority_pp": 0.07692307692307698,
       "wilson_lb_95": 0.3552248097226855
-    },
-    {
-      "expectancy_bps": 32.86386753033579,
-      "expectancy_maker_2bps": 30.863867530335785,
-      "hit_rate": 0.725,
-      "majority_rate": 0.775,
-      "n": 40,
-      "score": 34.08034244702333,
-      "slice": "horizon=24h|dow=0",
-      "vs_majority_pp": -0.050000000000000044,
-      "wilson_lb_95": 0.5716474916687543
     },
     {
       "expectancy_bps": 32.25233290838292,
@@ -308,17 +308,6 @@
       "wilson_lb_95": 0.4535045882751561
     },
     {
-      "expectancy_bps": 30.113153181607434,
-      "expectancy_maker_2bps": 28.113153181607434,
-      "hit_rate": 0.6133333333333333,
-      "majority_rate": 0.64,
-      "n": 75,
-      "score": 31.78154672148684,
-      "slice": "horizon=12h|dow=0",
-      "vs_majority_pp": -0.026666666666666727,
-      "wilson_lb_95": 0.5001726873212743
-    },
-    {
       "expectancy_bps": 25.78450061024325,
       "expectancy_maker_2bps": 23.78450061024325,
       "hit_rate": 0.5764705882352941,
@@ -328,6 +317,17 @@
       "slice": "horizon=12h|regime=unknown",
       "vs_majority_pp": 0.05294117647058816,
       "wilson_lb_95": 0.5013082766233525
+    },
+    {
+      "expectancy_bps": 28.903701069713414,
+      "expectancy_maker_2bps": 26.90370106971341,
+      "hit_rate": 0.5974025974025974,
+      "majority_rate": 0.6233766233766234,
+      "n": 77,
+      "score": 30.46266470406126,
+      "slice": "horizon=12h|dow=0",
+      "vs_majority_pp": -0.025974025974025983,
+      "wilson_lb_95": 0.4857664933049152
     },
     {
       "expectancy_bps": 27.573313961525535,
@@ -429,6 +429,17 @@
       "wilson_lb_95": 0.5221948964164917
     },
     {
+      "expectancy_bps": 15.626597157767778,
+      "expectancy_maker_2bps": 13.626597157767778,
+      "hit_rate": 0.5330739299610895,
+      "majority_rate": 0.5136186770428015,
+      "n": 257,
+      "score": 19.319748517625086,
+      "slice": "model=v0.1.0-baseline-shadow|horizon=24h",
+      "vs_majority_pp": 0.01945525291828798,
+      "wilson_lb_95": 0.4720388713942908
+    },
+    {
       "expectancy_bps": 16.403573144571705,
       "expectancy_maker_2bps": 14.403573144571705,
       "hit_rate": 0.6,
@@ -438,17 +449,6 @@
       "slice": "hour_utc=05",
       "vs_majority_pp": 0.0,
       "wilson_lb_95": 0.46181189102759373
-    },
-    {
-      "expectancy_bps": 15.354609265444072,
-      "expectancy_maker_2bps": 13.35460926544407,
-      "hit_rate": 0.53125,
-      "majority_rate": 0.515625,
-      "n": 256,
-      "score": 18.836954708227218,
-      "slice": "model=v0.1.0-baseline-shadow|horizon=24h",
-      "vs_majority_pp": 0.015625,
-      "wilson_lb_95": 0.47010954427831475
     },
     {
       "expectancy_bps": 24.200434115183374,
@@ -471,6 +471,17 @@
       "slice": "hour_utc=06",
       "vs_majority_pp": 0.09756097560975607,
       "wilson_lb_95": 0.489362574712238
+    },
+    {
+      "expectancy_bps": 13.61108493682761,
+      "expectancy_maker_2bps": 11.611084936827607,
+      "hit_rate": 0.49732620320855614,
+      "majority_rate": 0.5026737967914439,
+      "n": 187,
+      "score": 15.608118125706774,
+      "slice": "horizon=24h|dir=up",
+      "vs_majority_pp": -0.005347593582887722,
+      "wilson_lb_95": 0.42644128680235527
     },
     {
       "expectancy_bps": 14.267337773893596,
@@ -517,15 +528,15 @@
       "wilson_lb_95": 0.49405126034489305
     },
     {
-      "expectancy_bps": 8.896178752428229,
-      "expectancy_maker_2bps": 6.89617875242823,
-      "hit_rate": 0.5952380952380952,
-      "majority_rate": 0.5238095238095238,
-      "n": 42,
-      "score": 14.917011876674543,
+      "expectancy_bps": 8.80512986129151,
+      "expectancy_maker_2bps": 6.80512986129151,
+      "hit_rate": 0.6046511627906976,
+      "majority_rate": 0.5348837209302325,
+      "n": 43,
+      "score": 14.851381613646677,
       "slice": "horizon=1h|hour_utc=10",
-      "vs_majority_pp": 0.0714285714285714,
-      "wilson_lb_95": 0.4449404552817742
+      "vs_majority_pp": 0.06976744186046513,
+      "wilson_lb_95": 0.4557879659331909
     },
     {
       "expectancy_bps": 14.971114775774948,
@@ -539,15 +550,15 @@
       "wilson_lb_95": 0.4253291174826267
     },
     {
-      "expectancy_bps": 12.62413962780397,
-      "expectancy_maker_2bps": 10.62413962780397,
-      "hit_rate": 0.5714285714285714,
-      "majority_rate": 0.5948051948051948,
-      "n": 385,
-      "score": 14.670603152582098,
+      "expectancy_bps": 12.60433894595357,
+      "expectancy_maker_2bps": 10.60433894595357,
+      "hit_rate": 0.572538860103627,
+      "majority_rate": 0.5958549222797928,
+      "n": 386,
+      "score": 14.66563233473547,
       "slice": "sma_rel<0.1%",
-      "vs_majority_pp": -0.023376623376623384,
-      "wilson_lb_95": 0.5215294693609296
+      "vs_majority_pp": -0.023316062176165775,
+      "wilson_lb_95": 0.522709649759019
     },
     {
       "expectancy_bps": 11.189075237022566,
@@ -561,26 +572,26 @@
       "wilson_lb_95": 0.45263522635441744
     },
     {
-      "expectancy_bps": 12.836550745953996,
-      "expectancy_maker_2bps": 10.836550745953994,
-      "hit_rate": 0.4918918918918919,
-      "majority_rate": 0.508108108108108,
-      "n": 185,
-      "score": 14.233256137074113,
-      "slice": "horizon=24h|dir=up",
-      "vs_majority_pp": -0.016216216216216106,
-      "wilson_lb_95": 0.42075162019309237
+      "expectancy_bps": 11.539669963843513,
+      "expectancy_maker_2bps": 9.539669963843513,
+      "hit_rate": 0.5774647887323944,
+      "majority_rate": 0.5774647887323944,
+      "n": 71,
+      "score": 14.154723834189067,
+      "slice": "horizon=24h|sma_rel_0.5-1%",
+      "vs_majority_pp": 0.0,
+      "wilson_lb_95": 0.46150538703455535
     },
     {
-      "expectancy_bps": 10.966203909371435,
-      "expectancy_maker_2bps": 8.966203909371435,
-      "hit_rate": 0.5328467153284672,
-      "majority_rate": 0.5401459854014599,
-      "n": 411,
-      "score": 13.44654063717639,
+      "expectancy_bps": 11.325958358200806,
+      "expectancy_maker_2bps": 9.325958358200806,
+      "hit_rate": 0.5351089588377724,
+      "majority_rate": 0.5375302663438257,
+      "n": 413,
+      "score": 14.073921562546492,
       "slice": "horizon=24h",
-      "vs_majority_pp": -0.007299270072992692,
-      "wilson_lb_95": 0.48453002314545907
+      "vs_majority_pp": -0.002421307506053294,
+      "wilson_lb_95": 0.4869028579648352
     },
     {
       "expectancy_bps": 9.860753771222425,
@@ -592,17 +603,6 @@
       "slice": "horizon=4h|dir=up",
       "vs_majority_pp": 0.0,
       "wilson_lb_95": 0.546735205099674
-    },
-    {
-      "expectancy_bps": 9.054629051831466,
-      "expectancy_maker_2bps": 7.0546290518314665,
-      "hit_rate": 0.5759493670886076,
-      "majority_rate": 0.5759493670886076,
-      "n": 1422,
-      "score": 12.555548157359294,
-      "slice": "dir=up",
-      "vs_majority_pp": 0.0,
-      "wilson_lb_95": 0.5500919105527828
     }
   ],
   "top_tradeable": [
@@ -662,15 +662,15 @@
       "wilson_lb_95": 0.5221948964164917
     },
     {
-      "expectancy_bps": 15.354609265444072,
-      "expectancy_maker_2bps": 13.35460926544407,
-      "hit_rate": 0.53125,
-      "majority_rate": 0.515625,
-      "n": 256,
-      "score": 18.836954708227218,
+      "expectancy_bps": 15.626597157767778,
+      "expectancy_maker_2bps": 13.626597157767778,
+      "hit_rate": 0.5330739299610895,
+      "majority_rate": 0.5136186770428015,
+      "n": 257,
+      "score": 19.319748517625086,
       "slice": "model=v0.1.0-baseline-shadow|horizon=24h",
-      "vs_majority_pp": 0.015625,
-      "wilson_lb_95": 0.47010954427831475
+      "vs_majority_pp": 0.01945525291828798,
+      "wilson_lb_95": 0.4720388713942908
     },
     {
       "expectancy_bps": 8.446404860647592,
@@ -706,15 +706,15 @@
       "wilson_lb_95": 0.40703956657240076
     },
     {
-      "expectancy_bps": 8.896178752428229,
-      "expectancy_maker_2bps": 6.89617875242823,
-      "hit_rate": 0.5952380952380952,
-      "majority_rate": 0.5238095238095238,
-      "n": 42,
-      "score": 14.917011876674543,
+      "expectancy_bps": 8.80512986129151,
+      "expectancy_maker_2bps": 6.80512986129151,
+      "hit_rate": 0.6046511627906976,
+      "majority_rate": 0.5348837209302325,
+      "n": 43,
+      "score": 14.851381613646677,
       "slice": "horizon=1h|hour_utc=10",
-      "vs_majority_pp": 0.0714285714285714,
-      "wilson_lb_95": 0.4449404552817742
+      "vs_majority_pp": 0.06976744186046513,
+      "wilson_lb_95": 0.4557879659331909
     },
     {
       "expectancy_bps": 11.189075237022566,
@@ -772,5 +772,5 @@
       "wilson_lb_95": 0.4202438257848398
     }
   ],
-  "total_resolved_scanned": 2778
+  "total_resolved_scanned": 2783
 }

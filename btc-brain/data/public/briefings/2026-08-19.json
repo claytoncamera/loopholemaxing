@@ -1,0 +1,132 @@
+{
+  "date": "2026-08-19",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-08-19T10:47:04Z",
+  "id": "briefing-2026-08-19",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.51209398756047,
+      "baseline_brier": 0.2498537354648872,
+      "baseline_hit_rate": 0.51209398756047,
+      "brier": 0.25025955013330337,
+      "display_ready": true,
+      "ece": 0.039829560038254476,
+      "generated_at": "2026-08-19T10:40:42Z",
+      "hit_rate": 0.51209398756047,
+      "logloss": 0.6936670331784685,
+      "metrics_version": "metrics-v0.3.0",
+      "min_n_display": 20,
+      "n": 2894,
+      "total_forecasts": 2949,
+      "total_resolved": 2894
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-08-19T10:46:03Z",
+      "funding_rate": 5.04439145383e-05,
+      "long_short_ratio": 2.0,
+      "mark_price": 64375.0,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 32940.352600000144,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-08-19T10:46:04Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 64560.23,
+        "r1": 65141.100000000006,
+        "r2": 65600.87,
+        "recent_high": 65020.0,
+        "recent_low": 63981.0,
+        "s1": 64100.46000000001,
+        "s2": 63519.590000000004,
+        "sma_20": 63856.233499999995,
+        "sma_200": null,
+        "sma_50": 63755.975999999995,
+        "vwap_session": 64340.56579446337
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Fear",
+      "fear_greed_value": 46,
+      "fetched_at": "2026-08-19T10:46:04Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-08-19T10:46:04Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-08-19T10:46:02Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-08-19T10:46:02Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-08-19T10:46:02Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-08-19T10:46:02Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-08-19T10:46:02Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-08-19T10:46:02Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-08-19T10:46:03Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-08-19T10:46:04Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-08-19T10:46:04Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-08-19"
+}

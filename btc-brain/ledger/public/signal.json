@@ -15,11 +15,9 @@
     "horizon": "24h",
     "model_version": "v0.3.0-shadow-guard24",
     "n": 192,
-    "ok": false,
-    "reason": "insufficient_edge_or_sample \u2014 remain shadow",
-    "reasons": [
-      "forecast expired: target_time 2026-08-26T09:00:00Z <= now"
-    ],
+    "ok": true,
+    "reason": "gates_cleared",
+    "reasons": [],
     "rolling_30d": {
       "expectancy_maker_2bps": 75.35652024440832,
       "hit_rate": 0.6510416666666666,
@@ -27,7 +25,7 @@
       "wilson_lb_95": 0.5812564526919826,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.5204896221394358,
+    "rolling_30d_hit": 0.5212539851222104,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -38,25 +36,25 @@
     "vs_majority_pp": 0.08333333333333326,
     "wilson_lb_95": 0.5812564526919826
   },
-  "generated_at": "2026-08-26T09:54:02Z",
+  "generated_at": "2026-08-26T10:01:12Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0094|sma24=79161.30|sma72=77791.85|band=low",
-    "direction": "up",
-    "entry_ref": 79905.81,
-    "expires_at": "2026-08-26T09:00:00Z",
-    "forecast_id": "f7ba9e89-b095-4fba-9700-14133f6db762",
+    "confidence_reason": "guard24:rel=-0.0067|sma24=78940.83|sma72=78493.86|band=low",
+    "direction": "down",
+    "entry_ref": 78408.09,
+    "expires_at": "2026-08-27T10:00:00Z",
+    "forecast_id": "62549f2d-c524-4eb8-a741-f241ccfe57fe",
     "horizon": "24h",
-    "invalidation": "BTC < 75910.52 before target",
-    "issued_at": "2026-08-25T09:00:00Z",
+    "invalidation": "BTC > 82328.49 before target",
+    "issued_at": "2026-08-26T10:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.52,
-    "regime": "bull",
-    "signal_id": "sig-f7ba9e89",
+    "regime": "bear",
+    "signal_id": "sig-62549f2d",
     "signal_version": "shadow-guard24-v0.1.0",
-    "target_rule": "close_above_entry"
+    "target_rule": "close_below_entry"
   },
-  "status": "shadow"
+  "status": "actionable_paper"
 }

@@ -77,14 +77,14 @@
         <div class="eyebrow">Owner cockpit · research and paper execution</div>
         <h1>MMS + Trading Systems</h1>
         <p class="sub">The complete operating map: live research, strategy evidence, execution surfaces, risk gaps, source-of-truth hierarchy, and the shortest honest route toward a promotable multi-algorithm system.</p>
-        <div class="fresh"><i></i><span id="freshness">BTC ledger loading · MMS runtime last independently verified 2026-08-09</span></div>
+        <div class="fresh"><i></i><span id="freshness">BTC ledger loading · MMS runtime last independently verified 2026-08-26</span></div>
       </div>
 
       <div class="stats">
         <article class="stat"><div class="k">MMS audit</div><b class="red">0 / 9</b><small>investor-ready strategies</small></article>
-        <article class="stat"><div class="k">Best existing sample</div><b class="amber">60.5%</b><small>Hybrid V6 Binance.US win rate</small></article>
-        <article class="stat"><div class="k">Paper fleet snapshot</div><b>$27,972.79</b><small>of $30,000 · −6.76% · 2026-08-13 authority file</small></article>
-        <article class="stat"><div class="k">BTC resolved</div><b class="blue" id="btc-n">2,234</b><small id="btc-global">loading current ledger</small></article>
+        <article class="stat"><div class="k">Best existing sample</div><b class="amber">56.5%</b><small>Hybrid V6 Crypto.com win rate · 69 closed</small></article>
+        <article class="stat"><div class="k">Paper fleet snapshot</div><b>$30,057.01</b><small>of $30,000 · +0.19% · 2026-08-26 authority file</small></article>
+        <article class="stat"><div class="k">BTC resolved</div><b class="blue" id="btc-n">3,503</b><small id="btc-global">loading current ledger</small></article>
         <article class="stat"><div class="k">Promotion state</div><b class="green" id="signal-state">SHADOW</b><small id="signal-gate">fail-closed · not tradeable</small></article>
       </div>
 
@@ -107,9 +107,9 @@
             <table>
               <thead><tr><th>System</th><th>State</th><th>Evidence</th><th>Decision</th></tr></thead>
               <tbody>
-                <tr><td class="system">Hybrid V6 · Binance.US</td><td><span class="chip paper">paper</span></td><td class="evidence">43-trade venue slice · 60.5% WR; blended system 56.25% over 80 trades.</td><td class="amber">instrument, do not scale</td></tr>
-                <tr><td class="system">Hybrid V6 · Crypto.com</td><td><span class="chip paper">paper</span></td><td class="evidence">37 trades · 51.4% WR; correlated with the first venue.</td><td class="amber">A/B only</td></tr>
-                <tr><td class="system">Rapid Increase</td><td><span class="chip paper">paper observation</span></td><td class="evidence">0 valid post-fix trades. Current-candle cutoff, exit updates, and fail-closed freshness guard repaired 2026-08-13; new forward sample starts now.</td><td class="amber">collect real sample</td></tr>
+                <tr><td class="system">Hybrid V6 · Binance.US</td><td><span class="chip paper">paper</span></td><td class="evidence">78 closed · 56.4% WR (60.5% was the 08-05 audit’s 43-trade slice).</td><td class="amber">instrument, do not scale</td></tr>
+                <tr><td class="system">Hybrid V6 · Crypto.com</td><td><span class="chip paper">paper</span></td><td class="evidence">69 closed · 56.5% WR (−3.28% equity); correlated with the first venue.</td><td class="amber">A/B only</td></tr>
+                <tr><td class="system">Rapid Increase</td><td><span class="chip paper">paper observation</span></td><td class="evidence">34 closed post-fix · 55.9% WR · +3.15%. Current-candle cutoff, exit updates, and fail-closed freshness guard repaired 2026-08-13.</td><td class="amber">collect real sample</td></tr>
                 <tr><td class="system">Crypto arb cluster</td><td><span class="chip blocked">rejected</span></td><td class="evidence">36 real trades · 47.4% before full fee/slippage accounting.</td><td class="red">edge negative</td></tr>
                 <tr><td class="system">Gemini RSI</td><td><span class="chip blocked">blocked</span></td><td class="evidence">12 real trades; live orders rejected; backtest lacks fee model.</td><td class="red">do not promote</td></tr>
                 <tr><td class="system">Leveraged ETF</td><td><span class="chip bench">bench</span></td><td class="evidence">102 trades · 56.9% full-history, 44.8% current config; losses exceed cap.</td><td class="red">parked</td></tr>
@@ -162,7 +162,7 @@
         </div>
       </section>
     </main>
-    <footer><div class="shell foot"><span>Owner cockpit · no secrets or credentials stored here</span><span>Trading state verified from repository evidence 2026-08-13 · runtime snapshot 2026-08-09</span></div></footer>
+    <footer><div class="shell foot"><span>Owner cockpit · no secrets or credentials stored here</span><span>Trading state verified from repository evidence 2026-08-26 · runtime snapshot 2026-08-26</span></div></footer>
   </div>
 
   <script>
@@ -192,7 +192,7 @@
       $('confidence-state').textContent=gate.wilson_lb_95>0.5?'PASS':'OPEN';
       $('confidence-state').className=gate.wilson_lb_95>0.5?'green':'';
       $('expectancy-state').textContent=gate.expectancy_maker_2bps>0?'CANDIDATE':'OPEN';
-      $('freshness').textContent=`BTC ledger ${a.generated_at||'current'} · MMS runtime last independently verified 2026-08-09`;
+      $('freshness').textContent=`BTC ledger ${a.generated_at||'current'} · MMS runtime last independently verified 2026-08-26`;
     }catch(e){
       $('freshness').textContent='BTC live refresh unavailable · displaying committed fallback · promotion remains locked';
       $('guard-evidence').textContent='Live ledger unavailable. Fail-closed; no promotion inference.';

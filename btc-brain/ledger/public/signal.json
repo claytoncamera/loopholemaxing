@@ -1,31 +1,33 @@
 {
   "disclaimer": "Educational / paper-trading signal for OpenClaw. Not financial advice. No buy/sell instruction is implied.",
   "economics": {
-    "expectancy_maker_2bps": 52.955737129680955,
+    "expectancy_maker_2bps": 51.40028313488393,
     "fee_assumption": "maker_rt_2bps",
-    "hit_rate": 0.6171171171171171,
+    "hit_rate": 0.6143497757847534,
     "horizon_primary": "24h",
-    "n": 222,
-    "vs_majority_pp": 0.022522522522522515
+    "n": 223,
+    "vs_majority_pp": 0.022421524663677084
   },
   "gates": {
     "bucket": "v0.3.0-shadow-guard24|24h",
-    "expectancy_maker_2bps": 52.955737129680955,
-    "hit_rate": 0.6171171171171171,
+    "expectancy_maker_2bps": 51.40028313488393,
+    "hit_rate": 0.6143497757847534,
     "horizon": "24h",
     "model_version": "v0.3.0-shadow-guard24",
-    "n": 222,
-    "ok": true,
-    "reason": "gates_cleared",
-    "reasons": [],
+    "n": 223,
+    "ok": false,
+    "reason": "insufficient_edge_or_sample \u2014 remain shadow",
+    "reasons": [
+      "forecast expired: target_time 2026-08-29T04:00:00Z <= now"
+    ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 52.955737129680955,
-      "hit_rate": 0.6171171171171171,
-      "n": 222,
-      "wilson_lb_95": 0.551696327919422,
+      "expectancy_maker_2bps": 51.40028313488393,
+      "hit_rate": 0.6143497757847534,
+      "n": 223,
+      "wilson_lb_95": 0.5490405407113789,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.5213592233009708,
+    "rolling_30d_hit": 0.521823472356935,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -33,10 +35,10 @@
       "rolling_30d_min_n": 20,
       "wilson_lb_95_gt": 0.5
     },
-    "vs_majority_pp": 0.022522522522522515,
-    "wilson_lb_95": 0.551696327919422
+    "vs_majority_pp": 0.022421524663677084,
+    "wilson_lb_95": 0.5490405407113789
   },
-  "generated_at": "2026-08-29T03:23:26Z",
+  "generated_at": "2026-08-29T09:00:36Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
@@ -56,5 +58,5 @@
     "signal_version": "shadow-guard24-v0.1.0",
     "target_rule": "close_above_entry"
   },
-  "status": "actionable_paper"
+  "status": "shadow"
 }

@@ -1266,7 +1266,7 @@
           + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:#8b949e;">'+b.n+'</td>'
           + '<td style="padding:8px 10px;text-align:center;font-family:monospace;font-weight:700;color:'+hitColor+';">'+pct(b.hit_rate)+'</td>'
           + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:#8b949e;">'+pct(b.always_up_rate)+'</td>'
-          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:'+((vsMaj||0)>0?'#3fb950':'#f85149')+';">'+(vsMaj==null?'—':((vsMaj>0?'+':'')+(vsMaj*100).toFixed(1)+' pp'))+'</td>'
+          + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:'+((vsMaj||0)>0?'#3fb950':'#f85149')+';">'+(vsMaj==null?'—':((vsMaj>0?'+':'')+vsMaj.toFixed(1)+' pp'))+'</td>'
           + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:'+makerColor+';">'+bps(b.expectancy_maker_2bps)+'</td>'
           + '<td style="padding:8px 10px;text-align:center;font-family:monospace;color:'+((lb||0)>0.5?'#3fb950':'#8b949e')+';">'+pct(lb)+'</td>'
           + '</tr>';

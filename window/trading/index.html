@@ -175,7 +175,8 @@
   function unlock(){try{sessionStorage.setItem(SESSION_KEY,'1')}catch(e){}$('gate').style.display='none';$('cockpit').style.display='block';loadLive()}
   $('gate-form').onsubmit=async e=>{e.preventDefault();const value=$('pass').value;$('gate-err').textContent='';if(!value)return $('gate-err').textContent='Enter your access code.';if(!(window.crypto&&crypto.subtle))return $('gate-err').textContent='HTTPS is required.';if(equal(await sha256Hex(value),EXPECTED_DIGEST))unlock();else{$('gate-err').textContent='Wrong code.';$('pass').value='';$('pass').focus()}};
   $('lock').onclick=()=>{sessionStorage.removeItem(SESSION_KEY);location.reload()};
-  const pct=v=>`${(Number(v||0)*100).toFixed(1)}%`, bps=v=>`${Number(v||0).toFixed(1)} bps`;
+  const pct=v=>`${(Number(v||0)*100).toFixed(1)}%`, bps=v=>`${Number(v||0).toFixed(1)} bps`,
+    pp=v=>{const x=Number(v||0);return `${x>0?'+':''}${x.toFixed(1)}pp`}; // vs_majority_pp is real pp since metrics-v0.3.1 — no ×100
   async function loadLive(){
     try{
       const [a,s]=await Promise.all([
@@ -184,7 +185,7 @@
       ]);
       const g=a.global||{},gate=s.gates||{},n=g.n||a.total_resolved||0;
       $('btc-n').textContent=Number(n).toLocaleString();
-      $('btc-global').textContent=`${pct(g.hit_rate)} hit · ${pct(g.vs_majority_pp)} vs majority`;
+      $('btc-global').textContent=`${pct(g.hit_rate)} hit · ${pp(g.vs_majority_pp)} vs majority`;
       $('signal-state').textContent=String(s.status||'shadow').toUpperCase();
       $('signal-gate').textContent=gate.ok?'evidence gate passed · approval required':'fail-closed · not tradeable';
       $('guard-evidence').textContent=`${gate.model_version||'candidate'} × ${gate.horizon||'24h'} · n=${gate.n||0} · ${pct(gate.hit_rate)} WR · Wilson LB ${pct(gate.wilson_lb_95)} · maker ${bps(gate.expectancy_maker_2bps)}`;

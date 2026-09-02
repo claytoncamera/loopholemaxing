@@ -254,7 +254,8 @@ class TestMetrics(unittest.TestCase):
         self.tmp.cleanup()
 
     def _add(self, fid: str, p: float, correct: bool, horizon="1h",
-             model="v0.1.0-baseline", resolved_at=None):
+             model="v0.1.0-baseline", resolved_at=None, direction="up",
+             actual_return=None):
         L = Ledger.at(self.root)
         # Unique issued_at per row: since the 2026-08-11 multi-writer dedupe,
         # metrics count one forecast per (model, horizon, issued_at) bucket —
@@ -263,14 +264,19 @@ class TestMetrics(unittest.TestCase):
         self._issue_counter = getattr(self, "_issue_counter", 0) + 1
         issued_at = f"2026-04-01T00:{self._issue_counter % 60:02d}:00Z"
         f = _good_forecast(forecast_id=fid, probability=p, horizon=horizon,
-                           model_version=model, issued_at=issued_at)
+                           model_version=model, issued_at=issued_at,
+                           direction=direction)
         L.append_forecast(f)
         outcome = 1 if correct else 0
+        # Default realized move: correct up-calls went up. A down-direction
+        # fixture must pass actual_return itself (correct means it went DOWN).
+        if actual_return is None:
+            actual_return = 0.001 if correct else -0.001
         L.append_resolution({
             "forecast_id": fid,
             "resolved_at": resolved_at or "2026-04-01T01:01:00Z",
-            "actual_close": 67500.0 if correct else 67000.0,
-            "actual_return": 0.001 if correct else -0.001,
+            "actual_close": 67500.0 if actual_return > 0 else 67000.0,
+            "actual_return": actual_return,
             "direction_correct": correct,
             "brier_component": brier(p, outcome),
             "logloss_component": logloss(p, outcome),
@@ -300,7 +306,8 @@ class TestMetrics(unittest.TestCase):
         self.assertAlmostEqual(m["global"]["hit_rate"], 0.5)
 
     def test_baseline_predict_majority(self):
-        # 3 wins, 1 loss → base_rate = 0.75. Baseline hit_rate = 0.75.
+        # 3 wins, 1 loss, all up-calls → outcome base_rate = 0.75, and the
+        # realized tape is 3 up / 1 down → majority baseline = 0.75 too.
         for i, c in enumerate([True, True, True, False]):
             self._add(f"00000000-0000-0000-0000-bbbbbbbb{i:04d}", 0.6, c)
         m = metrics_mod.build(self.root)
@@ -309,6 +316,28 @@ class TestMetrics(unittest.TestCase):
         # Baseline brier: every row gets predicted at base_rate=0.75.
         # Brier = ((0.75-1)^2)*3 + ((0.75-0)^2)*1 / 4 = (3*0.0625 + 0.5625)/4 = 0.1875
         self.assertAlmostEqual(m["global"]["baseline_brier"], 0.1875, places=6)
+
+    def test_baseline_is_majority_direction_not_own_hits(self):
+        # v0.3.1 regression test for the two lying fields. 2 correct
+        # up-calls (+ret) and 2 correct down-calls (−ret): hit_rate = 1.0
+        # while the realized tape is 50/50 up/down.
+        #   - baseline_hit_rate must be the majority realized-direction rate
+        #     (0.5), NOT max(hit_rate, 1−hit_rate) — the old bug made it
+        #     equal hit_rate whenever hit_rate >= 0.5.
+        #   - vs_majority_pp must be real percentage points (+50.0), not a
+        #     fraction (+0.5).
+        self._add("00000000-0000-0000-0000-cccccccc0001", 0.6, True)
+        self._add("00000000-0000-0000-0000-cccccccc0002", 0.6, True)
+        self._add("00000000-0000-0000-0000-cccccccc0003", 0.6, True,
+                  direction="down", actual_return=-0.001)
+        self._add("00000000-0000-0000-0000-cccccccc0004", 0.6, True,
+                  direction="down", actual_return=-0.001)
+        g = metrics_mod.build(self.root)["global"]
+        self.assertAlmostEqual(g["hit_rate"], 1.0)
+        self.assertAlmostEqual(g["always_up_rate"], 0.5)
+        self.assertAlmostEqual(g["baseline_hit_rate"], 0.5)
+        self.assertNotAlmostEqual(g["baseline_hit_rate"], g["hit_rate"])
+        self.assertAlmostEqual(g["vs_majority_pp"], 50.0)
 
     def test_missing_data_gives_empty_metrics(self):
         m = metrics_mod.build(self.root)
@@ -723,7 +752,7 @@ class TestMetricsV2(unittest.TestCase):
     def test_expectancy_and_direction_fields(self):
         self._seed_resolved()
         m = metrics_mod.build(self.root, min_n_display=5)
-        self.assertEqual(m["metrics_version"], "metrics-v0.3.0")
+        self.assertEqual(m["metrics_version"], "metrics-v0.3.1")
         h = m["by_horizon"]["24h"]
         self.assertIn("expectancy_bps", h)
         self.assertIn("expectancy_maker_2bps", h)

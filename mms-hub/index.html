@@ -244,6 +244,8 @@
   'use strict';
   const pct = value => `${(Number(value || 0) * 100).toFixed(1)}%`;
   const bps = value => `${Number(value || 0).toFixed(1)} bps`;
+  // vs_majority_pp is already in percentage points (metrics-v0.3.1) — no ×100.
+  const pp = value => { const v = Number(value || 0); return `${v > 0 ? '+' : ''}${v.toFixed(1)}pp`; };
   Promise.all([
     fetch('/btc-brain/ledger/public/accuracy.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('accuracy unavailable'); return r.json(); }),
     fetch('/btc-brain/ledger/public/signal.json', { cache: 'no-store' }).then(r => { if (!r.ok) throw new Error('signal unavailable'); return r.json(); })
@@ -251,7 +253,7 @@
     const global = accuracy.global || {};
     const n = global.n || accuracy.total_resolved || 0;
     document.getElementById('resolved').textContent = Number(n).toLocaleString();
-    document.getElementById('global-meta').textContent = `${pct(global.hit_rate)} hit rate · ${pct(global.vs_majority_pp)} vs majority · maker ${bps(global.expectancy_maker_2bps)}`;
+    document.getElementById('global-meta').textContent = `${pct(global.hit_rate)} hit rate · ${pp(global.vs_majority_pp)} vs majority · maker ${bps(global.expectancy_maker_2bps)}`;
     document.getElementById('global-meter').style.width = `${Math.max(0, Math.min(100, Number(global.hit_rate || 0) * 100))}%`;
     document.getElementById('btc-strategy-metric').textContent = `${Number(n).toLocaleString()} resolved · ${pct(global.hit_rate)} global hit rate`;
     const gates = signal.gates || {};

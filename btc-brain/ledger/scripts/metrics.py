@@ -6,8 +6,14 @@ direction, by regime, plus rolling 7d / 30d / 90d windows.
 
 For every bucket we report:
   - n, hit_rate, brier, logloss, ece, wilson_lb_95
-  - baseline_brier / baseline_hit_rate / base_rate  (legacy majority-of-outcome)
-  - vs_majority_pp  (hit_rate − max(always_up, always_down) on realized moves)
+  - baseline_hit_rate  (majority-direction baseline: max(always_up_rate,
+    always_down_rate) on realized moves — what "always call the majority
+    direction" would score in this bucket)
+  - baseline_brier / base_rate  (climatology Brier baseline over the model's
+    own hit/miss outcome sequence — Brier-skill reference, NOT a directional
+    baseline)
+  - vs_majority_pp  ((hit_rate − max(always_up, always_down)) × 100 —
+    real percentage points, matching the _pp suffix)
   - expectancy_bps / expectancy_maker_2bps / expectancy_taker_10bps
   - hit_up / hit_down / n_up / n_down
   - always_up_rate / always_down_rate
@@ -28,6 +34,16 @@ v0.3.0 additions (all additive — every v0.2.0 field is preserved):
   - side artifacts `recent.json` (last 50 joined rows) and `trades.json`
     (the paper trade tape, one group per model|horizon), written next to
     accuracy.json.
+
+v0.3.1 fixes (2026-09-01 — semantics only, no fields added or removed):
+  - vs_majority_pp now emits real percentage points. It held a raw fraction
+    despite the _pp suffix (-0.0681 meant -6.81pp), so any renderer trusting
+    the name showed a ~100× flattering gap (-0.07pp on the NOC wall).
+  - baseline_hit_rate is now the majority-direction baseline. It was
+    max(base_rate, 1 - base_rate) over the model's OWN hit/miss outcomes,
+    which equals hit_rate whenever hit_rate >= 0.5 — a "baseline" that could
+    never be beaten and implied a permanent 0.00pp gap. base_rate and
+    baseline_brier keep their outcome-sequence (Brier-skill) semantics.
 """
 from __future__ import annotations
 
@@ -43,7 +59,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from ledger import Ledger, parse_iso_utc, utc_now_iso  # noqa: E402
 
-METRICS_VERSION = "metrics-v0.3.0"
+METRICS_VERSION = "metrics-v0.3.1"
 DEFAULT_MIN_N_DISPLAY = 20
 ECE_QUANTILE_BINS = 5
 ECE_MIN_N = 50
@@ -128,13 +144,19 @@ def _ece(pairs: list[tuple[float, int]],
 
 
 def _baseline(pairs: list[tuple[float, int]]) -> dict:
+    """Climatology Brier baseline over the hit/miss outcome sequence.
+
+    baseline_hit_rate does NOT belong here: pairs carry the model's own
+    direction_correct outcomes, so max(base_rate, 1-base_rate) just equals
+    hit_rate whenever hit_rate >= 0.5 (the pre-v0.3.1 bug). The directional
+    baseline is the majority realized-direction rate — _bucket_metrics sets
+    it from always_up/always_down.
+    """
     if not pairs:
-        return {"baseline_hit_rate": None, "baseline_brier": None, "base_rate": None}
+        return {"baseline_brier": None, "base_rate": None}
     base_rate = sum(o for _, o in pairs) / len(pairs)
-    baseline_hit_rate = max(base_rate, 1 - base_rate)
     baseline_brier = sum((base_rate - o) ** 2 for _, o in pairs) / len(pairs)
     return {
-        "baseline_hit_rate": baseline_hit_rate,
         "baseline_brier": baseline_brier,
         "base_rate": base_rate,
     }
@@ -180,7 +202,7 @@ def _bucket_metrics(rows: list[dict], min_n_display: int) -> dict:
     hit_rate = (hits / n) if n else None
     vs_maj = None
     if hit_rate is not None and majority is not None:
-        vs_maj = hit_rate - majority
+        vs_maj = (hit_rate - majority) * 100.0
 
     exp = statistics.fmean(signed) if signed else None
     exp_bps = (exp * 10000.0) if exp is not None else None
@@ -195,6 +217,7 @@ def _bucket_metrics(rows: list[dict], min_n_display: int) -> dict:
         "ece": _ece(pairs),
         "wilson_lb_95": (wilson_lb(hit_rate, n) if hit_rate is not None else None),
         **base,
+        "baseline_hit_rate": majority,
         "always_up_rate": always_up,
         "always_down_rate": always_down,
         "vs_majority_pp": vs_maj,

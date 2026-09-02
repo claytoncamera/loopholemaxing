@@ -23,7 +23,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from ledger import Ledger, parse_iso_utc, utc_now_iso  # noqa: E402
 
-EDGE_HUNTER_VERSION = "edge-hunter-v0.1.0"
+EDGE_HUNTER_VERSION = "edge-hunter-v0.1.1"
 MAKER_RT = 0.0002
 MIN_N = 20
 MIN_N_EXPLORE = 12  # exploratory slices (hour/DOW) can be thinner
@@ -76,7 +76,9 @@ def _slice_metrics(rows: list[tuple[dict, dict]], min_n: int) -> dict | None:
         "n": n,
         "hit_rate": hit,
         "wilson_lb_95": _wilson_lower(hit, n),
-        "vs_majority_pp": hit - majority,
+        # Real percentage points since v0.1.1 (was a raw fraction despite
+        # the _pp suffix — same 2026-09-01 fix as accuracy.json's field).
+        "vs_majority_pp": (hit - majority) * 100.0,
         "expectancy_bps": exp * 10000.0,
         "expectancy_maker_2bps": maker * 10000.0,
         "majority_rate": majority,

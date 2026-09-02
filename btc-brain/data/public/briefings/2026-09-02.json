@@ -1,0 +1,132 @@
+{
+  "date": "2026-09-02",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-09-02T14:31:28Z",
+  "id": "briefing-2026-09-02",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.525941532789044,
+      "baseline_brier": 0.24932703687655497,
+      "baseline_hit_rate": 0.5912562549381091,
+      "brier": 0.24922498039873883,
+      "display_ready": true,
+      "ece": 0.04659705107271641,
+      "generated_at": "2026-09-02T14:31:10Z",
+      "hit_rate": 0.525941532789044,
+      "logloss": 0.691592597485415,
+      "metrics_version": "metrics-v0.3.1",
+      "min_n_display": 20,
+      "n": 3797,
+      "total_forecasts": 3850,
+      "total_resolved": 3797
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-09-02T14:31:08Z",
+      "funding_rate": 0.0001,
+      "long_short_ratio": 1.12,
+      "mark_price": 77116.0,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 29770.173800000102,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-09-02T14:31:10Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 77653.37666666666,
+        "r1": 78940.63333333333,
+        "r2": 80482.57666666668,
+        "recent_high": 78400.59,
+        "recent_low": 76219.18,
+        "s1": 76111.43333333332,
+        "s2": 74824.17666666665,
+        "sma_20": 73167.614,
+        "sma_200": null,
+        "sma_50": 67878.5652,
+        "vwap_session": 77077.88215550872
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Greed",
+      "fear_greed_value": 63,
+      "fetched_at": "2026-09-02T14:31:10Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-09-02T14:31:10Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-09-02T14:31:06Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-09-02T14:31:07Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-09-02T14:31:06Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-09-02T14:31:06Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-09-02T14:31:06Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-09-02T14:31:06Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-09-02T14:31:08Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-09-02T14:31:10Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-09-02T14:31:10Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-09-02"
+}

@@ -25,7 +25,7 @@
       "wilson_lb_95": 0.5457037462156302,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.5304606240713224,
+    "rolling_30d_hit": 0.5309252845126176,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -36,25 +36,25 @@
     "vs_majority_pp": 2.212389380530966,
     "wilson_lb_95": 0.5457037462156302
   },
-  "generated_at": "2026-09-02T19:31:08Z",
+  "generated_at": "2026-09-02T20:01:10Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0023|sma24=77167.74|sma72=77928.02|band=high",
-    "direction": "up",
-    "entry_ref": 77341.7,
-    "expires_at": "2026-09-03T19:00:00Z",
-    "forecast_id": "25b43765-f761-450c-8444-7b871ccb8619",
+    "confidence_reason": "guard24:rel=-0.0003|sma24=77176.87|sma72=77904.66|band=high",
+    "direction": "down",
+    "entry_ref": 77152.69,
+    "expires_at": "2026-09-03T20:00:00Z",
+    "forecast_id": "52afe737-0db9-4cb9-bd76-b3e81f0b131c",
     "horizon": "24h",
-    "invalidation": "BTC < 73474.61 before target",
-    "issued_at": "2026-09-02T19:00:00Z",
+    "invalidation": "BTC > 81010.32 before target",
+    "issued_at": "2026-09-02T20:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.55,
-    "regime": "chop",
-    "signal_id": "sig-25b43765",
+    "regime": "bear",
+    "signal_id": "sig-52afe737",
     "signal_version": "shadow-guard24-v0.1.0",
-    "target_rule": "close_above_entry"
+    "target_rule": "close_below_entry"
   },
   "status": "actionable_paper"
 }

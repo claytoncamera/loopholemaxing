@@ -18,16 +18,17 @@
     "ok": false,
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
-      "all-time wilson_lb_95 0.4880 not > 0.5 (hit_rate 0.5359 at n=418)"
+      "all-time wilson_lb_95 0.4880 not > 0.5 (hit_rate 0.5359 at n=418)",
+      "rolling-30d hit_rate 0.5199 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 47.46435255883403,
-      "hit_rate": 0.5215827338129496,
-      "n": 278,
-      "wilson_lb_95": 0.4629676727786689,
+      "expectancy_maker_2bps": 47.51010092650945,
+      "hit_rate": 0.51985559566787,
+      "n": 277,
+      "wilson_lb_95": 0.46115110666643505,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.5154150197628459,
+    "rolling_30d_hit": 0.5140371688414394,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -38,23 +39,23 @@
     "vs_majority_pp": 1.4354066985646008,
     "wilson_lb_95": 0.48796568651809796
   },
-  "generated_at": "2026-09-17T01:31:08Z",
+  "generated_at": "2026-09-17T02:01:07Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0066|sma24=75806.08|sma72=76885.80|band=low",
+    "confidence_reason": "guard24:rel=0.0057|sma24=75829.25|sma72=76878.87|band=low",
     "direction": "up",
-    "entry_ref": 76303.77,
-    "expires_at": "2026-09-18T01:00:00Z",
-    "forecast_id": "083f2b1a-7bcb-4cef-852e-4be2fa06f612",
+    "entry_ref": 76263.2,
+    "expires_at": "2026-09-18T02:00:00Z",
+    "forecast_id": "72916798-a8d9-4bd2-91a8-fb40c6595c4b",
     "horizon": "24h",
-    "invalidation": "BTC < 72488.58 before target",
-    "issued_at": "2026-09-17T01:00:00Z",
+    "invalidation": "BTC < 72450.04 before target",
+    "issued_at": "2026-09-17T02:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.52,
     "regime": "bull",
-    "signal_id": "sig-083f2b1a",
+    "signal_id": "sig-72916798",
     "signal_version": "shadow-guard24-v0.1.0",
     "target_rule": "close_above_entry"
   },

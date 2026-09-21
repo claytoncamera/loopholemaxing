@@ -2,7 +2,7 @@
   "attempts": [
     {
       "error": "all binance derivatives endpoints failed",
-      "fetched_at": "2026-09-21T01:01:03Z",
+      "fetched_at": "2026-09-21T01:31:06Z",
       "kind": "derivatives",
       "latency_ms": 291,
       "notes": [
@@ -15,57 +15,53 @@
     },
     {
       "error": null,
-      "fetched_at": "2026-09-21T01:01:19Z",
+      "fetched_at": "2026-09-21T01:31:07Z",
       "kind": "derivatives",
-      "latency_ms": 15416,
+      "latency_ms": 878,
       "notes": [
-        "mark_price:fail:GET https://www.okx.com/api/v5/public/mark-price?instId=BTC-USDT-SWAP failed: The read operation timed out",
-        "long_short:fail:GET https://www.okx.com/api/v5/rubik/stat/contracts/long-short-account-ratio?ccy=BTC&period=5m failed: <urlopen error [Errno 51] Network is unreachable>",
-        "missing:mark_price,long_short_ratio,long_account_pct,short_account_pct"
+        "missing:long_account_pct,short_account_pct"
       ],
       "source": "okx",
       "status": "partial_ok"
     },
     {
       "error": "all bybit derivatives endpoints failed",
-      "fetched_at": "2026-09-21T01:01:19Z",
+      "fetched_at": "2026-09-21T01:31:07Z",
       "kind": "derivatives",
-      "latency_ms": 5,
+      "latency_ms": 205,
       "notes": [
-        "tickers:fail:GET https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT failed: <urlopen error [Errno 8] nodename nor servname provided, or not known>",
-        "long_short:fail:GET https://api.bybit.com/v5/market/account-ratio?category=linear&symbol=BTCUSDT&period=5min&limit=1 failed: <urlopen error [Errno 8] nodename nor servname provided, or not known>"
+        "tickers:fail:GET https://api.bybit.com/v5/market/tickers?category=linear&symbol=BTCUSDT failed: HTTP Error 403: Forbidden",
+        "long_short:fail:GET https://api.bybit.com/v5/market/account-ratio?category=linear&symbol=BTCUSDT&period=5min&limit=1 failed: HTTP Error 403: Forbidden"
       ],
       "source": "bybit",
       "status": "failed"
     },
     {
-      "error": "deribit book_summary failed",
-      "fetched_at": "2026-09-21T01:01:19Z",
+      "error": null,
+      "fetched_at": "2026-09-21T01:31:07Z",
       "kind": "derivatives",
-      "latency_ms": 4,
+      "latency_ms": 149,
       "notes": [
-        "book_summary:fail:GET https://www.deribit.com/api/v2/public/get_book_summary_by_instrument?instrument_name=BTC-PERPETUAL failed: <urlopen error [Errno 8] nodename nor servname provided, or not known>"
+        "missing:next_funding_time_ms,open_interest_btc,long_short_ratio,long_account_pct,short_account_pct"
       ],
       "source": "deribit",
-      "status": "failed"
+      "status": "degraded"
     }
   ],
   "data": {
-    "funding_rate": 9.73782547025e-05,
+    "funding_rate": 9.62518535227e-05,
     "long_account_pct": null,
-    "long_short_ratio": null,
-    "mark_price": null,
+    "long_short_ratio": 1.01,
+    "mark_price": 81632.9,
     "next_funding_time_ms": 1790006400000,
-    "open_interest_btc": 30097.095600000102,
+    "open_interest_btc": 30057.57580000009,
     "short_account_pct": null
   },
   "error": null,
-  "fetched_at": "2026-09-21T01:01:19Z",
+  "fetched_at": "2026-09-21T01:31:07Z",
   "kind": "derivatives",
   "notes": [
-    "mark_price:fail:GET https://www.okx.com/api/v5/public/mark-price?instId=BTC-USDT-SWAP failed: The read operation timed out",
-    "long_short:fail:GET https://www.okx.com/api/v5/rubik/stat/contracts/long-short-account-ratio?ccy=BTC&period=5m failed: <urlopen error [Errno 51] Network is unreachable>",
-    "missing:mark_price,long_short_ratio,long_account_pct,short_account_pct"
+    "missing:long_account_pct,short_account_pct"
   ],
   "schema_version": "phase2-data-v1",
   "source": "okx",

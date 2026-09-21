@@ -1,33 +1,26 @@
 {
   "attempts": [
     {
-      "error": "GET https://api.alternative.me/fng/?limit=1 failed: <urlopen error [Errno 8] nodename nor servname provided, or not known>",
-      "fetched_at": "2026-09-21T01:01:19Z",
+      "error": null,
+      "fetched_at": "2026-09-21T01:31:08Z",
       "kind": "sentiment",
-      "latency_ms": 3,
+      "latency_ms": 168,
       "notes": [],
       "source": "alternative.me",
-      "status": "failed"
-    },
-    {
-      "error": "GET https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=false&community_data=true&developer_data=false&sparkline=false failed: <urlopen error [Errno 51] Network is unreachable>",
-      "fetched_at": "2026-09-21T01:01:19Z",
-      "kind": "sentiment",
-      "latency_ms": 1,
-      "notes": [],
-      "source": "coingecko",
-      "status": "failed"
+      "status": "ok"
     }
   ],
-  "data": null,
-  "error": "all providers failed",
-  "fetched_at": "2026-09-21T01:01:19Z",
+  "data": {
+    "fear_greed_label": "Greed",
+    "fear_greed_value": 70,
+    "indicator": "fear_greed_btc_crypto",
+    "sample_timestamp": "1789948800"
+  },
+  "error": null,
+  "fetched_at": "2026-09-21T01:31:08Z",
   "kind": "sentiment",
-  "notes": [
-    "alternative.me:failed",
-    "coingecko:failed"
-  ],
+  "notes": [],
   "schema_version": "phase2-data-v1",
-  "source": "coingecko",
-  "status": "failed"
+  "source": "alternative.me",
+  "status": "ok"
 }

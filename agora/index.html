@@ -160,7 +160,8 @@
     .a-detail-back:hover { color: var(--agora-amber); }
     .a-detail-head { padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border); margin-bottom: var(--space-xl); }
     .a-detail-head h2 { margin-bottom: 8px; }
-    .a-detail-meta { display:flex; gap: 12px; flex-wrap:wrap; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+    /* baseline: the date and the 44px-tall source links share one text line */
+    .a-detail-meta { display:flex; gap: 12px; flex-wrap:wrap; align-items: baseline; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-top: 10px; }
     .a-detail-link { display:inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--agora-amber); font-size: 13px; }
 
     .a-works { display:grid; gap: var(--space-md); }

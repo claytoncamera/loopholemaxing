@@ -128,13 +128,13 @@
       .strategy-grid, .gates { grid-template-columns: 1fr 1fr; }
     }
     @media (max-width: 640px) {
-      /* Two-row sticky header: brand, then the section links (sideways scroll if needed) */
+      /* Two-row sticky header: brand, then the section links. The link row wraps
+         rather than scrolls, so "Owner login" is never hidden under the edge. */
       html { scroll-padding-top: 112px; }
       .nav { height: auto; flex-wrap: wrap; row-gap: 0; padding-top: 4px; }
       .brand { min-height: 48px; }
-      .nav-links { width: 100%; order: 3; gap: 18px; overflow-x: auto; scrollbar-width: none; white-space: nowrap; }
-      .nav-links::-webkit-scrollbar { display: none; }
-      .owner { margin-left: auto; }
+      .nav-links { width: 100%; order: 3; gap: 18px; flex-wrap: wrap; row-gap: 0; white-space: nowrap; }
+      .owner { margin-left: auto; margin-block: 2px; } /* fits the 44px link row; keeps a gap if it wraps */
       .hero { padding-top: 56px; }
       h1 { letter-spacing: -.04em; line-height: 1.02; }
       .flow-card { min-height: 0; } .flow-card h3 { margin-top: 14px; }
@@ -145,6 +145,17 @@
       .section-head, .live-grid, .honesty { grid-template-columns: 1fr; gap: 18px; }
       .flow, .strategy-grid, .gates { grid-template-columns: 1fr; }
       .truth b { font-size: 22px; } .footer-row { flex-direction: column; }
+    }
+    /* Narrow phones: tighter link spacing keeps all four on one row from 344px up. */
+    @media (max-width: 380px) {
+      .nav-links { column-gap: 12px; }
+      .owner { padding: 8px 10px; }
+    }
+    /* Below 344px "Owner login" wraps to its own row, right-aligned: the header
+       is three rows, so anchors clear the extra row. */
+    @media (max-width: 343px) {
+      html { scroll-padding-top: 160px; }
+      .nav { padding-bottom: 6px; }
     }
     @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } .btn:hover { transform: none; } }
   </style>

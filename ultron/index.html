@@ -6,6 +6,7 @@
   <title>ULTRON — The autonomous agent that can't go rogue | Loopholemaxing</title>
   <meta name="description" content="Local-first autonomous AI agent. It reads, plans, and proposes — but every trade, file write, deploy, and API call waits for an explicit human APPROVE. 30 adversarial tests green. Free trial on loopholemaxing.com.">
   <link rel="canonical" href="https://loopholemaxing.com/ultron/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
   <!-- Entity wiring. This page had neither a canonical nor any structured
        data until 2026-07-28, so it sat in the sitemap contributing nothing
@@ -63,8 +64,9 @@
       min-height: 78vh; display:flex; flex-direction:column; align-items:center;
       justify-content:center; text-align:center; padding: 120px var(--space-lg) var(--space-3xl);
     }
+    html { scroll-padding-top: 72px; }
     .u-eyebrow {
-      font-family: var(--font-mono); font-size: 11px; letter-spacing:.18em;
+      font-family: var(--font-mono); font-size: 12px; letter-spacing:.18em;
       text-transform: uppercase; color: var(--ultron-cyan);
       border:1px solid var(--ultron-edge); padding: 6px 14px; border-radius: 999px;
       background: rgba(56,214,255,.05); margin-bottom: var(--space-xl);
@@ -98,7 +100,7 @@
     .u-stats { display:flex; gap: 40px; justify-content:center; flex-wrap:wrap; margin-top: var(--space-2xl); }
     .u-stat { text-align:center; }
     .u-stat-val { font-family: var(--font-mono); font-size: 26px; font-weight: 800; color: var(--ultron-cyan); }
-    .u-stat-lbl { font-size: 11px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-top:4px; }
+    .u-stat-lbl { font-size: 12px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-top:4px; }
 
     /* Sections */
     .u-section { max-width: var(--max-width); margin: 0 auto; padding: var(--space-4xl) var(--space-lg); }
@@ -112,7 +114,7 @@
       border-radius: 14px; padding: var(--space-lg); position:relative; }
     .u-how-step .n { font-family: var(--font-mono); font-size: 12px; color: var(--ultron-cyan);
       letter-spacing:.1em; margin-bottom: 10px; }
-    .u-how-step h4 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+    .u-how-step h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
     .u-how-step p  { font-size: 14px; color: var(--text-secondary); line-height: 1.65; }
 
     /* Safety grid */
@@ -129,13 +131,17 @@
     .u-hud-wrap { position:relative; border: 1px solid var(--ultron-edge);
       border-radius: 14px; overflow:hidden; background: var(--ultron-bg);
       box-shadow: 0 10px 60px -10px rgba(56,214,255,.12); }
-    .u-hud-chrome { display:flex; align-items:center; gap: 10px; padding: 10px 14px;
+    .u-hud-chrome { display:flex; align-items:center; flex-wrap: wrap; gap: 10px; padding: 10px 14px;
       background: #0a0e18; border-bottom: 1px solid var(--border); }
     .u-hud-chrome .dot { width: 11px; height: 11px; border-radius:50%; }
     .u-hud-chrome .dot.r { background:#f85149; } .u-hud-chrome .dot.y { background:#d29922; } .u-hud-chrome .dot.g { background:#3fb950; }
-    .u-hud-chrome .addr { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); }
+    .u-hud-chrome .addr { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); }
+    .u-hud-open { display: inline-flex; align-items: center; min-height: 36px; padding: 6px 14px;
+      border: 1px solid var(--ultron-edge); border-radius: 999px; background: rgba(56,214,255,.06);
+      color: var(--ultron-cyan); font-size: 13px; font-weight: 600; white-space: nowrap; }
+    .u-hud-open:hover { background: rgba(56,214,255,.14); color: var(--ultron-cyan); }
     .u-hud-frame { width:100%; height: 620px; border:0; display:block; background: var(--ultron-bg); }
-    .u-hud-cap { font-size: 12px; color: var(--text-muted); margin-top: 10px; text-align:center; font-family: var(--font-mono); }
+    .u-hud-cap { font-size: 13px; color: var(--text-muted); margin-top: 10px; text-align:center; font-family: var(--font-mono); line-height: 1.55; }
 
     /* Pricing */
     .u-pricing { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-lg); }
@@ -144,7 +150,7 @@
     .u-plan.featured { border-color: var(--ultron-edge);
       background: linear-gradient(180deg, rgba(56,214,255,.05), rgba(56,214,255,0) 60%);
       box-shadow: 0 0 0 1px var(--ultron-edge), 0 10px 40px -20px var(--ultron-cyan-dim); }
-    .u-plan .ribbon { font-family: var(--font-mono); font-size: 10px; letter-spacing:.16em;
+    .u-plan .ribbon { font-family: var(--font-mono); font-size: 12px; letter-spacing:.16em;
       text-transform: uppercase; color: var(--ultron-cyan); margin-bottom: 10px; }
     .u-plan h3 { font-size: 20px; font-weight: 700; margin-bottom: 6px; }
     .u-plan .price { font-family: var(--font-mono); font-size: 34px; font-weight: 800;
@@ -161,24 +167,32 @@
     .u-trial { display:flex; gap: 10px; max-width: 540px; margin: var(--space-xl) auto 0; }
     .u-trial input { flex:1; background: rgba(255,255,255,.03); color: var(--text-primary);
       border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 14px;
-      font-family: var(--font-mono); font-size: 14px; }
+      font-family: var(--font-mono); font-size: 16px; min-height: 48px; }
     .u-trial input:focus { outline: 0; border-color: var(--ultron-cyan); }
-    .u-trial-note { text-align:center; font-size: 12px; color: var(--text-muted); margin-top: 10px; }
+    .u-trial input:focus-visible { outline: 2px solid var(--ultron-cyan); outline-offset: 2px; }
+    .u-trial .btn-cyan { min-height: 48px; font: inherit; font-size: 14px; font-weight: 700; cursor: pointer; }
+    .u-trial-note { text-align:center; font-size: 13px; color: var(--text-muted); margin-top: 10px; }
     .u-trial-ok { display:none; text-align:center; color: var(--ultron-cyan); font-family: var(--font-mono);
       font-size: 13px; margin-top: 10px; }
 
+    .u-cta-row a, .u-plan > a { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; }
     @media (max-width: 720px) {
       .u-hero { padding: 90px var(--space-md) var(--space-2xl); }
+      .u-section { padding-left: var(--space-md); padding-right: var(--space-md); }
       .u-hud-frame { height: 520px; }
       .u-trial { flex-direction: column; }
+      .u-hero p, .u-section .lede, .u-how-step p { font-size: 16px; }
+      .u-rule span, .u-plan li { font-size: 15px; }
+      .u-eyebrow, .u-stat-lbl, .u-how-step .n, .u-plan .ribbon, .u-hud-chrome .addr { font-size: 13px; }
     }
   </style>
 </head>
 <body>
+  <a class="lm-skip" href="#main">Skip to content</a>
   <div class="bg-grid"></div>
   <div class="bg-glow"></div>
 
-  <header class="top-header">
+  <header class="top-header hdr-scroll">
     <a href="/" class="logo">Loopholemaxing</a>
     <nav><ul class="nav-links">
       <li><a href="/#creations">Creations</a></li>
@@ -187,6 +201,7 @@
     </ul></nav>
   </header>
 
+  <main id="main" tabindex="-1">
   <!-- HERO -->
   <section class="u-hero">
     <div class="u-eyebrow">Local-first · Open source · v0.1</div>
@@ -212,22 +227,22 @@
     <div class="u-how">
       <div class="u-how-step">
         <div class="n">01 · PLAN</div>
-        <h4>Decompose the objective</h4>
+        <h3>Decompose the objective</h3>
         <p>The planner turns your natural-language goal into a DAG of tool calls. Nothing runs yet.</p>
       </div>
       <div class="u-how-step">
         <div class="n">02 · READ</div>
-        <h4>Read-only tools auto-run</h4>
+        <h3>Read-only tools auto-run</h3>
         <p>Filesystem reads, web search, code-index queries, market quotes, Drive search — all run in-process with no approval.</p>
       </div>
       <div class="u-how-step">
         <div class="n">03 · PROPOSE</div>
-        <h4>Side-effects queue a Proposal</h4>
+        <h3>Side-effects queue a Proposal</h3>
         <p>Every write, trade, deploy, or mutating API call pauses and emits a typed <code>Proposal</code> — intent, exact command, rollback plan, risk 1–5.</p>
       </div>
       <div class="u-how-step">
         <div class="n">04 · APPROVE</div>
-        <h4>You decide with Y or N</h4>
+        <h3>You decide with Y or N</h3>
         <p>Approve from CLI, HUD, or API. The gate re-checks the kill switch, runs the tool, and hashes the result into the audit chain.</p>
       </div>
     </div>
@@ -241,6 +256,7 @@
       <div class="u-hud-chrome">
         <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="addr">ultron://command-deck · demo</span>
+        <a class="u-hud-open" href="https://www.perplexity.ai/computer/a/ultron-command-deck-bvg7GI0mQ2i.1tePEEC9eQ?demo=1" target="_blank" rel="noopener">Open the Command Deck in a new tab ↗</a>
       </div>
       <iframe class="u-hud-frame" title="ULTRON Command Deck — live demo"
         src="https://www.perplexity.ai/computer/a/ultron-command-deck-bvg7GI0mQ2i.1tePEEC9eQ?demo=1"
@@ -319,12 +335,13 @@
     <h2 style="text-align:center;">Start your 14-day trial</h2>
     <p class="lede" style="margin-left:auto; margin-right:auto; text-align:center;">Drop your email. We'll send a signed trial token for the hosted Pro daemon. No card until day 14.</p>
     <form class="u-trial" id="trialForm" novalidate>
-      <input type="email" id="trialEmail" name="email" placeholder="you@domain.com" required autocomplete="email">
+      <input type="email" id="trialEmail" name="email" placeholder="you@domain.com" required autocomplete="email" aria-label="Email address">
       <button type="submit" class="btn-cyan">Send my trial token</button>
     </form>
     <div class="u-trial-ok" id="trialOk">&#10003; You're on the list &mdash; trial tokens go out by email in signup order as hosted slots open.</div>
     <p class="u-trial-note">Your email goes straight to Clayton's own CRM &mdash; no third-party lists. No card required.</p>
   </section>
+  </main>
 
   <footer class="site-footer">
     <div>ULTRON &mdash; Clayton Camera &mdash; 2026 &nbsp;|&nbsp; <a href="/">Loopholemaxing</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/ultron" target="_blank" rel="noopener">GitHub</a></div>

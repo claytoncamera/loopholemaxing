@@ -6,6 +6,7 @@
   <title>BTC Intelligence Brain — Loopholemaxing</title>
   <meta name="description" content="A live Bitcoin forecast ledger with measured, public accuracy — every forecast published before resolution and scored automatically — plus a 15-chapter Bitcoin education library covering cycles, on-chain metrics, technicals, sentiment, macro, and risk.">
   <link rel="canonical" href="https://loopholemaxing.com/btc-brain/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://loopholemaxing.com/btc-brain/">
   <meta property="og:title" content="BTC Intelligence Brain — a Bitcoin forecast ledger that shows its losses">
@@ -73,6 +74,16 @@
 }
   </script>
 
+  <script>
+    // Hold the measured space of the two late-loading panels (source health,
+    // key levels) so the page doesn't jump when they appear. Each loader
+    // releases its own reserve (success or failure); 3s releases both.
+    (function (d) {
+      d.setAttribute('data-reserve-health', '');
+      d.setAttribute('data-reserve-levels', '');
+      setTimeout(function () { d.removeAttribute('data-reserve-health'); d.removeAttribute('data-reserve-levels'); }, 3000);
+    })(document.documentElement);
+  </script>
   <link rel="stylesheet" href="../styles.css">
   <style>
     /* ========================================
@@ -81,6 +92,7 @@
 
     body {
       background: var(--bg-secondary);
+      padding-top: 48px; /* clears the fixed 48px header so the disclaimer isn't hidden under it */
     }
 
     /* Top bar override for brain page */
@@ -129,12 +141,18 @@
 
     .hamburger {
       display: none;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
       background: none;
       border: none;
+      border-radius: 8px;
       color: var(--text-secondary);
       font-size: 20px;
       cursor: pointer;
-      padding: 4px;
+      padding: 0;
       line-height: 1;
     }
 
@@ -167,7 +185,7 @@
     }
 
     .sidebar-section-label {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: 0.15em;
       text-transform: uppercase;
@@ -183,8 +201,9 @@
       display: flex;
       align-items: center;
       gap: var(--space-sm);
+      min-height: 40px;
       padding: 7px var(--space-md);
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-secondary);
       text-decoration: none;
       transition: all var(--transition-fast);
@@ -204,7 +223,7 @@
 
     .sidebar-nav .chapter-num {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
       min-width: 22px;
     }
@@ -256,7 +275,7 @@
     /* Main Content */
     .main-content {
       margin-left: var(--sidebar-width);
-      padding: calc(48px + var(--space-xl)) var(--space-2xl) var(--space-3xl);
+      padding: var(--space-xl) var(--space-2xl) var(--space-3xl);
       max-width: calc(var(--sidebar-width) + 920px);
     }
 
@@ -287,7 +306,7 @@
     }
 
     .chapter-desc {
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-secondary);
       margin-top: 6px;
     }
@@ -309,7 +328,7 @@
     }
 
     .metric-card .metric-label {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -325,7 +344,7 @@
     }
 
     .metric-card .metric-sub {
-      font-size: 11px;
+      font-size: 12px;
       color: var(--text-muted);
       margin-top: 4px;
     }
@@ -339,10 +358,10 @@
       margin-bottom: var(--space-md);
     }
 
-    .zone-card h4 {
+    .zone-card :is(h3, h4) {
       font-size: 15px;
       font-weight: 700;
-      margin-bottom: var(--space-sm);
+      margin: 0 0 var(--space-sm);
       color: var(--text-primary);
     }
 
@@ -398,15 +417,15 @@
       min-width: 80px;
     }
 
-    .event-body h4 {
+    .event-body :is(h3, h4) {
       font-size: 15px;
       font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: 4px;
+      margin: 0 0 4px;
     }
 
     .event-body p {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-secondary);
       line-height: 1.5;
     }
@@ -528,7 +547,7 @@
     }
 
     .outlook-card .outlook-timeframe {
-      font-size: 11px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -585,7 +604,7 @@
       border-radius: 0 8px 8px 0;
       padding: var(--space-md) var(--space-lg);
       margin: var(--space-lg) 0;
-      font-size: 14px;
+      font-size: 15px;
       color: var(--text-secondary);
     }
 
@@ -627,7 +646,7 @@
     }
 
     .glossary-item dd {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-secondary);
       margin-top: 2px;
     }
@@ -641,10 +660,10 @@
       margin: var(--space-lg) 0;
     }
 
-    .quick-ref h4 {
+    .quick-ref :is(h3, h4) {
       font-size: 15px;
       font-weight: 700;
-      margin-bottom: var(--space-md);
+      margin: 0 0 var(--space-md);
       color: var(--text-primary);
     }
 
@@ -715,7 +734,7 @@
 
     @media (max-width: 900px) {
       .hamburger {
-        display: block;
+        display: inline-flex;
       }
 
       .sidebar {
@@ -733,7 +752,7 @@
 
       .main-content {
         margin-left: 0;
-        padding: calc(48px + var(--space-lg)) var(--space-md) var(--space-2xl);
+        padding: var(--space-lg) var(--space-md) var(--space-2xl);
       }
 
       .metric-grid {
@@ -780,6 +799,30 @@
       .chapter-title {
         font-size: 22px;
       }
+
+      /* Header fits 390px: smaller wordmark, the h1 keeps its full text
+         (ellipsis only as a last resort on the narrowest phones). */
+      .brain-header {
+        padding: 0 12px;
+        gap: 10px;
+      }
+      .brain-header .logo {
+        font-size: 12px;
+        letter-spacing: .06em;
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+      .brain-header-title {
+        display: block;
+        min-width: 0;
+        font-size: 13px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .brain-header-title::before {
+        margin-right: 5px;
+      }
     }
 
     /* ── Education layer (2026-08-11) ─────────────────────────── */
@@ -790,12 +833,12 @@
       border-radius: 8px;
       padding: 12px 16px;
       margin: 0 0 var(--space-lg) 0;
-      font-size: 13.5px;
+      font-size: 15px;
       line-height: 1.65;
       color: var(--text-primary, #e6edf3);
     }
     .eli12 .eli12-tag {
-      font-size: 10px;
+      font-size: 12px;
       font-weight: 700;
       letter-spacing: .08em;
       text-transform: uppercase;
@@ -804,9 +847,9 @@
       margin-bottom: 4px;
     }
     .sidebar-subhead {
-      font-size: 9px;
+      font-size: 12px;
       font-weight: 700;
-      letter-spacing: .14em;
+      letter-spacing: .12em;
       text-transform: uppercase;
       color: var(--text-muted, #8b949e);
       padding: 8px 16px 2px 16px;
@@ -836,7 +879,7 @@
       font-weight: 700;
       display: block;
       margin-bottom: 3px;
-      font-size: 11px;
+      font-size: 12px;
       text-transform: uppercase;
       letter-spacing: .05em;
     }
@@ -847,9 +890,10 @@
       background: #0d1117;
       border: 1px solid #21262d;
       border-radius: 8px;
-      padding: 9px 12px;
+      min-height: 44px;
+      padding: 11px 12px;
       margin-bottom: 6px;
-      font-size: 13px;
+      font-size: 14px;
       color: #c9d1d9;
       cursor: pointer;
       transition: border-color .15s, background .15s;
@@ -858,7 +902,7 @@
     .quiz-opt.correct { border-color: #3fb950; background: rgba(63,185,80,.08); }
     .quiz-opt.wrong { border-color: #f85149; background: rgba(248,81,73,.08); }
     .quiz-opt.reveal { border-color: #3fb950; }
-    .quiz-explain { display: none; font-size: 12px; color: #8b949e; line-height: 1.55; padding: 6px 2px 0; }
+    .quiz-explain { display: none; font-size: 13px; color: #8b949e; line-height: 1.55; padding: 6px 2px 0; }
     .quiz-q.answered .quiz-explain { display: block; }
     .skip-link {
       position: absolute;
@@ -885,6 +929,76 @@
           transition-duration: 0.01ms !important; }
     }
   @keyframes pulse-dot { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+    /* ── Viewability pass ─────────────────────────────────────── */
+    /* The pre-main panels clear the fixed sidebar on desktop. */
+    @media (min-width: 901px) {
+      #public-disclaimer, #source-health-banner { margin-left: var(--sidebar-width); }
+      #dynamic-key-levels { margin-left: calc(var(--sidebar-width) + 18px) !important; max-width: 920px; }
+    }
+    /* Space reserved for the late-loading panels while their artifacts load
+       (heights measured per width band; see the head script). */
+    html[data-reserve-health] #source-health-banner[hidden],
+    html[data-reserve-levels] #dynamic-key-levels[hidden] { display: block; visibility: hidden; }
+    html[data-reserve-health] #source-health-banner[hidden] { min-height: 51px; }
+    html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 165px; }
+    @media (max-width: 1439px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 67px; } }
+    @media (max-width: 1279px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 212px; } }
+    @media (max-width: 1099px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 84px; } }
+    @media (max-width: 1023px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 277px; } }
+    @media (max-width: 900px) {
+      html[data-reserve-health] #source-health-banner[hidden] { min-height: 67px; }
+      html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 212px; }
+    }
+    @media (max-width: 819px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 84px; } }
+    @media (max-width: 699px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 277px; } }
+    @media (max-width: 579px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 118px; } }
+    @media (max-width: 499px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 370px; } }
+    @media (max-width: 480px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 394px; } }
+    @media (max-width: 429px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 135px; } }
+    @media (max-width: 413px) {
+      html[data-reserve-health] #source-health-banner[hidden] { min-height: 151px; }
+      html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 415px; }
+    }
+    @media (max-width: 389px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 202px; } }
+    @media (max-width: 359px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 663px; } }
+    /* Readability floor for the page's 9-11px inline-styled labels (page content only). */
+    #source-health-banner,
+    :is(.main-content, #source-health-banner, #dynamic-key-levels) :is([style*="font-size:9px"], [style*="font-size: 9px"], [style*="font-size:10px"], [style*="font-size: 10px"], [style*="font-size:11px"], [style*="font-size: 11px"]) {
+      font-size: 12px !important;
+    }
+    /* Phones: one step larger again (13px) for the dense labels and tables. */
+    @media (max-width: 480px) {
+      #source-health-banner { text-align: left !important; } /* a wrapped source list reads better ragged-right */
+      :is(.main-content, #dynamic-key-levels) :is([style*="font-size:9px"], [style*="font-size: 9px"], [style*="font-size:10px"], [style*="font-size: 10px"], [style*="font-size:11px"], [style*="font-size: 11px"], [style*="font-size:12px"], [style*="font-size: 12px"]),
+      .main-content .data-table, .main-content .data-table th, .main-content .data-table td {
+        font-size: 13px !important;
+      }
+      .chapter-number, .sidebar-nav .chapter-num, .sidebar-section-label, .sidebar-subhead,
+      .eli12 .eli12-tag, .zone-level, .level-label, .event-date, .composite-labels,
+      .metric-card .metric-label, .metric-card .metric-sub,
+      .outlook-card .outlook-timeframe, .outlook-card .outlook-base {
+        font-size: 13px;
+      }
+    }
+    /* Inline text links and glossary terms get a taller hit area without moving any text. */
+    :is(#public-disclaimer, .main-content) a:not([class]):not([style*="display"]),
+    .main-content .gloss { padding-block: 5px; }
+    /* Registry bars are data-driven widths; keep them inside their card. */
+    #module-registry > div { overflow: hidden; min-width: 0; }
+    #module-registry > div > div:nth-child(2) { overflow: hidden; }
+    /* Long file paths / identifiers wrap on narrow phones instead of widening the page. */
+    .main-content code, .main-content span[style*="font-family:monospace"] { overflow-wrap: anywhere; }
+    /* A table in a plain card scrolls inside the card instead of widening the page. */
+    .main-content div:has(> table):not([style*="overflow"]) { overflow-x: auto; }
+    /* Horizontal-scroll tables show an edge shadow while more columns are off-screen. */
+    .main-content div[style*="overflow-x:auto"]:not([style*="background"]) {
+      background:
+        linear-gradient(90deg, #0d1117 30%, rgba(13, 17, 23, 0)) left center / 32px 100% no-repeat local,
+        linear-gradient(270deg, #0d1117 30%, rgba(13, 17, 23, 0)) right center / 32px 100% no-repeat local,
+        radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, .55), transparent) left center / 16px 100% no-repeat scroll,
+        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .55), transparent) right center / 16px 100% no-repeat scroll;
+    }
   </style>
   <!-- Three.js is NOT loaded here. The Neural Brain section lazy-loads it
        from its own IntersectionObserver-gated loader only when the reader
@@ -900,14 +1014,14 @@
 
   <!-- Top Header Bar -->
   <header class="brain-header">
-    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation">☰</button>
+    <button class="hamburger" id="hamburgerBtn" aria-label="Toggle navigation" aria-controls="sidebar" aria-expanded="false">☰</button>
     <a href="/" class="logo">Loopholemaxing</a>
     <h1 class="brain-header-title" style="margin:0;">BTC Intelligence Brain</h1>
     <span class="brain-header-right" id="header-ledger-stat">Live ledger</span>
   </header>
 
   <!-- Public Disclaimer Banner -->
-  <div id="public-disclaimer" role="note" aria-label="Disclaimer" style="background:#1a1206;border-bottom:1px solid #3a2a0a;color:#f0c674;padding:10px 18px;font-size:12px;line-height:1.5;text-align:center;">
+  <div id="public-disclaimer" role="note" aria-label="Disclaimer" style="background:#1a1206;border-bottom:1px solid #3a2a0a;color:#f0c674;padding:10px 18px;font-size:13px;line-height:1.55;text-align:center;">
     <strong style="color:#f7931a;">Educational research — not financial advice.</strong>
     The <a href="#scoreboard" style="color:#f0c674;">Forecast Scoreboard</a> and
     <a href="#trust-layer" style="color:#f0c674;">Trust &amp; Transparency</a> sections show
@@ -924,7 +1038,7 @@
               padding:8px 18px;font-size:11px;line-height:1.4;text-align:center;
               font-family:ui-monospace,Menlo,Consolas,monospace;">
     <span id="source-health-summary">Source health: loading…</span>
-    <span id="source-health-detail" style="color:#6e7681;"></span>
+    <span id="source-health-detail" style="color:#848d97;"></span>
   </div>
   <noscript>
     <div style="background:#1a1206;border-bottom:1px solid #3a2a0a;color:#f0c674;
@@ -1388,8 +1502,8 @@
         var colors=['#f7931a','#58a6ff','#d2a8ff','#3fb950'];
         var svg='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto;background:#010409;border:1px solid #161b22;border-radius:8px;" role="img" aria-label="Cumulative paper P&L, 24h horizon groups">';
         svg+='<line x1="'+P+'" y1="'+Y(0)+'" x2="'+(W-P)+'" y2="'+Y(0)+'" stroke="#30363d" stroke-dasharray="4 4"/>';
-        svg+='<text x="'+(P+2)+'" y="'+(Y(0)-5)+'" fill="#8b949e" font-size="10" font-family="monospace">0 bps</text>';
-        svg+='<text x="'+(P+2)+'" y="'+(P-6)+'" fill="#8b949e" font-size="10" font-family="monospace">'+v1.toFixed(0)+' bps</text>';
+        svg+='<text x="'+(P+2)+'" y="'+(Y(0)-5)+'" fill="#8b949e" font-size="12" font-family="monospace">0 bps</text>';
+        svg+='<text x="'+(P+2)+'" y="'+(P-6)+'" fill="#8b949e" font-size="12" font-family="monospace">'+v1.toFixed(0)+' bps</text>';
         var legend='';
         g24.forEach(function(gr,i){
           var pts=gr.curve.map(function(p){ return X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1); }).join(' ');
@@ -2710,7 +2824,7 @@
           </ul>
         </div>
 
-        <h3 style="font-size:16px;margin:22px 0 8px;">The halving — Bitcoin's built-in clock, interactive</h3>
+        <h3 id="hw-title" style="font-size:16px;margin:22px 0 8px;">The halving — Bitcoin's built-in clock, interactive</h3>
         <p style="margin-bottom:12px;">
           New bitcoins are created as a reward to the computers that secure the network
           (<span class="gloss-seed">mining</span>). Roughly every four years that reward is <strong>cut in
@@ -2718,7 +2832,7 @@
           Drag the slider to watch the schedule play out:
         </p>
         <div id="halving-widget" style="background:#0d1117;border:1px solid #21262d;border-radius:10px;padding:18px;margin-bottom:18px;">
-          <input type="range" id="hw-slider" min="0" max="9" value="4" step="1" style="width:100%;accent-color:#f7931a;">
+          <input type="range" id="hw-slider" min="0" max="9" value="4" step="1" aria-labelledby="hw-title" style="width:100%;min-height:44px;accent-color:#f7931a;">
           <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;text-align:center;margin:14px 0;">
             <div><div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;">Era</div>
               <div id="hw-era" style="font-size:20px;font-weight:800;font-family:monospace;color:#e6edf3;">—</div>
@@ -3005,7 +3119,7 @@
       <div class="eli12"><span class="eli12-tag">💡 In plain words</span>Because Bitcoin's ledger is public, you can measure things no stock market shows — like the average price everyone paid for their coins. These “on-chain” gauges help judge whether Bitcoin looks cheap or expensive compared with its own history.</div>
 
       <div class="zone-card">
-        <h4>MVRV Ratio <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Market Value to Realized Value)</span></h4>
+        <h3>MVRV Ratio <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Market Value to Realized Value)</span></h3>
         <div class="zone-bar">
           <span style="background: var(--green);"></span>
           <span style="background: var(--text-secondary);"></span>
@@ -3021,7 +3135,7 @@
       </div>
 
       <div class="zone-card">
-        <h4>NUPL <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Net Unrealized Profit/Loss)</span></h4>
+        <h3>NUPL <span style="font-weight:400; color: var(--text-muted); font-size:12px;">(Net Unrealized Profit/Loss)</span></h3>
         <div class="zone-bar">
           <span style="background: var(--red);"></span>
           <span style="background: var(--accent-orange);"></span>
@@ -3039,7 +3153,7 @@
       </div>
 
       <div class="zone-card">
-        <h4>Puell Multiple</h4>
+        <h3>Puell Multiple</h3>
         <div class="zone-bar">
           <span style="background: var(--green);"></span>
           <span style="background: var(--text-muted);"></span>
@@ -3053,7 +3167,7 @@
       </div>
 
       <div class="zone-card">
-        <h4>Reserve Risk</h4>
+        <h3>Reserve Risk</h3>
         <div class="zone-bar">
           <span style="background: var(--green);"></span>
           <span style="background: var(--text-muted);"></span>
@@ -3147,7 +3261,7 @@
         <div class="event-card">
           <div class="event-date">2014</div>
           <div class="event-body">
-            <h4>Mt. Gox Collapse</h4>
+            <h3>Mt. Gox Collapse</h3>
             <p>850,000 BTC stolen from the world's largest exchange, exposing catastrophic custodial risk.</p>
             <div class="event-impact negative">Price impact: -47%</div>
           </div>
@@ -3155,7 +3269,7 @@
         <div class="event-card">
           <div class="event-date">Mar 2020</div>
           <div class="event-body">
-            <h4>COVID Black Thursday</h4>
+            <h3>COVID Black Thursday</h3>
             <p>Global liquidity crisis triggered a -53% crash in 24 hours, followed by a historic V-shaped recovery.</p>
             <div class="event-impact negative">Price impact: -53% in 24h</div>
           </div>
@@ -3163,7 +3277,7 @@
         <div class="event-card">
           <div class="event-date">May 2022</div>
           <div class="event-body">
-            <h4>Terra/LUNA Death Spiral</h4>
+            <h3>Terra/LUNA Death Spiral</h3>
             <p>Algorithmic stablecoin UST depegged, destroying $60B in value and triggering cascading liquidations across DeFi.</p>
             <div class="event-impact negative">Systemic contagion event</div>
           </div>
@@ -3171,7 +3285,7 @@
         <div class="event-card">
           <div class="event-date">Nov 2022</div>
           <div class="event-body">
-            <h4>FTX Collapse</h4>
+            <h3>FTX Collapse</h3>
             <p>Exchange fraud exposed, leading to bankruptcy. BTC hit $15,476 cycle low — peak fear, peak opportunity.</p>
             <div class="event-impact negative">Cycle low: $15,476</div>
           </div>
@@ -3179,7 +3293,7 @@
         <div class="event-card">
           <div class="event-date">Mar 2023</div>
           <div class="event-body">
-            <h4>SVB Banking Crisis</h4>
+            <h3>SVB Banking Crisis</h3>
             <p>Silicon Valley Bank failure sparked fears of systemic banking contagion. BTC rallied as safe-haven narrative validated.</p>
             <div class="event-impact positive">BTC: +33% — safe haven signal</div>
           </div>
@@ -3187,7 +3301,7 @@
         <div class="event-card">
           <div class="event-date">Jan 2024</div>
           <div class="event-body">
-            <h4>Spot ETF Approval</h4>
+            <h3>Spot ETF Approval</h3>
             <p>SEC approved 11 spot Bitcoin ETFs, opening historic institutional access and fundamentally changing the market structure.</p>
             <div class="event-impact positive">$56.9B cumulative inflows</div>
           </div>
@@ -3836,7 +3950,7 @@
       </div>
 
       <div class="quick-ref">
-        <h4>Key Thresholds — Quick Reference</h4>
+        <h3>Key Thresholds — Quick Reference</h3>
         <div class="quick-ref-item"><span>MVRV Buy Zone</span><span class="positive">&lt; 1.0</span></div>
         <div class="quick-ref-item"><span>MVRV Sell Zone</span><span class="negative">&gt; 3.5</span></div>
         <div class="quick-ref-item"><span>NUPL Capitulation</span><span class="negative">&lt; 0</span></div>
@@ -4038,20 +4152,45 @@
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('sidebarOverlay');
 
+    // The closed off-canvas drawer is inert (out of the tab order and the
+    // accessibility tree) on narrow screens; on desktop it is always live.
+    const drawerMq = window.matchMedia('(max-width: 900px)');
+    function syncDrawerInert() {
+      sidebar.inert = drawerMq.matches && !sidebar.classList.contains('open');
+    }
+
+    function setSidebar(open) {
+      sidebar.classList.toggle('open', open);
+      overlay.classList.toggle('open', open);
+      hamburger.setAttribute('aria-expanded', open ? 'true' : 'false');
+      syncDrawerInert();
+    }
+    syncDrawerInert();
+    drawerMq.addEventListener('change', syncDrawerInert);
+
     function toggleSidebar() {
-      sidebar.classList.toggle('open');
-      overlay.classList.toggle('open');
+      const open = !sidebar.classList.contains('open');
+      setSidebar(open);
+      if (open) {
+        const first = sidebar.querySelector('.sidebar-nav a');
+        if (first) requestAnimationFrame(() => first.focus());
+      }
     }
 
     hamburger.addEventListener('click', toggleSidebar);
     overlay.addEventListener('click', toggleSidebar);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && sidebar.classList.contains('open')) {
+        setSidebar(false);
+        hamburger.focus();
+      }
+    });
 
     // Close sidebar on link click (mobile)
     sidebarLinks.forEach(link => {
       link.addEventListener('click', () => {
         if (window.innerWidth <= 900) {
-          sidebar.classList.remove('open');
-          overlay.classList.remove('open');
+          setSidebar(false);
         }
       });
     });
@@ -7159,7 +7298,7 @@
     ];
     grid.innerHTML = rows.map(function (r) {
       var v = r[1];
-      var color = (v === null || v === undefined) ? '#6e7681' : '#e6edf3';
+      var color = (v === null || v === undefined) ? '#848d97' : '#e6edf3';
       var tag = (v === null || v === undefined) ? 'unavailable' : fmtNum(v);
       return '<div><div style="color:#8b949e;font-size:10px;text-transform:uppercase;letter-spacing:.04em;">' +
              r[0] + '</div><div style="color:' + color + ';font-weight:700;">' + tag + '</div></div>';
@@ -7207,7 +7346,8 @@
         // their own "stale/unavailable" copy.
         var b = document.getElementById('source-health-banner');
         if (b) b.hidden = true;
-      });
+      })
+      .finally(function () { document.documentElement.removeAttribute('data-reserve-health'); });
   }
 
   function loadLevels() {
@@ -7217,7 +7357,8 @@
       .catch(function () {
         var p = document.getElementById('dynamic-key-levels');
         if (p) p.hidden = true;
-      });
+      })
+      .finally(function () { document.documentElement.removeAttribute('data-reserve-levels'); });
   }
 
   if (document.readyState === 'loading') {

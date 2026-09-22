@@ -6,6 +6,7 @@
   <title>Agora Alpha — Library of Minds | Loopholemaxing</title>
   <meta name="description" content="A public-domain reading room for the foundational philosophers. Plato, Aristotle, Socrates, Heraclitus, Parmenides and more — sourced from Project Gutenberg, Perseus, Open Library, and Wikidata. Every text traceable to its edition.">
   <link rel="canonical" href="https://loopholemaxing.com/agora/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
   <!-- Entity wiring. This page had neither a canonical nor any structured
        data until 2026-07-28, so it sat in the sitemap contributing nothing
@@ -65,7 +66,7 @@
     .a-hero { min-height: 60vh; display:flex; flex-direction:column; align-items:center;
       justify-content:center; text-align:center; padding: 110px var(--space-lg) var(--space-2xl); }
     .a-eyebrow {
-      font-family: var(--font-mono); font-size: 11px; letter-spacing:.18em;
+      font-family: var(--font-mono); font-size: 12px; letter-spacing:.18em;
       text-transform: uppercase; color: var(--agora-amber);
       border:1px solid var(--agora-edge); padding: 6px 14px; border-radius: 999px;
       background: rgba(247,185,85,.05); margin-bottom: var(--space-xl);
@@ -85,7 +86,7 @@
     .a-stats { display:flex; gap: 36px; justify-content:center; flex-wrap:wrap; margin-top: var(--space-lg); }
     .a-stat { text-align:center; }
     .a-stat-val { font-family: var(--font-mono); font-size: 24px; font-weight: 800; color: var(--agora-amber); }
-    .a-stat-lbl { font-size: 11px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-top:4px; }
+    .a-stat-lbl { font-size: 12px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-top:4px; }
 
     /* Sections */
     .a-section { max-width: var(--max-width); margin: 0 auto; padding: var(--space-3xl) var(--space-lg); }
@@ -105,11 +106,12 @@
       flex: 1; min-width: 200px;
       background: var(--bg-primary); color: var(--text-primary);
       border: 1px solid var(--border-light); border-radius: 8px;
-      padding: 10px 14px; font-size: 14px; font-family: var(--font-body);
+      padding: 10px 14px; font-size: 16px; font-family: var(--font-body); min-height: 44px;
     }
     .a-search:focus { outline: none; border-color: var(--agora-amber); }
+    .a-search:focus-visible { outline: 2px solid var(--agora-amber); outline-offset: 2px; }
     .a-filter-chip {
-      font-family: var(--font-mono); font-size: 11px;
+      font-family: var(--font-mono); font-size: 12px; min-height: 36px;
       padding: 6px 12px; border-radius: 999px;
       background: rgba(255,255,255,.03); color: var(--text-muted);
       border: 1px solid var(--border-light); cursor: pointer;
@@ -136,14 +138,14 @@
       box-shadow: 0 0 8px var(--agora-amber);
     }
     .a-card-name { font-size: 17px; font-weight: 700; color: var(--text-primary); }
-    .a-card-era { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing:.06em; }
+    .a-card-era { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); letter-spacing:.06em; }
     .a-card-school {
-      display:inline-block; font-size: 10px; font-weight: 700; letter-spacing:.1em; text-transform:uppercase;
+      display:inline-block; font-size: 12px; font-weight: 700; letter-spacing:.08em; text-transform:uppercase;
       padding: 3px 9px; border-radius: 4px; width: fit-content;
       background: rgba(247,185,85,.1); color: var(--agora-amber);
     }
     .a-card-tagline { font-size: 13px; color: var(--text-secondary); line-height: 1.55; flex:1; }
-    .a-card-meta { display:flex; gap: 10px; font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+    .a-card-meta { display:flex; gap: 10px; font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
 
     /* Detail */
     .a-detail-back { display:inline-flex; gap: 6px; align-items:center; font-size: 13px;
@@ -152,7 +154,7 @@
     .a-detail-head { padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border); margin-bottom: var(--space-xl); }
     .a-detail-head h2 { margin-bottom: 8px; }
     .a-detail-meta { display:flex; gap: 12px; flex-wrap:wrap; font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-top: 10px; }
-    .a-detail-link { display:inline-flex; gap: 6px; color: var(--agora-amber); font-size: 13px; }
+    .a-detail-link { display:inline-flex; align-items: center; gap: 6px; min-height: 44px; color: var(--agora-amber); font-size: 13px; }
 
     .a-works { display:grid; gap: var(--space-md); }
     .a-work {
@@ -167,7 +169,7 @@
     /* Source badges */
     .a-badge {
       display:inline-flex; align-items:center; gap: 6px;
-      font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; padding: 4px 10px; border-radius: 999px;
       background: rgba(255,255,255,.04); border: 1px solid var(--border-light);
       color: var(--text-secondary); transition: all .15s ease;
     }
@@ -254,7 +256,7 @@
     .ce-node-head { display:flex; align-items:center; justify-content:space-between; gap: 10px; }
     .ce-node-name { font-size: 16px; font-weight: 700; color: var(--text-primary); }
     .ce-node-kind {
-      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
       letter-spacing:.1em;
       text-transform: uppercase; color: #b8b8c8;
       padding: 4px 9px; border-radius: 4px; background: rgba(255,255,255,.06);
@@ -263,15 +265,15 @@
     .ce-node.is-public  .ce-node-kind { color: var(--agora-amber); background: rgba(247,185,85,.1); }
     .ce-node.is-restricted .ce-node-kind { color: #a78bfa; background: rgba(167,139,250,.1); }
     .ce-node.is-api     .ce-node-kind { color: #58a6ff; background: rgba(88,166,255,.1); }
-    .ce-node-role { font-family: var(--font-mono); font-size: 11px; color: #a0a0b0; letter-spacing:.04em; }
+    .ce-node-role { font-family: var(--font-mono); font-size: 12px; color: #a0a0b0; letter-spacing:.04em; }
     .ce-node-summary { font-size: 13.5px; color: #c4c4d4; line-height: 1.6; flex: 1; }
     .ce-node-metrics { display:flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
     .ce-node-metric {
-      font-family: var(--font-mono); font-size: 10px;
+      font-family: var(--font-mono); font-size: 12px;
       padding: 2px 7px; border-radius: 4px;
       background: rgba(255,255,255,.04); color: var(--text-muted);
     }
-    .ce-node-link { font-size: 12px; color: var(--agora-amber); margin-top: 4px; }
+    .ce-node-link { display: inline-flex; align-items: center; min-height: 44px; font-size: 13px; color: var(--agora-amber); margin-top: 0; }
 
     /* Monetization */
     .ce-offers { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -282,12 +284,12 @@
       padding: var(--space-lg); display: flex; flex-direction: column; gap: 10px;
     }
     .ce-offer-title { font-size: 17px; font-weight: 700; color: var(--text-primary); }
-    .ce-offer-tag { font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+    .ce-offer-tag { font-family: var(--font-mono); font-size: 12px; font-weight: 700;
       letter-spacing: .12em; text-transform: uppercase; color: #ffd180; }
     .ce-offer-summary { font-size: 14px; color: #cfcfdb; line-height: 1.6; flex: 1; }
     .ce-offer-status {
       display: inline-flex; align-items: center; gap: 6px;
-      font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+      font-family: var(--font-mono); font-size: 12px; font-weight: 600;
       letter-spacing: .08em;
       text-transform: uppercase; color: #b8b8c8;
     }
@@ -319,7 +321,7 @@
       border-radius: 10px; align-items: start;
     }
     .ce-road-phase {
-      font-family: var(--font-mono); font-size: 11px; letter-spacing: .1em;
+      font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
       text-transform: uppercase; color: var(--agora-amber);
       padding: 3px 10px; border-radius: 4px; width: fit-content;
       background: rgba(247,185,85,.08); border: 1px solid var(--agora-edge);
@@ -348,6 +350,21 @@
       color: var(--agora-amber); font-weight: 700;
     }
 
+    /* Anchors land below the fixed header; the routed view reserves its space
+       so the Creation Engine block doesn't paint first and then jump. */
+    html { scroll-padding-top: 72px; }
+    #agora-main { min-height: calc(100vh - 56px); }
+
+    @media (max-width: 640px) {
+      .a-filter-chip { min-height: 44px; padding: 10px 14px; }
+      /* Phones: 13px label floor */
+      .a-eyebrow, .a-stat-lbl, .a-filter-chip, .a-card-era, .a-card-meta, .a-card-school, .a-badge, .a-work-sub,
+      .a-detail-meta, .a-ledger, .a-ledger .sub, .ce-eyebrow, .ce-node-kind, .ce-node-role, .ce-node-metric,
+      .ce-offer-tag, .ce-offer-status, .ce-road-phase, .ce-trust-principle, .ce-payment-note, .a-ledger-row .a-detail-link, .a-ledger-row > div > div { font-size: 13px !important; }
+      .a-section { padding-left: var(--space-md); padding-right: var(--space-md); }
+      .a-section .lede, .a-hero p { font-size: 16px; }
+    }
+
     @media (max-width: 768px) {
       .a-hero { padding: 90px var(--space-md) var(--space-2xl); }
       .a-grid { grid-template-columns: 1fr; }
@@ -357,10 +374,11 @@
   </style>
 </head>
 <body>
+  <a class="lm-skip" href="#agora-main" id="agora-skip">Skip to content</a>
   <div class="bg-grid"></div>
   <div class="bg-glow"></div>
 
-  <header class="top-header">
+  <header class="top-header hdr-scroll">
     <a href="/" class="logo">Loopholemaxing</a>
     <nav><ul class="nav-links">
       <li><a href="/#creations">Creations</a></li>
@@ -383,7 +401,7 @@
     </div>
   </section>
 
-  <main id="agora-main">
+  <main id="agora-main" tabindex="-1">
     <!-- Routed views inject here -->
   </main>
 
@@ -426,6 +444,16 @@
     <div class="footer-tagline">Read. Source. Verify.</div>
   </footer>
 
+  <script>
+  // Skip link: move focus into the routed view without touching location.hash
+  // (the hash router would treat "#agora-main" as an unknown route).
+  document.getElementById('agora-skip').addEventListener('click', function (e) {
+    e.preventDefault();
+    var m = document.getElementById('agora-main');
+    m.focus({ preventScroll: true });
+    m.scrollIntoView();
+  });
+  </script>
   <script>
   // ───────────────────────── Agora SPA ─────────────────────────
   (function() {
@@ -480,7 +508,7 @@
           <p class="lede">Sixteen seed philosophers from the Greek archive — Pre-Socratics, Classical Athenians, Hellenistic schools, Late Antiquity. A featured author has a reader excerpt available; everything else links to its public-domain source edition.</p>
 
           <div class="a-toolbar">
-            <input type="search" class="a-search" id="a-search" placeholder="Search philosopher, school, work…" value="${esc(searchTerm)}">
+            <input type="search" class="a-search" id="a-search" placeholder="Search philosopher, school, work…" aria-label="Search philosopher, school, work" value="${esc(searchTerm)}">
             <button class="a-filter-chip ${activeFilter==='all'?'active':''}" data-filter="all">All</button>
             ${schools.map(s => `<button class="a-filter-chip ${activeFilter===s?'active':''}" data-filter="${esc(s)}">${esc(s)}</button>`).join('')}
           </div>
@@ -546,7 +574,7 @@
               <span class="a-ledger-work">${esc(e.work_id)}</span>
               <div style="color:var(--text-muted); font-family: var(--font-body); font-size: 12px; margin-top:2px;">${esc(e.edition)} &middot; tr. ${esc(e.translator)}</div>
             </div>
-            <a href="${esc(e.primary_url)}" target="_blank" rel="noopener" class="a-detail-link" style="font-size:11px;">source &rarr;</a>
+            <a href="${esc(e.primary_url)}" target="_blank" rel="noopener" class="a-detail-link" style="font-size:12px;">source &rarr;</a>
             <span class="a-ledger-status">VERIFIED <span class="a-ledger-date">${esc(e.verified)}</span></span>
           </div>
         `).join('')}

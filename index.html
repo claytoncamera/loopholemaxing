@@ -290,6 +290,13 @@
     .hero-stat-val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); letter-spacing: -.01em; }
     .hero-stat-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
     .hero-footnote { font-size: 12.5px; color: var(--text-muted); margin-top: 14px; line-height: 1.5; }
+    /* Tablets (769-979): six columns wrap some labels and not others, so the
+       strip uses the same 3 x 2 grid as smaller screens. */
+    @media (min-width: 769px) and (max-width: 979px) {
+      .hero-stats { grid-template-columns: repeat(3, 1fr); }
+      .hero-stat:nth-child(3) { border-right: none; }
+      .hero-stat:nth-child(-n+3) { border-bottom: 1px solid var(--border); }
+    }
 
     /* ── WORK WITH CLAYTON band ── */
     .work-band {
@@ -402,12 +409,12 @@
 
     .card-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: var(--space-md); margin-top: auto; }
     .card-meta-item { font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); background: rgba(255,255,255,.03); padding: 4px 9px; border-radius: 5px; border: 1px solid var(--border); }
-    .card-action { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 10px 0; margin-top: 2px; font-size: 14.5px; font-weight: 600; color: #60a5fa; transition: gap .2s ease, color .2s ease; }
+    .card-action { display: inline-flex; align-items: center; align-self: flex-start; gap: 6px; min-height: 44px; padding: 10px 6px; margin: 2px 0 0 -6px; border-radius: 6px; font-size: 14.5px; font-weight: 600; color: #60a5fa; transition: gap .2s ease, color .2s ease; } /* hugs its text so the focus ring does too */
     .card-action:hover { color: #93c5fd; gap: 9px; }
     .card-action.muted { color: var(--text-muted); pointer-events: none; }
     /* De-emphasised by a dashed border + desaturated icon, not by opacity,
        so its text (incl. the offline disclosure) stays at AA contrast. */
-    .creation-card.coming-soon { border-style: dashed; }
+    .creation-card.coming-soon { border-style: dashed; border-color: #3d444d; } /* a dashed edge light enough to read as 'offline' */
     .creation-card.coming-soon h3 .icon { filter: grayscale(1); opacity: .6; }
     .creation-card.coming-soon .card-action { pointer-events: none; color: var(--text-muted); }
 
@@ -450,7 +457,7 @@
     .closing p { font-size: 16px; color: var(--text-secondary); max-width: 560px; margin: 0 auto var(--space-xl); line-height: 1.6; }
 
     .site-footer { border-top: 1px solid var(--border); padding: var(--space-2xl) var(--space-lg); text-align: center; color: var(--text-muted); font-size: 14px; }
-    .site-footer a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; color: var(--text-secondary); }
+    .site-footer a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; color: var(--text-secondary); } /* no side padding: separators stay evenly spaced; each '|' stays at a line end */
     .site-footer a:hover { color: var(--brand-3); }
     .footer-tagline { margin-top: 8px; font-family: var(--font-display); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
 
@@ -511,7 +518,7 @@
     /* ── The Loophole Letter — email capture band ── */
     .letter-band { max-width: 760px; margin: 0 auto; padding: var(--space-2xl) var(--space-lg) var(--space-3xl); text-align: center; }
     .letter-band .eyebrow { margin-bottom: var(--space-sm); font-size: 12px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--green); }
-    .letter-band h2 { font-family: var(--font-display); font-size: clamp(24px, 3.6vw, 34px); font-weight: 700; letter-spacing: -.02em; margin-bottom: var(--space-sm); }
+    .letter-band h2 { font-family: var(--font-display); font-size: clamp(24px, 3.6vw, 34px); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-bottom: var(--space-sm); }
     .letter-band > p { color: var(--text-secondary); line-height: 1.65; max-width: 560px; margin: 0 auto var(--space-xl); }
     .letter-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
     .letter-form input { flex: 1; background: rgba(255,255,255,.03); color: var(--text-primary);
@@ -894,7 +901,7 @@
           <span class="ship-date">Sep 22, 2026</span>
           <span class="ship-tag">Loopholemaxing</span>
         </div>
-        <p>A readability and accessibility pass across the portfolio and the BTC Brain, MMS HUB, ULTRON, Agora, Universal Analyst, PersonalVault and NBA Brain pages, with <strong>no existing copy, figure or claim changed</strong>. Muted text now clears WCAG AA contrast, the smallest labels were raised to 12px, and the homepage's card and ship-log text reads at 15–16px. Phones and tablets get a real menu instead of a lone icon. On the BTC Brain, the <strong>"not financial advice" banner had been rendering underneath the page's own fixed header</strong>; it is visible again, the source-health and key-level panels no longer sit behind the sidebar, and space is now held for them so the page doesn't jump when they load. Skip links, visible keyboard focus, labelled form fields and a 404 page that fits a phone round it out.</p>
+        <p>A readability and accessibility pass across the portfolio and the BTC Brain, MMS HUB, ULTRON, Agora, Universal Analyst, PersonalVault and NBA Brain pages, with <strong>no existing copy, figure or claim changed</strong>. Muted text now clears WCAG AA contrast, the smallest labels were raised to 12px, and the homepage's card and ship-log text reads at 15–16px. Phones get a real menu instead of a lone icon, and tablets no longer squeeze the link row. On the BTC Brain, the <strong>"not financial advice" banner had been rendering underneath the page's own fixed header</strong>; it is now fully visible, the source-health and key-level panels no longer sit behind the sidebar, and space is now held for them so the page doesn't jump when they load. Skip links, visible keyboard focus, labelled form fields and a 404 page that fits a phone round it out.</p>
       </li>
       <li class="ship">
         <div class="ship-head">
@@ -1115,7 +1122,7 @@
 
   <!-- Footer -->
   <footer class="site-footer">
-    <div><a href="https://claytoncamera.com/">Clayton Camera</a> — Loopholemaxing.com — 2026 &nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div><a href="https://claytoncamera.com/">Clayton Camera</a> — Loopholemaxing.com — 2026&nbsp;&nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a>&nbsp;&nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
     <div class="footer-tagline">Research. Analyze. Execute.</div>
   </footer>
 
@@ -1155,7 +1162,11 @@
       panel.addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
       document.addEventListener('keydown', e => { if (e.key === 'Escape' && header.classList.contains('nav-open')) setOpen(false, true); });
       document.addEventListener('click', e => { if (header.classList.contains('nav-open') && !header.contains(e.target)) setOpen(false); });
-      window.matchMedia('(min-width: 1025px)').addEventListener('change', e => { if (e.matches) setOpen(false); });
+      // Tabbing out of the header closes the panel so focus never lands on a link hidden behind it.
+      header.addEventListener('focusout', e => { if (header.classList.contains('nav-open') && e.relatedTarget && !header.contains(e.relatedTarget)) setOpen(false); });
+      const wideMq = window.matchMedia('(min-width: 1025px)');
+      const onWide = e => { if (e.matches) setOpen(false); };
+      if (wideMq.addEventListener) wideMq.addEventListener('change', onWide); else if (wideMq.addListener) wideMq.addListener(onWide);
     })();
 
     // Scroll-to-top. One state function so every trigger agrees: shown past

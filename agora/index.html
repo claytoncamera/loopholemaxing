@@ -87,6 +87,11 @@
     .a-stat { text-align:center; }
     .a-stat-val { font-family: var(--font-mono); font-size: 24px; font-weight: 800; color: var(--agora-amber); }
     .a-stat-lbl { font-size: 12px; text-transform:uppercase; letter-spacing:.08em; color: var(--text-muted); margin-top:4px; }
+    /* Phones: the four hero stats hold an aligned 2x2 grid (a row of four needs ~600px). */
+    @media (max-width: 599px) {
+      .a-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 16px;
+        width: 100%; max-width: 440px; margin-left: auto; margin-right: auto; }
+    }
 
     /* Sections */
     .a-section { max-width: var(--max-width); margin: 0 auto; padding: var(--space-3xl) var(--space-lg); }
@@ -103,7 +108,9 @@
       margin-bottom: var(--space-xl);
     }
     .a-search {
-      flex: 1; min-width: 200px;
+      /* Wide enough for the full placeholder (its only visible label); on the
+         narrowest phones it ends in an ellipsis instead of a hard cut. */
+      flex: 1 1 320px; min-width: min(100%, 320px); text-overflow: ellipsis;
       background: var(--bg-primary); color: var(--text-primary);
       border: 1px solid var(--border-light); border-radius: 8px;
       padding: 10px 14px; font-size: 16px; font-family: var(--font-body); min-height: 44px;
@@ -148,7 +155,7 @@
     .a-card-meta { display:flex; gap: 10px; font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
 
     /* Detail */
-    .a-detail-back { display:inline-flex; gap: 6px; align-items:center; font-size: 13px;
+    .a-detail-back { display:inline-flex; gap: 6px; align-items:center; min-height: 44px; font-size: 13px;
       color: var(--text-muted); margin-bottom: var(--space-md); }
     .a-detail-back:hover { color: var(--agora-amber); }
     .a-detail-head { padding-bottom: var(--space-lg); border-bottom: 1px solid var(--border); margin-bottom: var(--space-xl); }
@@ -363,6 +370,9 @@
       .ce-offer-tag, .ce-offer-status, .ce-road-phase, .ce-trust-principle, .ce-payment-note, .a-ledger-row .a-detail-link, .a-ledger-row > div > div { font-size: 13px !important; }
       .a-section { padding-left: var(--space-md); padding-right: var(--space-md); }
       .a-section .lede, .a-hero p { font-size: 16px; }
+      /* Letter-spaced eyebrows stay on one line at 13px from 390 up; narrower
+         phones get two balanced lines instead of a lone word. */
+      .a-eyebrow, .ce-eyebrow { letter-spacing: .1em; text-wrap: balance; }
     }
 
     @media (max-width: 768px) {

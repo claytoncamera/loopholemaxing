@@ -187,7 +187,7 @@
     .sidebar-section-label {
       font-size: 12px;
       font-weight: 700;
-      letter-spacing: 0.15em;
+      letter-spacing: 0.1em; /* tighter tracking at 12px; the chapters summary tightens further below */
       text-transform: uppercase;
       color: var(--text-muted);
       padding: var(--space-md) var(--space-md) var(--space-xs);
@@ -262,7 +262,9 @@
       align-items: center;
       justify-content: space-between;
       user-select: none;
-      padding-right: var(--space-md);
+      padding-right: 12px;
+      letter-spacing: .06em; /* "Learn Bitcoin — 15 Chapters" fits one line at 12px; balanced two lines at 13px */
+      text-wrap: balance;
     }
     .sidebar-group-summary::-webkit-details-marker { display: none; }
     .sidebar-group-summary:hover { color: var(--text-secondary); }
@@ -934,7 +936,9 @@
     /* The pre-main panels clear the fixed sidebar on desktop. */
     @media (min-width: 901px) {
       #public-disclaimer, #source-health-banner { margin-left: var(--sidebar-width); }
-      #dynamic-key-levels { margin-left: calc(var(--sidebar-width) + 18px) !important; max-width: 920px; }
+      /* Same left edge and width as the main column's content (sidebar + 48px, 1084px max). */
+      #dynamic-key-levels { margin-left: calc(var(--sidebar-width) + var(--space-2xl)) !important;
+        margin-right: var(--space-2xl) !important; max-width: calc(var(--sidebar-width) + 920px - 2 * var(--space-2xl)); }
     }
     /* Space reserved for the late-loading panels while their artifacts load
        (heights measured per width band; see the head script). */
@@ -943,9 +947,10 @@
     html[data-reserve-health] #source-health-banner[hidden] { min-height: 51px; }
     html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 165px; }
     @media (max-width: 1439px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 67px; } }
-    @media (max-width: 1279px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 212px; } }
+    @media (max-width: 1265px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 212px; } }
     @media (max-width: 1099px) { html[data-reserve-health] #source-health-banner[hidden] { min-height: 84px; } }
-    @media (max-width: 1023px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 277px; } }
+    @media (max-width: 987px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 231px; } }
+    @media (max-width: 969px) { html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 277px; } }
     @media (max-width: 900px) {
       html[data-reserve-health] #source-health-banner[hidden] { min-height: 67px; }
       html[data-reserve-levels] #dynamic-key-levels[hidden] { min-height: 212px; }
@@ -981,9 +986,24 @@
         font-size: 13px;
       }
     }
+    /* Trend matrix on phones: tighter cells so Timeframe through Signal stay in
+       view at 390 (only Note scrolls); the narrowest phones drop this one table
+       to 12px so the Signal pills still clear the scroll edge at 360-375. */
+    @media (max-width: 480px) {
+      :is(.main-content, #dynamic-key-levels) table:has(> #tf-matrix-body) :is(th, td) { padding: 8px 5px !important; }
+      :is(.main-content, #dynamic-key-levels) table:has(> #tf-matrix-body) th { letter-spacing: .02em !important; }
+      :is(.main-content, #dynamic-key-levels) table:has(> #tf-matrix-body) td:nth-child(4) span { padding: 3px 7px !important; letter-spacing: .02em !important; }
+    }
+    @media (max-width: 389px) {
+      :is(.main-content, #dynamic-key-levels) table:has(> #tf-matrix-body) :is(th, td, td span) { font-size: 12px !important; }
+    }
     /* Inline text links and glossary terms get a taller hit area without moving any text. */
     :is(#public-disclaimer, .main-content) a:not([class]):not([style*="display"]),
     .main-content .gloss { padding-block: 5px; }
+    /* The padding would push a border underline 5px below the word, so glossary
+       terms draw their dotted underline as text decoration instead. */
+    .main-content .gloss { border-bottom: 0; text-decoration: underline dotted #58a6ff;
+      text-decoration-thickness: 1px; text-underline-offset: 3px; }
     /* Registry bars are data-driven widths; keep them inside their card. */
     #module-registry > div { overflow: hidden; min-width: 0; }
     #module-registry > div > div:nth-child(2) { overflow: hidden; }
@@ -991,13 +1011,14 @@
     .main-content code, .main-content span[style*="font-family:monospace"] { overflow-wrap: anywhere; }
     /* A table in a plain card scrolls inside the card instead of widening the page. */
     .main-content div:has(> table):not([style*="overflow"]) { overflow-x: auto; }
-    /* Horizontal-scroll tables show an edge shadow while more columns are off-screen. */
+    /* Horizontal-scroll tables show a light edge glow while more columns are off-screen
+       (a black shadow disappeared on the near-black page). */
     .main-content div[style*="overflow-x:auto"]:not([style*="background"]) {
       background:
         linear-gradient(90deg, #0d1117 30%, rgba(13, 17, 23, 0)) left center / 32px 100% no-repeat local,
         linear-gradient(270deg, #0d1117 30%, rgba(13, 17, 23, 0)) right center / 32px 100% no-repeat local,
-        radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, .55), transparent) left center / 16px 100% no-repeat scroll,
-        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, .55), transparent) right center / 16px 100% no-repeat scroll;
+        radial-gradient(farthest-side at 0 50%, rgba(139, 148, 158, .32), transparent) left center / 16px 100% no-repeat scroll,
+        radial-gradient(farthest-side at 100% 50%, rgba(139, 148, 158, .32), transparent) right center / 16px 100% no-repeat scroll;
     }
   </style>
   <!-- Three.js is NOT loaded here. The Neural Brain section lazy-loads it
@@ -4166,7 +4187,8 @@
       syncDrawerInert();
     }
     syncDrawerInert();
-    drawerMq.addEventListener('change', syncDrawerInert);
+    if (drawerMq.addEventListener) drawerMq.addEventListener('change', syncDrawerInert);
+    else if (drawerMq.addListener) drawerMq.addListener(syncDrawerInert);
 
     function toggleSidebar() {
       const open = !sidebar.classList.contains('open');
@@ -4202,12 +4224,27 @@
     });
 
     // ===== Scroll to top button =====
+    // Past 400px; on phones only while scrolling up (hidden again shortly after
+    // scrolling stops) so it never sits over chart labels at the right edge.
     const scrollBtn = document.getElementById('scrollTop');
+    const phoneScrollMq = window.matchMedia('(max-width: 640px)');
+    let lastScrollY = window.scrollY, scrollingUp = false, scrollIdle = null;
+    const updateScrollBtn = () => {
+      scrollBtn.classList.toggle('visible', window.scrollY > 400 && (!phoneScrollMq.matches || scrollingUp));
+    };
     window.addEventListener('scroll', () => {
-      scrollBtn.classList.toggle('visible', window.scrollY > 400);
-    });
+      const y = window.scrollY;
+      scrollingUp = y < lastScrollY;
+      lastScrollY = y;
+      updateScrollBtn();
+      if (phoneScrollMq.matches) {
+        clearTimeout(scrollIdle);
+        scrollIdle = setTimeout(() => { scrollingUp = false; updateScrollBtn(); }, 1200);
+      }
+    }, { passive: true });
     scrollBtn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
     });
 
     // ===== Unified poll scheduler (2026-08-11) =====

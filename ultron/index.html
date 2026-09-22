@@ -185,6 +185,13 @@
       .u-rule span, .u-plan li { font-size: 15px; }
       .u-eyebrow, .u-stat-lbl, .u-how-step .n, .u-plan .ribbon, .u-hud-chrome .addr { font-size: 13px; }
     }
+    /* The four hero stats hold a 2x2 grid on phones and small tablets (320-800);
+       a single row of four needs about 770px. */
+    @media (max-width: 800px) {
+      .u-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px 16px;
+        width: 100%; max-width: 440px; margin-left: auto; margin-right: auto; }
+      .u-stat-lbl { letter-spacing: .04em; line-height: 1.35; }
+    }
   </style>
 </head>
 <body>

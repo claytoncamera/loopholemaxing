@@ -398,6 +398,9 @@ img {
   .top-header.hdr-scroll {
     padding: 0 var(--space-md);
     gap: 12px;
+    /* Opaque here so the nav's edge covers (#0a0a0f) match the header exactly;
+       over a lit hero the 85% glass rendered lighter and the covers showed as blocks. */
+    background: #0a0a0f;
   }
   .top-header.hdr-scroll .logo {
     font-size: 13px;
@@ -412,8 +415,9 @@ img {
     background:
       linear-gradient(90deg, #0a0a0f 50%, rgba(10, 10, 15, 0)) left center / 28px 100% no-repeat local,
       linear-gradient(270deg, #0a0a0f 50%, rgba(10, 10, 15, 0)) right center / 28px 100% no-repeat local,
-      radial-gradient(farthest-side at 0 50%, rgba(88, 166, 255, 0.35), transparent) left center / 12px 70% no-repeat scroll,
-      radial-gradient(farthest-side at 100% 50%, rgba(88, 166, 255, 0.35), transparent) right center / 12px 70% no-repeat scroll;
+      /* glows sit 1px inside the edge so the covers always hide them at rest (no 1px seam) */
+      radial-gradient(farthest-side at 0 50%, rgba(88, 166, 255, 0.35), transparent) left 1px center / 12px 70% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(88, 166, 255, 0.35), transparent) right 1px center / 12px 70% no-repeat scroll;
   }
   .top-header.hdr-scroll nav::-webkit-scrollbar { display: none; }
   .top-header.hdr-scroll .nav-links {

@@ -6,6 +6,7 @@
   <title>PersonalVault — Secure Zero-Knowledge Vault | Loopholemaxing</title>
   <meta name="description" content="Your encrypted personal vault. Zero-knowledge AES-256-GCM encryption — your data is only decryptable by you.">
   <link rel="canonical" href="https://loopholemaxing.com/vault/">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
   <!-- Entity wiring. This page had neither a canonical nor any structured
        data until 2026-07-28, so it sat in the sitemap contributing nothing
@@ -65,9 +66,14 @@
 
     /* ── Auth Pages ─────────────────────────── */
     .auth-wrap {
-      min-height: 100vh; display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 80px 16px 40px;
     }
+    .auth-home {
+      display: inline-flex; align-items: center; min-height: 44px; padding: 0 6px; margin-bottom: 8px;
+      font-size: 14px; color: var(--text-secondary);
+    }
+    .auth-home:hover { color: var(--accent-cyan); }
     .auth-card {
       width: 100%; max-width: 420px;
       background: var(--bg-card); border: 1px solid var(--border);
@@ -84,7 +90,7 @@
       color: var(--accent-blue); font-size: 18px;
     }
     .auth-logo-text { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; color: var(--text-primary); }
-    .auth-logo-sub  { font-size: 11px; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; }
+    .auth-logo-sub  { font-size: 12px; color: var(--text-muted); letter-spacing: .06em; text-transform: uppercase; }
 
     .auth-title { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
     .auth-subtitle { font-size: 14px; color: var(--text-secondary); margin-bottom: 28px; line-height: 1.5; }
@@ -101,7 +107,7 @@
     .form-input:focus { border-color: var(--accent-blue); }
     .form-input::placeholder { color: var(--text-muted); }
 
-    .form-hint { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
+    .form-hint { font-size: 13px; color: var(--text-muted); margin-top: 4px; line-height: 1.4; }
 
     .btn-full { width: 100%; justify-content: center; margin-top: 8px; padding: 13px; font-size: 15px; }
 
@@ -177,7 +183,7 @@
       border-radius: 10px; padding: 16px;
     }
     .dash-stat-val { font-size: 26px; font-weight: 800; font-family: var(--font-mono); color: var(--text-primary); }
-    .dash-stat-lbl { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
+    .dash-stat-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 2px; }
 
     .categories-label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
       color: var(--accent-blue); margin-bottom: 14px; }
@@ -347,6 +353,10 @@
     @media (max-width: 480px) {
       .categories-grid { grid-template-columns: 1fr; }
     }
+    @media (max-width: 640px) {
+      .form-input, .form-textarea { font-size: 16px; } /* no iOS focus zoom */
+      .auth-logo-sub, .zero-knowledge-badge, .form-label, .dash-stat-lbl { font-size: 13px; }
+    }
   </style>
 </head>
 <body>
@@ -361,6 +371,7 @@
 
   <!-- Login -->
   <div id="page-login" class="auth-wrap">
+    <a class="auth-home" href="/">← Loopholemaxing</a>
     <div class="auth-card">
       <div class="auth-logo">
         <div class="auth-logo-icon">
@@ -372,7 +383,7 @@
           </svg>
         </div>
         <div>
-          <div class="auth-logo-text">PersonalVault</div>
+          <h1 class="auth-logo-text">PersonalVault</h1>
           <div class="auth-logo-sub">by loopholemaxing</div>
         </div>
       </div>
@@ -389,11 +400,11 @@
 
       <form id="login-form" onsubmit="handleLogin(event)">
         <div class="form-group">
-          <label class="form-label">Email</label>
+          <label class="form-label" for="login-email">Email</label>
           <input id="login-email" type="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
         </div>
         <div class="form-group">
-          <label class="form-label">Password</label>
+          <label class="form-label" for="login-pass">Password</label>
           <input id="login-pass" type="password" class="form-input" placeholder="••••••••••••" required autocomplete="current-password">
           <div class="form-hint">Your password is used to derive your encryption key client-side.</div>
         </div>
@@ -411,6 +422,7 @@
 
   <!-- Register -->
   <div id="page-register" class="auth-wrap" style="display:none">
+    <a class="auth-home" href="/">← Loopholemaxing</a>
     <div class="auth-card">
       <div class="auth-logo">
         <div class="auth-logo-icon">
@@ -421,7 +433,7 @@
           </svg>
         </div>
         <div>
-          <div class="auth-logo-text">PersonalVault</div>
+          <h2 class="auth-logo-text">PersonalVault</h2>
           <div class="auth-logo-sub">by loopholemaxing</div>
         </div>
       </div>
@@ -438,16 +450,16 @@
 
       <form id="register-form" onsubmit="handleRegister(event)">
         <div class="form-group">
-          <label class="form-label">Email</label>
+          <label class="form-label" for="reg-email">Email</label>
           <input id="reg-email" type="email" class="form-input" placeholder="you@example.com" required autocomplete="email">
         </div>
         <div class="form-group">
-          <label class="form-label">Master Password</label>
+          <label class="form-label" for="reg-pass">Master Password</label>
           <input id="reg-pass" type="password" class="form-input" placeholder="Choose a strong password" required autocomplete="new-password" minlength="12">
           <div class="form-hint">Minimum 12 characters (requires uppercase, lowercase, number &amp; special character). This cannot be recovered — write it down somewhere safe.</div>
         </div>
         <div class="form-group">
-          <label class="form-label">Confirm Password</label>
+          <label class="form-label" for="reg-pass2">Confirm Password</label>
           <input id="reg-pass2" type="password" class="form-input" placeholder="Repeat password" required autocomplete="new-password">
         </div>
         <button type="submit" class="btn-primary btn-full" id="register-btn">
@@ -557,12 +569,12 @@
         <div id="add-error" class="auth-error"></div>
         <form id="add-item-form" onsubmit="handleAddItem(event)">
           <div class="form-group">
-            <label class="form-label">Title *</label>
+            <label class="form-label" for="item-title">Title *</label>
             <input id="item-title" type="text" class="form-input" placeholder="e.g. US Passport, Chase Checking, Blue Cross..." required>
           </div>
           <div id="dynamic-fields"></div>
           <div class="form-group">
-            <label class="form-label">Notes</label>
+            <label class="form-label" for="item-notes">Notes</label>
             <textarea id="item-notes" class="form-textarea" placeholder="Additional notes (optional)..."></textarea>
           </div>
           <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;">
@@ -1067,7 +1079,7 @@ function showAddItem() {
     <div class="field-grid" style="margin-bottom:14px;">
       ${pair.map(f => `
         <div class="form-group" style="margin-bottom:0">
-          <label class="form-label">${f.label}</label>
+          <label class="form-label" for="field-${f.key}">${f.label}</label>
           <input id="field-${f.key}" type="${f.secret ? 'password' : 'text'}"
             class="form-input" placeholder="${escHtml(f.placeholder || '')}">
         </div>

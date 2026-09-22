@@ -21,19 +21,33 @@
       // Unknown path — stay on 404
     })();
   </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <style>
     body { background: #0a0a0f; color: #e6edf3; font-family: system-ui; 
            display: flex; align-items: center; justify-content: center; 
-           min-height: 100vh; margin: 0; text-align: center; }
+           min-height: 100vh; margin: 0; text-align: center; padding: 24px 16px; box-sizing: border-box; }
     h1 { font-size: 72px; color: #3b82f6; margin: 0; }
-    p { color: #8b949e; }
+    p { color: #8b949e; font-size: 16px; line-height: 1.6; }
     a { color: #3b82f6; }
+    p a { display: inline-block; padding: 10px 2px; }
+    .lost-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 8px; }
+    .lost-nav a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px;
+                  border: 1px solid #30363d; border-radius: 999px; color: #e6edf3; text-decoration: none; font-size: 15px; }
+    .lost-nav a:hover { border-color: #3b82f6; color: #58a6ff; }
+    a:focus-visible { outline: 2px solid #58a6ff; outline-offset: 2px; }
   </style>
 </head>
 <body>
   <div>
     <h1>404</h1>
     <p>Page not found. <a href="/">Back to home →</a></p>
+    <nav class="lost-nav" aria-label="Popular pages">
+      <a href="/#creations">Creations</a>
+      <a href="/btc-brain/">BTC Brain</a>
+      <a href="/mms-hub/">MMS HUB</a>
+      <a href="/#shiplog">Ship Log</a>
+    </nav>
   </div>
   <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js?v=20260616a" data-site="loopholemaxing"></script>
 </body>

@@ -15,6 +15,7 @@
   <meta name="twitter:title" content="Loopholemaxing — Find Every Edge">
   <meta name="twitter:description" content="Clayton Camera — technical founder. Live AI, commerce, and trading systems, each one shipped and running. Available for client work.">
   <meta name="theme-color" content="#08080d">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <!-- ── Entity graph ─────────────────────────────────────────────────
        The canonical Person entity lives at claytoncamera.com (an
        exact-match personal domain, registered 2026-07-24 — the
@@ -92,7 +93,7 @@
 
       --text-primary: #f4f4f8;
       --text-secondary: #a1a1b3;
-      --text-muted: #6d6d80;
+      --text-muted: #8a8a9e;   /* AA: 5.3:1 on chips, 5.9:1 on page */
 
       --brand-1: #6366f1;   /* indigo */
       --brand-2: #3b82f6;   /* blue   */
@@ -140,7 +141,8 @@
     }
     .promo-bar strong { color: var(--green); }
     .promo-bar .promo-btn {
-      font-size: 12px; font-weight: 700; letter-spacing: .02em;
+      display: inline-flex; align-items: center; min-height: 34px;
+      font-size: 13px; font-weight: 700; letter-spacing: .02em;
       padding: 6px 15px; border-radius: 7px; white-space: nowrap;
       background: var(--green); color: #04231a;
       transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
@@ -162,10 +164,51 @@
       content: ""; position: absolute; inset: 5px; border-radius: 3px;
       background: var(--bg-primary);
     }
-    .nav-links a { font-family: var(--font-body); }
+    .top-header nav { display: flex; align-items: center; gap: var(--space-lg); }
+    .nav-links a { font-family: var(--font-body); font-size: 14px; }
     .nav-cta { color: var(--green) !important; font-weight: 700 !important; }
-    .nav-window { font-size: 15px; opacity: .8; }
+    /* 32x44 hit area; the negative margin keeps the glyph exactly where it sat */
+    .nav-window { display: inline-flex; align-items: center; justify-content: center; min-height: 44px; padding: 0 7px; margin: 0 -7px; font-size: 15px; opacity: .8; }
     .nav-window:hover { opacity: 1; }
+    /* Menu toggle — only shown where the full link row can't fit (<=1024px) */
+    .nav-toggle { display: none; }
+    .nav-toggle-bars, .nav-toggle-bars::before, .nav-toggle-bars::after {
+      display: block; width: 18px; height: 2px; border-radius: 2px; background: currentColor;
+      transition: transform .2s ease, opacity .2s ease;
+    }
+    .nav-toggle-bars { position: relative; }
+    .nav-toggle-bars::before, .nav-toggle-bars::after { content: ""; position: absolute; left: 0; }
+    .nav-toggle-bars::before { top: -6px; }
+    .nav-toggle-bars::after { top: 6px; }
+    .top-header.nav-open .nav-toggle-bars { background: transparent; }
+    .top-header.nav-open .nav-toggle-bars::before { transform: translateY(6px) rotate(45deg); }
+    .top-header.nav-open .nav-toggle-bars::after { transform: translateY(-6px) rotate(-45deg); }
+    @media (max-width: 1024px) {
+      .top-header nav { gap: 12px; }
+      .nav-toggle {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 44px; height: 44px; padding: 0; cursor: pointer;
+        background: rgba(255,255,255,.03); color: var(--text-primary);
+        border: 1px solid var(--border-light); border-radius: 10px;
+      }
+      .nav-toggle:hover { border-color: var(--brand-2); }
+      #site-nav { display: none; }
+      .top-header.nav-open #site-nav {
+        display: flex; flex-direction: column; gap: 2px;
+        position: absolute; top: calc(100% + 6px); left: 12px; right: 12px;
+        padding: 8px; background: var(--bg-card);
+        border: 1px solid var(--border-light); border-radius: 14px;
+        box-shadow: 0 24px 48px -16px rgba(0,0,0,.75);
+      }
+      .top-header.nav-open #site-nav a {
+        display: flex; align-items: center; min-height: 48px; padding: 0 14px;
+        font-size: 16px; border-radius: 10px;
+      }
+      .top-header.nav-open #site-nav a:hover { background: rgba(255,255,255,.04); }
+    }
+    @media (min-width: 600px) and (max-width: 1024px) {
+      .top-header.nav-open #site-nav { left: auto; width: 320px; }
+    }
 
     /* ── HERO ── */
     .hero {
@@ -175,7 +218,7 @@
     }
     .hero-eyebrow {
       display: inline-flex; align-items: center; gap: 9px;
-      font-size: 12.5px; font-weight: 600; letter-spacing: .01em;
+      font-size: 13px; font-weight: 600; letter-spacing: .01em;
       color: var(--text-secondary);
       padding: 7px 15px 7px 12px; border-radius: 999px; margin-bottom: 26px;
       background: rgba(255,255,255,.03);
@@ -206,6 +249,8 @@
       max-width: 620px; line-height: 1.6; margin-bottom: var(--space-xl);
     }
     .hero-sub strong { color: var(--text-primary); font-weight: 600; }
+    .hero-sub a { text-decoration: underline; text-decoration-color: rgba(244,244,248,.35); text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .hero-sub a:hover { text-decoration-color: var(--brand-3); }
     .hero-cta-row { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; margin-top: 4px; }
     .btn-hire {
       display: inline-flex; align-items: center; gap: 9px;
@@ -230,6 +275,7 @@
     }
     .hero-trust span { display: inline-flex; align-items: center; gap: 7px; }
     .hero-trust .tick { color: var(--green); font-weight: 700; }
+    .hero-trust a { display: inline-block; padding: 10px 2px; margin: -10px 0; } /* 44px target, same line height */
 
     /* Stat strip */
     .hero-stats {
@@ -242,12 +288,19 @@
     .hero-stat { text-align: center; padding: 22px 10px; border-right: 1px solid var(--border); }
     .hero-stat:last-child { border-right: none; }
     .hero-stat-val { font-size: 24px; font-weight: 700; font-family: var(--font-mono); color: var(--text-primary); letter-spacing: -.01em; }
-    .hero-stat-lbl { font-size: 10.5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .06em; margin-top: 4px; }
-    .hero-footnote { font-size: 11px; color: var(--text-muted); margin-top: 14px; }
+    .hero-stat-lbl { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: .05em; margin-top: 4px; }
+    .hero-footnote { font-size: 12.5px; color: var(--text-muted); margin-top: 14px; line-height: 1.5; }
+    /* Tablets (769-979): six columns wrap some labels and not others, so the
+       strip uses the same 3 x 2 grid as smaller screens. */
+    @media (min-width: 769px) and (max-width: 979px) {
+      .hero-stats { grid-template-columns: repeat(3, 1fr); }
+      .hero-stat:nth-child(3) { border-right: none; }
+      .hero-stat:nth-child(-n+3) { border-bottom: 1px solid var(--border); }
+    }
 
     /* ── WORK WITH CLAYTON band ── */
     .work-band {
-      max-width: var(--max-width); margin: 0 auto var(--space-4xl);
+      width: min(var(--max-width), calc(100% - 32px)); margin: 0 auto var(--space-3xl);
       padding: var(--space-2xl) var(--space-xl);
       border: 1px solid rgba(52,211,153,.28); border-radius: 20px;
       background:
@@ -256,30 +309,30 @@
         var(--bg-card);
     }
     .work-band-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: var(--space-2xl); align-items: center; }
-    .work-band .eyebrow { font-size: 11px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--green); margin-bottom: var(--space-md); }
+    .work-band .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--green); margin-bottom: var(--space-md); }
     .work-band h2 { font-family: var(--font-display); font-size: clamp(25px, 3.5vw, 36px); font-weight: 700; line-height: 1.14; letter-spacing: -0.02em; margin-bottom: var(--space-md); color: var(--text-primary); }
     .work-band h2 .green { color: var(--green); }
-    .work-band p { font-size: 15px; color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--space-lg); max-width: 560px; }
+    .work-band p { font-size: 16px; color: var(--text-secondary); line-height: 1.7; margin-bottom: var(--space-lg); max-width: 560px; }
     .work-tiers { display: flex; flex-direction: column; gap: 10px; }
-    .work-tier { display: flex; align-items: baseline; gap: var(--space-md); padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.015); transition: border-color .2s ease, transform .2s ease; }
+    .work-tier { display: grid; grid-template-columns: 7.5rem 1fr; align-items: baseline; gap: 14px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 12px; background: rgba(255,255,255,.015); transition: border-color .2s ease, transform .2s ease; }
     .work-tier:hover { border-color: var(--border-light); transform: translateX(2px); }
-    .work-tier .amt { font-family: var(--font-mono); font-weight: 700; font-size: 16px; color: var(--text-primary); white-space: nowrap; min-width: 74px; }
-    .work-tier .desc { font-size: 13px; color: var(--text-secondary); line-height: 1.45; }
+    .work-tier .amt { font-family: var(--font-mono); font-weight: 700; font-size: 17px; color: var(--text-primary); white-space: nowrap; }
+    .work-tier .desc { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
     .work-tier .desc strong { color: var(--text-primary); font-weight: 600; }
     .work-band-cta { margin-top: var(--space-lg); display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
-    .work-band-note { font-size: 12px; color: var(--text-muted); }
+    .work-band-note { font-size: 13px; color: var(--text-muted); }
 
     /* ── Marquee feature strip ── */
     .feature-strip { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 22px 0; overflow: hidden; -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent); }
     .feature-track { display: flex; gap: 44px; width: max-content; animation: marquee 46s linear infinite; }
     .feature-strip:hover .feature-track { animation-play-state: paused; }
     @keyframes marquee { to { transform: translateX(-50%); } }
-    .feature-item { display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-secondary); flex-shrink: 0; white-space: nowrap; }
+    .feature-item { display: flex; align-items: center; gap: 9px; font-size: 14px; color: var(--text-secondary); flex-shrink: 0; white-space: nowrap; }
     .feature-item strong { color: var(--text-primary); font-weight: 600; }
     .feature-item .fdot { width: 5px; height: 5px; border-radius: 50%; background: var(--brand-2); flex-shrink: 0; }
 
     /* ── CREATIONS ── */
-    .creations { padding: var(--space-4xl) var(--space-lg); max-width: var(--max-width); margin: 0 auto; }
+    .creations { padding: 72px var(--space-lg) var(--space-4xl); max-width: var(--max-width); margin: 0 auto; }
     .creations-header { text-align: center; margin-bottom: var(--space-xl); }
     .creations-header .section-label { color: var(--brand-3); }
     .creations-header .section-title { font-family: var(--font-display); font-size: clamp(30px, 4.5vw, 46px); letter-spacing: -.03em; }
@@ -293,7 +346,7 @@
       border: 1px solid var(--border); transition: all .18s ease; user-select: none;
     }
     .filter-chip:hover { color: var(--text-primary); border-color: var(--border-light); }
-    .filter-chip:focus-visible { outline: 2px solid var(--brand-3); outline-offset: 2px; }
+    .filter-chip:focus-visible { outline: 2px solid var(--brand-3); outline-offset: 3px; }
     .filter-chip.active { background: var(--text-primary); color: #0a0a12; border-color: var(--text-primary); }
 
     .creations-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(348px, 1fr)); gap: var(--space-lg); }
@@ -312,7 +365,7 @@
     .creation-card:hover::before { opacity: 1; }
     .creation-card.hide-card { display: none; }
 
-    .card-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 4px 10px; border-radius: 5px; margin-bottom: var(--space-md); width: fit-content; }
+    .card-tag { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 5px; margin-bottom: var(--space-md); width: fit-content; }
     .tag-live { background: rgba(52,211,153,.14); color: var(--green); }
     .tag-paper { background: rgba(242,189,90,.14); color: #f2bd5a; }
     .tag-rev  { background: rgba(52,211,153,.20); color: #5eead4; }
@@ -338,26 +391,31 @@
     .icon-studio { background: rgba(167,139,250,.12); color: #a78bfa; }
     .icon-creation { background: rgba(99,102,241,.16); color: #818cf8; }
 
-    .card-lead { font-size: 13px; font-weight: 600; color: var(--brand-3); margin-bottom: 10px; letter-spacing: -.005em; }
-    .creation-card p { font-size: 13.5px; color: var(--text-secondary); line-height: 1.62; margin-bottom: var(--space-md); }
+    .creation-card p { font-size: 15px; color: var(--text-secondary); line-height: 1.65; margin-bottom: var(--space-md); }
+    /* Lead line: the designed cyan sub-head between title and body (it was being
+       out-specified by the body rule above and rendering as grey body text). */
+    .creation-card .card-lead { font-size: 14.5px; font-weight: 600; color: var(--brand-3); line-height: 1.5; margin-bottom: 10px; letter-spacing: -.005em; }
 
     /* Value / edge line */
     .card-edge {
       display: flex; gap: 10px; align-items: flex-start;
-      font-size: 12.5px; line-height: 1.5; color: var(--text-secondary);
-      padding: 11px 13px; margin-bottom: var(--space-md);
+      font-size: 14px; line-height: 1.55; color: var(--text-secondary);
+      padding: 12px 14px; margin-bottom: var(--space-md);
       background: rgba(52,211,153,.05); border: 1px solid rgba(52,211,153,.16);
       border-radius: 10px;
     }
-    .card-edge .edge-ic { color: var(--green); flex-shrink: 0; font-size: 13px; line-height: 1.5; }
+    .card-edge .edge-ic { color: var(--green); flex-shrink: 0; font-size: 13px; line-height: 1.7; }
     .card-edge b { color: var(--text-primary); font-weight: 600; }
 
     .card-meta { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: var(--space-md); margin-top: auto; }
-    .card-meta-item { font-size: 10.5px; font-family: var(--font-mono); color: var(--text-muted); background: rgba(255,255,255,.03); padding: 3px 8px; border-radius: 5px; border: 1px solid var(--border); }
-    .card-action { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: #60a5fa; transition: gap .2s ease, color .2s ease; }
+    .card-meta-item { font-size: 12px; font-family: var(--font-mono); color: var(--text-muted); background: rgba(255,255,255,.03); padding: 4px 9px; border-radius: 5px; border: 1px solid var(--border); }
+    .card-action { display: inline-flex; align-items: center; align-self: flex-start; gap: 6px; min-height: 44px; padding: 10px 6px; margin: 2px 0 0 -6px; border-radius: 6px; font-size: 14.5px; font-weight: 600; color: #60a5fa; transition: gap .2s ease, color .2s ease; } /* hugs its text so the focus ring does too */
     .card-action:hover { color: #93c5fd; gap: 9px; }
     .card-action.muted { color: var(--text-muted); pointer-events: none; }
-    .creation-card.coming-soon { opacity: .58; }
+    /* De-emphasised by a dashed border + desaturated icon, not by opacity,
+       so its text (incl. the offline disclosure) stays at AA contrast. */
+    .creation-card.coming-soon { border-style: dashed; border-color: #3d444d; } /* a dashed edge light enough to read as 'offline' */
+    .creation-card.coming-soon h3 .icon { filter: grayscale(1); opacity: .6; }
     .creation-card.coming-soon .card-action { pointer-events: none; color: var(--text-muted); }
 
     /* ── Ship Log ── */
@@ -365,9 +423,9 @@
     .shiplog-header { text-align: center; margin-bottom: var(--space-xl); }
     .shiplog-header .section-label { color: var(--green); }
     .shiplog-header .section-title { font-family: var(--font-display); font-size: clamp(26px, 3.8vw, 38px); letter-spacing: -.03em; }
-    .shiplog-header p { font-size: 14.5px; color: var(--text-secondary); max-width: 560px; margin: 12px auto 0; line-height: 1.65; }
+    .shiplog-header p { font-size: 16px; color: var(--text-secondary); max-width: 560px; margin: 12px auto 0; line-height: 1.65; }
     .shiplog-list { list-style: none; margin: 0; padding: 0 0 0 var(--space-lg); border-left: 1px solid var(--border); }
-    .ship { position: relative; padding: 0 0 var(--space-lg) 0; }
+    .ship { position: relative; padding: 0 0 32px 0; }
     .ship:last-child { padding-bottom: 0; }
     .ship::before {
       content: ""; position: absolute; left: calc(-1 * var(--space-lg) - 4px); top: 7px;
@@ -375,19 +433,19 @@
       background: var(--green); box-shadow: 0 0 0 3px rgba(52,211,153,.12);
     }
     .ship-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 5px; }
-    .ship-date { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); letter-spacing: .02em; }
+    .ship-date { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-muted); letter-spacing: .02em; }
     .ship-tag {
-      font-size: 10.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
       padding: 3px 9px; border-radius: 5px; color: var(--brand-3);
       background: rgba(34,211,238,.10); border: 1px solid rgba(34,211,238,.20);
     }
     a.ship-tag:hover { background: rgba(34,211,238,.18); color: #67e8f9; }
-    .ship p { font-size: 14px; color: var(--text-secondary); line-height: 1.62; margin: 0; }
+    .ship p { font-size: 15.5px; color: var(--text-secondary); line-height: 1.65; margin: 0; max-width: 70ch; }
     .ship p strong { color: var(--text-primary); font-weight: 600; }
-    .shiplog-foot { margin-top: var(--space-xl); font-size: 12.5px; color: var(--text-muted); text-align: center; }
+    .shiplog-foot { margin-top: var(--space-xl); font-size: 13.5px; color: var(--text-muted); text-align: center; }
 
     /* ── Closing CTA ── */
-    .closing { max-width: var(--max-width); margin: 0 auto var(--space-4xl); padding: 0 var(--space-lg); }
+    .closing { max-width: var(--max-width); margin: 0 auto var(--space-3xl); padding: 0 var(--space-lg); }
     .closing-inner {
       text-align: center; padding: var(--space-3xl) var(--space-xl);
       border-radius: 22px; border: 1px solid var(--border-light);
@@ -398,49 +456,83 @@
     .closing h2 { font-family: var(--font-display); font-size: clamp(26px, 4vw, 40px); font-weight: 700; letter-spacing: -.025em; line-height: 1.1; color: var(--text-primary); margin-bottom: var(--space-md); }
     .closing p { font-size: 16px; color: var(--text-secondary); max-width: 560px; margin: 0 auto var(--space-xl); line-height: 1.6; }
 
-    .site-footer { border-top: 1px solid var(--border); padding: var(--space-2xl) var(--space-lg); text-align: center; color: var(--text-muted); font-size: 13px; }
-    .site-footer a { color: var(--text-secondary); }
+    .site-footer { border-top: 1px solid var(--border); padding: var(--space-2xl) var(--space-lg); text-align: center; color: var(--text-muted); font-size: 14px; }
+    .site-footer a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; color: var(--text-secondary); } /* no side padding: separators stay evenly spaced; each '|' stays at a line end */
     .site-footer a:hover { color: var(--brand-3); }
-    .footer-tagline { margin-top: 8px; font-family: var(--font-display); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
+    .footer-tagline { margin-top: 8px; font-family: var(--font-display); font-size: 12px; letter-spacing: .14em; text-transform: uppercase; color: var(--text-muted); }
 
     @media (max-width: 768px) {
-      .promo-bar { font-size: 12px; gap: 10px; padding: 0 var(--space-md); }
+      .promo-bar { font-size: 13px; gap: 10px; padding: 0 var(--space-md); }
       .promo-bar .promo-hide-sm { display: none; }
       .hero { padding: 128px var(--space-md) var(--space-2xl); min-height: 0; }
-      /* Collapse header nav on mobile — the sticky promo bar already carries
-         the hire CTA, so keep only the logo + the 🪟 Window entry. */
+      /* Header on tablets/phones: logo, the menu toggle, and the 🪟 Window
+         entry; the other links open from the toggle (rules above). */
       .top-header { padding: 0 var(--space-md); }
-      .nav-links { gap: 14px; }
-      .nav-links li:not(.nav-window-li) { display: none; }
       .creations-grid { grid-template-columns: 1fr; }
       .hero-stats { grid-template-columns: repeat(3, 1fr); }
       .hero-stat:nth-child(3) { border-right: none; }
       .hero-stat:nth-child(-n+3) { border-bottom: 1px solid var(--border); }
+      .work-band { padding: 28px 20px; border-radius: 16px; }
       .work-band-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+      .creations { padding-top: 56px; }
+      .filter-chip { min-height: 44px; padding: 10px 16px; }
+    }
+    @media (max-width: 640px) {
+      /* Phones: 16px reading text, a wider text column, and a 13px label floor */
+      .creations { padding-left: var(--space-md); padding-right: var(--space-md); }
+      .creation-card { padding: 20px; }
+      .creation-card p, .ship p, .work-band p, .closing p, .letter-band > p, .shiplog-header p { font-size: 16px; line-height: 1.6; }
+      .card-edge, .work-tier .desc { font-size: 15px; }
+      .card-tag, .card-meta-item, .hero-stat-lbl, .ship-date, .ship-tag, .footer-tagline,
+      .work-band .eyebrow, .letter-band .eyebrow, .creations-header .section-label, .shiplog-header .section-label,
+      .hero-footnote, .work-band-note, .letter-note, .work-tier .amt span { font-size: 13px !important; }
+      .shiplog { padding: 0 var(--space-md); }
+      .shiplog-list { padding-left: 18px; }
+      .ship::before { left: -22px; }
+      .scroll-top { right: 12px; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); background: rgba(16,16,23,.88); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
     }
     @media (max-width: 420px) {
       .hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .hero-stat:nth-child(odd) { border-right: 1px solid var(--border); }
       .hero-stat:nth-child(2n) { border-right: none; }
+      .hero-stat:nth-child(-n+4) { border-bottom: 1px solid var(--border); }
+      .hero-stat:nth-child(n+5) { border-bottom: none; }
+      .work-tier { grid-template-columns: 1fr; gap: 4px; }
     }
     @media (prefers-reduced-motion: reduce) {
       .hero h1 .grad, .feature-track, .hero-eyebrow .live-dot { animation: none !important; }
+      /* Static, wrapped marquee: every item visible, the loop copy hidden */
+      .feature-strip { -webkit-mask-image: none; mask-image: none; }
+      .feature-track { width: auto; flex-wrap: wrap; justify-content: center; gap: 12px 28px; padding: 0 16px; }
+      .feature-track [aria-hidden="true"] { display: none; }
+      .feature-item { display: block; white-space: normal; flex-shrink: 1; max-width: 100%; }
+      .feature-item .fdot { display: inline-block; vertical-align: middle; margin-right: 4px; }
+      .creation-card, .work-tier, .btn-hire, .btn-ghost { transition: none !important; }
     }
 
+    /* ── Keyboard + landmark wayfinding ── */
+    html { scroll-padding-top: 116px; }
+    @media (max-width: 768px) { html { scroll-padding-top: 112px; } }
+    a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--brand-3); outline-offset: 3px; }
+
     /* ── The Loophole Letter — email capture band ── */
-    .letter-band { max-width: 760px; margin: 0 auto; padding: var(--space-3xl) var(--space-lg); text-align: center; }
-    .letter-band .eyebrow { margin-bottom: var(--space-sm); }
-    .letter-band h2 { font-size: clamp(24px, 3.6vw, 34px); font-weight: 700; letter-spacing: -.02em; margin-bottom: var(--space-sm); }
+    .letter-band { max-width: 760px; margin: 0 auto; padding: var(--space-2xl) var(--space-lg) var(--space-3xl); text-align: center; }
+    .letter-band .eyebrow { margin-bottom: var(--space-sm); font-size: 12px; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; color: var(--green); }
+    .letter-band h2 { font-family: var(--font-display); font-size: clamp(24px, 3.6vw, 34px); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; margin-bottom: var(--space-sm); }
     .letter-band > p { color: var(--text-secondary); line-height: 1.65; max-width: 560px; margin: 0 auto var(--space-xl); }
     .letter-form { display: flex; gap: 10px; max-width: 480px; margin: 0 auto; }
     .letter-form input { flex: 1; background: rgba(255,255,255,.03); color: var(--text-primary);
-      border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 14px; font-size: 14px; }
+      border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 14px; font-size: 16px; min-height: 48px; }
     .letter-form input:focus { outline: 0; border-color: var(--accent, #3fb950); }
+    .letter-form input:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+    .letter-form .btn-hire { justify-content: center; border: 0; font: inherit; font-size: 15px; font-weight: 700; cursor: pointer; min-height: 48px; }
     .letter-ok { display: none; color: #3fb950; font-family: var(--font-mono); font-size: 14px; margin-top: var(--space-md); }
-    .letter-note { font-size: 12px; color: var(--text-muted); margin-top: 12px; }
-    @media (max-width: 720px) { .letter-form { flex-direction: column; } }
+    .letter-note { font-size: 13px; color: var(--text-muted); margin-top: 12px; }
+    @media (max-width: 720px) { .letter-form { flex-direction: column; } .letter-form .btn-hire { width: 100%; } }
   </style>
 </head>
 <body>
+  <a class="lm-skip" href="#main">Skip to content</a>
   <div class="bg-grid"></div>
   <div class="bg-aurora"></div>
 
@@ -453,16 +545,21 @@
   <!-- Header -->
   <header class="top-header">
     <a href="/" class="logo"><span class="logo-mark"></span>Loopholemaxing</a>
-    <nav><ul class="nav-links">
+    <nav aria-label="Primary">
+      <button type="button" class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span class="nav-toggle-bars" aria-hidden="true"></span></button>
+      <ul class="nav-links" id="site-nav">
       <li><a href="#creations">Creations</a></li>
       <li><a href="#shiplog">Ship Log</a></li>
       <li><a href="https://claytoncamera.com/">About Clayton</a></li>
       <li><a class="nav-cta" data-work href="/work-with-clayton/">Work With Clayton</a></li>
       <li><a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+      <ul class="nav-links nav-window-ul">
       <li class="nav-window-li"><a class="nav-window" href="/window/" rel="nofollow" title="The Window" aria-label="The Window">🪟</a></li>
     </ul></nav>
   </header>
 
+  <main id="main" tabindex="-1">
   <!-- Hero -->
   <section class="hero">
     <div class="hero-eyebrow"><span class="live-dot"></span> 15 live creations · open for client work</div>
@@ -506,7 +603,7 @@
       <div class="work-tiers">
         <div class="work-tier"><span class="amt">$497</span><span class="desc"><strong>Loophole Audit</strong> — 5-lens diagnosis in 48 hours; every leak priced.</span></div>
         <div class="work-tier"><span class="amt">$1.5–3.5K</span><span class="desc"><strong>Build Sprint</strong> — the highest-ROI fix, shipped in 5 days.</span></div>
-        <div class="work-tier"><span class="amt">$3–7.5K<span style="font-size:11px;color:var(--text-muted)">/mo</span></span><span class="desc"><strong>Operator Retainer</strong> — a continuous build queue, post-sprint.</span></div>
+        <div class="work-tier"><span class="amt">$3–7.5K<span style="font-size:12px;color:var(--text-muted)">/mo</span></span><span class="desc"><strong>Operator Retainer</strong> — a continuous build queue, post-sprint.</span></div>
       </div>
     </div>
   </section>
@@ -549,7 +646,7 @@
       <!-- 1 · OrbitRoute -->
       <div class="card creation-card" data-cats="ai tools">
         <span class="card-tag tag-live">Live — Platform</span>
-        <h3><span class="icon icon-orbit">🛰</span> OrbitRoute</h3>
+        <h3><span class="icon icon-orbit" aria-hidden="true">🛰</span> OrbitRoute</h3>
         <p class="card-lead">The routing layer for the orbital-compute era.</p>
         <p>Decides <em>where</em> an AI workload should run — orbital GPU capacity or terrestrial cloud — using real orbital mechanics: SGP4 tracking across 12,000+ satellites drawn from the official 32,308-object catalog, 37 modeled ground stations, eclipse and weather physics, 23 autonomous engines, 5 USPTO filings. Its cost-compare API (free key) still returns a "use terrestrial" recommendation today and names the exact rate at which that flips — <strong>the platform tells you when not to buy it.</strong> Rebuilt on that honest footing in July 2026 after a 30-agent adversarial audit of its own claims. The AI Compute Audit went purchasable in August — three tiers, live checkout, fulfilment deliberately by hand.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> enterprises planning AI/GPU capacity → a modeled, falsifiable answer on when orbital compute actually beats terrestrial, instead of a vendor pitch.</span></div>
@@ -565,7 +662,7 @@
       <!-- 2 · Practically Natty / PNP -->
       <div class="card creation-card" data-cats="commerce">
         <span class="card-tag tag-rev">Live — Revenue</span>
-        <h3><span class="icon icon-natty">💊</span> Practically Natty (PNP)</h3>
+        <h3><span class="icon icon-natty" aria-hidden="true">💊</span> Practically Natty (PNP)</h3>
         <p class="card-lead">The operational backbone of a live peptide brand.</p>
         <p>A live WooCommerce brand where I'm <strong>CTO &amp; Managing Partner</strong>. I architected <strong>Command Center 2 (CC2)</strong> — the ops plugin running shipping, payment verification, inventory, COGS, email, and order workflows — plus the <strong>affiliate system</strong> behind 37 active affiliates, a <strong>customer rewards engine</strong> (credits earned per order, redeemable at checkout), and a <strong>promotion engine</strong> that arms tiered site-wide sales and bundle stacks on schedule without anyone touching the store at midnight. Its first full run — the July Summer Sale — closed at <strong>$6,254.70 across 34 orders</strong> and disarmed itself on time; its second, the <strong>Back to School Sale</strong>, armed itself on schedule Aug 22 and runs through Sep 7 — 46 products tiered 10/20/30% by all-time units sold. In August the brand itself moved: <strong>95 product images</strong> were rebuilt so the whole catalogue carries the current label, by replacing the label alone rather than upscaling a photograph that would have degraded every render it touched.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a growing e-commerce operation → one system that runs fulfillment, payments, promotions, rewards, and affiliate payouts instead of manual spreadsheets.</span></div>
@@ -581,7 +678,7 @@
       <!-- 3 · MMS HUB -->
       <div class="card creation-card" data-cats="trading">
         <span class="card-tag tag-paper">Research — Public Preview</span>
-        <h3><span class="icon icon-mms">⚙</span> MMS HUB</h3>
+        <h3><span class="icon icon-mms" aria-hidden="true">⚙</span> MMS HUB</h3>
         <p class="card-lead">A paper-first control plane for multi-algorithm trading research.</p>
         <p>A Money Making Solutions research stack: real-data ingestion, strategy experiments, bot orchestration, risk gates, paper ledgers, and explicit promote-or-kill decisions. Brokerage execution is locked by default behind hard caps. In August 2026 all nine strategies were put through a 22-agent audit where every claim had to survive a second, adversarial reviewer. <strong>The verdict was that none of them are investor-ready</strong> — the best venue win rate on the authority ledger is 56.5%, and the honest sustained throughput is about two trades a day. The public preview shows the architecture and evidence without exposing the owner controls.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a solo operator running many strategies → one orchestration layer with hard risk caps, so nothing trades live without explicit gates.</span></div>
@@ -597,7 +694,7 @@
       <!-- 4 · Universal Analyst Engine -->
       <div class="card creation-card" data-cats="ai research">
         <span class="card-tag tag-live">Live — v1.0</span>
-        <h3><span class="icon icon-uae">🔬</span> Universal Analyst Engine</h3>
+        <h3><span class="icon icon-uae" aria-hidden="true">🔬</span> Universal Analyst Engine</h3>
         <p class="card-lead">Momentum intelligence across five worlds at once.</p>
         <p>A multi-domain AI engine that scores, ranks, and tracks entities across sports, markets, brands, politics, and entertainment. Narrative ingestion, Polygon.io market data, AI sentiment scoring, and alerting over 90 entities across 5 domains. The API has been up continuously for a month; the ingestion worker is currently idle rather than pulling new material.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> anyone tracking many players across domains → AI scoring and alerts that surface momentum before it becomes obvious.</span></div>
@@ -613,7 +710,7 @@
       <!-- 5 · BTC Intelligence Brain -->
       <div class="card creation-card" data-cats="trading research">
         <span class="card-tag tag-live">Live — v5.0</span>
-        <h3><span class="icon icon-btc">₿</span> BTC Intelligence Brain</h3>
+        <h3><span class="icon icon-btc" aria-hidden="true">₿</span> BTC Intelligence Brain</h3>
         <p class="card-lead">A 15-chapter Bitcoin research workspace.</p>
         <p>Covers macro cycles, on-chain metrics, technicals, sentiment, institutional flows, trading frameworks, and risk management — with live market data, a 3D diagram of the system, and a research activity feed. It also keeps a <strong>public forecast ledger</strong>: every prediction is timestamped, resolved on schedule, and scored against a dumb baseline. <strong>3,503 resolved forecasts in, the global record is still 6.4 points behind always-guessing-up — and the page says so.</strong> The pooled 24h slice is positive after the maker-fee assumption, and on Aug 23 the guard24 candidate cleared the promotion gate for the first time — 190 resolved, 65.8% hit, Wilson lower bound 58.8% — though it stays paper-only pending manual review, with the global record still behind. Coverage Score: <span id="homepage-btc-iq-desc">189</span>* (author-curated breadth index, not an accuracy score). Educational research only — not financial advice.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> serious BTC learners &amp; researchers → scattered market intelligence in one live workspace, with a scorecard honest enough to report no edge.</span></div>
@@ -629,7 +726,7 @@
       <!-- 6 · PersonalVault -->
       <div class="card creation-card" data-cats="tools">
         <span class="card-tag tag-live">Live — v1.0</span>
-        <h3><span class="icon icon-ph">🔒</span> PersonalVault</h3>
+        <h3><span class="icon icon-ph" aria-hidden="true">🔒</span> PersonalVault</h3>
         <p class="card-lead">A vault where the server never sees your data.</p>
         <p>A zero-knowledge encrypted vault for your most sensitive documents. AES-256-GCM encryption runs entirely in your browser — the server never sees your data. Store IDs, insurance, financial accounts, medical records, passwords, and estate documents with military-grade security.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> anyone storing sensitive documents → true zero-knowledge encryption, so a server breach exposes nothing readable.</span></div>
@@ -645,7 +742,7 @@
       <!-- 7 · ULTRON -->
       <div class="card creation-card" data-cats="ai tools">
         <span class="card-tag tag-live">Live — v0.1</span>
-        <h3><span class="icon icon-ultron">⚛</span> ULTRON</h3>
+        <h3><span class="icon icon-ultron" aria-hidden="true">⚛</span> ULTRON</h3>
         <p class="card-lead">Autonomy that can't act without your approval.</p>
         <p>A local-first autonomous AI agent with a non-negotiable human-in-the-loop gate on every side effect. It reads, plans, and proposes — but every trade, file write, deploy, and API call waits for an explicit human <strong>APPROVE</strong>. Zero OpenAI dependency: Ollama locally, Anthropic or Perplexity in the cloud. 30/30 adversarial tests green, hash-chained audit log, kill switch.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> operators who want agent leverage without agent risk → nothing executes until a human clicks approve, with a full audit trail.</span></div>
@@ -661,7 +758,7 @@
       <!-- 8 · PeptiDex -->
       <div class="card creation-card" data-cats="research">
         <span class="card-tag tag-live">Live</span>
-        <h3><span class="icon icon-peptidex">🧫</span> PeptiDex</h3>
+        <h3><span class="icon icon-peptidex" aria-hidden="true">🧫</span> PeptiDex</h3>
         <p class="card-lead">Scattered peptide research, made legible.</p>
         <p>A research-grade peptide knowledge hub — 79 structured entries across 10 research categories, plus <strong>119 programmatic side-by-side comparison pages</strong>, a reconstitution calculator, a 77-term glossary, and a research library: 264 crawlable URLs in total. Every compound plate is generated from the entry's own data, so a picture can't contradict the record it illustrates. Educational research only — not medical advice, and PeptiDex does not sell peptides.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> people researching peptides → clean, structured entries instead of scattered forum threads and PDFs.</span></div>
@@ -677,7 +774,7 @@
       <!-- 9 · KnockFiber -->
       <div class="card creation-card" data-cats="commerce">
         <span class="card-tag tag-live">Live — Recruiting</span>
-        <h3><span class="icon icon-knock">🚪</span> KnockFiber</h3>
+        <h3><span class="icon icon-knock" aria-hidden="true">🚪</span> KnockFiber</h3>
         <p class="card-lead">A 30-second door into door-to-door sales work.</p>
         <p>A recruiting <strong>platform</strong> for door-to-door fiber sales, now carrying <strong>three carriers</strong> — T-Mobile, Frontier, and Kinetic. <strong>294 city pages across 47 state and metro hubs</strong>, a bilingual (English/Spanish) apply lane, and a 30-second application with no résumé. The August expansion came from one join: ranking markets by coverage <em>×</em> population instead of coverage alone, which surfaced the largest uncovered Frontier market in the country sitting at roughly position 1,100 on the old list. Machine-readable job feeds are earnings-claim-free by design and guard-tested on every deploy.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> commission sales crews → a frictionless apply flow into whichever carrier actually has product in their town, in English or Spanish.</span></div>
@@ -693,7 +790,7 @@
       <!-- 10 · NBA Loophole Brain -->
       <div class="card creation-card" data-cats="trading">
         <span class="card-tag tag-live">Live — v3.0</span>
-        <h3><span class="icon icon-nba">🏀</span> NBA Loophole Brain</h3>
+        <h3><span class="icon icon-nba" aria-hidden="true">🏀</span> NBA Loophole Brain</h3>
         <p class="card-lead">Catches mispriced lines before the market does.</p>
         <p>A 12-module NBA betting intelligence system built to detect line mistakes before the market corrects. Real-time odds modeling, schedule-stress analysis, pace projections, injury-impact scoring, prop-market edges, an arbitrage window scanner, and CLV tracking — all in one dashboard.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> bettors hunting line value → modeling that flags edges and closing-line value before books adjust.</span></div>
@@ -709,7 +806,7 @@
       <!-- 11 · FORMIX -->
       <div class="card creation-card" data-cats="commerce">
         <span class="card-tag tag-concept">Concept — Pre-launch</span>
-        <h3><span class="icon icon-formix">🐜</span> FORMIX Ant Protein</h3>
+        <h3><span class="icon icon-formix" aria-hidden="true">🐜</span> FORMIX Ant Protein</h3>
         <p class="card-lead">A performance-nutrition brand, built and ready.</p>
         <p>A performance-nutrition brand concept — fully built and researched end-to-end, <strong>not yet for sale</strong>. Powered by one of the most protein-dense organisms on earth: a target of 28g complete protein per serving, all 9 essential amino acids, and a ~95% lower carbon footprint than beef. Brand, product spec, and storefront are built and ready for launch.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> the performance-nutrition market → a differentiated, sustainability-led protein brand with the full launch stack already built.</span></div>
@@ -724,7 +821,7 @@
       <!-- 12 · Agora -->
       <div class="card creation-card" data-cats="research">
         <span class="card-tag tag-live">Live — v0.1 Alpha</span>
-        <h3><span class="icon icon-agora">🏛</span> Agora — Library of Minds</h3>
+        <h3><span class="icon icon-agora" aria-hidden="true">🏛</span> Agora — Library of Minds</h3>
         <p class="card-lead">The West's foundational thinkers, source-traceable.</p>
         <p>A public-domain reading room for the philosophers who built the operating system of the West. 16 seed authors — Plato, Aristotle, Socrates, Heraclitus, Parmenides and more — with a compact catalog, source-traceable provenance (Gutenberg, Open Library, Wikidata, Perseus), and an in-browser reader. Modern copyrighted translations are never bundled.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> readers of classical philosophy → a clean reading room where every text's provenance is traceable to its public-domain source.</span></div>
@@ -740,7 +837,7 @@
       <!-- 13 · Creation Command Center -->
       <div class="card creation-card" data-cats="ai tools">
         <span class="card-tag tag-private">Private — Owner access</span>
-        <h3><span class="icon icon-creation">🚀</span> Creation Command Center</h3>
+        <h3><span class="icon icon-creation" aria-hidden="true">🚀</span> Creation Command Center</h3>
         <p class="card-lead">Nothing ships until it clears six gates.</p>
         <p>A full-stack viral-content command center for the LoopholeMaxing studio. Plan, draft, and ship content through a <strong>six-gate pre-publish workflow</strong>, with a content library, hook-variant generator, Trend Radar, Idea Inbox, deterministic scoring, and an audit log. Built on React + Express + Drizzle + Postgres. <strong>Owner-gated — sign-in required.</strong></p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a content operation → a disciplined pipeline where every post passes six quality gates before it publishes.</span></div>
@@ -756,7 +853,7 @@
       <!-- 14 · Studio — Content HUB -->
       <div class="card creation-card" data-cats="tools">
         <span class="card-tag tag-live">Live — v1.0</span>
-        <h3><span class="icon icon-studio">🎬</span> Studio — Content HUB</h3>
+        <h3><span class="icon icon-studio" aria-hidden="true">🎬</span> Studio — Content HUB</h3>
         <p class="card-lead">Import, track, trim and export — in the browser.</p>
         <p>A personal content command center. Import footage from GoPro, Nikon, and phone — Studio auto-tags <strong>where every clip came from</strong>, tracks it through a Raw → Editing → Clipped → Posted pipeline, and lets you <strong>trim and export real clips right in the browser</strong> (ffmpeg.wasm). A companion <strong>auto-clip engine</strong> runs on my Mac mini: drop raw footage in a watch folder and it returns hardware-encoded vertical cuts with on-device transcribed captions, synced back to every device. Multi-device sync and invite-based multi-user shipped July 2026.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> a solo creator drowning in footage → one place to track every clip's source, cut it without a desktop editor, and let a watch folder do the first pass.</span></div>
@@ -772,7 +869,7 @@
       <!-- 15 · Tallahassee Camera Intelligence -->
       <div class="card creation-card coming-soon" data-cats="research tools">
         <span class="card-tag tag-dev">Offline since June 2026</span>
-        <h3><span class="icon icon-tally">📷</span> Tallahassee Camera Intelligence</h3>
+        <h3><span class="icon icon-tally" aria-hidden="true">📷</span> Tallahassee Camera Intelligence</h3>
         <p class="card-lead">Every public camera in one live map.</p>
         <p>A real-source public-camera aggregation dashboard for Tallahassee and Leon County. 407 verified cameras dedup'd from 593 raw feeds across City ATMS, FDOT, FL511, WeatherSTEM, FAA, and regional webcams — live snapshots proxied through a per-source Referer-aware backend. Map-first, dark-themed, with live traffic incidents and congestion overlays. <strong>Its deploy has been down since 7 June 2026</strong> and hasn't been prioritised back up; the code and the camera ledger are intact. Listed here as built work, not as something you can open today.</p>
         <div class="card-edge"><span class="edge-ic">◆</span><span><b>For</b> Tallahassee / Leon County commuters → every verified public camera and live traffic condition on a single map.</span></div>
@@ -799,6 +896,13 @@
     </div>
 
     <ol class="shiplog-list">
+      <li class="ship">
+        <div class="ship-head">
+          <span class="ship-date">Sep 22, 2026</span>
+          <span class="ship-tag">Loopholemaxing</span>
+        </div>
+        <p>A readability and accessibility pass across the portfolio and the BTC Brain, MMS HUB, ULTRON, Agora, Universal Analyst, PersonalVault and NBA Brain pages, with <strong>no existing copy, figure or claim changed</strong>. Muted text now clears WCAG AA contrast, the smallest labels were raised to 12px, and the homepage's card and ship-log text reads at 15–16px. Phones get a real menu instead of a lone icon, and tablets no longer squeeze the link row. On the BTC Brain, the <strong>"not financial advice" banner had been rendering underneath the page's own fixed header</strong>; it is now fully visible, the source-health and key-level panels no longer sit behind the sidebar, and space is now held for them so the page doesn't jump when they load. Skip links, visible keyboard focus, labelled form fields and a 404 page that fits a phone round it out.</p>
+      </li>
       <li class="ship">
         <div class="ship-head">
           <span class="ship-date">Aug 26, 2026</span>
@@ -1014,10 +1118,11 @@
     <div class="letter-ok" id="letterOk">&#10003; You're in — first letter lands with the next drop.</div>
     <p class="letter-note">Your email goes straight to my own CRM. No third-party lists.</p>
   </section>
+  </main>
 
   <!-- Footer -->
   <footer class="site-footer">
-    <div><a href="https://claytoncamera.com/">Clayton Camera</a> — Loopholemaxing.com — 2026 &nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
+    <div><a href="https://claytoncamera.com/">Clayton Camera</a> — Loopholemaxing.com — 2026&nbsp;&nbsp;|&nbsp; <a data-work href="/work-with-clayton/">Work With Clayton</a>&nbsp;&nbsp;|&nbsp; <a href="https://github.com/claytoncamera/loopholemaxing" target="_blank" rel="noopener">GitHub</a></div>
     <div class="footer-tagline">Research. Analyze. Execute.</div>
   </footer>
 
@@ -1035,20 +1140,73 @@
     const WORK_WITH_URL = 'https://workwithclayton.com/';
     document.querySelectorAll('[data-work]').forEach(a => { a.href = WORK_WITH_URL; });
 
-    // Scroll-to-top
-    const scrollBtn = document.getElementById('scrollTop');
-    window.addEventListener('scroll', () => scrollBtn.classList.toggle('visible', window.scrollY > 300));
-    scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    // Reveal cards on scroll
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } });
-    }, { threshold: 0.08 });
-    document.querySelectorAll('.creation-card').forEach((el, i) => {
-      el.style.opacity = '0'; el.style.transform = 'translateY(18px)';
-      el.style.transition = 'opacity .5s ease ' + (i % 3) * 60 + 'ms, transform .5s ease ' + (i % 3) * 60 + 'ms';
-      obs.observe(el);
-    });
+    // Menu toggle (<=1024px): the link row opens as a panel under the header.
+    (function () {
+      const header = document.querySelector('.top-header');
+      const toggle = document.getElementById('navToggle');
+      const panel = document.getElementById('site-nav');
+      if (!header || !toggle || !panel) return;
+      const setOpen = (open, returnFocus) => {
+        header.classList.toggle('nav-open', open);
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+        if (!open && returnFocus) toggle.focus();
+      };
+      toggle.addEventListener('click', () => {
+        const open = !header.classList.contains('nav-open');
+        setOpen(open);
+        if (open) { const first = panel.querySelector('a'); if (first) first.focus(); }
+      });
+      panel.addEventListener('click', e => { if (e.target.closest('a')) setOpen(false); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && header.classList.contains('nav-open')) setOpen(false, true); });
+      document.addEventListener('click', e => { if (header.classList.contains('nav-open') && !header.contains(e.target)) setOpen(false); });
+      // Tabbing out of the header closes the panel so focus never lands on a link hidden behind it.
+      header.addEventListener('focusout', e => { if (header.classList.contains('nav-open') && e.relatedTarget && !header.contains(e.relatedTarget)) setOpen(false); });
+      const wideMq = window.matchMedia('(min-width: 1025px)');
+      const onWide = e => { if (e.matches) setOpen(false); };
+      if (wideMq.addEventListener) wideMq.addEventListener('change', onWide); else if (wideMq.addListener) wideMq.addListener(onWide);
+    })();
+
+    // Scroll-to-top. One state function so every trigger agrees: shown past
+    // 300px; on narrow screens (stacked form) never over the letter form; on
+    // phones only while scrolling up, hidden again shortly after scrolling stops.
+    const scrollBtn = document.getElementById('scrollTop');
+    const phoneMq = window.matchMedia('(max-width: 640px)');
+    const narrowMq = window.matchMedia('(max-width: 720px)');
+    let letterInView = false, scrollingUp = false, lastY = window.scrollY, idleTimer = null;
+    const updateScrollBtn = () => {
+      const show = window.scrollY > 300 && !(letterInView && narrowMq.matches) && (!phoneMq.matches || scrollingUp);
+      scrollBtn.classList.toggle('visible', show);
+    };
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      scrollingUp = y < lastY;
+      lastY = y;
+      updateScrollBtn();
+      if (phoneMq.matches) {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => { scrollingUp = false; updateScrollBtn(); }, 1200);
+      }
+    }, { passive: true });
+    const letterBand = document.getElementById('letter');
+    if (letterBand && 'IntersectionObserver' in window) {
+      new IntersectionObserver(entries => { letterInView = entries[0].isIntersecting; updateScrollBtn(); }).observe(letterBand);
+    }
+    scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' }));
+
+    // Reveal cards on scroll (skipped when the visitor prefers reduced motion)
+    if (!reduceMotion) {
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; } });
+      }, { threshold: 0.08 });
+      document.querySelectorAll('.creation-card').forEach((el, i) => {
+        el.style.opacity = '0'; el.style.transform = 'translateY(18px)';
+        el.style.transition = 'opacity .5s ease ' + (i % 3) * 60 + 'ms, transform .5s ease ' + (i % 3) * 60 + 'ms';
+        obs.observe(el);
+      });
+    }
 
     // Category filter (hides non-matches; curated DOM order is preserved)
     const chips = document.querySelectorAll('.filter-chip');
@@ -1064,10 +1222,14 @@
       });
     }));
 
-    // Duplicate marquee content for a seamless loop
+    // Duplicate marquee content for a seamless loop. The copy is hidden from
+    // assistive tech (and from view under reduced motion) so it is read once.
     (function () {
       const track = document.getElementById('featureTrack');
-      if (track) track.innerHTML += track.innerHTML;
+      if (!track) return;
+      const n = track.children.length;
+      track.innerHTML += track.innerHTML;
+      Array.from(track.children).slice(n).forEach(el => el.setAttribute('aria-hidden', 'true'));
     })();
 
     // ── Coverage-score sync: read live score from BTC Brain's localStorage ──
@@ -1087,8 +1249,8 @@
       } catch (e) {}
     })();
 
-    // Animate hero stats (count-up)
-    document.querySelectorAll('.hero-stat-val').forEach(el => {
+    // Animate hero stats (count-up; static under reduced motion)
+    if (!reduceMotion) document.querySelectorAll('.hero-stat-val').forEach(el => {
       const txt = el.textContent;
       const num = parseFloat(txt.replace(/[^0-9.]/g, ''));
       if (!isNaN(num) && num > 10 && !txt.includes('/') && !txt.includes('-')) {

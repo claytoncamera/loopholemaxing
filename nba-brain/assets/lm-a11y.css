@@ -1,0 +1,29 @@
+/* Readability overrides for the compiled NBA Brain bundle.
+   The hashed bundle (index-*.js / index-*.css) is never edited; these rules
+   load after it and only lift sizes/contrast or reorder on narrow screens. */
+
+/* No label below 12px */
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\] { font-size: 12px !important; }
+
+@media (max-width: 640px) {
+  .text-\[9px\],
+  .text-\[10px\],
+  .text-\[11px\],
+  .text-xs { font-size: 13px !important; }
+}
+
+/* Letter-spaced sand labels at 50-60% alpha were 3.0-3.7:1; 80% is ~5.7:1 */
+.text-sand\/50,
+.text-sand\/60 { color: rgba(183, 173, 157, 0.8) !important; }
+
+/* Below the two-column breakpoint the page stacked the chapter sidebar first,
+   pushing the hero and modules two screens down. Show the main column first. */
+@media (max-width: 1279px) {
+  #root main { order: -1; }
+}
+
+/* Keyboard focus */
+#root a:focus-visible,
+#root button:focus-visible { outline: 2px solid #5eead4; outline-offset: 2px; }

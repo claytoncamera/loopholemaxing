@@ -1,33 +1,34 @@
 {
   "disclaimer": "Educational / paper-trading signal for OpenClaw. Not financial advice. No buy/sell instruction is implied.",
   "economics": {
-    "expectancy_maker_2bps": 57.85419667023535,
+    "expectancy_maker_2bps": 57.18387408087085,
     "fee_assumption": "maker_rt_2bps",
-    "hit_rate": 0.5445544554455446,
+    "hit_rate": 0.5434782608695652,
     "horizon_primary": "24h",
-    "n": 505,
-    "vs_majority_pp": -2.5742574257425654
+    "n": 506,
+    "vs_majority_pp": -2.5691699604743157
   },
   "gates": {
     "bucket": "v0.3.0-shadow-guard24|24h",
-    "expectancy_maker_2bps": 57.85419667023535,
-    "hit_rate": 0.5445544554455446,
+    "expectancy_maker_2bps": 57.18387408087085,
+    "hit_rate": 0.5434782608695652,
     "horizon": "24h",
     "model_version": "v0.3.0-shadow-guard24",
-    "n": 505,
+    "n": 506,
     "ok": false,
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
-      "rolling-30d hit_rate 0.4778 < 0.52"
+      "all-time wilson_lb_95 0.4999 not > 0.5 (hit_rate 0.5435 at n=506)",
+      "rolling-30d hit_rate 0.4763 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 45.93293581112447,
-      "hit_rate": 0.4778481012658228,
-      "n": 316,
-      "wilson_lb_95": 0.42337009564797723,
+      "expectancy_maker_2bps": 44.900563668035105,
+      "hit_rate": 0.47634069400630913,
+      "n": 317,
+      "wilson_lb_95": 0.421972763551636,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.504787437763309,
+    "rolling_30d_hit": 0.5044044427422444,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -35,10 +36,10 @@
       "rolling_30d_min_n": 20,
       "wilson_lb_95_gt": 0.5
     },
-    "vs_majority_pp": -2.5742574257425654,
-    "wilson_lb_95": 0.5009451057216424
+    "vs_majority_pp": -2.5691699604743157,
+    "wilson_lb_95": 0.4999119475466349
   },
-  "generated_at": "2026-09-23T15:31:08Z",
+  "generated_at": "2026-09-23T16:01:09Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {

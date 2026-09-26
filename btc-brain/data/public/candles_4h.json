@@ -2,16 +2,16 @@
   "attempts": [
     {
       "error": "GET https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=4h&limit=200 failed: HTTP Error 451: ",
-      "fetched_at": "2026-09-26T07:31:05Z",
+      "fetched_at": "2026-09-26T08:01:05Z",
       "kind": "candles_4h",
-      "latency_ms": 30,
+      "latency_ms": 90,
       "notes": [],
       "source": "binance",
       "status": "failed"
     },
     {
       "error": "coinbase has no 4h candle granularity",
-      "fetched_at": "2026-09-26T07:31:05Z",
+      "fetched_at": "2026-09-26T08:01:05Z",
       "kind": "candles_4h",
       "latency_ms": 0,
       "notes": [],
@@ -20,9 +20,9 @@
     },
     {
       "error": null,
-      "fetched_at": "2026-09-26T07:31:05Z",
+      "fetched_at": "2026-09-26T08:01:06Z",
       "kind": "candles_4h",
-      "latency_ms": 146,
+      "latency_ms": 163,
       "notes": [],
       "source": "kraken",
       "status": "ok"
@@ -30,15 +30,6 @@
   ],
   "data": {
     "candles": [
-      {
-        "close": 76935.9,
-        "close_time_ms": 1787544000000,
-        "high": 77737.4,
-        "low": 76860.3,
-        "open": 77737.3,
-        "open_time_ms": 1787529600000,
-        "volume": 172.41407444
-      },
       {
         "close": 77303.3,
         "close_time_ms": 1787558400000,
@@ -1822,19 +1813,28 @@
         "volume": 114.12095678
       },
       {
-        "close": 84002.4,
+        "close": 84100.6,
         "close_time_ms": 1790409600000,
-        "high": 84035.4,
+        "high": 84114.9,
         "low": 83841.2,
         "open": 83935.5,
         "open_time_ms": 1790395200000,
-        "volume": 89.75324719
+        "volume": 148.1034599
+      },
+      {
+        "close": 84099.1,
+        "close_time_ms": 1790424000000,
+        "high": 84100.6,
+        "low": 84073.6,
+        "open": 84100.6,
+        "open_time_ms": 1790409600000,
+        "volume": 0.29161949
       }
     ],
     "interval": "4h"
   },
   "error": null,
-  "fetched_at": "2026-09-26T07:31:05Z",
+  "fetched_at": "2026-09-26T08:01:06Z",
   "kind": "candles_4h",
   "notes": [],
   "schema_version": "phase2-data-v1",

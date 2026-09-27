@@ -1,0 +1,132 @@
+{
+  "date": "2026-09-27",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-09-27T15:10:33Z",
+  "id": "briefing-2026-09-27",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.5073713927227101,
+      "baseline_brier": 0.24994566256932754,
+      "baseline_hit_rate": 0.5685382685069009,
+      "brier": 0.2499730142257143,
+      "display_ready": true,
+      "ece": 0.01820751559643105,
+      "generated_at": "2026-09-27T15:01:08Z",
+      "hit_rate": 0.5073713927227101,
+      "logloss": 0.6930933071817232,
+      "metrics_version": "metrics-v0.3.1",
+      "min_n_display": 20,
+      "n": 6376,
+      "total_forecasts": 6447,
+      "total_resolved": 6376
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-09-27T15:01:07Z",
+      "funding_rate": -9.4169926861e-06,
+      "long_short_ratio": 1.31,
+      "mark_price": 84498.4,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 27758.176800000052,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-09-27T15:01:07Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 84221.62000000001,
+        "r1": 84665.47000000002,
+        "r2": 84914.29000000001,
+        "recent_high": 85158.5,
+        "recent_low": 83811.99,
+        "s1": 83972.80000000002,
+        "s2": 83528.95000000001,
+        "sma_20": 80160.94499999999,
+        "sma_200": null,
+        "sma_50": 75712.02219999999,
+        "vwap_session": 84713.47870254898
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Greed",
+      "fear_greed_value": 70,
+      "fetched_at": "2026-09-27T15:01:07Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-09-27T15:01:07Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-09-27T15:01:05Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-09-27T15:01:06Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-09-27T15:01:05Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-09-27T15:01:05Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-09-27T15:01:06Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-09-27T15:01:05Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-09-27T15:01:07Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-09-27T15:01:07Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-09-27T15:01:07Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-09-27"
+}

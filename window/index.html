@@ -139,6 +139,10 @@
     .links a:hover { background: rgba(110,168,255,.12); }
     .links .lan { color: var(--paper); border-color: rgba(210,153,34,.3); }
     .links .repo { color: var(--muted); border-color: var(--glass-border); }
+    .business-access { margin: 20px 0; padding: 20px; border: 1px solid var(--glass-border); border-radius: 14px; background: rgba(110,168,255,.07); }
+    .business-access h2 { font-size: 19px; margin: 0 0 8px; }
+    .business-access p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 8px 0 14px; }
+    .business-access .links a { padding: 10px 13px; }
     .empty { color: var(--muted); font-size: 14px; padding: 30px 4px; }
     .foot { margin-top: 40px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.8; }
     .foot code { background: rgba(110,168,255,.1); border-radius: 5px; padding: 1px 6px; }
@@ -167,6 +171,16 @@
       <button class="tbtn" id="lock-btn">🔒 Lock</button>
     </div>
     <div class="deck-sub" id="deck-sub">Everything you've built, in one pane of glass.</div>
+    <section class="business-access" aria-labelledby="business-access-title">
+      <h2 id="business-access-title">Business Anywhere</h2>
+      <p>Eight business boards, including the new RCLX training section. Use the read view to scroll through every panel. Connect Tailscale on this device first; the live data stays on the private dashboard.</p>
+      <div class="links">
+        <a href="https://claytons-mac-mini.taild2326b.ts.net/ops?view=read&amp;rotate=0" target="_blank" rel="noopener">Business · read view ↗</a>
+        <a href="https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX%20%C2%B7%20Training&amp;view=read&amp;rotate=0" target="_blank" rel="noopener">RCLX training ↗</a>
+        <a href="https://claytons-mac-mini.taild2326b.ts.net/ops" target="_blank" rel="noopener">Business TV ↗</a>
+        <a href="https://claytons-mac-mini.taild2326b.ts.net/" target="_blank" rel="noopener">Systems ↗</a>
+      </div>
+    </section>
     <div class="ledger" id="ledger"></div>
     <div class="toolbar">
       <input id="filter" type="search" placeholder="Filter creations… (name, tag, description)">
@@ -177,7 +191,7 @@
       Owner deck — <code>noindex</code> + robots-blocked, code-gated on every device.<br>
       The gate is a privacy curtain, not a cryptographic vault (static GitHub Pages) — no tokens or secrets live on this page.<br>
       <b>LAN</b> links only resolve on the home network; <b>anywhere</b> links need Tailscale connected on the device you're holding. To add a creation edit <code>DECK</code>; to change the code replace <code>EXPECTED_DIGEST</code> — both in <code>window/index.html</code>.<br>
-      Deck facts verified <b>2026-08-26</b>; trading cockpit refreshed <b>2026-08-26</b>. A <code>need</code> field is what the item is waiting on <i>you</i> for — clear it when you clear the blocker.
+      Business access, RCLX training and the NOC description refreshed <b>2026-09-28</b>. Other deck figures are retained <b>2026-08-26 snapshots</b>; the private business boards carry current source timestamps. A <code>need</code> field is what the item is waiting on <i>you</i> for — clear it when you clear the blocker.
     </div>
   </div>
 
@@ -204,14 +218,14 @@
    the "Needs you" lens, and it must never be converted back into one without him
    reopening it.
 
-   Facts below verified live 2026-08-26 (NOC state.json collectors, knockfiber /health
+   Business access / RCLX / NOC refreshed 2026-09-28. Other facts verified 2026-08-26 (NOC state.json collectors, knockfiber /health
    + sitemap, orbitroute /engines/canary, MMS authority equity_history.csv, BTC ledger
    accuracy.json + signal.json, forge status.json, brain metrics, live DNS).
    ============================================================ */
 const DECK = [
   { group: '💸 Revenue & Commerce', items: [
     { name: 'Practically Natty (PNP)', status: 'live', tag: 'WooCommerce + CC2 v0.5.73',
-      desc: '<b>The peptide store — the one engine that has always taken money.</b> $59,074.43 gross across 322 paid orders, 37 active affiliates, $21,961.13 of inventory at cost (1,099 units). WooCommerce on Hostinger (HPOS) with Command Center 2 running ops: orders, Shippo labels, revenue intelligence, COGS/P&amp;L, broadcasts. The <b>PNP LABS rebrand</b> shipped 08-07 (95 images off the old vial), the SEO layer is live, the Summer Sale closed Jul 31 at <b>$6,254.70 / 34 orders</b> — and the <b>Back to School Sale is live 08-22 → Sep 7</b>: 46 products tiered 10/20/30% by all-time units, fee-label prefix registered, cache purge armed at both ends, all under the new 50% total-discount ceiling.',
+      desc: '<b>The peptide store — the one engine that has always taken money.</b> $59,074.43 gross across 322 paid orders, 37 active affiliates, $21,961.13 of inventory at cost (1,099 units). WooCommerce on Hostinger (HPOS) with Command Center 2 running ops: orders, Shippo labels, revenue intelligence, COGS/P&amp;L, broadcasts. The <b>PNP LABS rebrand</b> shipped 08-07 (95 images off the old vial), the SEO layer is live, the Summer Sale closed Jul 31 at <b>$6,254.70 / 34 orders</b> — and the <b>Back to School Sale ran Aug 22 → Sep 7, 2026</b>: 46 products tiered 10/20/30% by all-time units, fee-label prefix registered, cache purge armed at both ends, all under the new 50% total-discount ceiling.',
       need: '<b>$719.58 sitting in 5 on-hold orders</b> — #3198 is now ~35 days out, #3274 is 22, plus three fresh since 08-24. Stock has rotated: Tesamorelin 10mg is restocked (7) and the stacks it gated no longer exist after the 08-17 rebuild; 30 mL BAC Water is restocked (19). <b>7 variations are dark</b>: Thymosin A1 5mg, Sermorelin 5mg, GLP-S 20/30mg, Kisspeptin 5mg, AOD-9604 10mg, MT-1 5mg. Still true: CJC-1295 (No DAC) is a <b>drafted parent</b>, not an out-of-stock product — restocking won\'t fix it, republish it.',
       links: [ {t:'Store', u:'https://practicallynatty.com'}, {t:'WP Admin / CC2', u:'https://practicallynatty.com/wp-admin/'}, {t:'CC2 Proxy', u:'https://cc2.practicallynatty.com'}, {t:'Work Tracker', u:'/window/pnp-tracker/'} ] },
     { name: 'PNP Affiliate HUB', status: 'live', tag: 'v0.5.5 · 37 affiliates',
@@ -222,17 +236,17 @@ const DECK = [
       desc: '<b>The apparel venture — built, sealed, one switch from selling.</b> SPLICE storefront on Shopify (<code>qicbg2-wc</code>) behind the <b>PN VAULT</b> front-door film, now at v51. Deploy only via <code>tools/theme_deploy.sh</code> (the admin themes page is an iframe wall — CLI only). Two SKUs are platform-locked withheld; clearing the handle list + 6×10 units restores them.',
       need: '<b>Shopify Payments onboarding is the sole revenue gate.</b> Then: test order → domain → unseal. Rename the store display name off "Practically Natty" first — this is a separate entity and the password page still carries the wrong name.',
       links: [ {t:'Repo', u:'https://github.com/claytoncamera/pnp-apparel', cls:'repo'} ] },
-    { name: 'PeptiDex', status: 'live', tag: '79 entries · 10 categories',
+    { name: 'PeptiDex', status: 'live', tag: 'searchable compound research',
       desc: '<b>Peptide knowledge hub</b> — research library across 10 categories with original visuals. PNP-adjacent SEO + education asset on Railway.',
       links: [ {t:'thepeptidex.net', u:'https://www.thepeptidex.net'} ] },
-    { name: 'KnockFiber', status: 'live', tag: 'RCLX funnel · 110 leads',
-      desc: '<b>The three-carrier fiber D2D recruiting machine</b> — T-Mobile, Frontier, Kinetic. Grown from 49 city pages to <b>294 cities across 47 hubs / 367 sitemap URLs</b>, EN + ES, 2,259 tests green. Lead capture → SQLite → ntfy push to the work phone, mini-CRM, content kit, posting board, attribution stats. 110 leads in, <b>91 with prior D2D experience</b>. Google Jobs markup fixed sitewide; three job feeds built and valid.',
-      need: '<b>Distribution is still the bottleneck: 0 of 6 aggregators ever submitted, 0 feed-attributed leads all-time.</b> Submit the 3 feeds (~10 min, values prepped). Some board intake has happened on its own (12 leads carry source <code>indeed</code>, 10 <code>google_jobs_apply</code>), but the applicants in camera.clayton@icloud.com have never been fully harvested — pull them, and <b>/admin/callnow now ranks who to call first</b>.',
+    { name: 'KnockFiber', status: 'live', tag: 'RCLX recruiting · EN + ES',
+      desc: '<b>Fiber D2D recruiting</b> across T-Mobile, Frontier, Kinetic and Greenlight. City and regional job pages, English and Spanish apply lanes, lead capture, recruiter routing, mini-CRM, content kit, posting board and attribution. Recruiting records feed RCLX operations; training engagement is tracked separately in the private business dashboard. Open the pipeline for the current applicant and follow-up records.',
+      need: 'Review applicant follow-up and job-feed distribution in the current pipeline; the older queue counts are snapshots, not current workload.',
       links: [ {t:'knockfiber.com', u:'https://www.knockfiber.com'}, {t:'/hub (cmd center)', u:'https://www.knockfiber.com/hub'}, {t:'Pipeline', u:'https://www.knockfiber.com/admin'}, {t:'Content Kit', u:'https://www.knockfiber.com/kit'}, {t:'Posting Board', u:'https://www.knockfiber.com/posts'}, {t:'Stats', u:'https://www.knockfiber.com/stats'} ] },
-    { name: 'RCLX / KnockFiber Reps', status: 'live', tag: 'owner-gated · rep · team · payouts',
-      desc: '<b>The rep/team/payout engine behind KnockFiber.</b> Multi-level roster with the per-rep team-building gate, install → RCLX-statement verification, override ledger, payout batches, audit trail. <b>Tiered receive: $25/install</b> for a rep Clayton recruited directly (managers included), <b>$15</b> for a manager\'s team member — and he pays nothing out. Edgar Martinez runs RGV with a team of 5 (the first real downline). Token-guarded — use a cookie jar, a bare <code>?token=</code> eats the 303.',
-      need: 'Promote Edgar + the key installs off the latest RCLX statement — that turns invisible earned money into a tracked receivable.',
-      links: [ {t:'Reps HQ', u:'https://www.knockfiber.com/admin/hq'}, {t:'Team roster', u:'https://www.knockfiber.com/admin/team'}, {t:'Installs', u:'https://www.knockfiber.com/admin/installs'}, {t:'Payouts', u:'https://www.knockfiber.com/admin/payouts'} ] },
+    { name: 'RCLX / KnockFiber Reps', status: 'live', tag: 'private · recruiting · training · payouts',
+      desc: '<b>The rep, team and payout engine behind KnockFiber.</b> Recruiting pipeline, direct and downline roster, install verification, override ledger and payout records. The business wall now has a dedicated <b>RCLX training</b> board for Clayton’s FiberPitch team: meaningful portal use, training progress, recent signups, awaiting-training and quiet accounts. Older unused accounts are excluded from the working count without removing the source records. The board shows its <b>source timestamp and stale warnings</b>. Other managers’ unconnected portals are a known coverage gap; a portal signup is not a verified application, and training activity is not a sale or payroll event.',
+      need: 'Verify outstanding installs against the latest RCLX statements in Reps HQ. Training activity does not establish earned commissions.',
+      links: [ {t:'RCLX business', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX&view=read&rotate=0'}, {t:'RCLX training', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX%20%C2%B7%20Training&view=read&rotate=0'}, {t:'FiberPitch Team Hub', u:'https://fiberpitch.com/team'}, {t:'Reps HQ', u:'https://www.knockfiber.com/admin/hq'}, {t:'Team roster', u:'https://www.knockfiber.com/admin/team'}, {t:'Installs', u:'https://www.knockfiber.com/admin/installs'}, {t:'Payouts', u:'https://www.knockfiber.com/admin/payouts'} ] },
     { name: 'PNP Scout', status: 'bench', tag: 'v0.1.0 · built',
       desc: '<b>Creator discovery + vetting engine</b> (the Pickaxe clone) — AI DM queue, pipeline, briefs &amp; agreements, QR submission portal, review gate. Payouts are read-only by design. 7 open issues are an intentional backlog, not rot.',
       need: 'Four unlocks before it can run: Apify token, Woo keys, CLI auth, and an outreach IG identity.',
@@ -257,8 +271,8 @@ const DECK = [
       desc: '<b>The trading ecosystem — honestly, not there yet.</b> The 2026-08-26 authority snapshot puts the paper fleet at <b>$30,057.01 of $30,000 (+0.19%) across 181 closed trades</b> — back above its baseline for the first time since the drawdown — but the 08-05 investor audit still stands: <b>0 of 9 bots</b> meet the 10–100 trades/day · 70% WR · 0.5% max-loss bar. <code>rapid-increase</code>\'s stale-data defects (midnight cutoff, exit updates, freshness guard) are repaired and its post-fix forward sample is real now: <b>34 closed, 55.9% WR, +3.15%</b>. The <b>:8080 v44 API\'s fleet numbers remain non-authoritative</b> — the authority file is <code>logs/paper/equity_history.csv</code>. Paper only; no live funds.',
       note: '<b>Credentials: dispositioned, closed.</b> The Schwab / Polygon / Binance keys are <b>not</b> an open item — Clayton\'s call, made 2026-06-07 and re-confirmed twice on 2026-08-09: those systems are unused. <code>mms-hub</code> is private, sole collaborator, 0 forks, so there is no third-party read path; the Schwab refresh tokens expired in March and the exchange keys sit in a gitignored <code>.env</code> that never left the mini. <b>No rotation, no history purge.</b> Brain: decision D29 + the 🛑 block at the top of SECURITY_FINDINGS.md. Do not re-raise it here.',
       links: [ {t:'Trading cockpit', u:'/window/trading/'}, {t:'Public preview', u:'/mms-hub/'}, {t:'Cloud portal', u:'https://moneymakingsolutionsai.com'}, {t:'Hub :8000', u:'http://10.0.0.224:8000', cls:'lan'}, {t:'AI :8001', u:'http://10.0.0.224:8001', cls:'lan'}, {t:'API :8080', u:'http://10.0.0.224:8080', cls:'lan'} ] },
-    { name: 'BTC Brain', status: 'live', tag: 'forecast-only · gates cleared · paper',
-      desc: '<b>Live BTC forecast and model-selection engine</b> — issues forecasts, resolves them, publishes an append-only public ledger, runs edge searches, and emits a versioned signal contract. At the 2026-08-26 snapshot: <b>3,503 resolved</b>, 53.2% global hit rate, <b>6.4 points behind the majority baseline</b>. The <code>guard24</code> candidate <b>cleared the promotion gate on 08-23</b> — 190 resolved on the 24h bucket, 65.8% hit, Wilson 95% lower bound 58.8%, +77 bps expectancy after maker fees — and the signal contract now reads <code>actionable_paper</code>. Paper only: <b>manual owner promotion stays locked</b>, no trades, no funds.',
+    { name: 'BTC Brain', status: 'live', tag: 'public forecast ledger · paper research',
+      desc: '<b>BTC forecast and model-selection research.</b> Forecasts are timestamped, resolved and scored against a naive baseline in an append-only public ledger. Open the current scorecard for the resolved total, hit rate, baseline gap and candidate gate status; those change as new results arrive. A passing research gate does not itself authorize live trading. Paper only, with manual owner promotion still required.',
       links: [ {t:'Open BTC Brain', u:'/btc-brain/'}, {t:'Trading cockpit', u:'/window/trading/'}, {t:'Ledger (repo)', u:'https://github.com/claytoncamera/loopholemaxing/tree/main/btc-brain', cls:'repo'} ] },
     { name: 'Universal Analyst Engine', status: 'live', tag: 'FastAPI + Celery',
       desc: '<b>Multi-domain intelligence platform</b> — sports, politics, macro, climate, entertainment scorecards on Postgres/Redis/Celery. Biggest idle burn on Railway (~1.46GB RAM at 0% CPU) and a scale-to-zero candidate. (PR #3, the scorecards migration, merged 07-10 — zero open PRs.)',
@@ -301,9 +315,9 @@ const DECK = [
       links: [ {t:'raiden.biz', u:'https://raiden.biz'} ] },
   ]},
   { group: '🔐 Infra & Memory', items: [
-    { name: 'Claytron NOC', status: 'live', tag: 'command wall · :8090',
-      desc: '<b>The two-TV command wall</b> — the ambient layer every engine was missing: problems used to surface only when you went looking. <b>Systems TV:</b> 17 endpoint probes rendered from the 19-check shared array (the 2 MMS cloud probes stay hidden by default), engine activity feed, OrbitRoute + FORGE engines, backups &amp; data freshness, error-loop detector, launchd, mini vitals. <b>Business TV (v5, 08-24):</b> <b>five company-focused boards rotating every 30s</b> — <i>PNP · RCLX · OrbitRoute · Ventures · BTC</i> — with estate-wide header badges (PNP revenue, to-collect / owed-out, "N NEED YOU", live BTC) painted on <b>every</b> board; <code>?board=</code> pins one, <code>?rotate=0</code> stops it. RCLX\'s board owns a roster panel separating portal-verified <b>Primary/direct</b> from <b>Downline</b> recruits. Runs its <b>own 60s probe loop</b> — the daily sweep file is hours stale by evening and a wall rendering that as live would lie. Standalone read-only: own repo, own launchd job, own port; touches no engine.',
-      links: [ {t:'Systems TV', u:'http://Claytons-Mac-mini.local:8090/', cls:'lan'}, {t:'Business TV', u:'http://Claytons-Mac-mini.local:8090/ops', cls:'lan'}, {t:'Systems · anywhere', u:'https://claytons-mac-mini.taild2326b.ts.net/'}, {t:'Business · anywhere', u:'https://claytons-mac-mini.taild2326b.ts.net/ops'}, {t:'Repo', u:'https://github.com/claytoncamera/claytron-noc', cls:'repo'} ] },
+    { name: 'Claytron NOC', status: 'live', tag: '8 business boards · private remote access',
+      desc: '<b>The business and systems command wall.</b> Eight company-focused boards: <b>PNP · RCLX · RCLX Training · OrbitRoute · Ventures · BTC · OrbitRoute Admin · BTC Charts &amp; News</b>. TV view rotates; <b>read view scrolls through the full detail</b>. The RCLX training board reads a captured FiberPitch team snapshot, with coverage limits and source-age warnings; the scheduled browser refresh depends on the Mac being awake, signed in and connected. Systems view reports endpoint health, engine activity, backups, freshness, launchd and mini vitals. <b>23 collectors</b> run in a separate read-only service. Anywhere access is live over <b>private Tailscale HTTPS</b>; if it stops resolving, check Tailscale on the device first.',
+      links: [ {t:'Business · read view', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?view=read&rotate=0'}, {t:'RCLX training', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX%20%C2%B7%20Training&view=read&rotate=0'}, {t:'Systems · anywhere', u:'https://claytons-mac-mini.taild2326b.ts.net/'}, {t:'Business · TV view', u:'https://claytons-mac-mini.taild2326b.ts.net/ops'}, {t:'Systems TV · LAN', u:'http://Claytons-Mac-mini.local:8090/', cls:'lan'}, {t:'Business TV · LAN', u:'http://Claytons-Mac-mini.local:8090/ops', cls:'lan'}, {t:'Repo', u:'https://github.com/claytoncamera/claytron-noc', cls:'repo'} ] },
     { name: 'Claytron Brain', status: 'live', tag: 'the memory · 12.3k KI',
       desc: '<b>The operating brain</b> — engines, safety rules, decisions, journals at ~/brain/claytron-brain. Now <b>1.42M words across 410 journals, 249 decisions, 1,242 commits</b>, knowledge index 12,348. Auto-transported by hooks (SessionStart pulls, every turn checkpoints, SessionEnd pushes) and mirrored to the phone via Obsidian Sync.',
       links: [] },
@@ -335,7 +349,7 @@ const DECK = [
       need: 'Decide: archive or delete. The volume costs money either way.',
       links: [ {t:'Repo', u:'https://github.com/claytoncamera/tallahassee-cam-intel', cls:'repo'} ] },
     { name: 'OpenClaw', status: 'bench', tag: 'designed · unbuilt',
-      desc: 'Maker-only autonomous BTC trade agent designed on top of BTC Brain. The Phase-1 signal contract now exists upstream and its <code>guard24|24h</code> bucket clears the evidence gate (<code>actionable_paper</code>, 08-23) — but the <i>global</i> ledger still trails baseline by 6.4pp, OpenClaw itself is unbuilt, and everything stays gated behind manual owner promotion.',
+      desc: 'Maker-only autonomous BTC trade agent designed on top of BTC Brain. OpenClaw remains unbuilt. Its upstream scorecard and promotion gates change as results arrive; any execution remains behind explicit manual owner promotion.',
       links: [] },
   ]},
   /* ── Reference-only: local/unversioned ventures cataloged so nothing is

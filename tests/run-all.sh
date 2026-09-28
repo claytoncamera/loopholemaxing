@@ -165,6 +165,9 @@ echo
 echo "== Homepage truth scan (index.html) =="
 bash tests/homepage-truth-scan.sh
 T_HOME=$?
+if command -v node >/dev/null 2>&1; then
+  node tests/portfolio-ledger.spec.mjs || T_HOME=1
+fi
 
 echo
 echo "== SEO / entity scan (sitemap, Person @id, person hub) =="

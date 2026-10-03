@@ -91,7 +91,7 @@
     .group > h2 { font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: .14em;
       color: var(--muted); margin-bottom: 14px; display: flex; align-items: center; gap: 10px; }
     .group > h2::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--glass-border), transparent); }
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 14px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 310px), 1fr)); gap: 14px; }
 
     .pane { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 18px;
       backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); display: flex; flex-direction: column;
@@ -112,6 +112,7 @@
     .stag { font-size: 10.5px; font-weight: 700; letter-spacing: .06em; color: var(--muted); margin-left: auto;
       border: 1px solid var(--glass-border); border-radius: 7px; padding: 2px 7px; white-space: nowrap; }
     .pane p { font-size: 13.5px; color: var(--muted); line-height: 1.55; flex: 1; margin-bottom: 12px; }
+    .pane code { overflow-wrap: anywhere; }
     .pane p b { color: var(--text); font-weight: 600; }
 
     /* "Needs you" — the gate that is a human, not a machine. Amber, never red:
@@ -143,6 +144,7 @@
     .business-access h2 { font-size: 19px; margin: 0 0 8px; }
     .business-access p { color: var(--muted); font-size: 14px; line-height: 1.6; margin: 8px 0 14px; }
     .business-access .links a { padding: 10px 13px; }
+    .source-note { color: var(--muted); font-size: 11.5px; line-height: 1.45; margin: 0 0 12px; }
     .empty { color: var(--muted); font-size: 14px; padding: 30px 4px; }
     .foot { margin-top: 40px; color: var(--muted); font-size: 12px; text-align: center; line-height: 1.8; }
     .foot code { background: rgba(110,168,255,.1); border-radius: 5px; padding: 1px 6px; }
@@ -173,7 +175,7 @@
     <div class="deck-sub" id="deck-sub">Everything you've built, in one pane of glass.</div>
     <section class="business-access" aria-labelledby="business-access-title">
       <h2 id="business-access-title">Business Anywhere</h2>
-      <p>Eight business boards, including the new RCLX training section. Use the read view to scroll through every panel. Connect Tailscale on this device first; the live data stays on the private dashboard.</p>
+      <p>Eight private business boards, including RCLX training. Read view scrolls through every panel; each source shows its own timestamp and freshness. Connect Tailscale on this device first. This catalog is a dated guide, while current business records stay on the private dashboard.</p>
       <div class="links">
         <a href="https://claytons-mac-mini.taild2326b.ts.net/ops?view=read&amp;rotate=0" target="_blank" rel="noopener">Business · read view ↗</a>
         <a href="https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX%20%C2%B7%20Training&amp;view=read&amp;rotate=0" target="_blank" rel="noopener">RCLX training ↗</a>
@@ -191,7 +193,7 @@
       Owner deck — <code>noindex</code> + robots-blocked, code-gated on every device.<br>
       The gate is a privacy curtain, not a cryptographic vault (static GitHub Pages) — no tokens or secrets live on this page.<br>
       <b>LAN</b> links only resolve on the home network; <b>anywhere</b> links need Tailscale connected on the device you're holding. To add a creation edit <code>DECK</code>; to change the code replace <code>EXPECTED_DIGEST</code> — both in <code>window/index.html</code>.<br>
-      Business access, RCLX training and the NOC description refreshed <b>2026-09-28</b>. Other deck figures are retained <b>2026-08-26 snapshots</b>; the private business boards carry current source timestamps. A <code>need</code> field is what the item is waiting on <i>you</i> for — clear it when you clear the blocker.
+      Tracker refreshed <b>2026-10-02</b> (America/New_York). Every card states its evidence date or points to a current source. Reachable means the entry opened at that check, not that every workflow is healthy. Older operating notes keep their original dates. Open the private boards for current metrics and freshness; clear a <code>need</code> only when the action is complete.
     </div>
   </div>
 
@@ -201,13 +203,12 @@
 /* ============================================================
    DECK — everything Clayton has created.
    To add: append {name, status: live|paper|bench|down, tag, desc,
-                   need?, note?, links:[{t,u,cls?}]}
+                   source, need?, note?, links:[{t,u,cls?}]}
    to the right group (or add a group). Keep secrets/tokens OUT — public repo.
 
    `need` is the human gate: the action or decision this item is blocked on.
-   The whole estate is engineering-complete and waiting on Clayton (full-estate
-   discovery, 2026-08-09) — the deck says so out loud rather than painting
-   everything green. Clear a need when the blocker clears.
+   This is a dated catalog, not a live health monitor. Keep a source note on
+   every item. Clear a need only when its underlying action is complete.
 
    `note` is the opposite and exists because of a specific failure: a SETTLED
    decision. Something an audit would flag that Clayton has already ruled on,
@@ -218,156 +219,194 @@
    the "Needs you" lens, and it must never be converted back into one without him
    reopening it.
 
-   Business access / RCLX / NOC refreshed 2026-09-28. Other facts verified 2026-08-26 (NOC state.json collectors, knockfiber /health
-   + sitemap, orbitroute /engines/canary, MMS authority equity_history.csv, BTC ledger
-   accuracy.json + signal.json, forge status.json, brain metrics, live DNS).
+   Refreshed 2026-10-02. Public entry checks and OrbitRoute canary evidence
+   are dated per card; operating notes retain their source review dates.
+   Private metrics, contacts and training records belong on the private boards.
    ============================================================ */
 const DECK = [
   { group: '💸 Revenue & Commerce', items: [
-    { name: 'Practically Natty (PNP)', status: 'live', tag: 'WooCommerce + CC2 v0.5.73',
-      desc: '<b>The peptide store — the one engine that has always taken money.</b> $59,074.43 gross across 322 paid orders, 37 active affiliates, $21,961.13 of inventory at cost (1,099 units). WooCommerce on Hostinger (HPOS) with Command Center 2 running ops: orders, Shippo labels, revenue intelligence, COGS/P&amp;L, broadcasts. The <b>PNP LABS rebrand</b> shipped 08-07 (95 images off the old vial), the SEO layer is live, the Summer Sale closed Jul 31 at <b>$6,254.70 / 34 orders</b> — and the <b>Back to School Sale ran Aug 22 → Sep 7, 2026</b>: 46 products tiered 10/20/30% by all-time units, fee-label prefix registered, cache purge armed at both ends, all under the new 50% total-discount ceiling.',
-      need: '<b>$719.58 sitting in 5 on-hold orders</b> — #3198 is now ~35 days out, #3274 is 22, plus three fresh since 08-24. Stock has rotated: Tesamorelin 10mg is restocked (7) and the stacks it gated no longer exist after the 08-17 rebuild; 30 mL BAC Water is restocked (19). <b>7 variations are dark</b>: Thymosin A1 5mg, Sermorelin 5mg, GLP-S 20/30mg, Kisspeptin 5mg, AOD-9604 10mg, MT-1 5mg. Still true: CJC-1295 (No DAC) is a <b>drafted parent</b>, not an out-of-stock product — restocking won\'t fix it, republish it.',
-      links: [ {t:'Store', u:'https://practicallynatty.com'}, {t:'WP Admin / CC2', u:'https://practicallynatty.com/wp-admin/'}, {t:'CC2 Proxy', u:'https://cc2.practicallynatty.com'}, {t:'Work Tracker', u:'/window/pnp-tracker/'} ] },
-    { name: 'PNP Affiliate HUB', status: 'live', tag: 'v0.5.5 · 37 affiliates',
-      desc: '<b>Self-serve dashboard for every affiliate</b> at /my-affiliate/: links + QR, commissions &amp; balance, peptide credits (1cr/$10), leaderboard, tiers, team recruiting. Rides SliceWP + the elite-leaders engine underneath. The <b>v0.5.5 accuracy wave (08-25)</b> shows every Elite their real 15%/16% rate and made the public discount copy match the engine.',
-      need: '<b>Payout ran 08-16</b> — Samantha Muller paid in full ($1,803.25 across 63 commissions paid to date). Owed now: <b>$636.88 across 29 unpaid</b> (+$30.60 pending), largest Brennan Dinga $272.51. Samantha crossed the <b>$600 1099-NEC threshold</b> — get her W-9 on file for filing season. Your open calls (08-25): the canonical Elite-entry rule, the $25/$50 payout minimum, affiliate 14\'s unclaimed 250-credit bonus, and design direction.',
+    { name: 'Practically Natty (PNP)', status: 'live', tag: 'WooCommerce · operations in CC2',
+      desc: '<b>The PNP store and operations stack.</b> WooCommerce on Hostinger, with Command Center 2 for orders, shipping labels, inventory, revenue, costs and customer operations. Use the private PNP board for the latest source-dated business figures; CC2 holds the underlying orders and inventory.',
+      need: 'Review the current fulfillment queue, stock alerts and affiliate obligations in CC2 before acting. This catalog does not repeat customer records or an old order backlog.',
+      source: 'Store reachable 2026-10-02 · operations reviewed 2026-09-29',
+      links: [ {t:'PNP business', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=PNP&view=read&rotate=0'}, {t:'Store', u:'https://practicallynatty.com'}, {t:'WP Admin / CC2', u:'https://practicallynatty.com/wp-admin/'}, {t:'CC2 Proxy', u:'https://cc2.practicallynatty.com'}, {t:'Work Tracker', u:'/window/pnp-tracker/'} ] },
+    { name: 'PNP Affiliate HUB', status: 'live', tag: 'affiliate dashboard',
+      desc: '<b>Self-serve affiliate operations</b> at /my-affiliate/: referral links, QR codes, commissions, balances, credits, tiers and team recruiting. The current signed-in dashboard is the source for each affiliate’s records.',
+      need: 'Use the current affiliate reconciliation and payout preview for amounts owed and tax-document follow-up.',
+      source: 'Public entry reachable 2026-10-02 · capability review 2026-09-29',
       links: [ {t:'HUB', u:'https://practicallynatty.com/my-affiliate/'} ] },
-    { name: 'PNP Apparel · SPLICE', status: 'bench', tag: 'sealed · separate entity',
-      desc: '<b>The apparel venture — built, sealed, one switch from selling.</b> SPLICE storefront on Shopify (<code>qicbg2-wc</code>) behind the <b>PN VAULT</b> front-door film, now at v51. Deploy only via <code>tools/theme_deploy.sh</code> (the admin themes page is an iframe wall — CLI only). Two SKUs are platform-locked withheld; clearing the handle list + 6×10 units restores them.',
-      need: '<b>Shopify Payments onboarding is the sole revenue gate.</b> Then: test order → domain → unseal. Rename the store display name off "Practically Natty" first — this is a separate entity and the password page still carries the wrong name.',
+    { name: 'PNP Apparel · SPLICE', status: 'bench', tag: 'public storefront · payments pending',
+      desc: '<b>The separate apparel venture on Shopify.</b> The PN VAULT storefront is publicly reachable. The last recorded payment-provider review found onboarding incomplete; an open storefront does not confirm a working checkout.',
+      need: 'Confirm payment-provider onboarding and complete a test order before treating this as a selling business.',
+      source: 'Store reachable 2026-10-02 · payment state last recorded 2026-09-29',
       links: [ {t:'Repo', u:'https://github.com/claytoncamera/pnp-apparel', cls:'repo'} ] },
     { name: 'PeptiDex', status: 'live', tag: 'searchable compound research',
-      desc: '<b>Peptide knowledge hub</b> — research library across 10 categories with original visuals. PNP-adjacent SEO + education asset on Railway.',
+      desc: '<b>Compound research library</b> with searchable profiles, research references and educational tools. The canonical www site is the public destination; PNP commerce remains a separate surface.',
+      source: 'Public site reachable 2026-10-02',
       links: [ {t:'thepeptidex.net', u:'https://www.thepeptidex.net'} ] },
     { name: 'KnockFiber', status: 'live', tag: 'RCLX recruiting · EN + ES',
-      desc: '<b>Fiber D2D recruiting</b> across T-Mobile, Frontier, Kinetic and Greenlight. City and regional job pages, English and Spanish apply lanes, lead capture, recruiter routing, mini-CRM, content kit, posting board and attribution. Recruiting records feed RCLX operations; training engagement is tracked separately in the private business dashboard. Open the pipeline for the current applicant and follow-up records.',
+      desc: '<b>Fiber D2D recruiting</b> across supported fiber programs. City and regional job pages, English and Spanish apply lanes, lead capture, recruiter routing, mini-CRM, content kit, posting board and attribution. Recruiting records feed RCLX operations; training engagement is tracked separately in the private business dashboard. Open the pipeline for the current applicant and follow-up records.',
       need: 'Review applicant follow-up and job-feed distribution in the current pipeline; the older queue counts are snapshots, not current workload.',
+      source: 'Public health endpoint healthy 2026-10-02',
       links: [ {t:'knockfiber.com', u:'https://www.knockfiber.com'}, {t:'/hub (cmd center)', u:'https://www.knockfiber.com/hub'}, {t:'Pipeline', u:'https://www.knockfiber.com/admin'}, {t:'Content Kit', u:'https://www.knockfiber.com/kit'}, {t:'Posting Board', u:'https://www.knockfiber.com/posts'}, {t:'Stats', u:'https://www.knockfiber.com/stats'} ] },
     { name: 'RCLX / KnockFiber Reps', status: 'live', tag: 'private · recruiting · training · payouts',
-      desc: '<b>The rep, team and payout engine behind KnockFiber.</b> Recruiting pipeline, direct and downline roster, install verification, override ledger and payout records. The business wall now has a dedicated <b>RCLX training</b> board for Clayton’s FiberPitch team: meaningful portal use, training progress, recent signups, awaiting-training and quiet accounts. Older unused accounts are excluded from the working count without removing the source records. The board shows its <b>source timestamp and stale warnings</b>. Other managers’ unconnected portals are a known coverage gap; a portal signup is not a verified application, and training activity is not a sale or payroll event.',
-      need: 'Verify outstanding installs against the latest RCLX statements in Reps HQ. Training activity does not establish earned commissions.',
-      links: [ {t:'RCLX business', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX&view=read&rotate=0'}, {t:'RCLX training', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX%20%C2%B7%20Training&view=read&rotate=0'}, {t:'FiberPitch Team Hub', u:'https://fiberpitch.com/team'}, {t:'Reps HQ', u:'https://www.knockfiber.com/admin/hq'}, {t:'Team roster', u:'https://www.knockfiber.com/admin/team'}, {t:'Installs', u:'https://www.knockfiber.com/admin/installs'}, {t:'Payouts', u:'https://www.knockfiber.com/admin/payouts'} ] },
+      desc: '<b>Recruiting, training and partner-portal operations.</b> KnockFiber holds the recruiting pipeline; the RCLX partner portal is the authority for its roster, installs and payday records. Internal Reps HQ tools are separate and do not establish current payout truth. The business wall now has a dedicated <b>RCLX training</b> board for Clayton’s FiberPitch team: meaningful portal use, training progress, recent signups, awaiting-training and quiet accounts. Older unused accounts are excluded from the working count without removing the source records. The board shows its <b>source timestamp and stale warnings</b>. Other managers’ unconnected portals are a known coverage gap; a portal signup is not a verified application, and training activity is not a sale or payroll event.',
+      need: 'Verify outstanding installs and payday rows against the latest RCLX partner-portal records. Training activity does not establish earned commissions.',
+      source: 'Private board available 2026-10-02 · each source carries its own timestamp',
+      links: [ {t:'RCLX business', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX&view=read&rotate=0'}, {t:'RCLX training', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX%20%C2%B7%20Training&view=read&rotate=0'}, {t:'FiberPitch Team Hub', u:'https://fiberpitch.com/team'}, {t:'RCLX partner portal', u:'https://rclx.us/recruiter'}, {t:'Reps HQ · internal', u:'https://www.knockfiber.com/admin/hq'}, {t:'Team roster', u:'https://www.knockfiber.com/admin/team'}, {t:'Installs', u:'https://www.knockfiber.com/admin/installs'}, {t:'Payouts', u:'https://www.knockfiber.com/admin/payouts'} ] },
     { name: 'PNP Scout', status: 'bench', tag: 'v0.1.0 · built',
-      desc: '<b>Creator discovery + vetting engine</b> (the Pickaxe clone) — AI DM queue, pipeline, briefs &amp; agreements, QR submission portal, review gate. Payouts are read-only by design. 7 open issues are an intentional backlog, not rot.',
-      need: 'Four unlocks before it can run: Apify token, Woo keys, CLI auth, and an outreach IG identity.',
+      desc: '<b>Creator discovery and vetting toolkit</b> — outreach queue, pipeline, briefs, agreements, submission portal and review gate. Built for operator review; payouts are read-only.',
+      need: 'Confirm the required integrations and outreach identity before starting a reviewed discovery run.',
+      source: 'Built / unscheduled · registry review 2026-09-29',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/pnp-scout', cls:'repo'} ] },
-    { name: 'Work With Clayton', status: 'live', tag: 'services funnel · Stripe live',
-      desc: '<b>The near-term cash engine.</b> Own domain, own repo, own Pages site. Offer ladder: <b>$497 Loophole Audit / 48h</b> → $1.5–3.5K build sprint → $3–7.5K/mo operator retainer, audit credits toward the sprint. Stripe payment link is live and wired through a one-line <code>STRIPE_AUDIT_URL</code> constant; intake POSTs into the HUB CRM. The disproved trading claim and the contradictory "Stripe coming soon" FAQ are both <b>gone as of 08-09</b>.',
-      need: 'It has a working buy path and no traffic. Warm intros + one-to-one outbound are the plan of record — nothing has been sent.',
+    { name: 'Work With Clayton', status: 'live', tag: 'services funnel',
+      desc: '<b>Audits, build sprints and ongoing operator work.</b> The dedicated services site carries the current offers, scope, intake and buy path. Capabilities include recruiting portals, training reporting and operations dashboards.',
+      need: 'Review warm introductions and service leads in the private CRM. Outreach remains an owner action.',
+      source: 'Public site reachable 2026-10-02',
       links: [ {t:'workwithclayton.com', u:'https://workwithclayton.com/'} ] },
   ]},
   { group: '🛰️ Space', items: [
-    { name: 'OrbitRoute', status: 'live', tag: 'solo since 07-11 · 5 USPTO',
-      desc: '<b>Routing layer for the orbital compute era.</b> Live SGP4 tracking of <b>12,022 assets across 37 ground stations</b> (the expanded fleet at its 12,000 cap), weather viability, uplink routing, ops globe at /viz, 23 engines. Self-test canary is <b>15/15 green</b> over 3,897 runs; 44,155 synthetic jobs graded, 74/74 dispatched jobs completed, 0 failed, 88.9% scheduler deadline hit rate. <b>5 USPTO provisionals filed</b> on a 31-item portfolio (26 more drafted). Its /cost-compare (now behind a free API key) still honestly recommends terrestrial today — the card says so.',
-      need: '<b>The bottleneck moved to approval: 191 pending drafts and Roberto\'s Rotonium reply (#624) are all held on your word</b> — nothing has been sent since 08-10 (Monday\'s 13 went out with the old body; that decision expired unmade). Approve or revise the reply + the queue. Also: the web-search lead lane is still dead — Brave returns 402; pick <b>paid Brave vs Tavily</b> (the keyless catalog-company lane added 08-24 keeps discovery alive meanwhile). Still open: the duplicate <code>v=spf1</code> TXT at send.orbitroute.ai (zero-risk, re-verified 08-26).',
-      links: [ {t:'orbitroute.ai', u:'https://www.orbitroute.ai'}, {t:'Ops Globe /viz', u:'https://www.orbitroute.ai/viz'}, {t:'Canary', u:'https://www.orbitroute.ai/api/v1/engines/canary'} ] },
-    { name: 'FORGE', status: 'paper', tag: 'Phase-1 · build-stalled',
-      desc: '<b>The autonomous upgrade foundry for OrbitRoute</b> — it watches prod, finds its own defects, and builds the fixes. Phase-1 runs on launchd every 15 minutes and the ticker is healthy. Backlog stands at 389 new / 20 queued / 6 rejected (263 expired), with <b>5 diffs parked in front of the OFF gauntlet stage</b>. Parked diffs are local-only — there is no GitHub copy.',
-      need: '<b>Build engine stalled since 08-01 (~3.5 weeks)</b> — the 5 diffs are parked because <code>forge.toml</code> still says <code>gauntlet = false</code>: the stage is <i>off</i>, not at a cap, so nothing can ever leave it regardless of queue depth. Flip the one line or review/drain the 5. The old "4 of 5 symptoms already cleared" reading was pinned to canary 14/14 — the canary is 15/15 now, so re-derive it before repeating it.',
+    { name: 'OrbitRoute', status: 'live', tag: 'orbital-compute research · simulated execution',
+      desc: '<b>Decision support for orbital compute.</b> SGP4 tracking, weather-aware routing, managed jobs, an ops globe, public SLA evidence and a compute-cost comparison. Execution is simulated and labeled; the current canary and scoreboards carry their own timestamps. The public canary passed 17 of 17 checks in the Oct 2 review.',
+      need: 'Review the current outreach approvals and patent follow-up in the private OrbitRoute admin board; old draft counts are not a current queue.',
+      source: 'Canary: 2026-10-03 01:41 UTC (Oct 2 ET) · 17/17 passed',
+      links: [ {t:'OrbitRoute business', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=OrbitRoute&view=read&rotate=0'}, {t:'orbitroute.ai', u:'https://www.orbitroute.ai'}, {t:'Ops Globe /viz', u:'https://www.orbitroute.ai/viz'}, {t:'Canary', u:'https://www.orbitroute.ai/api/v1/engines/canary'} ] },
+    { name: 'FORGE', status: 'bench', tag: 'build lane blocked',
+      desc: '<b>The upgrade foundry for OrbitRoute.</b> It senses issues and prepares candidate changes for review. The latest recorded operating review found the builder blocked, with publication and merge gates closed. A ticking scheduler does not prove a successful build.',
+      need: 'Use the private systems board to verify the blocker, then decide whether to park or restore the build lane. Do not enable publication or merge gates from this catalog.',
+      source: 'Operating review 2026-09-29',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/claytron-forge', cls:'repo'} ] },
   ]},
   { group: '📈 Trading & Intelligence', items: [
-    { name: 'MMS Hub', status: 'paper', tag: 'paper only · NOT ready',
-      desc: '<b>The trading ecosystem — honestly, not there yet.</b> The 2026-08-26 authority snapshot puts the paper fleet at <b>$30,057.01 of $30,000 (+0.19%) across 181 closed trades</b> — back above its baseline for the first time since the drawdown — but the 08-05 investor audit still stands: <b>0 of 9 bots</b> meet the 10–100 trades/day · 70% WR · 0.5% max-loss bar. <code>rapid-increase</code>\'s stale-data defects (midnight cutoff, exit updates, freshness guard) are repaired and its post-fix forward sample is real now: <b>34 closed, 55.9% WR, +3.15%</b>. The <b>:8080 v44 API\'s fleet numbers remain non-authoritative</b> — the authority file is <code>logs/paper/equity_history.csv</code>. Paper only; no live funds.',
-      note: '<b>Credentials: dispositioned, closed.</b> The Schwab / Polygon / Binance keys are <b>not</b> an open item — Clayton\'s call, made 2026-06-07 and re-confirmed twice on 2026-08-09: those systems are unused. <code>mms-hub</code> is private, sole collaborator, 0 forks, so there is no third-party read path; the Schwab refresh tokens expired in March and the exchange keys sit in a gitignored <code>.env</code> that never left the mini. <b>No rotation, no history purge.</b> Brain: decision D29 + the 🛑 block at the top of SECURITY_FINDINGS.md. Do not re-raise it here.',
-      links: [ {t:'Trading cockpit', u:'/window/trading/'}, {t:'Public preview', u:'/mms-hub/'}, {t:'Cloud portal', u:'https://moneymakingsolutionsai.com'}, {t:'Hub :8000', u:'http://10.0.0.224:8000', cls:'lan'}, {t:'AI :8001', u:'http://10.0.0.224:8001', cls:'lan'}, {t:'API :8080', u:'http://10.0.0.224:8080', cls:'lan'} ] },
+    { name: 'MMS Hub', status: 'paper', tag: 'paper research · cloud portal offline',
+      desc: '<b>Paper trading and strategy research.</b> The Trading Cockpit and public preview explain the system and retain dated research evidence. Their older fleet balances and win-rate samples are historical observations, not current MMS performance. The separate cloud portal returned 404 in this review. No live trading is authorized by this tracker.',
+      note: '<b>Standing credentials decision stays closed.</b> This catalog refresh does not reopen the historical disposition or change trading controls. The private runbook retains the decision and its scope.',
+      source: 'Cloud portal checked 2026-10-02 · paper posture reviewed 2026-09-29',
+      links: [ {t:'Trading cockpit', u:'/window/trading/'}, {t:'Public preview', u:'/mms-hub/'}, {t:'Hub :8000', u:'http://Claytons-Mac-mini.local:8000', cls:'lan'}, {t:'AI :8001', u:'http://Claytons-Mac-mini.local:8001', cls:'lan'}, {t:'API :8080', u:'http://Claytons-Mac-mini.local:8080', cls:'lan'} ] },
     { name: 'BTC Brain', status: 'live', tag: 'public forecast ledger · paper research',
       desc: '<b>BTC forecast and model-selection research.</b> Forecasts are timestamped, resolved and scored against a naive baseline in an append-only public ledger. Open the current scorecard for the resolved total, hit rate, baseline gap and candidate gate status; those change as new results arrive. A passing research gate does not itself authorize live trading. Paper only, with manual owner promotion still required.',
+      source: 'Public ledger · read its source timestamp for current results',
       links: [ {t:'Open BTC Brain', u:'/btc-brain/'}, {t:'Trading cockpit', u:'/window/trading/'}, {t:'Ledger (repo)', u:'https://github.com/claytoncamera/loopholemaxing/tree/main/btc-brain', cls:'repo'} ] },
-    { name: 'Universal Analyst Engine', status: 'live', tag: 'FastAPI + Celery',
-      desc: '<b>Multi-domain intelligence platform</b> — sports, politics, macro, climate, entertainment scorecards on Postgres/Redis/Celery. Biggest idle burn on Railway (~1.46GB RAM at 0% CPU) and a scale-to-zero candidate. (PR #3, the scorecards migration, merged 07-10 — zero open PRs.)',
+    { name: 'Universal Analyst Engine', status: 'bench', tag: 'API available · ingestion offline',
+      desc: '<b>Multi-domain scorecard platform</b> for sports, politics, macro and other research domains. The API and ingestion are separate: the latest operating review found the API available while ingestion remained offline. Existing results must not be read as a fresh feed.',
+      need: 'Confirm a named consumer and the keep-or-retire decision before restarting ingestion.',
+      source: 'Operating review 2026-09-29 · last recorded ingest 2026-04-17',
       links: [ {t:'Showcase', u:'/uae/'}, {t:'Repo', u:'https://github.com/claytoncamera/universal-analyst-engine', cls:'repo'} ] },
-    { name: 'MMS Launch Pipeline', status: 'live', tag: 'daily codex automation',
-      desc: '<b>Public-launch marketing engine</b> — nightly scorecard, launch packet, copy bank, CRM summary and outreach copy generated to ~/trading_lab/outputs (mirrored into the Obsidian vault). Note the dependency: it markets a fleet the investor audit says is not ready.',
+    { name: 'MMS Launch Pipeline', status: 'bench', tag: 'dormant · no active scheduler',
+      desc: '<b>Paper scorecards and launch collateral tooling.</b> The latest operating review found no active scheduler and outputs last written July 2. This is a dormant toolkit, not a running daily marketing automation.',
+      source: 'Scheduler review 2026-09-29 · last recorded output 2026-07-02',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/trading_lab', cls:'repo'} ] },
     { name: 'NBA Loophole Brain', status: 'bench', tag: 'mock mode',
       desc: 'NBA analytics API deployed on Railway in mock mode — near-zero cost, deliberately left alone.',
+      source: 'Mock-mode catalog entry · review 2026-09-29',
       links: [ {t:'Showcase', u:'/nba-brain/'} ] },
   ]},
   { group: '🎬 Content & Audience', items: [
     { name: 'Studio', status: 'live', tag: 'PWA · local-first',
       desc: '<b>In-browser content factory</b> — import footage, clip with ffmpeg.wasm, reshape 9:16, caption/hook generator, plan scheduler, installable offline PWA. Cross-device sync is opt-in.',
+      source: 'Capabilities reviewed 2026-09-29 · usage is dormant',
       links: [ {t:'Open Studio', u:'/studio/'} ] },
-    { name: 'Studio Engine', status: 'live', tag: 'Mac mini · auto-clip',
-      desc: '<b>Drop footage in ~/StudioInbox</b> → auto-9:16 + whisper.cpp captions + Vision face reframe → clips land in <code>~/StudioInbox/_out</code> with a caption pack. <b>Local-only since 07-18</b> — it had run since 06-16 processing zero files (the scan loop was gated on an empty sync code, and renders were deleted before upload was confirmed). Sync is optional now; a sync failure can never lose local work.',
+    { name: 'Studio Engine', status: 'bench', tag: 'local media pipeline · dormant',
+      desc: '<b>Local footage-to-clips pipeline</b> with portrait formatting, captions and reframing. Local outputs are retained independently of optional sync. The latest operating review found the service present but no recent footage batch.',
+      source: 'Operating review 2026-09-29 · latest recorded input 2026-07-21',
       links: [ {t:'Repo', u:'https://github.com/claytoncamera/loopholemaxing-studio-engine', cls:'repo'} ] },
     { name: 'Studio Sync', status: 'live', tag: 'Railway + Postgres',
       desc: 'Cross-device sync API for Studio — library, thumbnails, captions, plan, finished clips. CORS locked to loopholemaxing.com.',
+      source: 'Public health endpoint healthy 2026-10-02',
       links: [ {t:'Health', u:'https://studio-sync-api-production.up.railway.app/health'} ] },
-    { name: 'Analytics HUB', status: 'live', tag: 'v2 · owner-gated · 8 sites',
-      desc: '<b>One dashboard for the whole estate</b> — network coverage board (per-site tracker health), real geo, human/bot/internal traffic classes, devices, UTM campaigns, referrers, outbound clicks, conversions, realtime, CSV export. v2 fixed v1\'s accuracy: it was 96.9% unconditional heartbeats with ~22% of "humans" being your own tooling. Tracks 8 properties; /window/ is deliberately not one of them.',
+    { name: 'Analytics HUB', status: 'live', tag: 'owner dashboard',
+      desc: '<b>Network analytics dashboard</b> for tracker coverage, traffic classes, locations, devices, campaigns, referrers, outbound clicks and conversions. Open the signed-in dashboard for current coverage and source dates; this Window deliberately does not track visits.',
+      source: 'Capability review 2026-09-29',
       links: [ {t:'Open', u:'/analytics-hub/'} ] },
     { name: 'Army Link', status: 'live', tag: 'owner-gated · phone board',
-      desc: '<b>Zero-token ops glance from the phone</b> — passkey gate + read-only live board: HUB CRM health, capture-list signups, Studio Sync, BTC feed freshness, forecast ledger vs baseline (it says "no edge yet" when that is true), latest briefing, reachability chips.',
+      desc: '<b>Read-only operations glance for the phone.</b> Owner-gated status and source-freshness views for connected systems, captures and public research artifacts. Each underlying source remains responsible for its own timestamp.',
+      source: 'Capability review 2026-09-29',
       links: [ {t:'Open', u:'/army-link/'} ] },
     { name: 'Creation Command Center', status: 'live', tag: 'Railway',
       desc: 'Owner-gated viral-content dashboard on its own subdomain — content library, hook variants, six-gate pre-publish workflow, trend radar, idea inbox, deterministic scoring.',
+      source: 'Public entry reachable 2026-10-02',
       links: [ {t:'creation.loopholemaxing.com', u:'https://creation.loopholemaxing.com'} ] },
     { name: 'LoopholeMaxing Portfolio', status: 'live', tag: 'GitHub Pages · the public face',
       desc: '<b>The public face</b> — creation cards + ship log + the hire CTA routing to workwithclayton.com. This Window lives inside it, unlisted. It is a <b>repeater</b>: it describes systems that live in other repos, so their honesty fixes never propagate here on their own — a truth-scan guard runs in CI to catch retired claims.',
+      source: 'Public Window reachable 2026-10-02',
       links: [ {t:'Homepage', u:'/'}, {t:'Ship log', u:'/#shiplog'} ] },
     { name: 'claytoncamera.com', status: 'live', tag: 'the name SERP',
-      desc: '<b>The person entity.</b> Canonical Person <code>@id</code> for the whole network — every other domain <i>references</i> it and none of them redefine it. HTTPS provisioned and enforced. The old <code>/clayton-camera/</code> page here is now a redirect stub, and a test fails the build if anyone re-expands it (two pages competing for one name query is exactly what canonicalisation prevents).',
+      desc: '<b>The person entity.</b> Canonical Person identity for the site network at <code>https://claytoncamera.com/#person</code>. Other domains reference the same identity; the old /clayton-camera/ path redirects to the dedicated site.',
+      source: 'Public site reachable 2026-10-02',
       links: [ {t:'claytoncamera.com', u:'https://claytoncamera.com/'} ] },
     { name: 'Raiden', status: 'live', tag: 'partnership pitch',
       desc: '<b>raiden.biz</b> — a DJ site for a real friend, live on GitHub Pages since 08-06. It is really a <b>partnership pitch</b>, not a finished site: the content is placeholder until the meeting produces real assets and terms.',
       need: 'Meeting with the DJ for real content + partnership terms.',
+      source: 'Public site reachable 2026-10-02 · partnership note 2026-09-02',
       links: [ {t:'raiden.biz', u:'https://raiden.biz'} ] },
   ]},
   { group: '🔐 Infra & Memory', items: [
     { name: 'Claytron NOC', status: 'live', tag: '8 business boards · private remote access',
       desc: '<b>The business and systems command wall.</b> Eight company-focused boards: <b>PNP · RCLX · RCLX Training · OrbitRoute · Ventures · BTC · OrbitRoute Admin · BTC Charts &amp; News</b>. TV view rotates; <b>read view scrolls through the full detail</b>. The RCLX training board reads a captured FiberPitch team snapshot, with coverage limits and source-age warnings; the scheduled browser refresh depends on the Mac being awake, signed in and connected. Systems view reports endpoint health, engine activity, backups, freshness, launchd and mini vitals. <b>23 collectors</b> run in a separate read-only service. Anywhere access is live over <b>private Tailscale HTTPS</b>; if it stops resolving, check Tailscale on the device first.',
+      source: 'Private runtime verified 2026-10-02 · 8 boards / 23 collectors',
       links: [ {t:'Business · read view', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?view=read&rotate=0'}, {t:'RCLX training', u:'https://claytons-mac-mini.taild2326b.ts.net/ops?board=RCLX%20%C2%B7%20Training&view=read&rotate=0'}, {t:'Systems · anywhere', u:'https://claytons-mac-mini.taild2326b.ts.net/'}, {t:'Business · TV view', u:'https://claytons-mac-mini.taild2326b.ts.net/ops'}, {t:'Systems TV', u:'http://Claytons-Mac-mini.local:8090/', cls:'lan'}, {t:'Business TV', u:'http://Claytons-Mac-mini.local:8090/ops', cls:'lan'}, {t:'Repo', u:'https://github.com/claytoncamera/claytron-noc', cls:'repo'} ] },
-    { name: 'Claytron Brain', status: 'live', tag: 'the memory · 12.3k KI',
-      desc: '<b>The operating brain</b> — engines, safety rules, decisions, journals at ~/brain/claytron-brain. Now <b>1.42M words across 410 journals, 249 decisions, 1,242 commits</b>, knowledge index 12,348. Auto-transported by hooks (SessionStart pulls, every turn checkpoints, SessionEnd pushes) and mirrored to the phone via Obsidian Sync.',
+    { name: 'Claytron Brain', status: 'live', tag: 'operating memory',
+      desc: '<b>The shared operating brain</b> — engine registry, safety rules, state, decisions and dated journals. Git carries revisions between machines; the Obsidian mirror brings the knowledge to the phone. Open the private systems board for current synchronization and freshness evidence.',
+      source: 'Capability review 2026-10-02',
       links: [] },
-    { name: 'Health Sweep', status: 'live', tag: 'daily launchd · 23 checks',
-      desc: 'All-systems health board (gh + railway + curl) every morning — pushes ALL GREEN / RED to the work phone via ntfy. Last run: <b>ALL GREEN across 23 endpoint checks + 5 hygiene rows</b>. Its lesson is written into the wall: an all-000 board means check localhost before believing 14 simultaneous outages.',
+    { name: 'Health Sweep', status: 'live', tag: 'scheduled endpoint checks',
+      desc: '<b>Cross-system reachability and hygiene checks.</b> Read the latest sweep result and its run time on the private systems board. A historical all-green result is not a current health guarantee; unavailable results must remain unknown.',
+      source: 'Capability review 2026-10-02 · current result stays on Systems',
       links: [] },
-    { name: 'PersonalVault', status: 'bench', tag: 'zero-knowledge',
-      desc: 'AES-256-GCM zero-knowledge personal data vault — backend API + React Native app. Dormant on Railway (api.loopholemaxing.com), ready to revive.',
+    { name: 'PersonalVault', status: 'bench', tag: 'zero-knowledge · idle service',
+      desc: '<b>Zero-knowledge personal data vault</b> with an API and mobile app. The last operating review found the API available but idle; keep-or-retire remains an owner decision.',
+      source: 'Operating review 2026-09-29',
       links: [ {t:'Showcase', u:'/vault/'}, {t:'Repo', u:'https://github.com/claytoncamera/personal-vault', cls:'repo'} ] },
-    { name: 'LMX Hub', status: 'bench', tag: 'agency infra',
-      desc: 'Client-site hub (frontend + backend on Railway) + the lmx-site-starter Next.js template for per-client deploys. Also the CRM every site\'s email capture POSTs into.',
+    { name: 'LMX Hub', status: 'live', tag: 'agency infrastructure · CRM',
+      desc: '<b>Client-site hub and shared CRM.</b> Frontend and backend on Railway, with a starter template for client deployments. The owner entry requires sign-in; capture and intake records stay in the private CRM.',
+      source: 'Owner entry reachable 2026-10-02',
       links: [ {t:'websitehub', u:'https://websitehub.loopholemaxing.com'} ] },
   ]},
   { group: '🧪 Blueprints & Bench', items: [
     { name: 'NAUTILUS', status: 'bench', tag: 'blueprint · 5 patents',
       desc: '<b>AI yacht command system</b> — master blueprint, 6 AI crew agents, 5 patent drafts, GTM plan. Lives at ~/ai-yacht-captain (also in the Obsidian vault).',
+      source: 'Blueprint registry review 2026-09-29',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/ai-yacht-captain', cls:'repo'} ] },
     { name: 'ULTRON', status: 'bench', tag: 'private',
       desc: 'Autonomous agent system — private repo, showcase page on the portfolio, waitlist wired into the HUB CRM.',
+      source: 'Concept catalog review 2026-09-29',
       links: [ {t:'Showcase', u:'/ultron/'} ] },
     { name: 'FORMIX', status: 'bench', tag: 'concept',
       desc: 'Pre-launch concept — built and researched, showcase only, deliberately not for sale.',
+      source: 'Concept catalog review 2026-09-29',
       links: [ {t:'Showcase', u:'/formix/'} ] },
     { name: 'Agora', status: 'bench', tag: 'scaffolding',
       desc: 'Catalog scaffolding built inside UAE — candidate to grow into its own engine.',
+      source: 'Scaffolding catalog review 2026-09-29',
       links: [ {t:'Showcase', u:'/agora/'} ] },
-    { name: 'Tally Cams', status: 'down', tag: 'paused by design',
-      desc: '407-camera Tallahassee public-cam dashboard (Express + SQLite + MapLibre). Railway service dead since 06-07, cams.loopholemaxing.com 404s, 3.1GB orphan volume still billing.',
-      need: 'Decide: archive or delete. The volume costs money either way.',
+    { name: 'Tally Cams', status: 'bench', tag: 'shelved by decision',
+      desc: '<b>Tallahassee public-camera dashboard.</b> The Railway deployment was shelved August 27; its public hostname returns 404. This is expected for the shelved project, not a newly discovered production outage.',
+      source: 'Shelving recorded 2026-08-27 · hostname checked 2026-10-02',
       links: [ {t:'Repo', u:'https://github.com/claytoncamera/tallahassee-cam-intel', cls:'repo'} ] },
     { name: 'OpenClaw', status: 'bench', tag: 'designed · unbuilt',
       desc: 'Maker-only autonomous BTC trade agent designed on top of BTC Brain. OpenClaw remains unbuilt. Its upstream scorecard and promotion gates change as results arrive; any execution remains behind explicit manual owner promotion.',
+      source: 'Design-stage registry review 2026-09-29',
       links: [] },
   ]},
   /* ── Reference-only: local/unversioned ventures cataloged so nothing is
-        lost. TRACKED, NOT PUBLIC — deliberately no open links; these are
-        not on the public creations grid and nothing here resolves to a
-        public URL. ── */
-  { group: '🗂️ Off-Portfolio Ventures — tracked, not public', items: [
+        lost. These source projects are off the public portfolio grid.
+        This static catalog is publicly served; keep private records out. ── */
+  { group: '🗂️ Off-Portfolio Ventures', items: [
     { name: 'pnp-tracker', status: 'bench', tag: 'internal · local-only',
-      desc: '<b>Internal PNP work &amp; cost tracker</b> — 70 entries with COGS / P&amp;L. Standalone local repo (<b>~/pnp-tracker</b>). The read view is reachable from the PNP card above; this entry tracks the source project itself. Reference only — not public.',
+      desc: '<b>Internal PNP work and cost tracker.</b> Local source project and reference read view for work history and cost accounting. Current store operations belong in CC2 and the private PNP business board.',
+      source: 'Catalog review 2026-09-29',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/pnp-tracker', cls:'repo'} ] },
     { name: 'kitchenops-ai', status: 'bench', tag: 'localhost · undeployed',
-      desc: '<b>Restaurant inventory &amp; food-cost SaaS</b> — Node/Express, 13 modules, runs on localhost:4173 with a demo tenant. Working locally but undeployed. Build-out vs. park undecided. Reference only — not public.',
+      desc: '<b>Restaurant inventory and food-cost SaaS prototype.</b> Local demo implementation, never deployed to production. Shelved in the operating registry; revival needs a new owner decision.',
+      source: 'Shelved registry review 2026-09-29',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/kitchenops-ai', cls:'repo'} ] },
     { name: 'autoscale-engines', status: 'bench', tag: 'idle · experimental',
-      desc: '<b>Autonomous-business engine network</b> (Python) — lead, sales, growth, fulfillment &amp; website engines plus a dashboard. Experimental, idle since March. Revive / merge / park TBD. Reference only — not public.',
+      desc: '<b>Experimental lead, sales, growth, fulfillment and website engine network.</b> Never operated in production; shelved in the operating registry.',
+      source: 'Shelved registry review 2026-09-29',
       links: [ {t:'Private repo', u:'https://github.com/claytoncamera/autoscale-engines', cls:'repo'} ] },
     { name: 'overnight-arb', status: 'bench', tag: 'research · edge-negative',
-      desc: '<b>Close-to-open equity anomaly research engine.</b> Backtest is <b>edge-negative</b> (net Sharpe 0.37 / CAGR 5.6% vs SPY 12.1% post-2021 costs) — do <b>not</b> trade live. The research answered its question with a no, which is a result. Paper / advisory only.',
+      desc: '<b>Close-to-open equity anomaly research.</b> The recorded research did not establish a usable edge after costs. Retained as research, with no live trading authority.',
+      source: 'Research disposition 2026-07-10 · registry review 2026-09-29',
       links: [] },
   ]},
 ];
@@ -484,6 +523,7 @@ function render(filter = '') {
       <div class="pane">
         <h3><span class="dot ${it.status}"></span><span class="nm">${it.name}</span><span class="stag">${it.tag}</span></h3>
         <p>${it.desc}</p>
+        <div class="source-note">${it.source}</div>
         ${it.need ? `<div class="need"><span class="nic">⚠️</span><span>${it.need}</span></div>` : ''}
         ${it.note ? `<div class="settled"><span class="nic">✔︎</span><span>${it.note}</span></div>` : ''}
         <div class="links">${it.links.map(l =>

@@ -1,33 +1,26 @@
 {
   "attempts": [
     {
-      "error": "GET https://api.alternative.me/fng/?limit=1 failed: <urlopen error [Errno 54] Connection reset by peer>",
-      "fetched_at": "2026-10-04T00:31:11Z",
+      "error": null,
+      "fetched_at": "2026-10-04T00:38:11Z",
       "kind": "sentiment",
-      "latency_ms": 1114,
+      "latency_ms": 120,
       "notes": [],
       "source": "alternative.me",
-      "status": "failed"
-    },
-    {
-      "error": "GET https://api.coingecko.com/api/v3/coins/bitcoin?localization=false&tickers=false&market_data=false&community_data=true&developer_data=false&sparkline=false failed: HTTP Error 429: Too Many Requests",
-      "fetched_at": "2026-10-04T00:31:11Z",
-      "kind": "sentiment",
-      "latency_ms": 90,
-      "notes": [],
-      "source": "coingecko",
-      "status": "failed"
+      "status": "ok"
     }
   ],
-  "data": null,
-  "error": "all providers failed",
-  "fetched_at": "2026-10-04T00:31:11Z",
+  "data": {
+    "fear_greed_label": "Greed",
+    "fear_greed_value": 65,
+    "indicator": "fear_greed_btc_crypto",
+    "sample_timestamp": "1791072000"
+  },
+  "error": null,
+  "fetched_at": "2026-10-04T00:38:11Z",
   "kind": "sentiment",
-  "notes": [
-    "alternative.me:failed",
-    "coingecko:failed"
-  ],
+  "notes": [],
   "schema_version": "phase2-data-v1",
-  "source": "coingecko",
-  "status": "failed"
+  "source": "alternative.me",
+  "status": "ok"
 }

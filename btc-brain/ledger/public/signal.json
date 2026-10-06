@@ -19,16 +19,16 @@
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
       "all-time wilson_lb_95 0.4639 not > 0.5 (hit_rate 0.5007 at n=707)",
-      "rolling-30d hit_rate 0.4508 < 0.52"
+      "rolling-30d hit_rate 0.4519 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 23.4176736205638,
-      "hit_rate": 0.45083932853717024,
-      "n": 417,
-      "wilson_lb_95": 0.4037461675547295,
+      "expectancy_maker_2bps": 23.704876142641197,
+      "hit_rate": 0.4519230769230769,
+      "n": 416,
+      "wilson_lb_95": 0.40475444288905,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.4631979695431472,
+    "rolling_30d_hit": 0.46383248730964466,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -39,25 +39,25 @@
     "vs_majority_pp": -6.223479490806227,
     "wilson_lb_95": 0.46394646204961554
   },
-  "generated_at": "2026-10-06T18:31:11Z",
+  "generated_at": "2026-10-06T19:01:12Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0009|sma24=85779.84|sma72=85566.28|band=high",
-    "direction": "up",
-    "entry_ref": 85854.61,
-    "expires_at": "2026-10-07T16:00:00Z",
-    "forecast_id": "ff5f8534-045d-4e12-b183-d0787a4f15aa",
+    "confidence_reason": "guard24:rel=-0.0038|sma24=85822.59|sma72=85598.14|band=high",
+    "direction": "down",
+    "entry_ref": 85498.84,
+    "expires_at": "2026-10-07T19:00:00Z",
+    "forecast_id": "d373d841-88a5-4bcc-b005-eed92086ce86",
     "horizon": "24h",
-    "invalidation": "BTC < 81561.88 before target",
-    "issued_at": "2026-10-06T16:00:00Z",
+    "invalidation": "BTC > 89773.78 before target",
+    "issued_at": "2026-10-06T19:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.55,
-    "regime": "chop",
-    "signal_id": "sig-ff5f8534",
+    "regime": "bear",
+    "signal_id": "sig-d373d841",
     "signal_version": "shadow-guard24-v0.1.0",
-    "target_rule": "close_above_entry"
+    "target_rule": "close_below_entry"
   },
   "status": "shadow"
 }

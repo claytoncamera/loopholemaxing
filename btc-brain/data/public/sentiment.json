@@ -1,26 +1,35 @@
 {
   "attempts": [
     {
-      "error": null,
-      "fetched_at": "2026-10-06T08:31:09Z",
+      "error": "GET https://api.alternative.me/fng/?limit=1 failed: <urlopen error [SSL: UNEXPECTED_EOF_WHILE_READING] EOF occurred in violation of protocol (_ssl.c:1082)>",
+      "fetched_at": "2026-10-06T09:01:12Z",
       "kind": "sentiment",
-      "latency_ms": 1270,
+      "latency_ms": 1181,
       "notes": [],
       "source": "alternative.me",
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "fetched_at": "2026-10-06T09:01:12Z",
+      "kind": "sentiment",
+      "latency_ms": 84,
+      "notes": [],
+      "source": "coingecko",
       "status": "ok"
     }
   ],
   "data": {
-    "fear_greed_label": "Greed",
-    "fear_greed_value": 73,
-    "indicator": "fear_greed_btc_crypto",
-    "sample_timestamp": "1791244800"
+    "fear_greed_label": "coingecko_up_pct_proxy",
+    "fear_greed_value": 76,
+    "indicator": "coingecko_sentiment_up_pct",
+    "sample_timestamp": null
   },
   "error": null,
-  "fetched_at": "2026-10-06T08:31:09Z",
+  "fetched_at": "2026-10-06T09:01:12Z",
   "kind": "sentiment",
   "notes": [],
   "schema_version": "phase2-data-v1",
-  "source": "alternative.me",
+  "source": "coingecko",
   "status": "ok"
 }

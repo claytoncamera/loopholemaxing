@@ -801,13 +801,9 @@
 
       function loadStudio() {
         var t = tile('tile-studio');
-        return fetchJson('https://studio-sync-api-production.up.railway.app/health').then(function (j) {
-          var ok = j && (j.ok === true || j.status === 'ok');
-          t.dot(ok ? 'ok' : 'warn');
-          t.val(ok ? 'healthy' : esc(JSON.stringify(j)).slice(0, 80));
-        }).catch(function (e) {
-          t.dot('err'); t.val('unreachable (' + esc(e.message) + ')');
-        });
+        // Shelved on Railway 2026-10-07 (data kept): show it, never probe it.
+        t.dot(''); t.val('shelved 10-07 &middot; data kept');
+        return Promise.resolve();
       }
 
       function loadFeeds() {
@@ -867,8 +863,7 @@
         ['orbitroute.ai', 'https://orbitroute.ai/'],
         ['workwithclayton.com', 'https://workwithclayton.com/'],
         ['knockfiber.com', 'https://www.knockfiber.com/'],
-        ['thepeptidex.net', 'https://thepeptidex.net/'],
-        ['creation hub', 'https://creation.loopholemaxing.com/']
+        ['thepeptidex.net', 'https://thepeptidex.net/']
       ];
 
       function loadReach() {

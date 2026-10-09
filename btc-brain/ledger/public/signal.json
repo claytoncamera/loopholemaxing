@@ -19,16 +19,16 @@
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
       "all-time wilson_lb_95 0.4721 not > 0.5 (hit_rate 0.5081 at n=740)",
-      "rolling-30d hit_rate 0.4758 < 0.52"
+      "rolling-30d hit_rate 0.4745 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 30.06323660191583,
-      "hit_rate": 0.4758269720101781,
-      "n": 393,
-      "wilson_lb_95": 0.4269233409870476,
+      "expectancy_maker_2bps": 29.79048670380432,
+      "hit_rate": 0.4744897959183674,
+      "n": 392,
+      "wilson_lb_95": 0.4255441928345606,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.4852801519468186,
+    "rolling_30d_hit": 0.48416719442685247,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -39,25 +39,25 @@
     "vs_majority_pp": -3.378378378378377,
     "wilson_lb_95": 0.4721385654109932
   },
-  "generated_at": "2026-10-09T19:36:48Z",
+  "generated_at": "2026-10-09T20:01:18Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0010|sma24=82296.28|sma72=83069.54|band=high",
-    "direction": "up",
-    "entry_ref": 82375.7,
-    "expires_at": "2026-10-10T19:00:00Z",
-    "forecast_id": "c5fd0fe5-3b43-4370-bf9b-ee0416e0443a",
+    "confidence_reason": "guard24:rel=-0.0008|sma24=82335.09|sma72=83026.16|band=high",
+    "direction": "down",
+    "entry_ref": 82267.62,
+    "expires_at": "2026-10-10T20:00:00Z",
+    "forecast_id": "7dc2cfa0-a784-4241-b42b-3bb97b1acf45",
     "horizon": "24h",
-    "invalidation": "BTC < 78256.91 before target",
-    "issued_at": "2026-10-09T19:00:00Z",
+    "invalidation": "BTC > 86381.0 before target",
+    "issued_at": "2026-10-09T20:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.55,
     "regime": "bear",
-    "signal_id": "sig-c5fd0fe5",
+    "signal_id": "sig-7dc2cfa0",
     "signal_version": "shadow-guard24-v0.1.0",
-    "target_rule": "close_above_entry"
+    "target_rule": "close_below_entry"
   },
   "status": "shadow"
 }

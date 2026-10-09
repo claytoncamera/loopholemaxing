@@ -19,16 +19,16 @@
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
       "all-time wilson_lb_95 0.4721 not > 0.5 (hit_rate 0.5081 at n=740)",
-      "rolling-30d hit_rate 0.4772 < 0.52"
+      "rolling-30d hit_rate 0.4758 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 30.37529001722494,
-      "hit_rate": 0.47715736040609136,
-      "n": 394,
-      "wilson_lb_95": 0.42829599661174994,
+      "expectancy_maker_2bps": 30.06323660191583,
+      "hit_rate": 0.4758269720101781,
+      "n": 393,
+      "wilson_lb_95": 0.4269233409870476,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.4854430379746835,
+    "rolling_30d_hit": 0.4852801519468186,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -39,23 +39,23 @@
     "vs_majority_pp": -3.378378378378377,
     "wilson_lb_95": 0.4721385654109932
   },
-  "generated_at": "2026-10-09T18:31:14Z",
+  "generated_at": "2026-10-09T19:01:12Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0055|sma24=82214.46|sma72=83112.26|band=low",
+    "confidence_reason": "guard24:rel=0.0010|sma24=82296.28|sma72=83069.54|band=high",
     "direction": "up",
-    "entry_ref": 82663.11,
-    "expires_at": "2026-10-10T18:00:00Z",
-    "forecast_id": "dd11160d-ec33-419c-a8eb-423fee664f81",
+    "entry_ref": 82375.7,
+    "expires_at": "2026-10-10T19:00:00Z",
+    "forecast_id": "c5fd0fe5-3b43-4370-bf9b-ee0416e0443a",
     "horizon": "24h",
-    "invalidation": "BTC < 78529.95 before target",
-    "issued_at": "2026-10-09T18:00:00Z",
+    "invalidation": "BTC < 78256.91 before target",
+    "issued_at": "2026-10-09T19:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
-    "probability": 0.52,
-    "regime": "bull",
-    "signal_id": "sig-dd11160d",
+    "probability": 0.55,
+    "regime": "bear",
+    "signal_id": "sig-c5fd0fe5",
     "signal_version": "shadow-guard24-v0.1.0",
     "target_rule": "close_above_entry"
   },

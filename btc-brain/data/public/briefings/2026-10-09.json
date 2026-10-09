@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-09",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-10-09T17:00:22Z",
+  "id": "briefing-2026-10-09",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.5013687915526007,
+      "baseline_brier": 0.24999812640968552,
+      "baseline_hit_rate": 0.5583365923608395,
+      "brier": 0.25009101533851286,
+      "display_ready": true,
+      "ece": 0.024748030490306543,
+      "generated_at": "2026-10-09T16:31:27Z",
+      "hit_rate": 0.5013687915526007,
+      "logloss": 0.6933288335447272,
+      "metrics_version": "metrics-v0.3.1",
+      "min_n_display": 20,
+      "n": 7671,
+      "total_forecasts": 7735,
+      "total_resolved": 7671
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-10-09T16:31:26Z",
+      "funding_rate": 2.84999318677e-05,
+      "long_short_ratio": 1.65,
+      "mark_price": 82707.1,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 30089.685400000115,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-10-09T16:31:27Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 81826.96999999999,
+        "r1": 83339.23999999998,
+        "r2": 84985.68999999999,
+        "recent_high": 83452.99,
+        "recent_low": 80314.7,
+        "s1": 80180.51999999997,
+        "s2": 78668.24999999999,
+        "sma_20": 84221.6525,
+        "sma_200": null,
+        "sma_50": 80524.7968,
+        "vwap_session": 82569.39444768979
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Greed",
+      "fear_greed_value": 59,
+      "fetched_at": "2026-10-09T16:31:27Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-10-09T16:31:27Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-10-09T16:31:13Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-10-09T16:31:21Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-10-09T16:31:17Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-10-09T16:31:11Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-10-09T16:31:21Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-10-09T16:31:12Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-10-09T16:31:26Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-10-09T16:31:27Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-10-09T16:31:27Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-10-09"
+}

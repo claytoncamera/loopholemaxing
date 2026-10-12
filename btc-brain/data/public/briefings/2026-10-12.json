@@ -1,0 +1,132 @@
+{
+  "date": "2026-10-12",
+  "disclaimer": "Educational summary of public market data. Not financial advice. No buy, sell, hold, or trading instruction is given or implied. Numbers reflect observed values at generation time only.",
+  "generated_at": "2026-10-12T19:49:08Z",
+  "id": "briefing-2026-10-12",
+  "inputs": {
+    "accuracy_path": "ledger/public/accuracy.json",
+    "derivatives_path": "data/public/derivatives.json",
+    "key_levels_path": "data/public/key_levels.json",
+    "sentiment_path": "data/public/sentiment.json",
+    "source_health_path": "data/public/source_health.json"
+  },
+  "not_financial_advice": true,
+  "schema_version": "briefings-v1",
+  "summary": {
+    "accuracy": {
+      "available": true,
+      "base_rate": 0.5070842654735273,
+      "baseline_brier": 0.2499498131827006,
+      "baseline_hit_rate": 0.5651255282127765,
+      "brier": 0.24977385730871146,
+      "display_ready": true,
+      "ece": 0.02679734940363577,
+      "generated_at": "2026-10-12T19:46:41Z",
+      "hit_rate": 0.5070842654735273,
+      "logloss": 0.6926923270568434,
+      "metrics_version": "metrics-v0.3.1",
+      "min_n_display": 20,
+      "n": 8046,
+      "total_forecasts": 8100,
+      "total_resolved": 8046
+    },
+    "derivatives": {
+      "available": true,
+      "fetched_at": "2026-10-12T19:48:15Z",
+      "funding_rate": 4.20622473391e-05,
+      "long_short_ratio": 1.5,
+      "mark_price": 82721.6,
+      "missing": [
+        "missing:long_account_pct,short_account_pct"
+      ],
+      "open_interest_btc": 30204.709700000116,
+      "source": "okx",
+      "status": "partial_ok"
+    },
+    "key_levels": {
+      "available": true,
+      "degraded": false,
+      "fetched_at": "2026-10-12T19:48:16Z",
+      "notes": [
+        "sma_200 needs 200+ daily closes"
+      ],
+      "source": "computed",
+      "status": "ok",
+      "values": {
+        "pivot_classic": 83501.17666666665,
+        "r1": 84288.1033333333,
+        "r2": 84897.91666666666,
+        "recent_high": 84261.99,
+        "recent_low": 82199.26,
+        "s1": 82891.3633333333,
+        "s2": 82104.43666666665,
+        "sma_20": 84228.918,
+        "sma_200": null,
+        "sma_50": 80939.6358,
+        "vwap_session": 83238.83839282123
+      }
+    },
+    "sentiment": {
+      "available": true,
+      "fear_greed_label": "Greed",
+      "fear_greed_value": 69,
+      "fetched_at": "2026-10-12T19:48:16Z",
+      "indicator": "fear_greed_btc_crypto",
+      "source": "alternative.me",
+      "status": "ok"
+    },
+    "source_health": {
+      "available": true,
+      "generated_at": "2026-10-12T19:48:16Z",
+      "overall": "partial_ok",
+      "sources": {
+        "candles_15m": {
+          "fetched_at": "2026-10-12T19:48:13Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1d": {
+          "fetched_at": "2026-10-12T19:48:14Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1h": {
+          "fetched_at": "2026-10-12T19:48:13Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_1m": {
+          "fetched_at": "2026-10-12T19:48:13Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "candles_4h": {
+          "fetched_at": "2026-10-12T19:48:13Z",
+          "source": "kraken",
+          "status": "ok"
+        },
+        "candles_5m": {
+          "fetched_at": "2026-10-12T19:48:13Z",
+          "source": "coinbase",
+          "status": "ok"
+        },
+        "derivatives": {
+          "fetched_at": "2026-10-12T19:48:15Z",
+          "source": "okx",
+          "status": "partial_ok"
+        },
+        "key_levels": {
+          "fetched_at": "2026-10-12T19:48:16Z",
+          "source": "computed",
+          "status": "ok"
+        },
+        "sentiment": {
+          "fetched_at": "2026-10-12T19:48:16Z",
+          "source": "alternative.me",
+          "status": "ok"
+        }
+      }
+    }
+  },
+  "title": "BTC Brain daily briefing \u2014 2026-10-12"
+}

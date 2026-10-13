@@ -19,16 +19,16 @@
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
       "all-time wilson_lb_95 0.4865 not > 0.5 (hit_rate 0.5208 at n=818)",
-      "rolling-30d hit_rate 0.5036 < 0.52"
+      "rolling-30d hit_rate 0.5024 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 22.76986218822499,
-      "hit_rate": 0.503562945368171,
-      "n": 421,
-      "wilson_lb_95": 0.4559860802955259,
+      "expectancy_maker_2bps": 22.32535720313102,
+      "hit_rate": 0.5023809523809524,
+      "n": 420,
+      "wilson_lb_95": 0.45475800704540803,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.5006277463904583,
+    "rolling_30d_hit": 0.5003138731952291,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -39,23 +39,23 @@
     "vs_majority_pp": -4.1564792176039145,
     "wilson_lb_95": 0.4865299361077217
   },
-  "generated_at": "2026-10-13T17:31:10Z",
+  "generated_at": "2026-10-13T18:01:08Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0048|sma24=82914.40|sma72=83137.59|band=high",
+    "confidence_reason": "guard24:rel=0.0001|sma24=82950.98|sma72=83142.38|band=high",
     "direction": "up",
-    "entry_ref": 83316.1,
-    "expires_at": "2026-10-14T17:00:00Z",
-    "forecast_id": "6010f244-68ad-4414-b2c4-d3a29e58c836",
+    "entry_ref": 82960.32,
+    "expires_at": "2026-10-14T18:00:00Z",
+    "forecast_id": "a8b23f0c-f33e-4f7a-8c49-c4749e70a9c8",
     "horizon": "24h",
-    "invalidation": "BTC < 79150.29 before target",
-    "issued_at": "2026-10-13T17:00:00Z",
+    "invalidation": "BTC < 78812.3 before target",
+    "issued_at": "2026-10-13T18:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.55,
-    "regime": "bull",
-    "signal_id": "sig-6010f244",
+    "regime": "bear",
+    "signal_id": "sig-a8b23f0c",
     "signal_version": "shadow-guard24-v0.1.0",
     "target_rule": "close_above_entry"
   },

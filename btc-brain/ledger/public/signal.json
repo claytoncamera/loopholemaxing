@@ -19,16 +19,16 @@
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
       "all-time wilson_lb_95 0.4847 not > 0.5 (hit_rate 0.5189 at n=821)",
-      "rolling-30d hit_rate 0.4952 < 0.52"
+      "rolling-30d hit_rate 0.4964 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 20.232345157624252,
-      "hit_rate": 0.49521531100478466,
-      "n": 418,
-      "wilson_lb_95": 0.44754643934802185,
+      "expectancy_maker_2bps": 20.652394419543906,
+      "hit_rate": 0.49640287769784175,
+      "n": 417,
+      "wilson_lb_95": 0.4486656732937344,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.50031328320802,
+    "rolling_30d_hit": 0.5003128911138923,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -39,25 +39,25 @@
     "vs_majority_pp": -4.506699147381243,
     "wilson_lb_95": 0.48469321029673623
   },
-  "generated_at": "2026-10-14T00:38:39Z",
+  "generated_at": "2026-10-14T01:01:08Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=-0.0005|sma24=83139.63|sma72=83164.59|band=high",
-    "direction": "down",
-    "entry_ref": 83096.02,
-    "expires_at": "2026-10-15T00:00:00Z",
-    "forecast_id": "8022fbb2-21a5-4ac2-960e-55560c80f8cd",
+    "confidence_reason": "guard24:rel=0.0020|sma24=83196.27|sma72=83167.24|band=high",
+    "direction": "up",
+    "entry_ref": 83361.03,
+    "expires_at": "2026-10-15T01:00:00Z",
+    "forecast_id": "bf919b92-97ac-46d7-8322-50d87ff99026",
     "horizon": "24h",
-    "invalidation": "BTC > 87250.82 before target",
-    "issued_at": "2026-10-14T00:00:00Z",
+    "invalidation": "BTC < 79192.98 before target",
+    "issued_at": "2026-10-14T01:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.55,
-    "regime": "bear",
-    "signal_id": "sig-8022fbb2",
+    "regime": "bull",
+    "signal_id": "sig-bf919b92",
     "signal_version": "shadow-guard24-v0.1.0",
-    "target_rule": "close_below_entry"
+    "target_rule": "close_above_entry"
   },
   "status": "shadow"
 }

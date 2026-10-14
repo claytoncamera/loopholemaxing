@@ -19,13 +19,13 @@
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
       "all-time wilson_lb_95 0.4847 not > 0.5 (hit_rate 0.5189 at n=821)",
-      "rolling-30d hit_rate 0.4940 < 0.52"
+      "rolling-30d hit_rate 0.4952 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 19.760758556527875,
-      "hit_rate": 0.49403341288782815,
-      "n": 419,
-      "wilson_lb_95": 0.4464328284635568,
+      "expectancy_maker_2bps": 20.232345157624252,
+      "hit_rate": 0.49521531100478466,
+      "n": 418,
+      "wilson_lb_95": 0.44754643934802185,
       "window_keyed_on": "issued_at"
     },
     "rolling_30d_hit": 0.50031328320802,
@@ -39,25 +39,25 @@
     "vs_majority_pp": -4.506699147381243,
     "wilson_lb_95": 0.48469321029673623
   },
-  "generated_at": "2026-10-13T23:31:07Z",
+  "generated_at": "2026-10-14T00:01:11Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0047|sma24=83081.03|sma72=83158.48|band=high",
-    "direction": "up",
-    "entry_ref": 83470.0,
-    "expires_at": "2026-10-14T23:00:00Z",
-    "forecast_id": "4d130eb1-7545-4be8-8917-135148231da1",
+    "confidence_reason": "guard24:rel=-0.0005|sma24=83139.63|sma72=83164.59|band=high",
+    "direction": "down",
+    "entry_ref": 83096.02,
+    "expires_at": "2026-10-15T00:00:00Z",
+    "forecast_id": "8022fbb2-21a5-4ac2-960e-55560c80f8cd",
     "horizon": "24h",
-    "invalidation": "BTC < 79296.5 before target",
-    "issued_at": "2026-10-13T23:00:00Z",
+    "invalidation": "BTC > 87250.82 before target",
+    "issued_at": "2026-10-14T00:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
     "probability": 0.55,
-    "regime": "bull",
-    "signal_id": "sig-4d130eb1",
+    "regime": "bear",
+    "signal_id": "sig-8022fbb2",
     "signal_version": "shadow-guard24-v0.1.0",
-    "target_rule": "close_above_entry"
+    "target_rule": "close_below_entry"
   },
   "status": "shadow"
 }

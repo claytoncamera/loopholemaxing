@@ -2,7 +2,7 @@
    Caches the app shell + self-hosted ffmpeg loader so Studio opens offline,
    and runtime-caches the big ffmpeg-core.wasm from the CDN so trimming works
    offline after the first export. Scope is /studio/ only. */
-const CACHE = 'loop-studio-v3';
+const CACHE = 'loop-studio-v4';
 const SHELL = [
   './',
   './index.html',

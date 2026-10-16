@@ -305,7 +305,7 @@
       </div>
     </div>
     <div class="gate-title">Enter your Studio</div>
-    <div class="gate-sub">Your content HUB — import, track, trim, and assemble. Passcode-protected on this device.</div>
+    <div class="gate-sub">Your content HUB — import, track, trim, and assemble. This browser’s device lock is a convenience feature, not server authentication.</div>
     <div id="gate-err" class="gate-err"></div>
     <div id="invite-flow" style="display:none;">
       <div id="inv-step-1">
@@ -330,12 +330,16 @@
     </div>
     <form id="gate-form" onsubmit="return doUnlock(event)">
       <div class="form-row">
-        <label class="field-label">Passcode</label>
+        <label class="field-label" id="gate-pass-label" for="gate-pass">Passcode</label>
         <input id="gate-pass" class="input" type="password" placeholder="&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password" autofocus>
       </div>
-      <button class="btn btn-full" type="submit">Unlock Studio</button>
+      <div class="form-row" id="gate-confirm-row" hidden>
+        <label class="field-label" for="gate-confirm">Repeat passcode</label>
+        <input id="gate-confirm" class="input" type="password" autocomplete="new-password">
+      </div>
+      <button id="gate-submit" class="btn btn-full" type="submit">Unlock Studio</button>
     </form>
-    <div class="hint" id="gate-hint" style="margin-top:18px;">Default passcode is <code>12345</code> — change it under Settings once you're in.</div>
+    <div class="gate-sub" id="gate-hint" style="font-size:11px;margin-top:18px;">The device lock applies to this browser. Cloud sync uses your separately supplied sync code.</div>
   </div>
 </div>
 
@@ -746,9 +750,7 @@
 /* ============================================================
    CONFIG
    ============================================================ */
-// SHA-256 of the default passcode "12345". A user-set passcode (Settings)
-// is stored hashed in localStorage and takes precedence.
-const DEFAULT_PASS_HASH = '5994471abb01112afcc18159f6cc74b4f511b99806da59b3caf5a9c173cacfc5';
+// Device passcode hashes are created locally; no shared credential is shipped.
 
 const SOURCES = [
   { id:'gopro', name:'GoPro Hero 9 Black', color:'#3b82f6', match:[/^GX\d/i,/^GH\d/i,/^GOPR/i,/^GP\d/i] },
@@ -829,6 +831,7 @@ $('confirm-ok').onclick = ()=>{ closeOverlay('confirm-overlay'); if(_confirmCb) 
 /* ── Invite onboarding (?invite=TOKEN → one-time redeem → fresh account) ── */
 let _inviteToken=null;
 function inviteBoot(){
+  prepareDeviceLock();
   const t=new URLSearchParams(location.search).get('invite');
   const admEl=$('adm-key'); if(admEl && localStorage.getItem('studio_admin_key')) admEl.value=localStorage.getItem('studio_admin_key');
   if(!t) return;
@@ -892,19 +895,37 @@ async function listInvites(){
 }
 document.addEventListener('DOMContentLoaded', inviteBoot);
 
+function prepareDeviceLock(){
+  const creating = !localStorage.getItem('studio_pass_hash');
+  $('gate-confirm-row').hidden = !creating;
+  $('gate-pass-label').textContent = creating ? 'Create a device passcode' : 'Passcode';
+  $('gate-pass').autocomplete = creating ? 'new-password' : 'current-password';
+  $('gate-submit').textContent = creating ? 'Set passcode & enter Studio' : 'Unlock Studio';
+  document.querySelector('.gate-title').textContent = creating ? 'Set up this device' : 'Enter your Studio';
+}
 async function doUnlock(e){
   e.preventDefault();
+  $('gate-err').textContent = '';
+  $('gate-err').classList.remove('show');
   const pass = $('gate-pass').value;
-  const want = localStorage.getItem('studio_pass_hash') || DEFAULT_PASS_HASH;
-  const got  = await sha256(pass);
-  if (got === want){
-    sessionStorage.setItem('studio_unlocked','1');
-    enterApp();
-  } else {
+  const want = localStorage.getItem('studio_pass_hash');
+  if (!want) {
+    if (pass.length < 4 || pass !== $('gate-confirm').value) {
+      $('gate-err').textContent = pass.length < 4 ? 'Use at least 4 characters.' : 'Passcodes do not match.';
+      $('gate-err').classList.add('show');
+      return false;
+    }
+    localStorage.setItem('studio_pass_hash', await sha256(pass));
+  } else if (await sha256(pass) !== want) {
     $('gate-err').textContent = 'Incorrect passcode.';
     $('gate-err').classList.add('show');
-    $('gate-pass').value='';
+    $('gate-pass').value = '';
+    return false;
   }
+  $('gate-pass').value = '';
+  $('gate-confirm').value = '';
+  sessionStorage.setItem('studio_unlocked', '1');
+  enterApp();
   return false;
 }
 function lock(){ sessionStorage.removeItem('studio_unlocked'); location.reload(); }
@@ -2157,7 +2178,7 @@ function renderSyncSettings(){
   window.addEventListener('beforeinstallprompt', e=>{ e.preventDefault(); _deferredPrompt=e; const b=$('install-btn'); if(b) b.style.display=''; });
   if('serviceWorker' in navigator){ window.addEventListener('load', ()=>navigator.serviceWorker.register('sw.js').catch(()=>{})); }
 
-  if(sessionStorage.getItem('studio_unlocked')==='1'){ enterApp(); }
+  if(localStorage.getItem('studio_pass_hash') && sessionStorage.getItem('studio_unlocked')==='1'){ enterApp(); }
 })();
 </script>
   <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js?v=20260616a" data-site="loopholemaxing"></script>

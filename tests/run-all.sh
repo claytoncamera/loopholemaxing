@@ -162,6 +162,16 @@ else
 fi
 
 echo
+echo "== Public product truth (ULTRON + Agora) =="
+if command -v node >/dev/null 2>&1; then
+  node tests/product-truth.spec.mjs
+  T_PRODUCT=$?
+else
+  echo "SKIP: node not installed"
+  T_PRODUCT=0
+fi
+
+echo
 echo "== Homepage truth scan (index.html) =="
 bash tests/homepage-truth-scan.sh
 T_HOME=$?
@@ -195,9 +205,9 @@ else
 fi
 
 echo
-if [ $T_PAGES -eq 0 ] && [ $T_STUDIO -eq 0 ] && [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ] && [ $T9 -eq 0 ] && [ $T_ARMY -eq 0 ] && [ $T_AGORA -eq 0 ] && [ $T_HOME -eq 0 ] && [ $T_SEO -eq 0 ] && [ $T_TRADING -eq 0 ]; then
+if [ $T_PRODUCT -eq 0 ] && [ $T_PAGES -eq 0 ] && [ $T_STUDIO -eq 0 ] && [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ] && [ $T9 -eq 0 ] && [ $T_ARMY -eq 0 ] && [ $T_AGORA -eq 0 ] && [ $T_HOME -eq 0 ] && [ $T_SEO -eq 0 ] && [ $T_TRADING -eq 0 ]; then
   echo "ALL CHECKS PASSED"
   exit 0
 fi
-echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8 briefings=$T9 army=$T_ARMY agora=$T_AGORA homepage=$T_HOME seo=$T_SEO trading=$T_TRADING pages=$T_PAGES studio=$T_STUDIO"
+echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8 briefings=$T9 army=$T_ARMY agora=$T_AGORA homepage=$T_HOME seo=$T_SEO trading=$T_TRADING pages=$T_PAGES studio=$T_STUDIO product=$T_PRODUCT"
 exit 1

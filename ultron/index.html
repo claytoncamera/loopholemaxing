@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ULTRON — The autonomous agent that can't go rogue | Loopholemaxing</title>
-  <meta name="description" content="Local-first autonomous AI agent. It reads, plans, and proposes — but every trade, file write, deploy, and API call waits for an explicit human APPROVE. 30 adversarial tests green. Free trial on loopholemaxing.com.">
+  <title>ULTRON — Local-first agent with human approval | Loopholemaxing</title>
+  <meta name="description" content="Local-first AI agent built around human approval for side effects. Source access for the local prototype is by request. Explore sample proposals or join the waitlist for planned hosted options.">
   <link rel="canonical" href="https://loopholemaxing.com/ultron/">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
@@ -42,8 +42,8 @@
 }
   </script>
 
-  <meta property="og:title" content="ULTRON — The autonomous agent that can't go rogue">
-  <meta property="og:description" content="Local-first autonomous AI agent with a non-negotiable human-in-the-loop gate on every side effect.">
+  <meta property="og:title" content="ULTRON — Local-first agent with human approval">
+  <meta property="og:description" content="Local-first AI agent built around human approval. Local prototype source access is by request; hosted options are planned and waitlist-only.">
   <link rel="stylesheet" href="../styles.css">
   <style>
     :root {
@@ -127,7 +127,7 @@
     .u-rule strong { color: var(--text-primary); display:block; margin-bottom: 4px; font-size: 14px; }
     .u-rule span   { color: var(--text-secondary); font-size: 13px; line-height: 1.55; }
 
-    /* Live HUD demo */
+    /* Sample HUD demo */
     .u-hud-wrap { position:relative; border: 1px solid var(--ultron-edge);
       border-radius: 14px; overflow:hidden; background: var(--ultron-bg);
       box-shadow: 0 10px 60px -10px rgba(56,214,255,.12); }
@@ -169,7 +169,7 @@
     .u-plan li:last-child { border-bottom:0; }
     .u-plan li::before { content:"✓  "; color: var(--ultron-cyan); font-weight:700; }
 
-    /* Trial form */
+    /* Hosted-interest waitlist (legacy form IDs retained for capture wiring) */
     .u-trial { display:flex; gap: 10px; max-width: 540px; margin: var(--space-xl) auto 0; }
     .u-trial input { flex:1; background: rgba(255,255,255,.03); color: var(--text-primary);
       border: 1px solid var(--border-light); border-radius: 10px; padding: 12px 14px;
@@ -209,24 +209,24 @@
     <a href="/" class="logo">Loopholemaxing</a>
     <nav><ul class="nav-links">
       <li><a href="/#creations">Creations</a></li>
-      <li><a href="#pricing">Pricing</a></li>
-      <li><a href="https://github.com/claytoncamera/ultron" target="_blank" rel="noopener">GitHub</a></li>
+      <li><a href="#pricing">Availability</a></li>
+      <li><a href="mailto:clayton.camera@icloud.com?subject=ULTRON%20source%20access">Source access</a></li>
     </ul></nav>
   </header>
 
   <main id="main" tabindex="-1">
   <!-- HERO -->
   <section class="u-hero">
-    <div class="u-eyebrow">Local-first · Open source · v0.1</div>
-    <h1>The autonomous agent<br>that can't <span>go rogue.</span></h1>
-    <p>ULTRON runs on your machine, not someone else's cloud. It reads, plans, and proposes — but every trade, deploy, file write, and API call waits for a single human keystroke: <strong>Y</strong> or <strong>N</strong>.</p>
+    <div class="u-eyebrow">Local-first · Prototype · Source by request</div>
+    <h1>A local-first agent.<br><span>You approve the actions.</span></h1>
+    <p>ULTRON is a local prototype designed to run on your machine. It reads, plans, and proposes — with an approval gate designed to pause trades, deploys, file writes and mutating API calls for a human decision: <strong>Y</strong> or <strong>N</strong>.</p>
     <div class="u-cta-row">
-      <a href="#trial" class="btn-cyan">Start free trial →</a>
-      <a href="#demo" class="btn-ghost">See live demo</a>
+      <a href="#waitlist" class="btn-cyan">Join the hosted waitlist →</a>
+      <a href="#demo" class="btn-ghost">See sample proposals</a>
     </div>
 
     <div class="u-stats">
-      <div class="u-stat"><div class="u-stat-val">100%</div><div class="u-stat-lbl">Side-effects gated</div></div>
+      <div class="u-stat"><div class="u-stat-val">Human</div><div class="u-stat-lbl">Approval gate</div></div>
       <div class="u-stat"><div class="u-stat-val">30/30</div><div class="u-stat-lbl">Attack tests passing</div></div>
       <div class="u-stat"><div class="u-stat-val">21</div><div class="u-stat-lbl">Tools registered</div></div>
       <div class="u-stat"><div class="u-stat-val">0</div><div class="u-stat-lbl">OpenAI keys required</div></div>
@@ -261,27 +261,27 @@
     </div>
   </section>
 
-  <!-- LIVE HUD DEMO -->
+  <!-- SAMPLE HUD DEMO -->
   <section class="u-section" id="demo">
-    <h2>Live Command Deck</h2>
-    <p class="lede">This is the real HUD, running in demo mode with three queued proposals across risk levels. Click APPROVE or DENY to see the gate in action.</p>
+    <h2>Command Deck · Sample proposals</h2>
+    <p class="lede">This interactive UI contains three sample proposals across risk levels. APPROVE and DENY illustrate the review flow; they do not execute live tools, trades or deployments.</p>
     <div class="u-hud-wrap">
       <div class="u-hud-chrome">
         <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
         <span class="addr">ultron://command-deck · demo</span>
         <a class="u-hud-open" href="https://www.perplexity.ai/computer/a/ultron-command-deck-bvg7GI0mQ2i.1tePEEC9eQ?demo=1" target="_blank" rel="noopener">Open the Command Deck in a new tab ↗</a>
       </div>
-      <iframe class="u-hud-frame" title="ULTRON Command Deck — live demo"
+      <iframe class="u-hud-frame" title="ULTRON Command Deck — sample proposals"
         src="https://www.perplexity.ai/computer/a/ultron-command-deck-bvg7GI0mQ2i.1tePEEC9eQ?demo=1"
         loading="lazy" referrerpolicy="no-referrer"></iframe>
     </div>
-    <p class="u-hud-cap">Demo mode seeds fake proposals — no real tools fire. For the live daemon, install the repo and run <code>python3 -m core.api</code>.</p>
+    <p class="u-hud-cap">Sample UI only — no live execution. Demo mode uses sample proposals. Source access and local setup are by request. The local daemon entry point is <code>python3 -m core.api</code>.</p>
   </section>
 
   <!-- SAFETY -->
   <section class="u-section" id="safety">
     <h2>The five invariants</h2>
-    <p class="lede">ULTRON will never do any of these without an explicit <code>APPROVE</code>. Breaking one requires breaking the gate and the hash-chained audit log at the same time, and the kill switch still refuses to clear without its signed token.</p>
+    <p class="lede">The engine is designed to require explicit <code>APPROVE</code> for the actions below, with a hash-chained audit log and a kill switch. These controls depend on the implementation, configuration and tools you connect; they are not a guarantee against every failure.</p>
     <div class="u-safety">
       <div class="u-rule"><span class="dot"></span><div><strong>Execute a trade</strong><span>Exchange orders are always risk 5. Always gated. Always logged.</span></div></div>
       <div class="u-rule"><span class="dot"></span><div><strong>Modify a file</strong><span>Every <code>file_write</code> and <code>git push</code> passes through the gate with a rollback plan.</span></div></div>
@@ -293,44 +293,44 @@
 
   <!-- PRICING -->
   <section class="u-section" id="pricing">
-    <h2>Pricing</h2>
-    <p class="lede">Local-first means the engine itself is free forever. Paid plans add hosted integrations, team collaboration, and managed cloud fallbacks.</p>
+    <h2>Local prototype. Hosted options are planned.</h2>
+    <p class="lede">ULTRON is a local prototype with source access by request; a public source download is not currently available. Hosted Pro and Team options are planned and waitlist-only: no active paid plans, checkout or trial is available. Features, pricing and launch timing are not finalized.</p>
     <div class="u-pricing">
       <div class="u-plan">
         <div class="ribbon">Local</div>
-        <h3>Self-host</h3>
-        <div class="price">$0<small> /forever</small></div>
-        <div class="sub">Run it on your own Mac. No account needed.</div>
+        <h3>Local prototype</h3>
+        <div class="price">By request</div>
+        <div class="sub">Discuss source access and local setup with Clayton. The source repository is private.</div>
         <ul>
           <li>All 21 tools + all 5 integrations</li>
           <li>Ollama / Anthropic / Perplexity adapters</li>
           <li>Full audit chain + kill switch</li>
           <li>30 adversarial tests</li>
-          <li>MIT license, fork freely</li>
+          <li>Source access by request</li>
         </ul>
-        <a href="https://github.com/claytoncamera/ultron" target="_blank" rel="noopener" class="btn-ghost">Clone on GitHub →</a>
+        <a href="mailto:clayton.camera@icloud.com?subject=ULTRON%20source%20access" class="btn-ghost">Ask about source access →</a>
       </div>
 
       <div class="u-plan featured">
-        <div class="ribbon">Most popular</div>
-        <h3>Pro</h3>
-        <div class="price">$19<small> /mo</small></div>
-        <div class="sub">Hosted daemon + web HUD + cloud LLM fallback.</div>
+        <div class="ribbon">Planned · Waitlist only</div>
+        <h3>Hosted Pro · Planned</h3>
+        <div class="price">Planned</div>
+        <div class="sub">Proposed capabilities for a future hosted option. Not available to purchase or activate.</div>
         <ul>
-          <li>Everything in Self-host</li>
+          <li>Local engine capabilities</li>
           <li>Hosted API daemon (Railway-backed)</li>
           <li>Managed Anthropic + Perplexity keys</li>
           <li>Cloud-synced audit log backup</li>
           <li>Priority support + invariant bounty</li>
         </ul>
-        <a href="#trial" class="btn-cyan">Start 14-day free trial</a>
+        <a href="#waitlist" class="btn-cyan">Join the hosted waitlist →</a>
       </div>
 
       <div class="u-plan">
-        <div class="ribbon">For teams</div>
-        <h3>Team</h3>
-        <div class="price">$99<small> /mo</small></div>
-        <div class="sub">Multiple approvers, shared personas, SAML-ready.</div>
+        <div class="ribbon">Planned · Team interest</div>
+        <h3>Team · Planned</h3>
+        <div class="price">Planned</div>
+        <div class="sub">Proposed team capabilities. Scope and availability are still being explored.</div>
         <ul>
           <li>Everything in Pro</li>
           <li>Up to 10 operators</li>
@@ -338,35 +338,36 @@
           <li>Centralized audit across operators</li>
           <li>SSO + SAML (on request)</li>
         </ul>
-        <a href="mailto:clayton@moneymakingsolutionsai.com?subject=ULTRON%20Team%20plan" class="btn-ghost">Contact sales →</a>
+        <a href="mailto:clayton.camera@icloud.com?subject=ULTRON%20Team%20interest" class="btn-ghost">Discuss team interest →</a>
       </div>
     </div>
   </section>
 
-  <!-- TRIAL FORM -->
-  <section class="u-section" id="trial" style="padding-top: 0;">
-    <h2 style="text-align:center;">Start your 14-day trial</h2>
-    <p class="lede" style="margin-left:auto; margin-right:auto; text-align:center;">Drop your email. We'll send a signed trial token for the hosted Pro daemon. No card until day 14.</p>
+  <!-- HOSTED-INTEREST WAITLIST -->
+  <section class="u-section" id="waitlist" style="padding-top: 0;">
+    <span id="trial" aria-hidden="true"></span>
+    <h2 style="text-align:center;">Join the hosted-interest waitlist</h2>
+    <p class="lede" style="margin-left:auto; margin-right:auto; text-align:center;">Leave your email for updates about planned hosted options. Joining the waitlist does not create an account, start a trial or activate a paid plan. No launch date is promised.</p>
     <form class="u-trial" id="trialForm" novalidate>
       <input type="email" id="trialEmail" name="email" placeholder="you@domain.com" required autocomplete="email" aria-label="Email address">
-      <button type="submit" class="btn-cyan">Send my trial token</button>
+      <button type="submit" class="btn-cyan">Join the waitlist</button>
     </form>
-    <div class="u-trial-ok" id="trialOk">&#10003; You're on the list &mdash; trial tokens go out by email in signup order as hosted slots open.</div>
-    <p class="u-trial-note">Your email goes straight to Clayton's own CRM &mdash; no third-party lists. No card required.</p>
+    <div class="u-trial-ok" id="trialOk">&#10003; You're on the hosted-interest waitlist. This is an interest signup; no account, trial or paid plan has been activated.</div>
+    <p class="u-trial-note">Your email goes to Clayton's own CRM &mdash; no third-party lists. Hosted availability updates only; no payment is collected here.</p>
   </section>
   </main>
 
   <footer class="site-footer">
-    <div>ULTRON &mdash; Clayton Camera &mdash; 2026 &nbsp;|&nbsp; <a href="/">Loopholemaxing</a> &nbsp;|&nbsp; <a href="https://github.com/claytoncamera/ultron" target="_blank" rel="noopener">GitHub</a></div>
+    <div>ULTRON &mdash; Clayton Camera &mdash; 2026 &nbsp;|&nbsp; <a href="/">Loopholemaxing</a> &nbsp;|&nbsp; <a href="mailto:clayton.camera@icloud.com?subject=ULTRON%20source%20access">Source access</a></div>
     <div class="footer-tagline">Read. Plan. Propose. Approve. Ship.</div>
   </footer>
 
   <script src="/capture.js"></script>
   <script>
-    // Trial form → HUB CRM (lead tagged "[LIST] ULTRON Pro Waitlist").
+    // Hosted-interest form → HUB CRM (lead tagged "[LIST] ULTRON Pro Waitlist").
     // Swap in Stripe checkout when the hosted daemon + billing are live.
     wireCaptureForm({ form: 'trialForm', input: 'trialEmail', okEl: 'trialOk',
-      list: 'ULTRON Pro Waitlist', note: '14-day Pro trial signup ($19/mo tier)' });
+      list: 'ULTRON Pro Waitlist', note: 'Interest in planned hosted ULTRON options; waitlist only' });
   </script>
   <script async src="https://analytics-hub-production-9e6b.up.railway.app/track.js?v=20260616a" data-site="loopholemaxing"></script>
 </body>

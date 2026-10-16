@@ -19,16 +19,16 @@
     "reason": "insufficient_edge_or_sample \u2014 remain shadow",
     "reasons": [
       "all-time wilson_lb_95 0.4719 not > 0.5 (hit_rate 0.5052 at n=859)",
-      "rolling-30d hit_rate 0.4849 < 0.52"
+      "rolling-30d hit_rate 0.4860 < 0.52"
     ],
     "rolling_30d": {
-      "expectancy_maker_2bps": 14.265461480926582,
-      "hit_rate": 0.48491879350348027,
-      "n": 431,
-      "wilson_lb_95": 0.43807726101225186,
+      "expectancy_maker_2bps": 14.535726137264787,
+      "hit_rate": 0.48604651162790696,
+      "n": 430,
+      "wilson_lb_95": 0.4391381379291729,
       "window_keyed_on": "issued_at"
     },
-    "rolling_30d_hit": 0.4858651755203479,
+    "rolling_30d_hit": 0.4854037267080745,
     "thresholds": {
       "min_n_resolved": 40,
       "rolling_30d_maker_bps_gt": 0,
@@ -39,25 +39,25 @@
     "vs_majority_pp": -4.656577415599528,
     "wilson_lb_95": 0.47185449891429376
   },
-  "generated_at": "2026-10-16T12:31:09Z",
+  "generated_at": "2026-10-16T13:01:07Z",
   "not_financial_advice": true,
   "schema_version": "signal-v0.2.0",
   "signal": {
     "asset": "BTCUSD",
-    "confidence_reason": "guard24:rel=0.0076|sma24=81919.84|sma72=82275.00|band=low",
-    "direction": "up",
-    "entry_ref": 82539.28,
-    "expires_at": "2026-10-17T12:00:00Z",
-    "forecast_id": "33c0ea5c-25fb-4493-b851-6a7a3440b79b",
+    "confidence_reason": "guard24:rel=-0.0006|sma24=81988.42|sma72=82264.99|band=high",
+    "direction": "down",
+    "entry_ref": 81935.45,
+    "expires_at": "2026-10-17T13:00:00Z",
+    "forecast_id": "c77bc5de-b6e0-4b28-ada7-2a91365ca098",
     "horizon": "24h",
-    "invalidation": "BTC < 78412.32 before target",
-    "issued_at": "2026-10-16T12:00:00Z",
+    "invalidation": "BTC > 86032.22 before target",
+    "issued_at": "2026-10-16T13:00:00Z",
     "model_version": "v0.3.0-shadow-guard24",
-    "probability": 0.52,
-    "regime": "bull",
-    "signal_id": "sig-33c0ea5c",
+    "probability": 0.55,
+    "regime": "chop",
+    "signal_id": "sig-c77bc5de",
     "signal_version": "shadow-guard24-v0.1.0",
-    "target_rule": "close_above_entry"
+    "target_rule": "close_below_entry"
   },
   "status": "shadow"
 }

@@ -180,9 +180,24 @@ bash tests/trading-surfaces-scan.sh
 T_TRADING=$?
 
 echo
-if [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ] && [ $T9 -eq 0 ] && [ $T_ARMY -eq 0 ] && [ $T_AGORA -eq 0 ] && [ $T_HOME -eq 0 ] && [ $T_SEO -eq 0 ] && [ $T_TRADING -eq 0 ]; then
+echo "== Reviewed Pages artifact + concept integrity =="
+python3 tests/pages-bundle.spec.py
+T_PAGES=$?
+
+echo
+echo "== Studio device convenience lock =="
+if command -v node >/dev/null 2>&1; then
+  node tests/studio-device-lock.spec.mjs
+  T_STUDIO=$?
+else
+  echo "SKIP: node not installed"
+  T_STUDIO=0
+fi
+
+echo
+if [ $T_PAGES -eq 0 ] && [ $T_STUDIO -eq 0 ] && [ $T1 -eq 0 ] && [ $T2 -eq 0 ] && [ $T3 -eq 0 ] && [ $T4 -eq 0 ] && [ $T5 -eq 0 ] && [ $T6 -eq 0 ] && [ $T7 -eq 0 ] && [ $T8 -eq 0 ] && [ $T9 -eq 0 ] && [ $T_ARMY -eq 0 ] && [ $T_AGORA -eq 0 ] && [ $T_HOME -eq 0 ] && [ $T_SEO -eq 0 ] && [ $T_TRADING -eq 0 ]; then
   echo "ALL CHECKS PASSED"
   exit 0
 fi
-echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8 briefings=$T9 army=$T_ARMY agora=$T_AGORA homepage=$T_HOME seo=$T_SEO trading=$T_TRADING"
+echo "FAILED: truth=$T1 secret=$T2 closed=$T3 ledger=$T4 data=$T5 models=$T6 phase4=$T7 phase7=$T8 briefings=$T9 army=$T_ARMY agora=$T_AGORA homepage=$T_HOME seo=$T_SEO trading=$T_TRADING pages=$T_PAGES studio=$T_STUDIO"
 exit 1

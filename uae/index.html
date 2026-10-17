@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Universal Analyst Engine — Multi-Domain Narrative Intelligence</title>
-  <meta name="description" content="Real-time narrative intelligence across sports, brand, entertainment, politics, and macro economics. 92 entities tracked, 42,000+ narratives analyzed." />
+  <meta name="description" content="Archived research: a multi-domain narrative intelligence engine across sports, brand, entertainment, politics and macro. Backend shelved October 7, 2026." />
   <link rel="canonical" href="https://loopholemaxing.com/uae/">
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 
@@ -237,7 +237,7 @@
   <div class="header-right">
     <div class="freshness">
       <div class="freshness-dot offline" id="f-dot"></div>
-      <span class="freshness-label offline" id="f-label">LOADING</span>
+      <span class="freshness-label offline" id="f-label">ARCHIVED</span>
       <span id="f-time" style="color:var(--muted)"></span>
     </div>
   </div>
@@ -253,11 +253,12 @@
 
 <main id="main" tabindex="-1">
 <div class="container">
+  <div role="status" style="margin:0 0 20px;padding:12px 16px;border:1px solid rgba(210,153,34,.35);background:rgba(210,153,34,.08);border-radius:10px;font-size:14px;line-height:1.5"><strong>Archived research.</strong> The Universal Analyst Engine backend was shelved on October 7, 2026. Ingestion and the live dashboard are offline, so no current rankings are shown. The About tab describes what the system did.</div>
 
   <!-- HOME PAGE -->
   <div class="page active" id="page-home">
     <div style="margin-bottom:4px"><h1 style="font-size:18px;font-weight:600">Intelligence Overview</h1></div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Real-time narrative intelligence across 5 domains</p>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:20px">Narrative intelligence research across 5 domains (archived)</p>
     <div class="kpi-row" id="kpi-row">
       <div class="kpi"><div class="kpi-label">Entities</div><div class="kpi-value" id="kpi-entities">—</div></div>
       <div class="kpi"><div class="kpi-label">Narratives</div><div class="kpi-value" id="kpi-narratives">—</div></div>
@@ -342,16 +343,16 @@
   <div class="page" id="page-about">
     <div class="about-section">
       <h1 style="font-size:18px;font-weight:600;margin-bottom:8px">About the Universal Analyst Engine</h1>
-      <p>UAE is a multi-domain narrative intelligence platform that continuously ingests news and media, analyzes narrative patterns, and scores entities across sports, brand, entertainment, politics, and macro economics. It transforms raw news flow into structured, ranked intelligence.</p>
+      <p>UAE was a multi-domain narrative intelligence platform that ingested news and media, analyzes narrative patterns, and scores entities across sports, brand, entertainment, politics, and macro economics. It transforms raw news flow into structured, ranked intelligence.</p>
     </div>
     <div class="about-section">
       <h2>Capabilities</h2>
       <div class="feature-grid">
-        <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title">Multi-Domain Intelligence</div><div class="feature-desc">Tracks 92+ entities across 5 domains with continuous monitoring.</div></div>
+        <div class="feature-card"><div class="feature-icon">🌐</div><div class="feature-title">Multi-Domain Intelligence</div><div class="feature-desc">Tracked entities across 5 domains while ingestion was running.</div></div>
         <div class="feature-card"><div class="feature-icon">📡</div><div class="feature-title">25+ Data Sources</div><div class="feature-desc">ESPN, Billboard, CoinDesk, TechCrunch, Politico, Reuters, and more.</div></div>
         <div class="feature-card"><div class="feature-icon">🧠</div><div class="feature-title">Narrative Analysis</div><div class="feature-desc">42,000+ narratives analyzed for sentiment, momentum, and fragility.</div></div>
         <div class="feature-card"><div class="feature-icon">📊</div><div class="feature-title">Scoring Engine</div><div class="feature-desc">Weighted scoring with narrative sentiment and momentum analysis.</div></div>
-        <div class="feature-card"><div class="feature-icon">⏱</div><div class="feature-title">Near Real-Time</div><div class="feature-desc">Data refreshes continuously. Dashboard auto-refreshes every 30s.</div></div>
+        <div class="feature-card"><div class="feature-icon">⏱</div><div class="feature-title">Refresh cadence</div><div class="feature-desc">While live, data refreshed continuously and the dashboard every 30 seconds.</div></div>
         <div class="feature-card"><div class="feature-icon">🎯</div><div class="feature-title">Confidence Scoring</div><div class="feature-desc">Every score includes confidence based on article volume and diversity.</div></div>
       </div>
     </div>
@@ -381,6 +382,9 @@
 </footer>
 
 <script>
+// The backend was shelved on 2026-10-07 (Railway API offline). Leave the page as an archive:
+// no API calls, no 30-second polling against a dead host. Set ARCHIVED=false to restore.
+const ARCHIVED = true;
 const API = 'https://universal-analyst-engine-production.up.railway.app/api/v1/public';
 const DOMAINS = ['sports','brand','entertainment','politics','macro'];
 const DOMAIN_ICONS = {sports:'⚽',brand:'🏷',entertainment:'🎬',politics:'🏛',macro:'📈'};
@@ -431,6 +435,7 @@ function showPage(page,tab) {
   if(el){el.classList.add('active');currentPage=page;}
   if(tab) tab.classList.add('active');
   else { const t=document.querySelector(`.nav-tab[data-page="${page}"]`); if(t) t.classList.add('active'); }
+  if (ARCHIVED) return;
   if(page==='home') loadHome();
   if(page==='rankings') loadRankingsPage();
   if(page==='domains') loadDomainPage();
@@ -455,7 +460,7 @@ document.addEventListener('keydown', e => {
 });
 
 // ── Data fetching ──
-async function api(path) { const r=await fetch(API+path,{signal:AbortSignal.timeout(10000)}); if(!r.ok) throw new Error(r.status); return r.json(); }
+async function api(path) { if (ARCHIVED) throw new Error('archived'); const r=await fetch(API+path,{signal:AbortSignal.timeout(10000)}); if(!r.ok) throw new Error(r.status); return r.json(); }
 
 // ── Freshness ──
 async function loadFreshness() {
@@ -650,6 +655,12 @@ async function loadEntityProfile(slug,domain) {
 
 // ── Init ──
 async function init() {
+  if (ARCHIVED) {
+    const msg = '<div class="empty-state">Archived — the backend was shelved on October 7, 2026, so live rankings are unavailable.</div>';
+    document.getElementById('home-leaderboards').innerHTML = msg;
+    for (const id of ['rankings-table-body','domain-heatmap','domain-narratives']) { const el=document.getElementById(id); if (el) el.innerHTML = msg; }
+    return;
+  }
   // Load freshness and home page data in parallel for faster initial render
   await Promise.all([loadFreshness(), loadHome()]);
   setInterval(()=>{ loadFreshness(); if(currentPage==='home') loadHome(); },30000);

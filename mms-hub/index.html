@@ -231,7 +231,7 @@
         <div class="live-grid">
           <article class="live-card">
             <div class="label">All resolved forecasts</div>
-            <div class="live-number" id="resolved">3,503</div>
+            <div class="live-number" id="resolved">—</div>
             <div class="live-meta" id="global-meta">Loading current scorecard…</div>
             <div class="meter" aria-hidden="true"><span id="global-meter"></span></div>
           </article>
@@ -295,7 +295,8 @@
     document.getElementById('candidate-copy').textContent = gates.ok ? 'The evidence gate currently passes; live promotion still requires explicit owner approval.' : (gates.reason || 'The candidate remains behind the evidence gate.');
     document.getElementById('candidate-metric').textContent = `${gates.model_version || 'candidate'} · n=${gates.n || 0} · ${pct(gates.hit_rate)} hit · Wilson LB ${pct(gates.wilson_lb_95)}`;
   }).catch(() => {
-    document.getElementById('global-meta').textContent = 'Latest committed snapshot · live refresh temporarily unavailable';
+    document.getElementById('resolved').textContent = '—';
+    document.getElementById('global-meta').textContent = 'Ledger data unavailable right now — open the BTC Brain scorecard for the latest published figures.';
     document.getElementById('candidate-metric').textContent = 'Fail-closed: no live data means no promotion signal.';
   });
   </script>

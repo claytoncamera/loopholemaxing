@@ -1,26 +1,35 @@
 {
   "attempts": [
     {
-      "error": null,
-      "fetched_at": "2026-10-17T08:01:05Z",
+      "error": "GET https://api.alternative.me/fng/?limit=1 failed: <urlopen error timed out>",
+      "fetched_at": "2026-10-17T08:31:19Z",
       "kind": "sentiment",
-      "latency_ms": 1340,
+      "latency_ms": 15013,
       "notes": [],
       "source": "alternative.me",
+      "status": "failed"
+    },
+    {
+      "error": null,
+      "fetched_at": "2026-10-17T08:31:19Z",
+      "kind": "sentiment",
+      "latency_ms": 65,
+      "notes": [],
+      "source": "coingecko",
       "status": "ok"
     }
   ],
   "data": {
-    "fear_greed_label": "Greed",
-    "fear_greed_value": 55,
-    "indicator": "fear_greed_btc_crypto",
-    "sample_timestamp": "1792195200"
+    "fear_greed_label": "coingecko_up_pct_proxy",
+    "fear_greed_value": 71,
+    "indicator": "coingecko_sentiment_up_pct",
+    "sample_timestamp": null
   },
   "error": null,
-  "fetched_at": "2026-10-17T08:01:05Z",
+  "fetched_at": "2026-10-17T08:31:19Z",
   "kind": "sentiment",
   "notes": [],
   "schema_version": "phase2-data-v1",
-  "source": "alternative.me",
+  "source": "coingecko",
   "status": "ok"
 }

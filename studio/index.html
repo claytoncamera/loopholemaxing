@@ -806,7 +806,7 @@ function inviteBoot(){
   const t=new URLSearchParams(location.search).get('invite');
   const admEl=$('adm-key'); if(admEl && localStorage.getItem('studio_admin_key')) admEl.value=localStorage.getItem('studio_admin_key');
   if(!t) return;
-  if(SYNC_SHELVED){ $('gate-err').textContent='Invite links are closed: Studio sync was shelved on October 7, 2026.'; return; }
+  if(SYNC_SHELVED){ const e=$('gate-err'); e.textContent='Invite links are closed: Studio sync was shelved on October 7, 2026.'; e.classList.add('show'); return; }
   _inviteToken=t;
   document.querySelector('.gate-title').textContent='Welcome to Studio';
   document.querySelector('.gate-sub').textContent='One tap and this device becomes your own private content studio.';
@@ -817,6 +817,7 @@ function inviteBoot(){
   }
 }
 async function redeemInvite(){
+  if(SYNC_SHELVED) return;
   $('inv-err').textContent='';
   try{
     const r=await fetch(SYNC_URL+'/invite/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:_inviteToken})});
@@ -843,6 +844,7 @@ async function finishInvite(){
 /* ── Owner: mint + list invites (admin key stored locally only) ── */
 function admKey(){ const v=($('adm-key').value||'').trim(); if(v) localStorage.setItem('studio_admin_key',v); return v||localStorage.getItem('studio_admin_key')||''; }
 async function mintInvite(){
+  if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; }
   const k=admKey(); const out=$('inv-out');
   if(!k){ out.textContent='Paste the admin key first (railway variables → ADMIN_KEY).'; return; }
   out.textContent='Minting…';
@@ -856,6 +858,7 @@ async function mintInvite(){
   }catch(e){ out.textContent='Mint failed: '+e.message; }
 }
 async function listInvites(){
+  if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; }
   const k=admKey(); const el=$('inv-list');
   if(!k){ $('inv-out').textContent='Paste the admin key first.'; return; }
   try{
@@ -2097,8 +2100,9 @@ async function ensureBlob(id){
   try{ const res=await fetch(SYNC_URL+'/blob/'+encodeURIComponent(id),{headers:syncHeaders()}); if(!res.ok) return null; const blob=await res.blob(); await idbPut('blobs',{id,blob}); return blob; }catch(_){ return null; }
 }
 
-function genSyncCode(){ const part=()=>Math.random().toString(36).slice(2,7); $('sync-code-input').value=[part(),part(),part(),part()].join('-'); }
+function genSyncCode(){ if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; } const part=()=>Math.random().toString(36).slice(2,7); $('sync-code-input').value=[part(),part(),part(),part()].join('-'); }
 async function saveSyncCode(){
+  if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; }
   const v=($('sync-code-input').value||'').trim();
   if(!v){ localStorage.removeItem('studio_sync_code'); toast('Sync turned off','success'); renderSyncSettings(); return; }
   if(v.length<8){ return toast('Sync code must be at least 8 characters','error'); }
@@ -2109,6 +2113,7 @@ async function saveSyncCode(){
 }
 function renderSyncSettings(){
   const on=syncEnabled(); const st=$('sync-state'); if(!st) return;
+  if(SYNC_SHELVED){ st.textContent='Shelved'; st.style.color='var(--text-muted)'; return; }
   st.textContent = on ? 'On' : 'Off';
   st.style.color = on ? 'var(--green)' : 'var(--text-muted)';
   const inp=$('sync-code-input'); if(inp && document.activeElement!==inp) inp.value=syncCode();

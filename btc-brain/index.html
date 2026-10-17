@@ -1478,7 +1478,17 @@
     });
 
     // ---- paper trade tape ----
-    fetchJson('ledger/public/trades.json').then(function(t){
+    // trades.json is ~600 KB; fetch it only when the tape section nears the viewport
+    // (2026-10-17 audit) instead of on page load. Falls back to loading at once.
+    function whenNearViewport(id, fn){
+      var el = document.getElementById(id);
+      if (!el || !('IntersectionObserver' in window)) { fn(); return; }
+      var io = new IntersectionObserver(function(entries){
+        if (entries.some(function(e){ return e.isIntersecting; })) { io.disconnect(); fn(); }
+      }, { rootMargin: '600px 0px' });
+      io.observe(el);
+    }
+    whenNearViewport('sb-tape-status', function(){ fetchJson('ledger/public/trades.json').then(function(t){
       var groups = (t.groups||[]).slice();
       if(!groups.length) return;
       var status = document.getElementById('sb-tape-status');
@@ -1557,7 +1567,7 @@
         var lEl=document.getElementById('sb-tape-last');
         lEl.innerHTML=lt; lEl.style.display='block';
       }
-    }).catch(function(){ /* tape not generated yet — initializing copy stays */ });
+    }).catch(function(){ /* tape not generated yet — initializing copy stays */ }); });
 
     // header ledger stat
     fetchJson('ledger/public/accuracy.json').then(function(d){
@@ -1948,7 +1958,7 @@
 
   <!-- LEARNING VELOCITY GAUGE -->
   <div style="background:linear-gradient(135deg,rgba(88,166,255,0.05),rgba(210,168,255,0.05));border:1px solid #21262d;border-radius:10px;padding:20px;margin-bottom:20px;">
-    <div style="font-size:10px;color:#d29922;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;text-align:center;">Initializing · Ledger-Backed Metrics Unavailable</div>
+    <div style="font-size:10px;color:#d29922;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;text-align:center;">Framework metrics · not computed from the public ledger</div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:16px;text-align:center;">
       <div>
         <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Learning Velocity</div>
@@ -1958,12 +1968,12 @@
       <div>
         <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Signal Accuracy</div>
         <div style="font-size:26px;font-weight:800;color:#8b949e;font-family:monospace;">—</div>
-        <div style="font-size:10px;color:#8b949e;">no ledger yet</div>
+        <div style="font-size:10px;color:#8b949e;">see the <a href="#scoreboard" style="color:#58a6ff;">scoreboard</a></div>
       </div>
       <div>
         <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">False Signal Rate</div>
         <div style="font-size:26px;font-weight:800;color:#8b949e;font-family:monospace;">—</div>
-        <div style="font-size:10px;color:#8b949e;">no ledger yet</div>
+        <div style="font-size:10px;color:#8b949e;">not measured</div>
       </div>
       <div>
         <div style="font-size:10px;color:#8b949e;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">Analog Match</div>
@@ -1976,7 +1986,7 @@
         <div style="font-size:10px;color:#8b949e;">not measured</div>
       </div>
     </div>
-    <div style="font-size:10px;color:#8b949e;margin-top:12px;text-align:center;">These metrics will populate once a tamper-evident, ledger-backed prediction record is published. Until then, no number is shown.</div>
+    <div style="font-size:10px;color:#8b949e;margin-top:12px;text-align:center;">The public forecast ledger scores every resolved forecast against a naive baseline; its hit rate is on the <a href="#scoreboard" style="color:#58a6ff;">scoreboard</a>. These five framework metrics are not computed from it, so no number is shown here.</div>
   </div>
 
   <!-- INFLUENCE FRAMEWORK (replaces a previous table of fabricated weights/readings) -->
@@ -3769,7 +3779,7 @@
   <div class="chapter-header">
     <div class="chapter-number">CHAPTER 15</div>
     <h2>Advanced Prediction Framework</h2>
-    <p class="chapter-desc">A disciplined methodology for BTC scenario analysis — tiered inputs, multi-timeframe confidence scoring, historical analog matching, scenario probability weighting, and systematic invalidation logic. <strong style="color:#d29922;">Confidence and analog-match figures below are author-set scenario weights, not measured prediction accuracy.</strong> No live ledger of past predictions exists yet.</p>
+    <p class="chapter-desc">A disciplined methodology for BTC scenario analysis — tiered inputs, multi-timeframe confidence scoring, historical analog matching, scenario probability weighting, and systematic invalidation logic. <strong style="color:#d29922;">Confidence and analog-match figures below are author-set scenario weights, not measured prediction accuracy.</strong> They are separate from the public forecast ledger, which scores resolved forecasts against a naive baseline on the <a href="#scoreboard" style="color:#58a6ff;">scoreboard</a>.</p>
   </div>
       <div class="eli12"><span class="eli12-tag">💡 In plain words</span>How we structure our guesses about where the price may go: ranked signals, scenarios with weights, and clear “this proves us wrong” lines. These are author judgments — the measured version lives in the Forecast Scoreboard.</div>
 

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex,nofollow">
   <title>Studio — Content HUB | Loopholemaxing</title>
-  <meta name="description" content="Your content command center. Import footage from GoPro, Nikon, and phone; track where every clip came from; trim and export clips right in the browser; assemble projects. Local-first, opens on any device.">
+  <meta name="description" content="Your content command center. Import footage from GoPro, Nikon, and phone; track where every clip came from; trim and export clips right in the browser; assemble projects. Local-first: your library stays in this browser.">
   <meta property="og:title" content="LoopholeMaxing Studio — Content HUB">
   <meta property="og:description" content="One place for all your content. Import, track, trim, clip, and assemble — fully in the browser.">
 
@@ -339,7 +339,7 @@
       </div>
       <button id="gate-submit" class="btn btn-full" type="submit">Unlock Studio</button>
     </form>
-    <div class="gate-sub" id="gate-hint" style="font-size:11px;margin-top:18px;">The device lock applies to this browser. Cloud sync uses your separately supplied sync code.</div>
+    <div class="gate-sub" id="gate-hint" style="font-size:11px;margin-top:18px;">The device lock applies to this browser.</div>
   </div>
 </div>
 
@@ -615,41 +615,9 @@
       <div class="panel engine-panel">
         <div class="eng-head">
           <span class="eng-badge">&#128225; Cross-device sync</span>
-          <span class="pill" id="sync-state">Off</span>
+          <span class="pill" id="sync-state">Shelved</span>
         </div>
-        <div class="hint" id="sync-when" style="margin:0 0 14px;">Enter the same code on each device to share your library + finished clips.</div>
-        <div class="form-row">
-          <label class="field-label">Sync code (your private key — keep it secret)</label>
-          <input class="input" id="sync-code-input" placeholder="e.g. ab12c-d34ef-…" autocomplete="off" autocapitalize="off" spellcheck="false">
-        </div>
-        <div class="row-actions">
-          <button class="btn btn-sm" onclick="saveSyncCode()">Turn on sync</button>
-          <button class="btn btn-ghost btn-sm" onclick="genSyncCode()">Generate a code</button>
-          <button class="btn btn-ghost btn-sm" onclick="syncNow(false)">Sync now</button>
-        </div>
-        <div class="hint" id="sync-status" style="margin-top:10px;"></div>
-        <div class="hint" style="margin-top:6px;">Syncs metadata, thumbnails, captions, plan, and your <b>finished clips</b>. Raw originals stay on the device you imported them on (use Backup to move those). To add another device: open Studio there, paste this same code, Turn on sync.</div>
-      </div>
-
-      <div class="panel engine-panel">
-        <div class="eng-head">
-          <span class="eng-badge">&#128140; Invite people (owner)</span>
-        </div>
-        <div class="hint" style="margin:0 0 14px;">Mint one-time login links. Each link provisions a fresh, isolated Studio account (own library, own sync, 2GB cloud clip storage). Needs the admin key from the sync server.</div>
-        <div class="form-row">
-          <label class="field-label">Admin key</label>
-          <input class="input" id="adm-key" type="password" placeholder="paste once — stored on this device only" autocomplete="off">
-        </div>
-        <div class="form-row">
-          <label class="field-label">Label (who is this for?)</label>
-          <input class="input" id="inv-label" placeholder="e.g. Jake — RCLX reels">
-        </div>
-        <div class="row-actions">
-          <button class="btn btn-sm" onclick="mintInvite()">&#128279; New invite link</button>
-          <button class="btn btn-ghost btn-sm" onclick="listInvites()">Show invites</button>
-        </div>
-        <div id="inv-out" class="hint" style="margin-top:10px;"></div>
-        <div id="inv-list" style="margin-top:6px;"></div>
+        <div class="hint" style="margin:0;">Cross-device sync and invite links were shelved on October 7, 2026, when the sync service was taken offline. Studio keeps working in this browser; use <b>Backup</b> below to move your library to another device.</div>
       </div>
 
       <div class="panel">
@@ -830,11 +798,15 @@ $('confirm-ok').onclick = ()=>{ closeOverlay('confirm-overlay'); if(_confirmCb) 
    ============================================================ */
 /* ── Invite onboarding (?invite=TOKEN → one-time redeem → fresh account) ── */
 let _inviteToken=null;
+// The studio-sync API was shelved on 2026-10-07 (Railway service off, data kept). With this flag
+// set, sync and invites are inert: no requests to the sync host. Set false to restore.
+var SYNC_SHELVED = true;
 function inviteBoot(){
   prepareDeviceLock();
   const t=new URLSearchParams(location.search).get('invite');
   const admEl=$('adm-key'); if(admEl && localStorage.getItem('studio_admin_key')) admEl.value=localStorage.getItem('studio_admin_key');
   if(!t) return;
+  if(SYNC_SHELVED){ const e=$('gate-err'); e.textContent='Invite links are closed: Studio sync was shelved on October 7, 2026.'; e.classList.add('show'); return; }
   _inviteToken=t;
   document.querySelector('.gate-title').textContent='Welcome to Studio';
   document.querySelector('.gate-sub').textContent='One tap and this device becomes your own private content studio.';
@@ -845,6 +817,7 @@ function inviteBoot(){
   }
 }
 async function redeemInvite(){
+  if(SYNC_SHELVED) return;
   $('inv-err').textContent='';
   try{
     const r=await fetch(SYNC_URL+'/invite/redeem',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token:_inviteToken})});
@@ -871,6 +844,7 @@ async function finishInvite(){
 /* ── Owner: mint + list invites (admin key stored locally only) ── */
 function admKey(){ const v=($('adm-key').value||'').trim(); if(v) localStorage.setItem('studio_admin_key',v); return v||localStorage.getItem('studio_admin_key')||''; }
 async function mintInvite(){
+  if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; }
   const k=admKey(); const out=$('inv-out');
   if(!k){ out.textContent='Paste the admin key first (railway variables → ADMIN_KEY).'; return; }
   out.textContent='Minting…';
@@ -884,6 +858,7 @@ async function mintInvite(){
   }catch(e){ out.textContent='Mint failed: '+e.message; }
 }
 async function listInvites(){
+  if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; }
   const k=admKey(); const el=$('inv-list');
   if(!k){ $('inv-out').textContent='Paste the admin key first.'; return; }
   try{
@@ -1098,7 +1073,7 @@ async function engineSaveConfig(){
     config[k]= inp.type==='checkbox'? inp.checked : (inp.type==='number'? +inp.value : inp.value);
   });
   ENGINE.config={config}; engineSave();
-  if(!syncEnabled()){ toast('Set a sync code first — the engine reads config through sync','error'); return; }
+  if(!syncEnabled()){ toast(SYNC_SHELVED?'Sync was shelved on Oct 7, 2026 — engine config is saved on this device only':'Set a sync code first — the engine reads config through sync','error'); return; }
   try{
     const r=await fetch(SYNC_URL+'/push',{method:'POST',headers:syncHeaders({'Content-Type':'application/json'}),
       body:JSON.stringify({items:[{id:'engine_config',kind:'engine_config',updatedAt:Date.now(),data:{config}}]})});
@@ -1127,7 +1102,7 @@ async function engineSkip(id){
   await idbPut('clips',c); await refreshAll();
 }
 async function copyPublicLink(id){
-  if(!syncEnabled()){ toast('Sync required for public links','error'); return; }
+  if(!syncEnabled()){ toast(SYNC_SHELVED?'Public links need sync, which was shelved on Oct 7, 2026':'Sync required for public links','error'); return; }
   try{
     const r=await fetch(SYNC_URL+'/blob/'+encodeURIComponent(id)+'/link',{method:'POST',headers:syncHeaders()});
     if(!r.ok) throw new Error(r.status===503?'not configured on server':('HTTP '+r.status));
@@ -2048,7 +2023,7 @@ function promptInstall(){ if(_deferredPrompt){ _deferredPrompt.prompt(); _deferr
 const SYNC_URL='https://studio-sync-api-production.up.railway.app';
 let _syncTimer=null, _syncing=false;
 function syncCode(){ return localStorage.getItem('studio_sync_code')||''; }
-function syncEnabled(){ return !!syncCode(); }
+function syncEnabled(){ return !SYNC_SHELVED && !!syncCode(); }
 function syncHeaders(extra){ return Object.assign({ Authorization:'Bearer '+syncCode() }, extra||{}); }
 function tombstone(id,kind){
   if(!syncEnabled()) return;
@@ -2125,8 +2100,9 @@ async function ensureBlob(id){
   try{ const res=await fetch(SYNC_URL+'/blob/'+encodeURIComponent(id),{headers:syncHeaders()}); if(!res.ok) return null; const blob=await res.blob(); await idbPut('blobs',{id,blob}); return blob; }catch(_){ return null; }
 }
 
-function genSyncCode(){ const part=()=>Math.random().toString(36).slice(2,7); $('sync-code-input').value=[part(),part(),part(),part()].join('-'); }
+function genSyncCode(){ if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; } const part=()=>Math.random().toString(36).slice(2,7); $('sync-code-input').value=[part(),part(),part(),part()].join('-'); }
 async function saveSyncCode(){
+  if(SYNC_SHELVED){ toast('Studio sync was shelved on Oct 7, 2026','error'); return; }
   const v=($('sync-code-input').value||'').trim();
   if(!v){ localStorage.removeItem('studio_sync_code'); toast('Sync turned off','success'); renderSyncSettings(); return; }
   if(v.length<8){ return toast('Sync code must be at least 8 characters','error'); }
@@ -2137,6 +2113,7 @@ async function saveSyncCode(){
 }
 function renderSyncSettings(){
   const on=syncEnabled(); const st=$('sync-state'); if(!st) return;
+  if(SYNC_SHELVED){ st.textContent='Shelved'; st.style.color='var(--text-muted)'; return; }
   st.textContent = on ? 'On' : 'Off';
   st.style.color = on ? 'var(--green)' : 'var(--text-muted)';
   const inp=$('sync-code-input'); if(inp && document.activeElement!==inp) inp.value=syncCode();

@@ -42,8 +42,12 @@ def publishable(relative):
     if name in ROOT_FILES or name in BTC_FILES:
         return True
     if len(relative.parts) == 1:
-        return (relative.name.startswith("google") and relative.suffix == ".html"
-                and relative.stem[6:].isalnum())
+        # Search-console verification files: Google's googleXXXX.html, and an IndexNow key
+        # (32 lowercase hex chars + .txt, whose content is the key) so Bing accepts URL pings.
+        return ((relative.name.startswith("google") and relative.suffix == ".html"
+                 and relative.stem[6:].isalnum())
+                or (relative.suffix == ".txt" and len(relative.stem) == 32
+                    and all(c in "0123456789abcdef" for c in relative.stem)))
     if any(part.startswith(".") or part in EXCLUDED_PARTS for part in relative.parts):
         return False
     if (relative.name.lower().startswith(("readme", "test_", "test-"))

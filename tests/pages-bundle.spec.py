@@ -35,6 +35,7 @@ class PagesBundleTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             allowed = ["index.html", "CNAME", ".nojekyll", "googleabc123.html",
+                       "0123456789abcdef0123456789abcdef.txt",
                        "studio/index.html", "studio/vendor/ffmpeg-core.js",
                        "window/pnp-tracker/data.js", "agora/excerpts/example.txt",
                        "btc-brain/research/topic.md", "btc-brain/BTC-INTELLIGENCE-BRAIN.pplx.md",
@@ -42,7 +43,7 @@ class PagesBundleTests(unittest.TestCase):
                        "btc-brain/models/public/registry.json",
                        "btc-brain/ledger/data/forecasts.jsonl",
                        "btc-brain/ledger/data/resolutions.jsonl"]
-            excluded = [".claude/launch.json", ".env", "README.md", "SECURITY.md",
+            excluded = [".claude/launch.json", ".env", "README.md", "SECURITY.md", "notes.txt",
                         "btc-brain-engine/engine.py", "btc-brain-engine/config.json",
                         "btc-brain-printer/README_SETUP.md", "logs/history.json",
                         "tests/example.html", "new-unreviewed-app/index.html",
